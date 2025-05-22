@@ -93,23 +93,23 @@
 
   <div class="top-bar">
     <h1>Admin Panel</h1>
-    <button onclick="toggleDarkMode()">🌙</button>
+    <button id="darkModeToggle">🌙</button>
   </div>
 
   <div class="section">
     <h2>Departments</h2>
     <input type="text" id="depName" placeholder="Department Name" />
     <input type="text" id="depImage" placeholder="Background Image URL" />
-    <button onclick="addOrUpdateDepartment()">Add / Update Department</button>
+    <button id="addDepBtn">Add / Update Department</button>
     <div class="list" id="departmentsList"></div>
-    <button onclick="saveDepartments()">💾 Save All</button>
+    <button id="saveAllBtn">💾 Save All</button>
   </div>
 
   <div class="section">
     <h2>Sub-Departments</h2>
     <select id="parentDep"></select>
     <input type="text" id="subName" placeholder="Sub-Department Name" />
-    <button onclick="addSubDepartment()">Add Sub-Department</button>
+    <button id="addSubBtn">Add Sub-Department</button>
     <div class="list" id="subsList"></div>
   </div>
 
@@ -120,7 +120,7 @@
     <input type="text" id="linkName" placeholder="Link Name" />
     <input type="text" id="linkUrl" placeholder="Link URL" />
     <input type="text" id="linkColor" placeholder="Background Color (e.g., #4CAF50)" />
-    <button onclick="addLink()">Add Link</button>
+    <button id="addLinkBtn">Add Link</button>
     <div class="list" id="linksList"></div>
   </div>
 
@@ -291,9 +291,16 @@
       }
     }
 
-    function toggleDarkMode() {
+    // DARK MODE
+    document.getElementById("darkModeToggle").addEventListener("click", () => {
       document.body.classList.toggle("dark");
-    }
+    });
+
+    // EVENT BINDING (FIXING Add button)
+    document.getElementById("addDepBtn").addEventListener("click", addOrUpdateDepartment);
+    document.getElementById("saveAllBtn").addEventListener("click", saveDepartments);
+    document.getElementById("addSubBtn").addEventListener("click", addSubDepartment);
+    document.getElementById("addLinkBtn").addEventListener("click", addLink);
 
     loadDepartments();
   </script>
