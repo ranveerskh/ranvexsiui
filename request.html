@@ -117,8 +117,9 @@
         confirmation.style.display = "block";
 
         setTimeout(() => {
-          window.location.href = "feature.html";
-        }, 1500);
+  form.reset();
+}, 1500);
+
       } catch (error) {
         alert("Error submitting request. Please try again.");
         console.error(error);
