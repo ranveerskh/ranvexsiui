@@ -39,6 +39,17 @@
       border-radius: 8px;
     }
 
+    .top-bar button {
+      margin-left: 8px;
+      background: white;
+      color: #4caf50;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
     .section {
       background: var(--section);
       padding: 20px;
@@ -109,6 +120,8 @@
     <div class="top-bar">
       <h1>Admin Panel</h1>
       <div>
+        <button onclick="window.open('feature.html', '_blank')">📋 Feature Requests</button>
+        <button onclick="window.open('https://postimages.org/', '_blank')">🖼️ Upload Image</button>
         <button id="darkModeToggle">🌙</button>
         <button id="logoutBtn">Logout</button>
       </div>
