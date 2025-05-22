@@ -25,37 +25,50 @@
       gap: 20px;
       padding: 20px;
       width: 100%;
-      max-width: 1200px;
+      max-width: 1600px;
       flex: 1;
       box-sizing: border-box;
       align-items: start;
     }
     .dept {
-      background: #4CAF50;
-      color: white;
-      border-radius: 10px;
-      padding: 20px;
       position: relative;
-      text-align: center;
-      font-size: 1.2rem;
-      font-weight: bold;
+      border-radius: 10px;
+      overflow: hidden;
       cursor: pointer;
+      height: 180px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-start;
+      background-size: cover;
+      background-position: center;
+      color: white;
+      font-size: 1.4rem;
+      font-weight: bold;
+      padding: 10px;
     }
-    .dept:hover {
-      background: #388e3c;
+    .dept::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 1;
+    }
+    .dept span {
+      position: relative;
+      z-index: 2;
     }
     .dropdown {
       display: none;
       position: absolute;
-      top: 100%;
+      bottom: 0;
       left: 0;
       right: 0;
       background: white;
       color: black;
       border-radius: 0 0 10px 10px;
       overflow: hidden;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-      z-index: 2;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.2);
+      z-index: 3;
     }
     .dept:hover .dropdown {
       display: block;
@@ -114,10 +127,13 @@
 
       deps.forEach(dep => {
         const subs = data[dep] || [];
+        const imageUrl = `https://source.unsplash.com/featured/?warehouse,${dep}`; // Replace with your own image logic
+
         const box = document.createElement("div");
         box.className = "dept";
+        box.style.backgroundImage = `url('${imageUrl}')`;
         box.innerHTML = `
-          ${dep}
+          <span>${dep}</span>
           <div class="dropdown">
             ${subs.map(sub => `<a href="department.html?dep=${dep}&sub=${sub}">${sub}</a>`).join("")}
           </div>
