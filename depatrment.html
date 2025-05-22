@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Department Links</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f5f5f5;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+    .link-box {
+      background: #4CAF50;
+      color: white;
+      padding: 30px;
+      border-radius: 10px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-decoration: none;
+      transition: background 0.3s, transform 0.3s;
+    }
+    .link-box:hover {
+      background: #388e3c;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <h1 id="title">Loading...</h1>
+  <div class="grid" id="linkGrid">
+    <!-- Link boxes go here -->
+  </div>
+
+  <!-- Firebase + Firestore -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDoUb1kEA8bo0NaqSTDQSTtH4fWNdmJrAw",
+      authDomain: "ranvexsi-ui.firebaseapp.com",
+      projectId: "ranvexsi-ui",
+      storageBucket: "ranvexsi-ui.firebasestorage.app",
+      messagingSenderId: "639916549058",
+      appId: "1:639916549058:web:2c14514e7d00aeaca52c5b"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const params = new URLSearchParams(window.location.search);
+    const dep = params.get("dep");
+    const sub = params.get("sub");
+    const docId = `${dep}-${sub}`;
+
+    document.getElementById("title").textContent = `${dep.toUpperCase()} → ${sub.toUpperCase()}`;
+
+    const linkGrid = document.getElementById("linkGrid");
+
+    async function loadLinks() {
+      const docRef = doc(db, "links", docId);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const links = docSnap.data().items || [];
+        links.forEach(link => {
+          const box = document.createElement("a");
+          box.href = link.url;
+          box.className = "link-box";
+          box.style.backgroundColor = link.color || "#4CAF50";
+          box.textContent = link.name;
+          box.target = "_blank";
+          linkGrid.appendChild(box);
+        });
+      } else {
+        linkGrid.innerHTML = `<p>No links found for ${dep}/${sub}</p>`;
+      }
+    }
+
+    loadLinks();
+  </script>
+</body>
+</html>
