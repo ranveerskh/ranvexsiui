@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Department Links</title>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <style>
     html, body {
       margin: 0;
@@ -44,7 +45,7 @@
       display: flex;
       align-items: flex-end;
       justify-content: flex-start;
-      cursor: pointer;
+      cursor: grab;
       background-size: cover;
       background-position: center;
       text-decoration: none;
@@ -102,10 +103,20 @@
     const dep = params.get("dep");
     const sub = params.get("sub");
     const docId = `${dep}-${sub}`;
+    const localKey = `linkOrder-${docId}`;
 
     document.getElementById("title").textContent = `${dep.toUpperCase()} → ${sub.toUpperCase()}`;
 
     const linkGrid = document.getElementById("linkGrid");
+    let linkData = [];
+
+    function getSavedOrder() {
+      try {
+        return JSON.parse(localStorage.getItem(localKey)) || [];
+      } catch {
+        return [];
+      }
+    }
 
     async function loadLinks() {
       const docRef = doc(db, "links", docId);
@@ -118,20 +129,39 @@
           return;
         }
 
-        linkGrid.innerHTML = "";
-        links.forEach(link => {
-          const div = document.createElement("a");
-          div.href = link.url;
-          div.className = "link-box";
-          div.style.backgroundImage = link.image ? `url('${link.image}')` : "none";
-          div.style.backgroundColor = link.color || "#4CAF50";
-          div.target = "_blank";
-          div.innerHTML = `<span>${link.name}</span>`;
-          linkGrid.appendChild(div);
-        });
+        linkData = links;
+        renderLinks();
       } else {
         linkGrid.innerHTML = `<div class="no-links">No links found for ${sub}</div>`;
       }
+    }
+
+    function renderLinks() {
+      linkGrid.innerHTML = "";
+      const order = getSavedOrder();
+      const sorted = order.length
+        ? order.map(name => linkData.find(l => l.name === name)).filter(Boolean)
+        : linkData;
+
+      sorted.forEach(link => {
+        const a = document.createElement("a");
+        a.href = link.url;
+        a.className = "link-box";
+        a.setAttribute("data-name", link.name);
+        a.style.backgroundImage = link.image ? `url('${link.image}')` : "none";
+        a.style.backgroundColor = link.color || "#4CAF50";
+        a.target = "_blank";
+        a.innerHTML = `<span>${link.name}</span>`;
+        linkGrid.appendChild(a);
+      });
+
+      Sortable.create(linkGrid, {
+        animation: 150,
+        onEnd: () => {
+          const newOrder = [...linkGrid.children].map(el => el.getAttribute("data-name"));
+          localStorage.setItem(localKey, JSON.stringify(newOrder));
+        }
+      });
     }
 
     loadLinks();
