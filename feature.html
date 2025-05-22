@@ -40,7 +40,9 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
+    // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyDoUb1kEA8bo0NaqSTDQSTtH4fWNdmJrAw",
       authDomain: "ranvexsi-ui.firebaseapp.com",
@@ -50,35 +52,44 @@
       appId: "1:639916549058:web:2c14514e7d00aeaca52c5b"
     };
 
+    // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const auth = getAuth(app);
 
-    const id = sessionStorage.getItem("featureRequestId");
     const box = document.getElementById("detailsBox");
+    const id = sessionStorage.getItem("featureRequestId");
 
-    if (!id) {
-      box.innerHTML = "<p>No request found. Please go back and submit the form again.</p>";
-    } else {
-      const ref = doc(db, "featureRequests", id);
-      getDoc(ref).then(docSnap => {
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          box.innerHTML = `
-            <p><strong>Amazon Login:</strong> ${data.amazonLogin}</p>
-            <p><strong>Department:</strong> ${data.department}</p>
-            <p><strong>Sub-Department:</strong> ${data.subdepartment}</p>
-            <p><strong>Link:</strong> <a href="${data.link}" target="_blank">${data.link}</a></p>
-            <p><strong>Date:</strong> ${data.date}</p>
-            <p style="color: green;"><strong>Status:</strong> Your request will be verified and updated in 24 to 48 hours.</p>
-          `;
-        } else {
-          box.innerHTML = "<p>Request not found in database.</p>";
+    // Check login state
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        if (!id) {
+          box.innerHTML = "<p>No request ID found in session. Please submit a request first.</p>";
+          return;
         }
-      }).catch(err => {
-        console.error(err);
-        box.innerHTML = "<p>Error fetching request. Try again later.</p>";
-      });
-    }
+        try {
+          const docSnap = await getDoc(doc(db, "featureRequests", id));
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            box.innerHTML = `
+              <p><strong>Amazon Login:</strong> ${data.amazonLogin}</p>
+              <p><strong>Department:</strong> ${data.department}</p>
+              <p><strong>Sub-Department:</strong> ${data.subdepartment}</p>
+              <p><strong>Link:</strong> <a href="${data.link}" target="_blank">${data.link}</a></p>
+              <p><strong>Date:</strong> ${data.date}</p>
+              <p style="color: green;"><strong>Status:</strong> Your request will be verified and updated in 24 to 48 hours.</p>
+            `;
+          } else {
+            box.innerHTML = "<p>Request not found in database.</p>";
+          }
+        } catch (err) {
+          console.error(err);
+          box.innerHTML = "<p>Error fetching request. Try again later.</p>";
+        }
+      } else {
+        box.innerHTML = "<p style='color: red;'>Access denied. Please log in to view your request.</p>";
+      }
+    });
   </script>
 </body>
 </html>
