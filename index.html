@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Select Department - RANVEXSI UI</title>
+  <title>RANVEXSI UI</title>
   <style>
     html, body {
       margin: 0;
@@ -14,11 +14,62 @@
       display: flex;
       flex-direction: column;
     }
-    h1 {
-      text-align: center;
-      margin: 10px;
-      font-size: 2rem;
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+    .header .menu {
+      position: relative;
+    }
+    .menu-button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    .menu-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      background: white;
       color: #333;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      z-index: 20;
+    }
+    .menu-dropdown a {
+      display: block;
+      padding: 10px 20px;
+      text-decoration: none;
+      color: #333;
+    }
+    .menu-dropdown a:hover {
+      background: #f0f0f0;
+    }
+    .menu:hover .menu-dropdown {
+      display: block;
+    }
+    .search-bar {
+      margin: 10px 20px;
+      display: flex;
+      justify-content: center;
+    }
+    .search-bar input {
+      width: 100%;
+      max-width: 500px;
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
     }
     .grid {
       display: grid;
@@ -88,7 +139,21 @@
   </style>
 </head>
 <body>
-  <h1>Select Your Department</h1>
+  <div class="header">
+    <h1>RANVEXSI UI</h1>
+    <div class="menu">
+      <button class="menu-button">☰</button>
+      <div class="menu-dropdown">
+        <a href="#about">About Us</a>
+        <a href="#request">Request New Feature</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Search department or sub-department...">
+  </div>
+
   <div class="grid" id="departments"></div>
 
   <script type="module">
@@ -107,19 +172,20 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const container = document.getElementById("departments");
+    const searchInput = document.getElementById("searchInput");
 
-    async function loadDepartments() {
-      const snap = await getDoc(doc(db, "structure", "departments"));
-      if (!snap.exists()) return;
-      const data = snap.data();
-      const deps = Object.keys(data);
+    let departmentsData = [];
 
-      deps.forEach(dep => {
-        const subs = data[dep] || [];
-        const imageUrl = `https://source.unsplash.com/600x400/?warehouse,${dep}`;
+    function renderDepartments(filter = "") {
+      container.innerHTML = "";
+      departmentsData.forEach(({ dep, subs, imageUrl }) => {
+        const match = dep.toLowerCase().includes(filter) || subs.some(sub => sub.toLowerCase().includes(filter));
+        if (!match) return;
+
         const box = document.createElement("div");
         box.className = "dept";
         box.style.backgroundImage = `url('${imageUrl}')`;
+
         const dropdown = subs.map(sub => `<a href="department.html?dep=${dep}&sub=${sub}">${sub}</a>`).join("");
 
         box.innerHTML = `
@@ -130,6 +196,24 @@
         container.appendChild(box);
       });
     }
+
+    async function loadDepartments() {
+      const snap = await getDoc(doc(db, "structure", "departments"));
+      if (!snap.exists()) return;
+      const data = snap.data();
+      departmentsData = Object.keys(data).map(dep => {
+        return {
+          dep,
+          subs: data[dep],
+          imageUrl: `https://source.unsplash.com/600x400/?warehouse,${dep}`
+        };
+      });
+      renderDepartments();
+    }
+
+    searchInput.addEventListener("input", e => {
+      renderDepartments(e.target.value.toLowerCase());
+    });
 
     loadDepartments();
   </script>
