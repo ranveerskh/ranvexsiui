@@ -9,47 +9,130 @@
       font-family: Arial, sans-serif;
       background: #f0f4f8;
       margin: 0;
+      padding: 40px;
       display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
       flex-direction: column;
+      align-items: center;
     }
     h1 {
       margin-bottom: 30px;
-      font-size: 2rem;
+      font-size: 2.2rem;
       color: #333;
     }
-    .departments {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 20px;
-      width: 90%;
-      max-width: 600px;
-    }
-    .department {
+    .department-box {
       background-color: #4CAF50;
       color: white;
-      padding: 30px;
+      margin: 10px;
+      padding: 20px;
+      border-radius: 8px;
+      width: 280px;
       text-align: center;
-      border-radius: 10px;
-      text-decoration: none;
-      font-weight: bold;
+      position: relative;
       font-size: 1.2rem;
-      transition: 0.3s;
+      cursor: pointer;
+      transition: background 0.3s;
     }
-    .department:hover {
+    .department-box:hover {
       background-color: #388e3c;
+    }
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: white;
+      min-width: 100%;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      z-index: 1;
+      top: 100%;
+      left: 0;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .dropdown-content a {
+      color: #333;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+      background: #fff;
+    }
+    .dropdown-content a:hover {
+      background-color: #f1f1f1;
+    }
+    .department-box:hover .dropdown-content {
+      display: block;
+    }
+    .departments-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      width: 100%;
+      max-width: 900px;
     }
   </style>
 </head>
 <body>
   <h1>Select Your Department</h1>
-  <div class="departments">
-    <a href="departments/it.html" class="department">IT</a>
-    <a href="departments/hr.html" class="department">HR</a>
-    <a href="departments/logistics.html" class="department">Logistics</a>
-    <a href="departments/admin.html" class="department">Admin</a>
+  <div class="departments-container">
+    <!-- Repeat for each department -->
+    <div class="department-box">Dep 1
+      <div class="dropdown-content">
+        <a href="department.html?dep=dep1&sub=sub1a">Sub 1A</a>
+        <a href="department.html?dep=dep1&sub=sub1b">Sub 1B</a>
+        <a href="department.html?dep=dep1&sub=sub1c">Sub 1C</a>
+      </div>
+    </div>
+    <div class="department-box">Dep 2
+      <div class="dropdown-content">
+        <a href="department.html?dep=dep2&sub=sub2a">Sub 2A</a>
+        <a href="department.html?dep=dep2&sub=sub2b">Sub 2B</a>
+        <a href="department.html?dep=dep2&sub=sub2c">Sub 2C</a>
+      </div>
+    </div>
+    <div class="department-box">Dep 3
+      <div class="dropdown-content">
+        <a href="department.html?dep=dep3&sub=sub3a">Sub 3A</a>
+        <a href="department.html?dep=dep3&sub=sub3b">Sub 3B</a>
+        <a href="department.html?dep=dep3&sub=sub3c">Sub 3C</a>
+      </div>
+    </div>
+    <div class="department-box">Dep 4
+      <div class="dropdown-content">
+        <a href="department.html?dep=dep4&sub=sub4a">Sub 4A</a>
+        <a href="department.html?dep=dep4&sub=sub4b">Sub 4B</a>
+        <a href="department.html?dep=dep4&sub=sub4c">Sub 4C</a>
+      </div>
+    </div>
+    <div class="department-box">Dep 5
+      <div class="dropdown-content">
+        <a href="department.html?dep=dep5&sub=sub5a">Sub 5A</a>
+        <a href="department.html?dep=dep5&sub=sub5b">Sub 5B</a>
+        <a href="department.html?dep=dep5&sub=sub5c">Sub 5C</a>
+      </div>
+    </div>
+    <div class="department-box">Dep 6
+      <div class="dropdown-content">
+        <a href="department.html?dep=dep6&sub=sub6a">Sub 6A</a>
+        <a href="department.html?dep=dep6&sub=sub6b">Sub 6B</a>
+        <a href="department.html?dep=dep6&sub=sub6c">Sub 6C</a>
+      </div>
+    </div>
   </div>
+
+  <!-- Firebase Setup -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDoUb1kEA8bo0NaqSTDQSTtH4fWNdmJrAw",
+      authDomain: "ranvexsi-ui.firebaseapp.com",
+      projectId: "ranvexsi-ui",
+      storageBucket: "ranvexsi-ui.firebasestorage.app",
+      messagingSenderId: "639916549058",
+      appId: "1:639916549058:web:2c14514e7d00aeaca52c5b"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    console.log("Firebase initialized!");
+  </script>
 </body>
 </html>
