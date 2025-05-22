@@ -1,8 +1,9 @@
+<!-- START: Complete Admin Panel with Edit Support and Persistent Dark Mode -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin Panel</title>
   <style>
     :root {
@@ -15,7 +16,6 @@
       --text: #eee;
       --section: #1f1f1f;
     }
-
     body {
       font-family: Arial, sans-serif;
       background: var(--bg);
@@ -23,11 +23,7 @@
       padding: 20px;
       transition: background 0.3s, color 0.3s;
     }
-
-    h1, h2 {
-      text-align: center;
-    }
-
+    h1, h2 { text-align: center; }
     .top-bar {
       display: flex;
       justify-content: space-between;
@@ -38,7 +34,6 @@
       margin-bottom: 20px;
       border-radius: 8px;
     }
-
     .top-bar button {
       margin-left: 8px;
       background: white;
@@ -49,7 +44,6 @@
       font-weight: bold;
       cursor: pointer;
     }
-
     .section {
       background: var(--section);
       padding: 20px;
@@ -57,22 +51,15 @@
       border-radius: 8px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
-
     input, select, button {
       padding: 10px;
       margin: 5px;
       width: calc(100% - 20px);
       max-width: 400px;
     }
-
-    button {
-      cursor: pointer;
-    }
-
     .list {
       margin-top: 10px;
     }
-
     .list div {
       margin: 5px 0;
       background: #ccc;
@@ -81,24 +68,27 @@
       border-radius: 5px;
       position: relative;
     }
-
     .list button {
       position: absolute;
-      right: 10px;
       top: 6px;
-      background: red;
-      color: white;
-      border: none;
       padding: 4px 8px;
       border-radius: 4px;
       cursor: pointer;
     }
-
+    .list button:first-of-type {
+      right: 40px;
+      background: #2196F3;
+      color: white;
+    }
+    .list button:last-of-type {
+      right: 10px;
+      background: red;
+      color: white;
+    }
     .dark .list div {
       background: #333;
       color: #fff;
     }
-
     .list img {
       height: 30px;
       vertical-align: middle;
@@ -108,7 +98,6 @@
   </style>
 </head>
 <body>
-
   <div id="loginSection" class="section">
     <h2>Login</h2>
     <input type="email" id="email" placeholder="Email" />
@@ -152,7 +141,7 @@
       <input type="text" id="linkUrl" placeholder="Link URL" />
       <input type="text" id="linkColor" placeholder="Background Color (e.g., #4CAF50)" />
       <input type="text" id="linkImage" placeholder="Image URL (optional)" />
-      <button id="addLinkBtn">Add Link</button>
+      <button id="addLinkBtn">Add / Update Link</button>
       <div class="list" id="linksList"></div>
     </div>
   </div>
@@ -175,17 +164,22 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
+    // Restore dark mode
+    if (localStorage.getItem("admin-dark-mode") === "on") {
+      document.body.classList.add("dark");
+    }
+
+    document.getElementById("darkModeToggle").addEventListener("click", () => {
+      const isDark = document.body.classList.toggle("dark");
+      localStorage.setItem("admin-dark-mode", isDark ? "on" : "off");
+    });
+
     let departments = {};
 
     onAuthStateChanged(auth, user => {
-      if (user) {
-        document.getElementById("loginSection").style.display = "none";
-        document.getElementById("adminContent").style.display = "block";
-        loadDepartments();
-      } else {
-        document.getElementById("loginSection").style.display = "block";
-        document.getElementById("adminContent").style.display = "none";
-      }
+      document.getElementById("loginSection").style.display = user ? "none" : "block";
+      document.getElementById("adminContent").style.display = user ? "block" : "none";
+      if (user) loadDepartments();
     });
 
     document.getElementById("loginBtn").addEventListener("click", async () => {
@@ -198,9 +192,7 @@
       }
     });
 
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-      signOut(auth);
-    });
+    document.getElementById("logoutBtn").addEventListener("click", () => signOut(auth));
 
     async function loadDepartments() {
       const snap = await getDoc(doc(db, "structure", "departments"));
@@ -217,6 +209,12 @@
       for (const dep in departments) {
         const div = document.createElement("div");
         div.textContent = `${dep}`;
+        const edit = document.createElement("button");
+        edit.textContent = "✎";
+        edit.onclick = () => {
+          document.getElementById("depName").value = dep;
+          document.getElementById("depImage").value = departments[dep].image || "";
+        };
         const del = document.createElement("button");
         del.textContent = "✕";
         del.onclick = () => {
@@ -224,6 +222,7 @@
           renderDepartments();
           populateDropdowns();
         };
+        div.appendChild(edit);
         div.appendChild(del);
         list.appendChild(div);
       }
@@ -249,15 +248,11 @@
     function populateDropdowns() {
       const parentDep = document.getElementById("parentDep");
       const linkDep = document.getElementById("linkDep");
-
       parentDep.innerHTML = "";
       linkDep.innerHTML = "";
-
       for (const dep in departments) {
-        const opt1 = new Option(dep, dep);
-        const opt2 = new Option(dep, dep);
-        parentDep.appendChild(opt1);
-        linkDep.appendChild(opt2);
+        parentDep.appendChild(new Option(dep, dep));
+        linkDep.appendChild(new Option(dep, dep));
       }
       populateSubDropdown();
       renderSubDepartments();
@@ -266,22 +261,24 @@
     function addSubDepartment() {
       const dep = document.getElementById("parentDep").value;
       const sub = document.getElementById("subName").value.trim();
-      if (!dep || !sub) return alert("Both department and sub-department are required");
+      if (!dep || !sub) return alert("Both fields are required");
       if (!departments[dep].subs.includes(sub)) {
         departments[dep].subs.push(sub);
-        renderSubDepartments();
-        populateSubDropdown();
       }
+      renderSubDepartments();
+      populateSubDropdown();
     }
 
     function renderSubDepartments() {
       const subsList = document.getElementById("subsList");
       subsList.innerHTML = "";
       const dep = document.getElementById("parentDep").value;
-      const subs = departments[dep]?.subs || [];
-      subs.forEach((sub, index) => {
+      (departments[dep]?.subs || []).forEach((sub, index) => {
         const div = document.createElement("div");
         div.textContent = sub;
+        const edit = document.createElement("button");
+        edit.textContent = "✎";
+        edit.onclick = () => document.getElementById("subName").value = sub;
         const del = document.createElement("button");
         del.textContent = "✕";
         del.onclick = () => {
@@ -289,6 +286,7 @@
           renderSubDepartments();
           populateSubDropdown();
         };
+        div.appendChild(edit);
         div.appendChild(del);
         subsList.appendChild(div);
       });
@@ -301,8 +299,7 @@
       const linkSub = document.getElementById("linkSub");
       linkSub.innerHTML = "";
       (departments[dep]?.subs || []).forEach(sub => {
-        const opt = new Option(sub, sub);
-        linkSub.appendChild(opt);
+        linkSub.appendChild(new Option(sub, sub));
       });
       renderLinks();
     }
@@ -314,17 +311,27 @@
       const url = document.getElementById("linkUrl").value.trim();
       const color = document.getElementById("linkColor").value.trim() || "#4CAF50";
       const image = document.getElementById("linkImage").value.trim();
-
-      if (!name || !url) return alert("Please enter link name and URL");
+      if (!name || !url) return alert("Please enter name and URL");
 
       const docId = `${dep}-${sub}`;
       const ref = doc(db, "links", docId);
       const snap = await getDoc(ref);
       const items = snap.exists() ? snap.data().items || [] : [];
+      const editIndex = sessionStorage.getItem("editLinkIndex");
 
-      items.push({ name, url, color, image });
+      if (editIndex !== null) {
+        items[editIndex] = { name, url, color, image };
+        sessionStorage.removeItem("editLinkIndex");
+      } else {
+        items.push({ name, url, color, image });
+      }
+
       await setDoc(ref, { items });
       renderLinks();
+      document.getElementById("linkName").value = "";
+      document.getElementById("linkUrl").value = "";
+      document.getElementById("linkColor").value = "";
+      document.getElementById("linkImage").value = "";
     }
 
     async function renderLinks() {
@@ -335,14 +342,22 @@
       const snap = await getDoc(ref);
       const list = document.getElementById("linksList");
       list.innerHTML = "";
+
       if (snap.exists()) {
         const items = snap.data().items || [];
         items.forEach((link, index) => {
           const div = document.createElement("div");
-          div.innerHTML = link.image
-            ? `<img src="${link.image}" /> ${link.name}`
-            : link.name;
+          div.innerHTML = link.image ? `<img src="${link.image}" /> ${link.name}` : link.name;
           div.style.background = link.color;
+          const edit = document.createElement("button");
+          edit.textContent = "✎";
+          edit.onclick = () => {
+            document.getElementById("linkName").value = link.name;
+            document.getElementById("linkUrl").value = link.url;
+            document.getElementById("linkColor").value = link.color;
+            document.getElementById("linkImage").value = link.image || "";
+            sessionStorage.setItem("editLinkIndex", index);
+          };
           const del = document.createElement("button");
           del.textContent = "✕";
           del.onclick = async () => {
@@ -350,15 +365,12 @@
             await setDoc(ref, { items });
             renderLinks();
           };
+          div.appendChild(edit);
           div.appendChild(del);
           list.appendChild(div);
         });
       }
     }
-
-    document.getElementById("darkModeToggle").addEventListener("click", () => {
-      document.body.classList.toggle("dark");
-    });
 
     document.getElementById("addDepBtn").addEventListener("click", addOrUpdateDepartment);
     document.getElementById("saveAllBtn").addEventListener("click", saveDepartments);
@@ -367,3 +379,4 @@
   </script>
 </body>
 </html>
+<!-- END -->
