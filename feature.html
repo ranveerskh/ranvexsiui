@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Feature Status</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      background: #f0f4f8;
+      text-align: center;
+      color: #4CAF50;
+    }
+    h2 {
+      font-size: 1.8rem;
+    }
+  </style>
+</head>
+<body>
+  <h2 id="message">Loading...</h2>
+
+  <script>
+    const msg = sessionStorage.getItem("featureRequest") || "No request submitted.";
+    document.getElementById("message").textContent = msg;
+  </script>
+</body>
+</html>
