@@ -1,4 +1,4 @@
-<!-- START: Complete Admin Panel with Edit Support and Persistent Dark Mode -->
+<!-- START: Admin Panel with Edit Support and Persistent Dark Mode -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -129,7 +129,7 @@
       <h2>Sub-Departments</h2>
       <select id="parentDep"></select>
       <input type="text" id="subName" placeholder="Sub-Department Name" />
-      <button id="addSubBtn">Add Sub-Department</button>
+      <button id="addSubBtn">Add / Update Sub-Department</button>
       <div class="list" id="subsList"></div>
     </div>
 
@@ -164,7 +164,6 @@
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    // Restore dark mode
     if (localStorage.getItem("admin-dark-mode") === "on") {
       document.body.classList.add("dark");
     }
@@ -238,6 +237,8 @@
       };
       renderDepartments();
       populateDropdowns();
+      document.getElementById("depName").value = "";
+      document.getElementById("depImage").value = "";
     }
 
     async function saveDepartments() {
@@ -262,9 +263,16 @@
       const dep = document.getElementById("parentDep").value;
       const sub = document.getElementById("subName").value.trim();
       if (!dep || !sub) return alert("Both fields are required");
-      if (!departments[dep].subs.includes(sub)) {
+
+      const editIndex = sessionStorage.getItem("editSub");
+      if (editIndex !== null) {
+        departments[dep].subs[editIndex] = sub;
+        sessionStorage.removeItem("editSub");
+      } else if (!departments[dep].subs.includes(sub)) {
         departments[dep].subs.push(sub);
       }
+
+      document.getElementById("subName").value = "";
       renderSubDepartments();
       populateSubDropdown();
     }
@@ -278,7 +286,10 @@
         div.textContent = sub;
         const edit = document.createElement("button");
         edit.textContent = "✎";
-        edit.onclick = () => document.getElementById("subName").value = sub;
+        edit.onclick = () => {
+          document.getElementById("subName").value = sub;
+          sessionStorage.setItem("editSub", index);
+        };
         const del = document.createElement("button");
         del.textContent = "✕";
         del.onclick = () => {
