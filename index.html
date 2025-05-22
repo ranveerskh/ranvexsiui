@@ -5,46 +5,43 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Select Department - RANVEXSI UI</title>
   <style>
-    body, html {
+    html, body {
       margin: 0;
       padding: 0;
+      height: 100%;
       font-family: Arial, sans-serif;
-      height: 100vh;
       background: #f0f4f8;
       display: flex;
       flex-direction: column;
-      align-items: center;
     }
     h1 {
-      margin: 20px;
+      text-align: center;
+      margin: 10px;
       font-size: 2rem;
       color: #333;
     }
     .grid {
       display: grid;
-      gap: 20px;
-      padding: 20px;
-      width: 100%;
-      max-width: 1600px;
       flex: 1;
+      width: 100%;
+      padding: 20px;
       box-sizing: border-box;
-      align-items: start;
+      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-auto-rows: 1fr;
     }
     .dept {
       position: relative;
       border-radius: 10px;
       overflow: hidden;
+      background-size: cover;
+      background-position: center;
       cursor: pointer;
-      height: 180px;
       display: flex;
       align-items: flex-end;
       justify-content: flex-start;
-      background-size: cover;
-      background-position: center;
-      color: white;
-      font-size: 1.4rem;
-      font-weight: bold;
-      padding: 10px;
+      height: 100%;
+      min-height: 200px;
     }
     .dept::before {
       content: "";
@@ -56,6 +53,10 @@
     .dept span {
       position: relative;
       z-index: 2;
+      padding: 10px;
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: white;
     }
     .dropdown {
       display: none;
@@ -63,21 +64,19 @@
       top: 100%;
       left: 0;
       right: 0;
+      max-height: 200px;
       background: white;
-      color: black;
+      overflow-y: auto;
       border-radius: 0 0 10px 10px;
-      overflow: hidden;
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
       z-index: 10;
-      max-height: 300px;
-      overflow-y: auto;
     }
     .dept:hover .dropdown {
       display: block;
     }
     .dropdown a {
       display: block;
-      padding: 10px;
+      padding: 12px;
       text-decoration: none;
       color: #333;
       font-weight: bold;
@@ -106,41 +105,27 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-
     const container = document.getElementById("departments");
-
-    function adjustGridLayout(count) {
-      if (count <= 6) {
-        container.style.gridTemplateColumns = "repeat(3, 1fr)";
-      } else if (count <= 9) {
-        container.style.gridTemplateColumns = "repeat(3, 1fr)";
-      } else if (count <= 12) {
-        container.style.gridTemplateColumns = "repeat(4, 1fr)";
-      } else {
-        container.style.gridTemplateColumns = "repeat(auto-fit, minmax(200px, 1fr))";
-      }
-    }
 
     async function loadDepartments() {
       const snap = await getDoc(doc(db, "structure", "departments"));
       if (!snap.exists()) return;
       const data = snap.data();
       const deps = Object.keys(data);
-      adjustGridLayout(deps.length);
 
       deps.forEach(dep => {
         const subs = data[dep] || [];
-        const imageUrl = `https://source.unsplash.com/featured/?warehouse,${dep}`; // Replace with your own image logic
-
+        const imageUrl = `https://source.unsplash.com/600x400/?warehouse,${dep}`;
         const box = document.createElement("div");
         box.className = "dept";
         box.style.backgroundImage = `url('${imageUrl}')`;
+        const dropdown = subs.map(sub => `<a href="department.html?dep=${dep}&sub=${sub}">${sub}</a>`).join("");
+
         box.innerHTML = `
           <span>${dep}</span>
-          <div class="dropdown">
-            ${subs.map(sub => `<a href="department.html?dep=${dep}&sub=${sub}">${sub}</a>`).join("")}
-          </div>
+          <div class="dropdown">${dropdown}</div>
         `;
+
         container.appendChild(box);
       });
     }
