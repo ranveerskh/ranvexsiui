@@ -87,6 +87,13 @@
       background: #333;
       color: #fff;
     }
+
+    .list img {
+      height: 30px;
+      vertical-align: middle;
+      margin-right: 10px;
+      border-radius: 4px;
+    }
   </style>
 </head>
 <body>
@@ -120,6 +127,7 @@
     <input type="text" id="linkName" placeholder="Link Name" />
     <input type="text" id="linkUrl" placeholder="Link URL" />
     <input type="text" id="linkColor" placeholder="Background Color (e.g., #4CAF50)" />
+    <input type="text" id="linkImage" placeholder="Image URL (optional)" />
     <button id="addLinkBtn">Add Link</button>
     <div class="list" id="linksList"></div>
   </div>
@@ -253,13 +261,16 @@
       const name = document.getElementById("linkName").value.trim();
       const url = document.getElementById("linkUrl").value.trim();
       const color = document.getElementById("linkColor").value.trim() || "#4CAF50";
+      const image = document.getElementById("linkImage").value.trim();
+
       if (!name || !url) return alert("Please enter link name and URL");
 
       const docId = `${dep}-${sub}`;
       const ref = doc(db, "links", docId);
       const snap = await getDoc(ref);
       const items = snap.exists() ? snap.data().items || [] : [];
-      items.push({ name, url, color });
+
+      items.push({ name, url, color, image });
       await setDoc(ref, { items });
       renderLinks();
     }
@@ -276,8 +287,10 @@
         const items = snap.data().items || [];
         items.forEach((link, index) => {
           const div = document.createElement("div");
+          div.innerHTML = link.image
+            ? `<img src="${link.image}" /> ${link.name}`
+            : link.name;
           div.style.background = link.color;
-          div.textContent = link.name;
           const del = document.createElement("button");
           del.textContent = "✕";
           del.onclick = async () => {
@@ -291,12 +304,10 @@
       }
     }
 
-    // DARK MODE
     document.getElementById("darkModeToggle").addEventListener("click", () => {
       document.body.classList.toggle("dark");
     });
 
-    // EVENT BINDING (FIXING Add button)
     document.getElementById("addDepBtn").addEventListener("click", addOrUpdateDepartment);
     document.getElementById("saveAllBtn").addEventListener("click", saveDepartments);
     document.getElementById("addSubBtn").addEventListener("click", addSubDepartment);
