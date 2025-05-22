@@ -5,38 +5,76 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Panel</title>
   <style>
+    :root {
+      --bg: #f4f4f4;
+      --text: #000;
+      --section: #fff;
+    }
+    body.dark {
+      --bg: #121212;
+      --text: #eee;
+      --section: #1f1f1f;
+    }
+
     body {
       font-family: Arial, sans-serif;
-      background: #f4f4f4;
+      background: var(--bg);
+      color: var(--text);
       padding: 20px;
+      transition: background 0.3s, color 0.3s;
     }
+
     h1 {
       text-align: center;
     }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #4caf50;
+      color: white;
+      padding: 10px 20px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+    }
+
     .section {
-      background: white;
+      background: var(--section);
       padding: 20px;
       margin-bottom: 20px;
       border-radius: 8px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
     }
+
     input, select, button {
       padding: 10px;
       margin: 5px;
       width: calc(100% - 20px);
       max-width: 400px;
     }
+
+    button {
+      cursor: pointer;
+    }
+
     .list {
       margin-top: 10px;
     }
+
     .list div {
       margin: 5px 0;
-      background: #eee;
+      background: #ccc;
+      color: #000;
       padding: 10px;
       border-radius: 5px;
+      position: relative;
     }
+
     .list button {
-      float: right;
+      position: absolute;
+      right: 10px;
+      top: 6px;
       background: red;
       color: white;
       border: none;
@@ -44,18 +82,27 @@
       border-radius: 4px;
       cursor: pointer;
     }
+
+    .dark .list div {
+      background: #333;
+      color: #fff;
+    }
   </style>
 </head>
 <body>
 
-  <h1>Admin Panel</h1>
+  <div class="top-bar">
+    <h1>Admin Panel</h1>
+    <button onclick="toggleDarkMode()">🌙</button>
+  </div>
 
   <div class="section">
     <h2>Departments</h2>
     <input type="text" id="depName" placeholder="Department Name" />
     <input type="text" id="depImage" placeholder="Background Image URL" />
-    <button onclick="addDepartment()">Add / Update Department</button>
+    <button onclick="addOrUpdateDepartment()">Add / Update Department</button>
     <div class="list" id="departmentsList"></div>
+    <button onclick="saveDepartments()">💾 Save All</button>
   </div>
 
   <div class="section">
@@ -79,7 +126,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteField } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDoUb1kEA8bo0NaqSTDQSTtH4fWNdmJrAw",
@@ -100,7 +147,7 @@
       if (snap.exists()) {
         departments = snap.data();
         renderDepartments();
-        populateDepDropdowns();
+        populateDropdowns();
       }
     }
 
@@ -109,101 +156,95 @@
       list.innerHTML = "";
       for (const dep in departments) {
         const div = document.createElement("div");
-        div.textContent = dep;
+        div.textContent = `${dep}`;
         const del = document.createElement("button");
         del.textContent = "✕";
-        del.onclick = () => deleteDepartment(dep);
+        del.onclick = () => {
+          delete departments[dep];
+          renderDepartments();
+          populateDropdowns();
+        };
         div.appendChild(del);
         list.appendChild(div);
       }
     }
 
-    async function addDepartment() {
+    function addOrUpdateDepartment() {
       const name = document.getElementById("depName").value.trim();
-      const img = document.getElementById("depImage").value.trim();
-      if (!name) return alert("Department name required");
-
+      const image = document.getElementById("depImage").value.trim();
+      if (!name) return alert("Please enter a department name");
       departments[name] = {
-        ...(departments[name] || {}),
-        image: img,
+        image,
         subs: departments[name]?.subs || []
       };
-      await setDoc(doc(db, "structure", "departments"), departments);
-      loadDepartments();
+      renderDepartments();
+      populateDropdowns();
     }
 
-    async function deleteDepartment(name) {
-      delete departments[name];
+    async function saveDepartments() {
       await setDoc(doc(db, "structure", "departments"), departments);
-      loadDepartments();
+      alert("Saved to Firebase");
     }
 
-    function populateDepDropdowns() {
-      const selects = [document.getElementById("parentDep"), document.getElementById("linkDep")];
-      selects.forEach(sel => {
-        sel.innerHTML = "";
-        for (const dep in departments) {
-          const opt = document.createElement("option");
-          opt.value = dep;
-          opt.textContent = dep;
-          sel.appendChild(opt);
-        }
-      });
+    function populateDropdowns() {
+      const parentDep = document.getElementById("parentDep");
+      const linkDep = document.getElementById("linkDep");
+
+      parentDep.innerHTML = "";
+      linkDep.innerHTML = "";
+
+      for (const dep in departments) {
+        const opt1 = new Option(dep, dep);
+        const opt2 = new Option(dep, dep);
+        parentDep.appendChild(opt1);
+        linkDep.appendChild(opt2);
+      }
       populateSubDropdown();
+      renderSubDepartments();
+    }
+
+    function addSubDepartment() {
+      const dep = document.getElementById("parentDep").value;
+      const sub = document.getElementById("subName").value.trim();
+      if (!dep || !sub) return alert("Both department and sub-department are required");
+      if (!departments[dep].subs.includes(sub)) {
+        departments[dep].subs.push(sub);
+        renderSubDepartments();
+        populateSubDropdown();
+      }
+    }
+
+    function renderSubDepartments() {
+      const subsList = document.getElementById("subsList");
+      subsList.innerHTML = "";
+      const dep = document.getElementById("parentDep").value;
+      const subs = departments[dep]?.subs || [];
+      subs.forEach((sub, index) => {
+        const div = document.createElement("div");
+        div.textContent = sub;
+        const del = document.createElement("button");
+        del.textContent = "✕";
+        del.onclick = () => {
+          departments[dep].subs.splice(index, 1);
+          renderSubDepartments();
+          populateSubDropdown();
+        };
+        div.appendChild(del);
+        subsList.appendChild(div);
+      });
     }
 
     document.getElementById("linkDep").addEventListener("change", populateSubDropdown);
 
     function populateSubDropdown() {
       const dep = document.getElementById("linkDep").value;
-      const subs = departments[dep]?.subs || [];
-      const sel = document.getElementById("linkSub");
-      sel.innerHTML = "";
-      subs.forEach(sub => {
-        const opt = document.createElement("option");
-        opt.value = sub;
-        opt.textContent = sub;
-        sel.appendChild(opt);
+      const linkSub = document.getElementById("linkSub");
+      linkSub.innerHTML = "";
+      (departments[dep]?.subs || []).forEach(sub => {
+        const opt = new Option(sub, sub);
+        linkSub.appendChild(opt);
       });
-      loadLinks();
-    }
-
-    async function addSubDepartment() {
-      const dep = document.getElementById("parentDep").value;
-      const sub = document.getElementById("subName").value.trim();
-      if (!dep || !sub) return alert("Both fields required");
-      if (!departments[dep].subs.includes(sub)) {
-        departments[dep].subs.push(sub);
-        await setDoc(doc(db, "structure", "departments"), departments);
-        loadDepartments();
-      }
-    }
-
-    const linksList = document.getElementById("linksList");
-
-    async function loadLinks() {
-      linksList.innerHTML = "";
-      const dep = document.getElementById("linkDep").value;
-      const sub = document.getElementById("linkSub").value;
-      if (!dep || !sub) return;
-      const docSnap = await getDoc(doc(db, "links", `${dep}-${sub}`));
-      if (docSnap.exists()) {
-        const items = docSnap.data().items || [];
-        items.forEach((link, index) => {
-          const div = document.createElement("div");
-          div.style.background = link.color;
-          div.textContent = link.name;
-          const del = document.createElement("button");
-          del.textContent = "✕";
-          del.onclick = async () => {
-            items.splice(index, 1);
-            await setDoc(doc(db, "links", `${dep}-${sub}`), { items });
-            loadLinks();
-          };
-          div.appendChild(del);
-          linksList.appendChild(div);
-        });
-      }
+      renderLinks();
     }
 
     async function addLink() {
@@ -212,13 +253,46 @@
       const name = document.getElementById("linkName").value.trim();
       const url = document.getElementById("linkUrl").value.trim();
       const color = document.getElementById("linkColor").value.trim() || "#4CAF50";
-      if (!name || !url) return alert("Link name and URL required");
-      const docRef = doc(db, "links", `${dep}-${sub}`);
-      const docSnap = await getDoc(docRef);
-      const links = docSnap.exists() ? docSnap.data().items || [] : [];
-      links.push({ name, url, color });
-      await setDoc(docRef, { items: links });
-      loadLinks();
+      if (!name || !url) return alert("Please enter link name and URL");
+
+      const docId = `${dep}-${sub}`;
+      const ref = doc(db, "links", docId);
+      const snap = await getDoc(ref);
+      const items = snap.exists() ? snap.data().items || [] : [];
+      items.push({ name, url, color });
+      await setDoc(ref, { items });
+      renderLinks();
+    }
+
+    async function renderLinks() {
+      const dep = document.getElementById("linkDep").value;
+      const sub = document.getElementById("linkSub").value;
+      const docId = `${dep}-${sub}`;
+      const ref = doc(db, "links", docId);
+      const snap = await getDoc(ref);
+      const list = document.getElementById("linksList");
+      list.innerHTML = "";
+      if (snap.exists()) {
+        const items = snap.data().items || [];
+        items.forEach((link, index) => {
+          const div = document.createElement("div");
+          div.style.background = link.color;
+          div.textContent = link.name;
+          const del = document.createElement("button");
+          del.textContent = "✕";
+          del.onclick = async () => {
+            items.splice(index, 1);
+            await setDoc(ref, { items });
+            renderLinks();
+          };
+          div.appendChild(del);
+          list.appendChild(div);
+        });
+      }
+    }
+
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark");
     }
 
     loadDepartments();
