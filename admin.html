@@ -3,173 +3,179 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel - RANVEXSI UI</title>
+  <title>Admin - RANVEXSI UI</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f0f4f8;
-    }
-    header {
-      background: #4CAF50;
-      color: white;
-      padding: 15px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    header h1 {
-      margin: 0;
-    }
-    .container {
-      padding: 20px;
-      max-width: 900px;
-      margin: auto;
-    }
-    .dept-box {
-      background: white;
-      margin-bottom: 20px;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    .dept-box input {
-      margin: 5px;
-      padding: 8px;
-      width: calc(100% - 20px);
-    }
-    .sub-list {
-      margin-top: 10px;
-    }
-    .sub-entry {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin: 5px 0;
-    }
-    .sub-entry input {
-      flex: 1 1 45%;
-      padding: 8px;
-    }
-    .sub-entry button {
-      background: red;
-      color: white;
-      border: none;
-      padding: 8px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    .actions button {
-      margin: 5px;
-      padding: 8px 12px;
-      background: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .actions button.delete {
-      background: red;
-    }
+    body { font-family: Arial, sans-serif; margin: 0; background: #f9f9f9; }
+    header { background: #4CAF50; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+    h1 { margin: 0; font-size: 1.4rem; }
+    .container { padding: 20px; max-width: 1000px; margin: auto; }
+    .section { background: white; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 20px; }
+    .section h2 { margin-top: 0; }
+    .input-row { display: flex; gap: 10px; margin: 10px 0; }
+    .input-row input { flex: 1; padding: 8px; }
+    .list-item { margin: 5px 0; padding: 10px; border: 1px solid #ddd; border-radius: 6px; background: #f5f5f5; }
+    button { padding: 8px 12px; margin-top: 10px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    button.delete { background: red; }
+    select, input[type=text] { padding: 8px; margin-top: 5px; }
   </style>
 </head>
 <body>
-  <header>
-    <h1>RANVEXSI UI - Admin Panel</h1>
-    <button onclick="saveStructure()">💾 Save All</button>
-  </header>
+<header>
+  <h1>Admin Panel - RANVEXSI UI</h1>
+  <button onclick="saveToFirestore()">💾 Save Changes</button>
+</header>
+<div class="container">
+  <div class="section">
+    <h2>Departments</h2>
+    <div class="input-row">
+      <input id="newDept" placeholder="New Department Name">
+      <button onclick="addDepartment()">+ Add Department</button>
+    </div>
+    <div id="departmentsList"></div>
+  </div>
+  <div class="section">
+    <h2>Sub-Departments</h2>
+    <select id="subDeptSelect"></select>
+    <div class="input-row">
+      <input id="newSubDept" placeholder="New Sub-Department Name">
+      <button onclick="addSubDepartment()">+ Add Sub</button>
+    </div>
+    <div id="subDeptList"></div>
+  </div>
+  <div class="section">
+    <h2>Links in Sub-Departments</h2>
+    <select id="linkDeptSelect"></select>
+    <select id="linkSubSelect"></select>
+    <div class="input-row">
+      <input id="linkName" placeholder="Link Name">
+      <input id="linkUrl" placeholder="URL">
+      <input id="linkImage" placeholder="Background Image URL">
+      <button onclick="addLink()">+ Add Link</button>
+    </div>
+    <div id="linkList"></div>
+  </div>
+</div>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-  <div class="container" id="adminPanel"></div>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDoUb1kEA8bo0NaqSTDQSTtH4fWNdmJrAw",
+    authDomain: "ranvexsi-ui.firebaseapp.com",
+    projectId: "ranvexsi-ui",
+    storageBucket: "ranvexsi-ui.firebasestorage.app",
+    messagingSenderId: "639916549058",
+    appId: "1:639916549058:web:2c14514e7d00aeaca52c5b"
+  };
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDoUb1kEA8bo0NaqSTDQSTtH4fWNdmJrAw",
-      authDomain: "ranvexsi-ui.firebaseapp.com",
-      projectId: "ranvexsi-ui",
-      storageBucket: "ranvexsi-ui.firebasestorage.app",
-      messagingSenderId: "639916549058",
-      appId: "1:639916549058:web:2c14514e7d00aeaca52c5b"
-    };
+  let structure = {};
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+  const deptList = document.getElementById("departmentsList");
+  const subDeptList = document.getElementById("subDeptList");
+  const linkList = document.getElementById("linkList");
+  const subSelect = document.getElementById("subDeptSelect");
+  const linkDeptSelect = document.getElementById("linkDeptSelect");
+  const linkSubSelect = document.getElementById("linkSubSelect");
 
-    const panel = document.getElementById("adminPanel");
-    let departments = [];
+  async function loadStructure() {
+    const snap = await getDoc(doc(db, "structure", "departments"));
+    structure = snap.exists() ? snap.data() : {};
+    renderAll();
+  }
 
-    async function loadStructure() {
-      const ref = doc(db, "structure", "departments");
-      const snap = await getDoc(ref);
-      if (!snap.exists()) return;
-      const data = snap.data();
-      departments = Object.entries(data).map(([dep, value]) => {
-        const subs = Array.isArray(value) ? value : value.subs || [];
-        const image = value.image || "";
-        return {
-          name: dep,
-          subs: subs.map(s => typeof s === 'string' ? { name: s, image: '' } : s),
-          image
-        };
-      });
-      window.departments = departments;
-      window.renderPanel = renderPanel;
-      renderPanel();
+  function renderAll() {
+    // Departments
+    deptList.innerHTML = Object.keys(structure).map(dep => `
+      <div class='list-item'>${dep}
+        <button class='delete' onclick="deleteDepartment('${dep}')">🗑</button>
+      </div>
+    `).join("");
+
+    // Dropdowns
+    subSelect.innerHTML = linkDeptSelect.innerHTML = Object.keys(structure).map(d => `<option>${d}</option>`).join("");
+    updateSubSelect();
+    renderSubDepartments();
+    renderLinks();
+  }
+
+  function updateSubSelect() {
+    const selectedDept = linkDeptSelect.value;
+    const subs = structure[selectedDept]?.subs || {};
+    linkSubSelect.innerHTML = subSelect.innerHTML = Object.keys(subs).map(s => `<option>${s}</option>`).join("");
+  }
+
+  function addDepartment() {
+    const val = document.getElementById("newDept").value.trim();
+    if (val && !structure[val]) {
+      structure[val] = { image: "", subs: {} };
+      renderAll();
     }
+  }
 
-    function renderPanel() {
-      panel.innerHTML = "";
-      departments.forEach((d, idx) => {
-        const box = document.createElement("div");
-        box.className = "dept-box";
+  function deleteDepartment(dep) {
+    delete structure[dep];
+    renderAll();
+  }
 
-        const subInputs = d.subs.map((s, si) => `
-          <div class="sub-entry">
-            <input value="${s.name}" placeholder="Sub-department Name" onchange="departments[${idx}].subs[${si}].name=this.value">
-            <input value="${s.image}" placeholder="Image URL" onchange="departments[${idx}].subs[${si}].image=this.value">
-            <button onclick="departments[${idx}].subs.splice(${si}, 1); renderPanel()">✖</button>
-          </div>
-        `).join("");
-
-        box.innerHTML = `
-          <input value="${d.name}" placeholder="Department Name" onchange="departments[${idx}].name=this.value">
-          <input value="${d.image}" placeholder="Department Image URL" onchange="departments[${idx}].image=this.value">
-          <div class="sub-list">
-            ${subInputs}
-          </div>
-          <div class="actions">
-            <button onclick="departments[${idx}].subs.push({ name: '', image: '' }); renderPanel()">+ Sub</button>
-            <button class="delete" onclick="departments.splice(${idx}, 1); renderPanel()">🗑️ Delete</button>
-          </div>
-        `;
-        panel.appendChild(box);
-      });
-
-      const addBtn = document.createElement("button");
-      addBtn.textContent = "+ Add Department";
-      addBtn.onclick = () => {
-        departments.push({ name: "", subs: [], image: "" });
-        renderPanel();
-      };
-      panel.appendChild(addBtn);
+  function addSubDepartment() {
+    const dept = subSelect.value;
+    const sub = document.getElementById("newSubDept").value.trim();
+    if (dept && sub) {
+      structure[dept].subs[sub] = { links: [] };
+      renderAll();
     }
+  }
 
-    window.saveStructure = async () => {
-      const data = {};
-      departments.forEach(d => {
-        data[d.name] = {
-          subs: d.subs.filter(s => s.name.trim() !== ""),
-          image: d.image
-        };
-      });
-      await setDoc(doc(db, "structure", "departments"), data);
-      alert("Saved to Firestore!");
-    };
+  function renderSubDepartments() {
+    const dept = subSelect.value;
+    const subs = structure[dept]?.subs || {};
+    subDeptList.innerHTML = Object.keys(subs).map(s => `
+      <div class='list-item'>${s} <button class='delete' onclick="deleteSubDepartment('${dept}','${s}')">🗑</button></div>
+    `).join("");
+  }
 
-    loadStructure();
-  </script>
+  function deleteSubDepartment(dep, sub) {
+    delete structure[dep].subs[sub];
+    renderAll();
+  }
+
+  function addLink() {
+    const d = linkDeptSelect.value;
+    const s = linkSubSelect.value;
+    const name = document.getElementById("linkName").value;
+    const url = document.getElementById("linkUrl").value;
+    const img = document.getElementById("linkImage").value;
+    if (name && url) {
+      structure[d].subs[s].links.push({ name, url, image: img });
+      renderLinks();
+    }
+  }
+
+  function renderLinks() {
+    const d = linkDeptSelect.value;
+    const s = linkSubSelect.value;
+    const links = structure[d]?.subs[s]?.links || [];
+    linkList.innerHTML = links.map((l, i) => `
+      <div class='list-item'>${l.name} - <a href="${l.url}" target="_blank">${l.url}</a>
+        <button class='delete' onclick="deleteLink('${d}','${s}',${i})">🗑</button>
+      </div>
+    `).join("");
+  }
+
+  function deleteLink(dep, sub, idx) {
+    structure[dep].subs[sub].links.splice(idx, 1);
+    renderLinks();
+  }
+
+  window.saveToFirestore = async () => {
+    await setDoc(doc(db, "structure", "departments"), structure);
+    alert("Saved!");
+  };
+
+  loadStructure();
+</script>
 </body>
 </html>
