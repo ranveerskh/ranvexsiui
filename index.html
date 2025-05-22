@@ -21,10 +21,22 @@
       background: #4CAF50;
       color: white;
       padding: 10px 20px;
+      position: relative;
     }
     .header h1 {
       margin: 0;
       font-size: 1.5rem;
+    }
+    .header .search {
+      flex: 1;
+      padding: 0 20px;
+    }
+    .header .search input {
+      width: 100%;
+      padding: 6px 12px;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: none;
     }
     .header .menu {
       position: relative;
@@ -57,19 +69,6 @@
     }
     .menu:hover .menu-dropdown {
       display: block;
-    }
-    .search-bar {
-      margin: 10px 20px;
-      display: flex;
-      justify-content: center;
-    }
-    .search-bar input {
-      width: 100%;
-      max-width: 500px;
-      padding: 10px;
-      font-size: 1rem;
-      border-radius: 6px;
-      border: 1px solid #ccc;
     }
     .grid {
       display: grid;
@@ -141,17 +140,16 @@
 <body>
   <div class="header">
     <h1>RANVEXSI UI</h1>
+    <div class="search">
+      <input type="text" id="searchInput" placeholder="Search department or sub-department...">
+    </div>
     <div class="menu">
       <button class="menu-button">☰</button>
       <div class="menu-dropdown">
         <a href="#about">About Us</a>
-        <a href="#request">Request New Feature</a>
+        <a href="request.html">Request New Feature</a>
       </div>
     </div>
-  </div>
-
-  <div class="search-bar">
-    <input type="text" id="searchInput" placeholder="Search department or sub-department...">
   </div>
 
   <div class="grid" id="departments"></div>
@@ -202,10 +200,11 @@
       if (!snap.exists()) return;
       const data = snap.data();
       departmentsData = Object.keys(data).map(dep => {
+        const deptData = data[dep];
         return {
           dep,
-          subs: data[dep],
-          imageUrl: `https://source.unsplash.com/600x400/?warehouse,${dep}`
+          subs: Array.isArray(deptData.subs) ? deptData.subs : [],
+          imageUrl: deptData.image || `https://source.unsplash.com/600x400/?warehouse,${dep}`
         };
       });
       renderDepartments();
