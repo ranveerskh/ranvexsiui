@@ -5,53 +5,67 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>RANVEXSI UI</title>
   <style>
+    :root {
+      --bg: #f0f4f8;
+      --text: #000;
+      --card: #fff;
+    }
+
+    body.dark {
+      --bg: #121212;
+      --text: #fff;
+      --card: #1e1e1e;
+    }
+
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
       font-family: Arial, sans-serif;
-      background: #f0f4f8;
+      background: var(--bg);
+      color: var(--text);
       display: flex;
       flex-direction: column;
     }
-   .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: #4CAF50;
-  color: white;
-  padding: 10px 20px;
-  position: relative;
-}
 
-.header h1 {
-  margin: 0;
-  font-size: 1.5rem;
-  flex: 1;
-}
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      position: relative;
+    }
 
-.header .search {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  max-width: 300px;
-  width: 100%;
-}
+    .header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      flex: 1;
+    }
 
-.header .search input {
-  width: 100%;
-  padding: 6px 12px;
-  font-size: 1rem;
-  border-radius: 6px;
-  border: none;
-}
+    .header .search {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: 300px;
+      width: 100%;
+    }
 
-.header .menu {
-  flex: 1;
-  display: flex;
-  justify-content: flex-end;
-  position: relative;
-}
+    .header .search input {
+      width: 100%;
+      padding: 6px 12px;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: none;
+    }
+
+    .header .menu {
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+      position: relative;
+    }
 
     .menu-button {
       background: none;
@@ -60,6 +74,7 @@
       font-size: 1.5rem;
       cursor: pointer;
     }
+
     .menu-dropdown {
       display: none;
       position: absolute;
@@ -69,19 +84,30 @@
       border-radius: 6px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.2);
       z-index: 20;
+      min-width: 220px;
     }
-    .menu-dropdown a {
+
+    .menu-dropdown a, .menu-dropdown button {
       display: block;
+      width: 100%;
       padding: 10px 20px;
       text-decoration: none;
       color: #333;
+      background: none;
+      border: none;
+      text-align: left;
+      cursor: pointer;
+      font-size: 1rem;
     }
-    .menu-dropdown a:hover {
+
+    .menu-dropdown a:hover, .menu-dropdown button:hover {
       background: #f0f0f0;
     }
+
     .menu:hover .menu-dropdown {
       display: block;
     }
+
     .grid {
       display: grid;
       flex: 1;
@@ -92,6 +118,7 @@
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       grid-auto-rows: 1fr;
     }
+
     .dept {
       position: relative;
       border-radius: 10px;
@@ -104,7 +131,9 @@
       justify-content: flex-start;
       height: 100%;
       min-height: 200px;
+      background-color: var(--card);
     }
+
     .dept::before {
       content: "";
       position: absolute;
@@ -112,6 +141,7 @@
       background: rgba(0,0,0,0.4);
       z-index: 1;
     }
+
     .dept span {
       position: relative;
       z-index: 2;
@@ -120,6 +150,7 @@
       font-weight: bold;
       color: white;
     }
+
     .dropdown {
       position: absolute;
       bottom: 0;
@@ -133,10 +164,12 @@
       z-index: 10;
       display: none;
     }
+
     .dept:hover .dropdown,
     .dept:focus-within .dropdown {
       display: block;
     }
+
     .dropdown a {
       display: block;
       padding: 12px;
@@ -144,6 +177,7 @@
       color: #333;
       font-weight: bold;
     }
+
     .dropdown a:hover {
       background: #f0f0f0;
     }
@@ -158,8 +192,10 @@
     <div class="menu">
       <button class="menu-button">☰</button>
       <div class="menu-dropdown">
-        <a href="#about">About Us</a>
+        <a href="#about" onclick="alert('Created By YXU1 Ship Dock Associate \\\"ranvexsi\\\"')">About Us</a>
         <a href="request.html">Request New Feature</a>
+        <a href="admin.html">Admin Login</a>
+        <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
       </div>
     </div>
   </div>
@@ -225,6 +261,18 @@
     });
 
     loadDepartments();
+  </script>
+
+  <script>
+    function toggleDarkMode() {
+      const isDark = document.body.classList.toggle('dark');
+      localStorage.setItem('darkMode', isDark ? 'enabled' : 'disabled');
+    }
+
+    // On page load
+    if (localStorage.getItem('darkMode') === 'enabled') {
+      document.body.classList.add('dark');
+    }
   </script>
 </body>
 </html>
