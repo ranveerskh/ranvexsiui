@@ -3,92 +3,160 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Panel - RANVEXSI UI</title>
+  <title>RANVEXSI UI</title>
   <style>
-    body {
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
       font-family: Arial, sans-serif;
-      background: #f0f2f5;
-      padding: 20px;
-      max-width: 1000px;
-      margin: auto;
+      background: #f0f4f8;
+      display: flex;
+      flex-direction: column;
     }
-    h1 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    input, select, button {
-      padding: 10px;
-      margin: 10px 0;
-      width: 100%;
-      font-size: 1rem;
-    }
-    .link-box, .structure-box {
-      background: #fff;
-      padding: 15px;
-      margin: 10px 0;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    .btn-danger {
-      background: red;
-      color: white;
-      border: none;
-    }
-    .btn-save {
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       background: #4CAF50;
       color: white;
+      padding: 10px 20px;
+      position: relative;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
+    .header .search {
+      flex: 1;
+      padding: 0 20px;
+    }
+    .header .search input {
+      width: 100%;
+      padding: 6px 12px;
+      font-size: 1rem;
+      border-radius: 6px;
       border: none;
     }
-    .flex {
-      display: flex;
-      gap: 10px;
+    .header .menu {
+      position: relative;
     }
-    .half {
-      width: 50%;
+    .menu-button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
     }
-    #dashboard, #structureManager {
+    .menu-dropdown {
       display: none;
+      position: absolute;
+      right: 0;
+      background: white;
+      color: #333;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      z-index: 20;
+    }
+    .menu-dropdown a {
+      display: block;
+      padding: 10px 20px;
+      text-decoration: none;
+      color: #333;
+    }
+    .menu-dropdown a:hover {
+      background: #f0f0f0;
+    }
+    .menu:hover .menu-dropdown {
+      display: block;
+    }
+    .grid {
+      display: grid;
+      flex: 1;
+      width: 100%;
+      padding: 20px;
+      box-sizing: border-box;
+      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-auto-rows: 1fr;
+    }
+    .dept {
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      background-size: cover;
+      background-position: center;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-start;
+      height: 100%;
+      min-height: 200px;
+    }
+    .dept::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 1;
+    }
+    .dept span {
+      position: relative;
+      z-index: 2;
+      padding: 10px;
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: white;
+    }
+    .dropdown {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      max-height: 200px;
+      background: white;
+      overflow-y: auto;
+      border-radius: 0 0 10px 10px;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.2);
+      z-index: 10;
+      display: none;
+    }
+    .dept:hover .dropdown,
+    .dept:focus-within .dropdown {
+      display: block;
+    }
+    .dropdown a {
+      display: block;
+      padding: 12px;
+      text-decoration: none;
+      color: #333;
+      font-weight: bold;
+    }
+    .dropdown a:hover {
+      background: #f0f0f0;
     }
   </style>
 </head>
 <body>
-  <h1>RANVEXSI Admin Panel</h1>
-
-  <div id="loginForm">
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
-    <button onclick="login()">Login</button>
-  </div>
-
-  <div id="dashboard">
-    <div class="flex">
-      <div class="half">
-        <label>Department</label>
-        <select id="department"></select>
-        <button onclick="renameDepartment()">✏️ Rename Department</button>
-        <button onclick="removeDepartment()">🗑️ Delete Department</button>
-        <button onclick="addDepartment()">➕ Add Department</button>
-      </div>
-      <div class="half">
-        <label>Sub-department</label>
-        <select id="subdepartment"></select>
-        <button onclick="renameSub()">✏️ Rename Sub</button>
-        <button onclick="removeSub()">🗑️ Delete Sub</button>
-        <button onclick="addSub()">➕ Add Sub</button>
+  <div class="header">
+    <h1>RANVEXSI UI</h1>
+    <div class="search" style="max-width: 300px; margin: 0 auto;">
+      <input type="text" id="searchInput" placeholder="Search department or sub-department..." style="width: 100%; padding: 6px 12px; font-size: 1rem; border-radius: 6px; border: none;">
+    </div>
+    <div class="menu">
+      <button class="menu-button">☰</button>
+      <div class="menu-dropdown">
+        <a href="#about">About Us</a>
+        <a href="request.html">Request New Feature</a>
       </div>
     </div>
-    <button onclick="loadLinks()">🔄 Load Links</button>
-    <button onclick="logout()" style="background:#555;color:white">🚪 Logout</button>
-
-    <div id="linksContainer"></div>
-    <button onclick="addNewLink()">+ Add New Link</button>
-    <button onclick="saveAll()" class="btn-save">💾 Save All</button>
   </div>
+
+  <div class="grid" id="departments"></div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDoUb1kEA8bo0NaqSTDQSTtH4fWNdmJrAw",
@@ -101,154 +169,50 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    const auth = getAuth(app);
+    const container = document.getElementById("departments");
+    const searchInput = document.getElementById("searchInput");
 
-    const loginForm = document.getElementById("loginForm");
-    const dashboard = document.getElementById("dashboard");
-    const linksContainer = document.getElementById("linksContainer");
+    let departmentsData = [];
 
-    const depSel = document.getElementById("department");
-    const subSel = document.getElementById("subdepartment");
+    function renderDepartments(filter = "") {
+      container.innerHTML = "";
+      departmentsData.forEach(({ dep, subs, imageUrl }) => {
+        const match = dep.toLowerCase().includes(filter) || subs.some(sub => sub.toLowerCase().includes(filter));
+        if (!match) return;
 
-    onAuthStateChanged(auth, async user => {
-      if (user) {
-        loginForm.style.display = "none";
-        dashboard.style.display = "block";
-        await loadStructure();
-      }
-    });
+        const box = document.createElement("div");
+        box.className = "dept";
+        box.style.backgroundImage = `url('${imageUrl}')`;
 
-    window.login = () => {
-      const email = document.getElementById("email").value;
-      const password = document.getElementById("password").value;
-      signInWithEmailAndPassword(auth, email, password)
-        .then(() => location.reload())
-        .catch(err => alert("Login failed: " + err.message));
-    };
+        const dropdown = subs.map(sub => `<a href="department.html?dep=${dep}&sub=${sub}">${sub}</a>`).join("");
 
-    window.logout = () => {
-      signOut(auth).then(() => location.reload());
-    };
+        box.innerHTML = `
+          <span>${dep}</span>
+          <div class="dropdown">${dropdown}</div>
+        `;
 
-    async function loadStructure() {
-      const snap = await getDoc(doc(db, "structure", "departments"));
-      if (!snap.exists()) return;
-      const data = snap.data();
-
-      depSel.innerHTML = "";
-      for (const dep in data) {
-        depSel.innerHTML += `<option value="${dep}">${dep}</option>`;
-      }
-      depSel.onchange = () => populateSubs(data[depSel.value]);
-      populateSubs(data[depSel.value]);
-    }
-
-    function populateSubs(subs = []) {
-      subSel.innerHTML = "";
-      subs.forEach(sub => {
-        subSel.innerHTML += `<option value="${sub}">${sub}</option>`;
+        container.appendChild(box);
       });
     }
 
-    window.addDepartment = async () => {
-      const name = prompt("New department name:");
-      if (!name) return;
-      const ref = doc(db, "structure", "departments");
-      const data = (await getDoc(ref)).data() || {};
-      data[name] = [];
-      await setDoc(ref, data);
-      loadStructure();
-    };
-
-    window.removeDepartment = async () => {
-      const dep = depSel.value;
-      if (!confirm("Delete department " + dep + "?")) return;
-      const ref = doc(db, "structure", "departments");
-      const data = (await getDoc(ref)).data();
-      delete data[dep];
-      await setDoc(ref, data);
-      loadStructure();
-    };
-
-    window.renameDepartment = async () => {
-      const old = depSel.value;
-      const updated = prompt("Rename to:", old);
-      if (!updated) return;
-      const ref = doc(db, "structure", "departments");
-      const data = (await getDoc(ref)).data();
-      data[updated] = data[old];
-      delete data[old];
-      await setDoc(ref, data);
-      loadStructure();
-    };
-
-    window.addSub = async () => {
-      const sub = prompt("New sub-department name:");
-      if (!sub) return;
-      const ref = doc(db, "structure", "departments");
-      const data = (await getDoc(ref)).data();
-      data[depSel.value].push(sub);
-      await setDoc(ref, data);
-      loadStructure();
-    };
-
-    window.removeSub = async () => {
-      const sub = subSel.value;
-      if (!confirm("Delete sub-department " + sub + "?")) return;
-      const ref = doc(db, "structure", "departments");
-      const data = (await getDoc(ref)).data();
-      data[depSel.value] = data[depSel.value].filter(x => x !== sub);
-      await setDoc(ref, data);
-      loadStructure();
-    };
-
-    window.renameSub = async () => {
-      const old = subSel.value;
-      const updated = prompt("Rename to:", old);
-      if (!updated) return;
-      const ref = doc(db, "structure", "departments");
-      const data = (await getDoc(ref)).data();
-      const list = data[depSel.value];
-      const index = list.indexOf(old);
-      if (index !== -1) list[index] = updated;
-      await setDoc(ref, data);
-      loadStructure();
-    };
-
-    window.loadLinks = async () => {
-      const docId = `${depSel.value}-${subSel.value}`;
-      const snap = await getDoc(doc(db, "links", docId));
-      linksContainer.innerHTML = "";
-      const links = snap.exists() ? snap.data().items || [] : [];
-      links.forEach((link, index) => createLinkBox(link.name, link.url, link.color, index));
-    };
-
-    function createLinkBox(name = "", url = "", color = "#4CAF50", index = Date.now()) {
-      const div = document.createElement("div");
-      div.className = "link-box";
-      div.dataset.index = index;
-      div.innerHTML = `
-        <input type="text" placeholder="Link Name" value="${name}" class="name">
-        <input type="url" placeholder="URL" value="${url}" class="url">
-        <input type="color" value="${color}" class="color">
-        <button class="btn-danger" onclick="this.parentElement.remove()">🗑️ Delete</button>
-      `;
-      linksContainer.appendChild(div);
+    async function loadDepartments() {
+      const snap = await getDoc(doc(db, "structure", "departments"));
+      if (!snap.exists()) return;
+      const data = snap.data();
+      departmentsData = Object.keys(data).map(dep => {
+        const value = data[dep];
+        const subs = Array.isArray(value) ? value : Array.isArray(value.subs) ? value.subs : [];
+        const imageUrl = value.image || `https://source.unsplash.com/600x400/?warehouse,${dep}`;
+        return { dep, subs, imageUrl };
+      });
+      renderDepartments();
     }
 
-    window.addNewLink = () => createLinkBox();
+    searchInput.addEventListener("input", e => {
+      renderDepartments(e.target.value.toLowerCase());
+    });
 
-    window.saveAll = async () => {
-      const docId = `${depSel.value}-${subSel.value}`;
-      const all = [...document.querySelectorAll(".link-box")];
-      const items = all.map(box => ({
-        name: box.querySelector(".name").value,
-        url: box.querySelector(".url").value,
-        color: box.querySelector(".color").value
-      }));
-      await setDoc(doc(db, "links", docId), { items });
-      alert("Links saved!");
-    };
+    loadDepartments();
   </script>
 </body>
 </html>
