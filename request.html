@@ -112,14 +112,8 @@
       try {
         const docRef = await addDoc(collection(db, "featureRequests"), data);
         sessionStorage.setItem("featureRequestId", docRef.id);
-
-        form.style.display = "none";
         confirmation.style.display = "block";
-
-        setTimeout(() => {
-  form.reset();
-}, 1500);
-
+        form.reset();
       } catch (error) {
         alert("Error submitting request. Please try again.");
         console.error(error);
