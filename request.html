@@ -27,7 +27,7 @@
       margin-top: 15px;
       font-weight: bold;
     }
-    input, textarea {
+    input {
       width: 100%;
       padding: 10px;
       margin-top: 5px;
@@ -78,20 +78,51 @@
     Your request will be verified and updated in 24 to 48 hours.
   </div>
 
-  <script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDoUb1kEA8bo0NaqSTDQSTtH4fWNdmJrAw",
+      authDomain: "ranvexsi-ui.firebaseapp.com",
+      projectId: "ranvexsi-ui",
+      storageBucket: "ranvexsi-ui.firebasestorage.app",
+      messagingSenderId: "639916549058",
+      appId: "1:639916549058:web:2c14514e7d00aeaca52c5b"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
     const form = document.getElementById("featureForm");
     const confirmation = document.getElementById("confirmationMessage");
 
-    form.addEventListener("submit", function(event) {
+    form.addEventListener("submit", async function(event) {
       event.preventDefault();
 
-      // Optional: Save form data to Firestore or localStorage here
+      const data = {
+        amazonLogin: document.getElementById("amazonLogin").value || "Not Provided",
+        department: document.getElementById("department").value,
+        subdepartment: document.getElementById("subdepartment").value,
+        link: document.getElementById("link").value,
+        date: document.getElementById("date").value,
+        timestamp: serverTimestamp()
+      };
 
-      form.style.display = "none";
-      confirmation.style.display = "block";
+      try {
+        const docRef = await addDoc(collection(db, "featureRequests"), data);
+        sessionStorage.setItem("featureRequestId", docRef.id);
 
-      // Save message to sessionStorage for feature.html
-      sessionStorage.setItem("featureRequest", "Your request will be verified and updated in 24 to 48 hours.");
+        form.style.display = "none";
+        confirmation.style.display = "block";
+
+        setTimeout(() => {
+          window.location.href = "feature.html";
+        }, 1500);
+      } catch (error) {
+        alert("Error submitting request. Please try again.");
+        console.error(error);
+      }
     });
   </script>
 </body>
