@@ -24,7 +24,7 @@
       transition: background 0.3s, color 0.3s;
     }
 
-    h1 {
+    h1, h2 {
       text-align: center;
     }
 
@@ -98,57 +98,96 @@
 </head>
 <body>
 
-  <div class="top-bar">
-    <h1>Admin Panel</h1>
-    <button id="darkModeToggle">🌙</button>
+  <div id="loginSection" class="section">
+    <h2>Login</h2>
+    <input type="email" id="email" placeholder="Email" />
+    <input type="password" id="password" placeholder="Password" />
+    <button id="loginBtn">Login</button>
   </div>
 
-  <div class="section">
-    <h2>Departments</h2>
-    <input type="text" id="depName" placeholder="Department Name" />
-    <input type="text" id="depImage" placeholder="Background Image URL" />
-    <button id="addDepBtn">Add / Update Department</button>
-    <div class="list" id="departmentsList"></div>
-    <button id="saveAllBtn">💾 Save All</button>
-  </div>
+  <div id="adminContent" style="display:none;">
+    <div class="top-bar">
+      <h1>Admin Panel</h1>
+      <div>
+        <button id="darkModeToggle">🌙</button>
+        <button id="logoutBtn">Logout</button>
+      </div>
+    </div>
 
-  <div class="section">
-    <h2>Sub-Departments</h2>
-    <select id="parentDep"></select>
-    <input type="text" id="subName" placeholder="Sub-Department Name" />
-    <button id="addSubBtn">Add Sub-Department</button>
-    <div class="list" id="subsList"></div>
-  </div>
+    <div class="section">
+      <h2>Departments</h2>
+      <input type="text" id="depName" placeholder="Department Name" />
+      <input type="text" id="depImage" placeholder="Background Image URL" />
+      <button id="addDepBtn">Add / Update Department</button>
+      <div class="list" id="departmentsList"></div>
+      <button id="saveAllBtn">💾 Save All</button>
+    </div>
 
-  <div class="section">
-    <h2>Links</h2>
-    <select id="linkDep"></select>
-    <select id="linkSub"></select>
-    <input type="text" id="linkName" placeholder="Link Name" />
-    <input type="text" id="linkUrl" placeholder="Link URL" />
-    <input type="text" id="linkColor" placeholder="Background Color (e.g., #4CAF50)" />
-    <input type="text" id="linkImage" placeholder="Image URL (optional)" />
-    <button id="addLinkBtn">Add Link</button>
-    <div class="list" id="linksList"></div>
+    <div class="section">
+      <h2>Sub-Departments</h2>
+      <select id="parentDep"></select>
+      <input type="text" id="subName" placeholder="Sub-Department Name" />
+      <button id="addSubBtn">Add Sub-Department</button>
+      <div class="list" id="subsList"></div>
+    </div>
+
+    <div class="section">
+      <h2>Links</h2>
+      <select id="linkDep"></select>
+      <select id="linkSub"></select>
+      <input type="text" id="linkName" placeholder="Link Name" />
+      <input type="text" id="linkUrl" placeholder="Link URL" />
+      <input type="text" id="linkColor" placeholder="Background Color (e.g., #4CAF50)" />
+      <input type="text" id="linkImage" placeholder="Image URL (optional)" />
+      <button id="addLinkBtn">Add Link</button>
+      <div class="list" id="linksList"></div>
+    </div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDoUb1kEA8bo0NaqSTDQSTtH4fWNdmJrAw",
       authDomain: "ranvexsi-ui.firebaseapp.com",
       projectId: "ranvexsi-ui",
-      storageBucket: "ranvexsi-ui.firebasestorage.app",
+      storageBucket: "ranvexsi-ui.appspot.com",
       messagingSenderId: "639916549058",
       appId: "1:639916549058:web:2c14514e7d00aeaca52c5b"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const auth = getAuth(app);
 
     let departments = {};
+
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        document.getElementById("loginSection").style.display = "none";
+        document.getElementById("adminContent").style.display = "block";
+        loadDepartments();
+      } else {
+        document.getElementById("loginSection").style.display = "block";
+        document.getElementById("adminContent").style.display = "none";
+      }
+    });
+
+    document.getElementById("loginBtn").addEventListener("click", async () => {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+      } catch (err) {
+        alert("Login failed: " + err.message);
+      }
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      signOut(auth);
+    });
 
     async function loadDepartments() {
       const snap = await getDoc(doc(db, "structure", "departments"));
@@ -312,8 +351,6 @@
     document.getElementById("saveAllBtn").addEventListener("click", saveDepartments);
     document.getElementById("addSubBtn").addEventListener("click", addSubDepartment);
     document.getElementById("addLinkBtn").addEventListener("click", addLink);
-
-    loadDepartments();
   </script>
 </body>
 </html>
