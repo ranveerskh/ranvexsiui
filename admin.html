@@ -3,180 +3,225 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin - RANVEXSI UI</title>
+  <title>Admin Panel</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; background: #f9f9f9; }
-    header { background: #4CAF50; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
-    h1 { margin: 0; font-size: 1.4rem; }
-    .container { padding: 20px; max-width: 1000px; margin: auto; }
-    .section { background: white; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 20px; }
-    .section h2 { margin-top: 0; }
-    .input-row { display: flex; gap: 10px; margin: 10px 0; }
-    .input-row input { flex: 1; padding: 8px; }
-    .list-item { margin: 5px 0; padding: 10px; border: 1px solid #ddd; border-radius: 6px; background: #f5f5f5; }
-    button { padding: 8px 12px; margin-top: 10px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; }
-    button.delete { background: red; }
-    select, input[type=text] { padding: 8px; margin-top: 5px; }
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .section {
+      background: white;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    input, select, button {
+      padding: 10px;
+      margin: 5px;
+      width: calc(100% - 20px);
+      max-width: 400px;
+    }
+    .list {
+      margin-top: 10px;
+    }
+    .list div {
+      margin: 5px 0;
+      background: #eee;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    .list button {
+      float: right;
+      background: red;
+      color: white;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
-<header>
-  <h1>Admin Panel - RANVEXSI UI</h1>
-  <button onclick="saveToFirestore()">💾 Save Changes</button>
-</header>
-<div class="container">
+
+  <h1>Admin Panel</h1>
+
   <div class="section">
     <h2>Departments</h2>
-    <div class="input-row">
-      <input id="newDept" placeholder="New Department Name">
-      <button onclick="addDepartment()">+ Add Department</button>
-    </div>
-    <div id="departmentsList"></div>
+    <input type="text" id="depName" placeholder="Department Name" />
+    <input type="text" id="depImage" placeholder="Background Image URL" />
+    <button onclick="addDepartment()">Add / Update Department</button>
+    <div class="list" id="departmentsList"></div>
   </div>
 
   <div class="section">
     <h2>Sub-Departments</h2>
-    <select id="subDeptSelect"></select>
-    <div class="input-row">
-      <input id="newSubDept" placeholder="New Sub-Department Name">
-      <button onclick="addSubDepartment()">+ Add Sub</button>
-    </div>
-    <div id="subDeptList"></div>
+    <select id="parentDep"></select>
+    <input type="text" id="subName" placeholder="Sub-Department Name" />
+    <button onclick="addSubDepartment()">Add Sub-Department</button>
+    <div class="list" id="subsList"></div>
   </div>
 
   <div class="section">
-    <h2>Links in Sub-Departments</h2>
-    <select id="linkDeptSelect"></select>
-    <select id="linkSubSelect"></select>
-    <div class="input-row">
-      <input id="linkName" placeholder="Link Name">
-      <input id="linkUrl" placeholder="URL">
-      <input id="linkImage" placeholder="Background Image URL">
-      <button onclick="addLink()">+ Add Link</button>
-    </div>
-    <div id="linkList"></div>
+    <h2>Links</h2>
+    <select id="linkDep"></select>
+    <select id="linkSub"></select>
+    <input type="text" id="linkName" placeholder="Link Name" />
+    <input type="text" id="linkUrl" placeholder="Link URL" />
+    <input type="text" id="linkColor" placeholder="Background Color (e.g., #4CAF50)" />
+    <button onclick="addLink()">Add Link</button>
+    <div class="list" id="linksList"></div>
   </div>
-</div>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteField } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDoUb1kEA8bo0NaqSTDQSTtH4fWNdmJrAw",
-    authDomain: "ranvexsi-ui.firebaseapp.com",
-    projectId: "ranvexsi-ui",
-    storageBucket: "ranvexsi-ui.firebasestorage.app",
-    messagingSenderId: "639916549058",
-    appId: "1:639916549058:web:2c14514e7d00aeaca52c5b"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyDoUb1kEA8bo0NaqSTDQSTtH4fWNdmJrAw",
+      authDomain: "ranvexsi-ui.firebaseapp.com",
+      projectId: "ranvexsi-ui",
+      storageBucket: "ranvexsi-ui.firebasestorage.app",
+      messagingSenderId: "639916549058",
+      appId: "1:639916549058:web:2c14514e7d00aeaca52c5b"
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-  let structure = {};
+    let departments = {};
 
-  const deptList = document.getElementById("departmentsList");
-  const subDeptList = document.getElementById("subDeptList");
-  const linkList = document.getElementById("linkList");
-  const subSelect = document.getElementById("subDeptSelect");
-  const linkDeptSelect = document.getElementById("linkDeptSelect");
-  const linkSubSelect = document.getElementById("linkSubSelect");
-
-  async function loadStructure() {
-    const snap = await getDoc(doc(db, "structure", "departments"));
-    structure = snap.exists() ? snap.data() : {};
-    renderAll();
-  }
-
-  function renderAll() {
-    deptList.innerHTML = Object.keys(structure).map(dep => `
-      <div class='list-item'>${dep}
-        <button class='delete' onclick="deleteDepartment('${dep}')">🗑</button>
-      </div>
-    `).join("");
-
-    subSelect.innerHTML = linkDeptSelect.innerHTML = Object.keys(structure).map(d => `<option>${d}</option>`).join("");
-    updateSubSelect();
-    renderSubDepartments();
-    renderLinks();
-  }
-
-  function updateSubSelect() {
-    const selectedDept = linkDeptSelect.value;
-    const subs = structure[selectedDept]?.subs || {};
-    linkSubSelect.innerHTML = subSelect.innerHTML = Object.keys(subs).map(s => `<option>${s}</option>`).join("");
-  }
-
-  function addDepartment() {
-    const val = document.getElementById("newDept").value.trim();
-    if (val && !structure[val]) {
-      structure[val] = { subs: {} };
-      renderAll();
+    async function loadDepartments() {
+      const snap = await getDoc(doc(db, "structure", "departments"));
+      if (snap.exists()) {
+        departments = snap.data();
+        renderDepartments();
+        populateDepDropdowns();
+      }
     }
-  }
 
-  function deleteDepartment(dep) {
-    delete structure[dep];
-    renderAll();
-  }
-
-  function addSubDepartment() {
-    const dept = subSelect.value;
-    const sub = document.getElementById("newSubDept").value.trim();
-    if (dept && sub) {
-      structure[dept].subs[sub] = { links: [] };
-      renderAll();
+    function renderDepartments() {
+      const list = document.getElementById("departmentsList");
+      list.innerHTML = "";
+      for (const dep in departments) {
+        const div = document.createElement("div");
+        div.textContent = dep;
+        const del = document.createElement("button");
+        del.textContent = "✕";
+        del.onclick = () => deleteDepartment(dep);
+        div.appendChild(del);
+        list.appendChild(div);
+      }
     }
-  }
 
-  function renderSubDepartments() {
-    const dept = subSelect.value;
-    const subs = structure[dept]?.subs || {};
-    subDeptList.innerHTML = Object.keys(subs).map(s => `
-      <div class='list-item'>${s} <button class='delete' onclick="deleteSubDepartment('${dept}','${s}')">🗑</button></div>
-    `).join("");
-  }
+    async function addDepartment() {
+      const name = document.getElementById("depName").value.trim();
+      const img = document.getElementById("depImage").value.trim();
+      if (!name) return alert("Department name required");
 
-  function deleteSubDepartment(dep, sub) {
-    delete structure[dep].subs[sub];
-    renderAll();
-  }
-
-  function addLink() {
-    const d = linkDeptSelect.value;
-    const s = linkSubSelect.value;
-    const name = document.getElementById("linkName").value.trim();
-    const url = document.getElementById("linkUrl").value.trim();
-    const img = document.getElementById("linkImage").value.trim();
-    if (name && url) {
-      structure[d].subs[s].links.push({ name, url, image: img });
-      renderLinks();
+      departments[name] = {
+        ...(departments[name] || {}),
+        image: img,
+        subs: departments[name]?.subs || []
+      };
+      await setDoc(doc(db, "structure", "departments"), departments);
+      loadDepartments();
     }
-  }
 
-  function renderLinks() {
-    const d = linkDeptSelect.value;
-    const s = linkSubSelect.value;
-    const links = structure[d]?.subs[s]?.links || [];
-    linkList.innerHTML = links.map((l, i) => `
-      <div class='list-item'>${l.name} - <a href="${l.url}" target="_blank">${l.url}</a>
-        <button class='delete' onclick="deleteLink('${d}','${s}',${i})">🗑</button>
-      </div>
-    `).join("");
-  }
+    async function deleteDepartment(name) {
+      delete departments[name];
+      await setDoc(doc(db, "structure", "departments"), departments);
+      loadDepartments();
+    }
 
-  function deleteLink(dep, sub, idx) {
-    structure[dep].subs[sub].links.splice(idx, 1);
-    renderLinks();
-  }
+    function populateDepDropdowns() {
+      const selects = [document.getElementById("parentDep"), document.getElementById("linkDep")];
+      selects.forEach(sel => {
+        sel.innerHTML = "";
+        for (const dep in departments) {
+          const opt = document.createElement("option");
+          opt.value = dep;
+          opt.textContent = dep;
+          sel.appendChild(opt);
+        }
+      });
+      populateSubDropdown();
+    }
 
-  window.saveToFirestore = async () => {
-    await setDoc(doc(db, "structure", "departments"), structure);
-    alert("Saved!");
-  };
+    document.getElementById("linkDep").addEventListener("change", populateSubDropdown);
 
-  loadStructure();
-</script>
+    function populateSubDropdown() {
+      const dep = document.getElementById("linkDep").value;
+      const subs = departments[dep]?.subs || [];
+      const sel = document.getElementById("linkSub");
+      sel.innerHTML = "";
+      subs.forEach(sub => {
+        const opt = document.createElement("option");
+        opt.value = sub;
+        opt.textContent = sub;
+        sel.appendChild(opt);
+      });
+      loadLinks();
+    }
+
+    async function addSubDepartment() {
+      const dep = document.getElementById("parentDep").value;
+      const sub = document.getElementById("subName").value.trim();
+      if (!dep || !sub) return alert("Both fields required");
+      if (!departments[dep].subs.includes(sub)) {
+        departments[dep].subs.push(sub);
+        await setDoc(doc(db, "structure", "departments"), departments);
+        loadDepartments();
+      }
+    }
+
+    const linksList = document.getElementById("linksList");
+
+    async function loadLinks() {
+      linksList.innerHTML = "";
+      const dep = document.getElementById("linkDep").value;
+      const sub = document.getElementById("linkSub").value;
+      if (!dep || !sub) return;
+      const docSnap = await getDoc(doc(db, "links", `${dep}-${sub}`));
+      if (docSnap.exists()) {
+        const items = docSnap.data().items || [];
+        items.forEach((link, index) => {
+          const div = document.createElement("div");
+          div.style.background = link.color;
+          div.textContent = link.name;
+          const del = document.createElement("button");
+          del.textContent = "✕";
+          del.onclick = async () => {
+            items.splice(index, 1);
+            await setDoc(doc(db, "links", `${dep}-${sub}`), { items });
+            loadLinks();
+          };
+          div.appendChild(del);
+          linksList.appendChild(div);
+        });
+      }
+    }
+
+    async function addLink() {
+      const dep = document.getElementById("linkDep").value;
+      const sub = document.getElementById("linkSub").value;
+      const name = document.getElementById("linkName").value.trim();
+      const url = document.getElementById("linkUrl").value.trim();
+      const color = document.getElementById("linkColor").value.trim() || "#4CAF50";
+      if (!name || !url) return alert("Link name and URL required");
+      const docRef = doc(db, "links", `${dep}-${sub}`);
+      const docSnap = await getDoc(docRef);
+      const links = docSnap.exists() ? docSnap.data().items || [] : [];
+      links.push({ name, url, color });
+      await setDoc(docRef, { items: links });
+      loadLinks();
+    }
+
+    loadDepartments();
+  </script>
 </body>
 </html>
