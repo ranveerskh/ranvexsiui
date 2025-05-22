@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RANVEXSI UI - Select Department</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f4f8;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+    h1 {
+      margin-bottom: 30px;
+      font-size: 2rem;
+      color: #333;
+    }
+    .departments {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 20px;
+      width: 90%;
+      max-width: 600px;
+    }
+    .department {
+      background-color: #4CAF50;
+      color: white;
+      padding: 30px;
+      text-align: center;
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1.2rem;
+      transition: 0.3s;
+    }
+    .department:hover {
+      background-color: #388e3c;
+    }
+  </style>
+</head>
+<body>
+  <h1>Select Your Department</h1>
+  <div class="departments">
+    <a href="departments/it.html" class="department">IT</a>
+    <a href="departments/hr.html" class="department">HR</a>
+    <a href="departments/logistics.html" class="department">Logistics</a>
+    <a href="departments/admin.html" class="department">Admin</a>
+  </div>
+</body>
+</html>
