@@ -59,19 +59,20 @@
       color: white;
     }
     .dropdown {
-      display: none;
       position: absolute;
-      top: 100%;
+      bottom: 0;
       left: 0;
       right: 0;
       max-height: 200px;
       background: white;
       overflow-y: auto;
       border-radius: 0 0 10px 10px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.2);
       z-index: 10;
+      display: none;
     }
-    .dept:hover .dropdown {
+    .dept:hover .dropdown,
+    .dept:focus-within .dropdown {
       display: block;
     }
     .dropdown a {
