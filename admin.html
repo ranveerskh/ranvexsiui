@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Panel - RANVEXSI UI</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input, select, button {
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      font-size: 1rem;
+    }
+    .link-box {
+      background: #fff;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .link-box input {
+      margin: 5px 0;
+    }
+    .btn-danger {
+      background: red;
+      color: white;
+      border: none;
+    }
+    .btn-save {
+      background: #4CAF50;
+      color: white;
+      border: none;
+    }
+    #dashboard {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>RANVEXSI Admin Panel</h1>
+
+  <!-- Login Form -->
+  <div id="loginForm">
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard">
+    <label>Department</label>
+    <select id="department">
+      <option value="dep1">Dep 1</option>
+      <option value="dep2">Dep 2</option>
+      <option value="dep3">Dep 3</option>
+      <option value="dep4">Dep 4</option>
+      <option value="dep5">Dep 5</option>
+      <option value="dep6">Dep 6</option>
+    </select>
+
+    <label>Sub-department</label>
+    <select id="subdepartment">
+      <option value="sub1a">Sub A</option>
+      <option value="sub1b">Sub B</option>
+      <option value="sub1c">Sub C</option>
+    </select>
+
+    <button onclick="loadLinks()">Load Links</button>
+    <div id="linksContainer"></div>
+
+    <button onclick="addNewLink()">+ Add New Link</button>
+    <button onclick="saveAll()" class="btn-save">💾 Save All</button>
+  </div>
+
+  <!-- Firebase Setup -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDoUb1kEA8bo0NaqSTDQSTtH4fWNdmJrAw",
+      authDomain: "ranvexsi-ui.firebaseapp.com",
+      projectId: "ranvexsi-ui",
+      storageBucket: "ranvexsi-ui.firebasestorage.app",
+      messagingSenderId: "639916549058",
+      appId: "1:639916549058:web:2c14514e7d00aeaca52c5b"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
+
+    const loginForm = document.getElementById("loginForm");
+    const dashboard = document.getElementById("dashboard");
+    const linksContainer = document.getElementById("linksContainer");
+
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        loginForm.style.display = "none";
+        dashboard.style.display = "block";
+      }
+    });
+
+    window.login = () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      signInWithEmailAndPassword(auth, email, password)
+        .then(() => {
+          loginForm.style.display = "none";
+          dashboard.style.display = "block";
+        })
+        .catch(err => alert("Login failed: " + err.message));
+    };
+
+    window.loadLinks = async () => {
+      const dep = document.getElementById("department").value;
+      const sub = document.getElementById("subdepartment").value;
+      const docId = `${dep}-${sub}`;
+
+      const ref = doc(db, "links", docId);
+      const snap = await getDoc(ref);
+      linksContainer.innerHTML = "";
+
+      const links = snap.exists() ? snap.data().items || [] : [];
+      links.forEach((link, index) => createLinkBox(link.name, link.url, link.color, index));
+    };
+
+    function createLinkBox(name = "", url = "", color = "#4CAF50", index = Date.now()) {
+      const div = document.createElement("div");
+      div.className = "link-box";
+      div.dataset.index = index;
+      div.innerHTML = `
+        <input type="text" placeholder="Link Name" value="${name}" class="name">
+        <input type="url" placeholder="URL" value="${url}" class="url">
+        <input type="color" value="${color}" class="color">
+        <button class="btn-danger" onclick="this.parentElement.remove()">🗑️ Delete</button>
+      `;
+      linksContainer.appendChild(div);
+    }
+
+    window.addNewLink = () => createLinkBox();
+
+    window.saveAll = async () => {
+      const dep = document.getElementById("department").value;
+      const sub = document.getElementById("subdepartment").value;
+      const docId = `${dep}-${sub}`;
+      const all = [...document.querySelectorAll(".link-box")];
+      const items = all.map(box => ({
+        name: box.querySelector(".name").value,
+        url: box.querySelector(".url").value,
+        color: box.querySelector(".color").value
+      }));
+      await setDoc(doc(db, "links", docId), { items });
+      alert("Links saved!");
+    };
+  </script>
+</body>
+</html>
