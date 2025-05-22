@@ -22,20 +22,16 @@
       color: white;
       padding: 10px 20px;
       position: relative;
-      flex-wrap: wrap;
     }
     .header h1 {
       margin: 0;
       font-size: 1.5rem;
     }
     .header .search {
-      flex: 1 1 100%;
-      display: flex;
-      justify-content: center;
-      margin-top: 10px;
+      max-width: 300px;
+      margin: 0 auto;
     }
     .header .search input {
-      max-width: 300px;
       width: 100%;
       padding: 6px 12px;
       font-size: 1rem;
@@ -141,3 +137,82 @@
     }
   </style>
 </head>
+<body>
+  <div class="header">
+    <h1>RANVEXSI UI</h1>
+    <div class="search">
+      <input type="text" id="searchInput" placeholder="Search department or sub-department...">
+    </div>
+    <div class="menu">
+      <button class="menu-button">☰</button>
+      <div class="menu-dropdown">
+        <a href="#about">About Us</a>
+        <a href="request.html">Request New Feature</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid" id="departments"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDoUb1kEA8bo0NaqSTDQSTtH4fWNdmJrAw",
+      authDomain: "ranvexsi-ui.firebaseapp.com",
+      projectId: "ranvexsi-ui",
+      storageBucket: "ranvexsi-ui.firebasestorage.app",
+      messagingSenderId: "639916549058",
+      appId: "1:639916549058:web:2c14514e7d00aeaca52c5b"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const container = document.getElementById("departments");
+    const searchInput = document.getElementById("searchInput");
+
+    let departmentsData = [];
+
+    function renderDepartments(filter = "") {
+      container.innerHTML = "";
+      departmentsData.forEach(({ dep, subs, imageUrl }) => {
+        const match = dep.toLowerCase().includes(filter) || subs.some(sub => sub.toLowerCase().includes(filter));
+        if (!match) return;
+
+        const box = document.createElement("div");
+        box.className = "dept";
+        box.style.backgroundImage = `url('${imageUrl}')`;
+
+        const dropdown = subs.map(sub => `<a href="department.html?dep=${dep}&sub=${sub}">${sub}</a>`).join("");
+
+        box.innerHTML = `
+          <span>${dep}</span>
+          <div class="dropdown">${dropdown}</div>
+        `;
+
+        container.appendChild(box);
+      });
+    }
+
+    async function loadDepartments() {
+      const snap = await getDoc(doc(db, "structure", "departments"));
+      if (!snap.exists()) return;
+      const data = snap.data();
+      departmentsData = Object.keys(data).map(dep => {
+        const value = data[dep];
+        const subs = Array.isArray(value) ? value : Array.isArray(value.subs) ? value.subs : [];
+        const imageUrl = value.image || `https://source.unsplash.com/600x400/?warehouse,${dep}`;
+        return { dep, subs, imageUrl };
+      });
+      renderDepartments();
+    }
+
+    searchInput.addEventListener("input", e => {
+      renderDepartments(e.target.value.toLowerCase());
+    });
+
+    loadDepartments();
+  </script>
+</body>
+</html>
