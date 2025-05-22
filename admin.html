@@ -9,7 +9,7 @@
       font-family: Arial, sans-serif;
       background: #f0f2f5;
       padding: 20px;
-      max-width: 800px;
+      max-width: 1000px;
       margin: auto;
     }
     h1 {
@@ -22,15 +22,12 @@
       width: 100%;
       font-size: 1rem;
     }
-    .link-box {
+    .link-box, .structure-box {
       background: #fff;
       padding: 15px;
       margin: 10px 0;
       border-radius: 8px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    .link-box input {
-      margin: 5px 0;
     }
     .btn-danger {
       background: red;
@@ -42,7 +39,14 @@
       color: white;
       border: none;
     }
-    #dashboard {
+    .flex {
+      display: flex;
+      gap: 10px;
+    }
+    .half {
+      width: 50%;
+    }
+    #dashboard, #structureManager {
       display: none;
     }
   </style>
@@ -50,44 +54,41 @@
 <body>
   <h1>RANVEXSI Admin Panel</h1>
 
-  <!-- Login Form -->
   <div id="loginForm">
     <input type="email" id="email" placeholder="Email">
     <input type="password" id="password" placeholder="Password">
     <button onclick="login()">Login</button>
   </div>
 
-  <!-- Dashboard -->
   <div id="dashboard">
-    <label>Department</label>
-    <select id="department">
-      <option value="dep1">Dep 1</option>
-      <option value="dep2">Dep 2</option>
-      <option value="dep3">Dep 3</option>
-      <option value="dep4">Dep 4</option>
-      <option value="dep5">Dep 5</option>
-      <option value="dep6">Dep 6</option>
-    </select>
+    <div class="flex">
+      <div class="half">
+        <label>Department</label>
+        <select id="department"></select>
+        <button onclick="renameDepartment()">✏️ Rename Department</button>
+        <button onclick="removeDepartment()">🗑️ Delete Department</button>
+        <button onclick="addDepartment()">➕ Add Department</button>
+      </div>
+      <div class="half">
+        <label>Sub-department</label>
+        <select id="subdepartment"></select>
+        <button onclick="renameSub()">✏️ Rename Sub</button>
+        <button onclick="removeSub()">🗑️ Delete Sub</button>
+        <button onclick="addSub()">➕ Add Sub</button>
+      </div>
+    </div>
+    <button onclick="loadLinks()">🔄 Load Links</button>
+    <button onclick="logout()" style="background:#555;color:white">🚪 Logout</button>
 
-    <label>Sub-department</label>
-    <select id="subdepartment">
-      <option value="sub1a">Sub A</option>
-      <option value="sub1b">Sub B</option>
-      <option value="sub1c">Sub C</option>
-    </select>
-
-    <button onclick="loadLinks()">Load Links</button>
     <div id="linksContainer"></div>
-
     <button onclick="addNewLink()">+ Add New Link</button>
     <button onclick="saveAll()" class="btn-save">💾 Save All</button>
   </div>
 
-  <!-- Firebase Setup -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDoUb1kEA8bo0NaqSTDQSTtH4fWNdmJrAw",
@@ -106,10 +107,14 @@
     const dashboard = document.getElementById("dashboard");
     const linksContainer = document.getElementById("linksContainer");
 
-    onAuthStateChanged(auth, user => {
+    const depSel = document.getElementById("department");
+    const subSel = document.getElementById("subdepartment");
+
+    onAuthStateChanged(auth, async user => {
       if (user) {
         loginForm.style.display = "none";
         dashboard.style.display = "block";
+        await loadStructure();
       }
     });
 
@@ -117,22 +122,103 @@
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
       signInWithEmailAndPassword(auth, email, password)
-        .then(() => {
-          loginForm.style.display = "none";
-          dashboard.style.display = "block";
-        })
+        .then(() => location.reload())
         .catch(err => alert("Login failed: " + err.message));
     };
 
+    window.logout = () => {
+      signOut(auth).then(() => location.reload());
+    };
+
+    async function loadStructure() {
+      const snap = await getDoc(doc(db, "structure", "departments"));
+      if (!snap.exists()) return;
+      const data = snap.data();
+
+      depSel.innerHTML = "";
+      for (const dep in data) {
+        depSel.innerHTML += `<option value="${dep}">${dep}</option>`;
+      }
+      depSel.onchange = () => populateSubs(data[depSel.value]);
+      populateSubs(data[depSel.value]);
+    }
+
+    function populateSubs(subs = []) {
+      subSel.innerHTML = "";
+      subs.forEach(sub => {
+        subSel.innerHTML += `<option value="${sub}">${sub}</option>`;
+      });
+    }
+
+    window.addDepartment = async () => {
+      const name = prompt("New department name:");
+      if (!name) return;
+      const ref = doc(db, "structure", "departments");
+      const data = (await getDoc(ref)).data() || {};
+      data[name] = [];
+      await setDoc(ref, data);
+      loadStructure();
+    };
+
+    window.removeDepartment = async () => {
+      const dep = depSel.value;
+      if (!confirm("Delete department " + dep + "?")) return;
+      const ref = doc(db, "structure", "departments");
+      const data = (await getDoc(ref)).data();
+      delete data[dep];
+      await setDoc(ref, data);
+      loadStructure();
+    };
+
+    window.renameDepartment = async () => {
+      const old = depSel.value;
+      const updated = prompt("Rename to:", old);
+      if (!updated) return;
+      const ref = doc(db, "structure", "departments");
+      const data = (await getDoc(ref)).data();
+      data[updated] = data[old];
+      delete data[old];
+      await setDoc(ref, data);
+      loadStructure();
+    };
+
+    window.addSub = async () => {
+      const sub = prompt("New sub-department name:");
+      if (!sub) return;
+      const ref = doc(db, "structure", "departments");
+      const data = (await getDoc(ref)).data();
+      data[depSel.value].push(sub);
+      await setDoc(ref, data);
+      loadStructure();
+    };
+
+    window.removeSub = async () => {
+      const sub = subSel.value;
+      if (!confirm("Delete sub-department " + sub + "?")) return;
+      const ref = doc(db, "structure", "departments");
+      const data = (await getDoc(ref)).data();
+      data[depSel.value] = data[depSel.value].filter(x => x !== sub);
+      await setDoc(ref, data);
+      loadStructure();
+    };
+
+    window.renameSub = async () => {
+      const old = subSel.value;
+      const updated = prompt("Rename to:", old);
+      if (!updated) return;
+      const ref = doc(db, "structure", "departments");
+      const data = (await getDoc(ref)).data();
+      const list = data[depSel.value];
+      const index = list.indexOf(old);
+      if (index !== -1) list[index] = updated;
+      await setDoc(ref, data);
+      loadStructure();
+    };
+
     window.loadLinks = async () => {
-      const dep = document.getElementById("department").value;
-      const sub = document.getElementById("subdepartment").value;
-      const docId = `${dep}-${sub}`;
-
-      const ref = doc(db, "links", docId);
-      const snap = await getDoc(ref);
+      const docId = `${depSel.value}-${subSel.value}`;
+      const snap = await getDoc(doc(db, "links", docId));
       linksContainer.innerHTML = "";
-
       const links = snap.exists() ? snap.data().items || [] : [];
       links.forEach((link, index) => createLinkBox(link.name, link.url, link.color, index));
     };
@@ -153,9 +239,7 @@
     window.addNewLink = () => createLinkBox();
 
     window.saveAll = async () => {
-      const dep = document.getElementById("department").value;
-      const sub = document.getElementById("subdepartment").value;
-      const docId = `${dep}-${sub}`;
+      const docId = `${depSel.value}-${subSel.value}`;
       const all = [...document.querySelectorAll(".link-box")];
       const items = all.map(box => ({
         name: box.querySelector(".name").value,
