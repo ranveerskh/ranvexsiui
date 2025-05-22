@@ -1,4 +1,4 @@
-<!-- START: Admin Panel with Edit Support and Persistent Dark Mode -->
+<!-- START: Admin Panel with Fixes for Missing Sub-Departments and Links -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -255,9 +255,13 @@
         parentDep.appendChild(new Option(dep, dep));
         linkDep.appendChild(new Option(dep, dep));
       }
-      populateSubDropdown();
       renderSubDepartments();
+      populateSubDropdown();
     }
+
+    document.getElementById("parentDep").addEventListener("change", renderSubDepartments);
+    document.getElementById("linkDep").addEventListener("change", populateSubDropdown);
+    document.getElementById("linkSub").addEventListener("change", renderLinks);
 
     function addSubDepartment() {
       const dep = document.getElementById("parentDep").value;
@@ -281,7 +285,11 @@
       const subsList = document.getElementById("subsList");
       subsList.innerHTML = "";
       const dep = document.getElementById("parentDep").value;
-      (departments[dep]?.subs || []).forEach((sub, index) => {
+      const subs = departments[dep]?.subs || [];
+      if (subs.length === 0) {
+        subsList.innerHTML = "<div>No sub-departments found</div>";
+      }
+      subs.forEach((sub, index) => {
         const div = document.createElement("div");
         div.textContent = sub;
         const edit = document.createElement("button");
@@ -302,8 +310,6 @@
         subsList.appendChild(div);
       });
     }
-
-    document.getElementById("linkDep").addEventListener("change", populateSubDropdown);
 
     function populateSubDropdown() {
       const dep = document.getElementById("linkDep").value;
@@ -356,6 +362,9 @@
 
       if (snap.exists()) {
         const items = snap.data().items || [];
+        if (items.length === 0) {
+          list.innerHTML = "<div>No links available</div>";
+        }
         items.forEach((link, index) => {
           const div = document.createElement("div");
           div.innerHTML = link.image ? `<img src="${link.image}" /> ${link.name}` : link.name;
@@ -380,6 +389,8 @@
           div.appendChild(del);
           list.appendChild(div);
         });
+      } else {
+        list.innerHTML = "<div>No links available</div>";
       }
     }
 
