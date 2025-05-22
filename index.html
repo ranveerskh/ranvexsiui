@@ -3,124 +3,81 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>RANVEXSI UI - Select Department</title>
+  <title>Select Department - RANVEXSI UI</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f0f4f8;
+    body, html {
       margin: 0;
-      padding: 40px;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      height: 100vh;
+      background: #f0f4f8;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
     h1 {
-      margin-bottom: 30px;
-      font-size: 2.2rem;
+      margin: 20px;
+      font-size: 2rem;
       color: #333;
     }
-    .department-box {
-      background-color: #4CAF50;
-      color: white;
-      margin: 10px;
+    .grid {
+      display: grid;
+      gap: 20px;
       padding: 20px;
-      border-radius: 8px;
-      width: 280px;
-      text-align: center;
+      width: 100%;
+      max-width: 1200px;
+      flex: 1;
+      box-sizing: border-box;
+      align-items: start;
+    }
+    .dept {
+      background: #4CAF50;
+      color: white;
+      border-radius: 10px;
+      padding: 20px;
       position: relative;
+      text-align: center;
       font-size: 1.2rem;
+      font-weight: bold;
       cursor: pointer;
-      transition: background 0.3s;
     }
-    .department-box:hover {
-      background-color: #388e3c;
+    .dept:hover {
+      background: #388e3c;
     }
-    .dropdown-content {
+    .dropdown {
       display: none;
       position: absolute;
-      background-color: white;
-      min-width: 100%;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      z-index: 1;
       top: 100%;
       left: 0;
-      border-radius: 6px;
+      right: 0;
+      background: white;
+      color: black;
+      border-radius: 0 0 10px 10px;
       overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      z-index: 2;
     }
-    .dropdown-content a {
-      color: #333;
-      padding: 12px 16px;
+    .dept:hover .dropdown {
+      display: block;
+    }
+    .dropdown a {
+      display: block;
+      padding: 10px;
       text-decoration: none;
-      display: block;
-      background: #fff;
+      color: #333;
     }
-    .dropdown-content a:hover {
-      background-color: #f1f1f1;
-    }
-    .department-box:hover .dropdown-content {
-      display: block;
-    }
-    .departments-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-      width: 100%;
-      max-width: 900px;
+    .dropdown a:hover {
+      background: #f0f0f0;
     }
   </style>
 </head>
 <body>
   <h1>Select Your Department</h1>
-  <div class="departments-container">
-    <!-- Repeat for each department -->
-    <div class="department-box">Dep 1
-      <div class="dropdown-content">
-        <a href="department.html?dep=dep1&sub=sub1a">Sub 1A</a>
-        <a href="department.html?dep=dep1&sub=sub1b">Sub 1B</a>
-        <a href="department.html?dep=dep1&sub=sub1c">Sub 1C</a>
-      </div>
-    </div>
-    <div class="department-box">Dep 2
-      <div class="dropdown-content">
-        <a href="department.html?dep=dep2&sub=sub2a">Sub 2A</a>
-        <a href="department.html?dep=dep2&sub=sub2b">Sub 2B</a>
-        <a href="department.html?dep=dep2&sub=sub2c">Sub 2C</a>
-      </div>
-    </div>
-    <div class="department-box">Dep 3
-      <div class="dropdown-content">
-        <a href="department.html?dep=dep3&sub=sub3a">Sub 3A</a>
-        <a href="department.html?dep=dep3&sub=sub3b">Sub 3B</a>
-        <a href="department.html?dep=dep3&sub=sub3c">Sub 3C</a>
-      </div>
-    </div>
-    <div class="department-box">Dep 4
-      <div class="dropdown-content">
-        <a href="department.html?dep=dep4&sub=sub4a">Sub 4A</a>
-        <a href="department.html?dep=dep4&sub=sub4b">Sub 4B</a>
-        <a href="department.html?dep=dep4&sub=sub4c">Sub 4C</a>
-      </div>
-    </div>
-    <div class="department-box">Dep 5
-      <div class="dropdown-content">
-        <a href="department.html?dep=dep5&sub=sub5a">Sub 5A</a>
-        <a href="department.html?dep=dep5&sub=sub5b">Sub 5B</a>
-        <a href="department.html?dep=dep5&sub=sub5c">Sub 5C</a>
-      </div>
-    </div>
-    <div class="department-box">Dep 6
-      <div class="dropdown-content">
-        <a href="department.html?dep=dep6&sub=sub6a">Sub 6A</a>
-        <a href="department.html?dep=dep6&sub=sub6b">Sub 6B</a>
-        <a href="department.html?dep=dep6&sub=sub6c">Sub 6C</a>
-      </div>
-    </div>
-  </div>
+  <div class="grid" id="departments"></div>
 
-  <!-- Firebase Setup -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDoUb1kEA8bo0NaqSTDQSTtH4fWNdmJrAw",
@@ -132,7 +89,44 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    console.log("Firebase initialized!");
+    const db = getFirestore(app);
+
+    const container = document.getElementById("departments");
+
+    function adjustGridLayout(count) {
+      if (count <= 6) {
+        container.style.gridTemplateColumns = "repeat(3, 1fr)";
+      } else if (count <= 9) {
+        container.style.gridTemplateColumns = "repeat(3, 1fr)";
+      } else if (count <= 12) {
+        container.style.gridTemplateColumns = "repeat(4, 1fr)";
+      } else {
+        container.style.gridTemplateColumns = "repeat(auto-fit, minmax(200px, 1fr))";
+      }
+    }
+
+    async function loadDepartments() {
+      const snap = await getDoc(doc(db, "structure", "departments"));
+      if (!snap.exists()) return;
+      const data = snap.data();
+      const deps = Object.keys(data);
+      adjustGridLayout(deps.length);
+
+      deps.forEach(dep => {
+        const subs = data[dep] || [];
+        const box = document.createElement("div");
+        box.className = "dept";
+        box.innerHTML = `
+          ${dep}
+          <div class="dropdown">
+            ${subs.map(sub => `<a href="department.html?dep=${dep}&sub=${sub}">${sub}</a>`).join("")}
+          </div>
+        `;
+        container.appendChild(box);
+      });
+    }
+
+    loadDepartments();
   </script>
 </body>
 </html>
