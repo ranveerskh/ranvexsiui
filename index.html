@@ -200,12 +200,10 @@
       if (!snap.exists()) return;
       const data = snap.data();
       departmentsData = Object.keys(data).map(dep => {
-        const deptData = data[dep];
-        return {
-          dep,
-          subs: Array.isArray(deptData.subs) ? deptData.subs : [],
-          imageUrl: deptData.image || `https://source.unsplash.com/600x400/?warehouse,${dep}`
-        };
+        const value = data[dep];
+        const subs = Array.isArray(value) ? value : Array.isArray(value.subs) ? value.subs : [];
+        const imageUrl = value.image || `https://source.unsplash.com/600x400/?warehouse,${dep}`;
+        return { dep, subs, imageUrl };
       });
       renderDepartments();
     }
