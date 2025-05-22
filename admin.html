@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin - RANVEXSI UI</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 0; background: #f9f9f9; }
@@ -33,6 +33,7 @@
     </div>
     <div id="departmentsList"></div>
   </div>
+
   <div class="section">
     <h2>Sub-Departments</h2>
     <select id="subDeptSelect"></select>
@@ -42,6 +43,7 @@
     </div>
     <div id="subDeptList"></div>
   </div>
+
   <div class="section">
     <h2>Links in Sub-Departments</h2>
     <select id="linkDeptSelect"></select>
@@ -55,6 +57,7 @@
     <div id="linkList"></div>
   </div>
 </div>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
   import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
@@ -87,14 +90,12 @@
   }
 
   function renderAll() {
-    // Departments
     deptList.innerHTML = Object.keys(structure).map(dep => `
       <div class='list-item'>${dep}
         <button class='delete' onclick="deleteDepartment('${dep}')">🗑</button>
       </div>
     `).join("");
 
-    // Dropdowns
     subSelect.innerHTML = linkDeptSelect.innerHTML = Object.keys(structure).map(d => `<option>${d}</option>`).join("");
     updateSubSelect();
     renderSubDepartments();
@@ -110,7 +111,7 @@
   function addDepartment() {
     const val = document.getElementById("newDept").value.trim();
     if (val && !structure[val]) {
-      structure[val] = { image: "", subs: {} };
+      structure[val] = { subs: {} };
       renderAll();
     }
   }
@@ -145,9 +146,9 @@
   function addLink() {
     const d = linkDeptSelect.value;
     const s = linkSubSelect.value;
-    const name = document.getElementById("linkName").value;
-    const url = document.getElementById("linkUrl").value;
-    const img = document.getElementById("linkImage").value;
+    const name = document.getElementById("linkName").value.trim();
+    const url = document.getElementById("linkUrl").value.trim();
+    const img = document.getElementById("linkImage").value.trim();
     if (name && url) {
       structure[d].subs[s].links.push({ name, url, image: img });
       renderLinks();
