@@ -205,7 +205,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDoUb1kEA8bo0NaqSTDQSTtH4fWNdmJrAw",
@@ -269,17 +269,19 @@
       });
     }
 
-    async function loadDepartments() {
-      const snap = await getDoc(doc(db, "structure", "departments"));
-      if (!snap.exists()) return;
-      const data = snap.data();
-      departmentsData = Object.keys(data).map(dep => {
-        const value = data[dep];
-        const subs = Array.isArray(value) ? value : Array.isArray(value.subs) ? value.subs : [];
-        const imageUrl = value.image || `https://source.unsplash.com/600x400/?warehouse,${dep}`;
-        return { dep, subs, imageUrl };
+    function loadDepartments() {
+      const ref = doc(db, "structure", "departments");
+      onSnapshot(ref, (snap) => {
+        if (!snap.exists()) return;
+        const data = snap.data();
+        departmentsData = Object.keys(data).map(dep => {
+          const value = data[dep];
+          const subs = Array.isArray(value) ? value : Array.isArray(value.subs) ? value.subs : [];
+          const imageUrl = value.image || `https://source.unsplash.com/600x400/?warehouse,${dep}`;
+          return { dep, subs, imageUrl };
+        });
+        renderDepartments(searchInput.value.toLowerCase());
       });
-      renderDepartments();
     }
 
     searchInput.addEventListener("input", e => {
@@ -296,10 +298,9 @@
     }
 
     function hardRefresh() {
-      window.location.reload(true); // Force full reload from server
+      window.location.reload(true);
     }
 
-    // On load
     if (localStorage.getItem("darkMode") === "enabled") {
       document.body.classList.add("dark");
     }
