@@ -28,6 +28,21 @@
       text-transform: uppercase;
     }
 
+    .header .buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .header button {
+      background: white;
+      color: #4CAF50;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -79,13 +94,17 @@
 
   <div class="header">
     <h1 id="title">Loading...</h1>
+    <div class="buttons">
+      <button onclick="location.reload()">🔄 Refresh</button>
+      <button onclick="clearOrder()">🧹 Clear Order</button>
+    </div>
   </div>
 
   <div class="grid" id="linkGrid"></div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDoUb1kEA8bo0NaqSTDQSTtH4fWNdmJrAw",
@@ -118,30 +137,23 @@
       }
     }
 
-    async function loadLinks() {
-      const docRef = doc(db, "links", docId);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        const links = docSnap.data().items || [];
-        if (links.length === 0) {
-          linkGrid.innerHTML = `<div class="no-links">No links found for ${sub}</div>`;
-          return;
-        }
-
-        linkData = links;
-        renderLinks();
-      } else {
-        linkGrid.innerHTML = `<div class="no-links">No links found for ${sub}</div>`;
-      }
+    function clearOrder() {
+      localStorage.removeItem(localKey);
+      location.reload();
     }
 
     function renderLinks() {
       linkGrid.innerHTML = "";
       const order = getSavedOrder();
-      const sorted = order.length
-        ? order.map(name => linkData.find(l => l.name === name)).filter(Boolean)
-        : linkData;
+      const sorted = [
+        ...order.map(name => linkData.find(l => l.name === name)).filter(Boolean),
+        ...linkData.filter(l => !order.includes(l.name))
+      ];
+
+      if (sorted.length === 0) {
+        linkGrid.innerHTML = `<div class="no-links">No links found for ${sub}</div>`;
+        return;
+      }
 
       sorted.forEach(link => {
         const a = document.createElement("a");
@@ -164,7 +176,22 @@
       });
     }
 
+    function loadLinks() {
+      const docRef = doc(db, "links", docId);
+      onSnapshot(docRef, (snap) => {
+        if (!snap.exists()) {
+          linkGrid.innerHTML = `<div class="no-links">No links found for ${sub}</div>`;
+          return;
+        }
+
+        const links = snap.data().items || [];
+        linkData = links;
+        renderLinks();
+      });
+    }
+
     loadLinks();
+    window.clearOrder = clearOrder;
   </script>
 </body>
 </html>
