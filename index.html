@@ -3,120 +3,185 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sub-Departments - RANVEXSI UI</title>
+  <title>RANVEXSI UI</title>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <style>
     :root {
-      --bg: #f4f4f4;
+      --bg: #f0f4f8;
       --text: #000;
       --card: #fff;
     }
     body.dark {
       --bg: #121212;
-      --text: #eee;
-      --card: #1f1f1f;
+      --text: #fff;
+      --card: #1e1e1e;
     }
-
-    body {
+    html, body {
       margin: 0;
       padding: 0;
+      height: 100%;
       font-family: Arial, sans-serif;
       background: var(--bg);
       color: var(--text);
+      display: flex;
+      flex-direction: column;
     }
-
-    header {
-      background-color: #4CAF50;
-      padding: 20px;
-      color: white;
+    .header {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      background: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      position: relative;
     }
-
-    header h2 {
+    .header h1 {
       margin: 0;
       font-size: 1.5rem;
+      flex: 1;
     }
-
-    .toggle-dark {
-      background: white;
-      color: #4CAF50;
-      border: none;
-      padding: 8px 14px;
+    .header .search {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: 300px;
+      width: 100%;
+    }
+    .header .search input {
+      width: 100%;
+      padding: 6px 12px;
+      font-size: 1rem;
       border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
+      border: none;
     }
-
-    .container {
-      padding: 20px;
-    }
-
-    .sub-department {
-      margin-bottom: 30px;
-      background: var(--card);
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    .sub-department h3 {
-      margin-top: 0;
-      margin-bottom: 15px;
-    }
-
-    .links {
+    .header .menu {
+      flex: 1;
       display: flex;
-      flex-wrap: wrap;
-      gap: 15px;
+      justify-content: flex-end;
+      position: relative;
     }
-
-    .link-card {
-      width: 220px;
+    .menu-button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    .menu-dropdown {
+      display: none;
+      position: absolute;
+      right: 0;
+      background: white;
+      color: #333;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      z-index: 20;
+      min-width: 220px;
+    }
+    .menu-dropdown a, .menu-dropdown button {
+      display: block;
+      width: 100%;
+      padding: 10px 20px;
+      text-decoration: none;
+      color: #333;
+      background: none;
+      border: none;
+      text-align: left;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .menu-dropdown a:hover, .menu-dropdown button:hover {
+      background: #f0f0f0;
+    }
+    .menu:hover .menu-dropdown {
+      display: block;
+    }
+    .grid {
+      display: grid;
+      flex: 1;
+      width: 100%;
+      padding: 20px;
+      box-sizing: border-box;
+      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-auto-rows: 1fr;
+    }
+    .dept {
+      position: relative;
       border-radius: 10px;
       overflow: hidden;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      background-size: cover;
+      background-position: center;
+      cursor: grab;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-start;
+      height: 100%;
+      min-height: 200px;
       background-color: var(--card);
-      text-align: center;
-      transition: transform 0.2s;
     }
-
-    .link-card:hover {
-      transform: translateY(-3px);
+    .dept::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 1;
     }
-
-    .link-card img {
-      width: 100%;
-      height: 140px;
-      object-fit: cover;
-    }
-
-    .link-card p {
-      margin: 10px;
-      font-weight: bold;
-      color: var(--text);
-    }
-
-    #searchInput {
-      width: 100%;
+    .dept span {
+      position: relative;
+      z-index: 2;
       padding: 10px;
-      font-size: 1rem;
-      margin-bottom: 20px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: white;
+    }
+    .dropdown {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      max-height: 200px;
+      background: white;
+      overflow-y: auto;
+      border-radius: 0 0 10px 10px;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.2);
+      z-index: 10;
+      display: none;
+    }
+    .dept:hover .dropdown,
+    .dept:focus-within .dropdown {
+      display: block;
+    }
+    .dropdown a {
+      display: block;
+      padding: 12px;
+      text-decoration: none;
+      color: #333;
+      font-weight: bold;
+    }
+    .dropdown a:hover {
+      background: #f0f0f0;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h2 id="pageTitle">Sub-Departments</h2>
-    <button class="toggle-dark" onclick="toggleDarkMode()">Toggle Dark Mode</button>
-  </header>
-
-  <div class="container">
-    <input type="text" id="searchInput" placeholder="Search links...">
-    <div id="content"></div>
+  <div class="header">
+    <h1>RANVEXSI UI</h1>
+    <div class="search">
+      <input type="text" id="searchInput" placeholder="Search department or sub-department...">
+    </div>
+    <div class="menu">
+      <button class="menu-button">☰</button>
+      <div class="menu-dropdown">
+        <a href="about.html">About Us</a>
+        <a href="request.html">Request New Feature</a>
+        <a href="admin.html">Admin Login</a>
+        <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
+      </div>
+    </div>
   </div>
+
+  <div class="grid" id="departments"></div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
@@ -133,65 +198,72 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-
-    const params = new URLSearchParams(window.location.search);
-    const dep = params.get("dep");
-    document.getElementById("pageTitle").textContent = dep;
-
-    const content = document.getElementById("content");
+    const container = document.getElementById("departments");
     const searchInput = document.getElementById("searchInput");
 
-    let subData = {};
+    let departmentsData = [];
 
-    function renderLinks(filter = "") {
-      content.innerHTML = "";
+    function getSavedOrder() {
+      try {
+        return JSON.parse(localStorage.getItem("deptOrder")) || [];
+      } catch {
+        return [];
+      }
+    }
 
-      Object.entries(subData).forEach(([sub, links]) => {
-        const filteredLinks = links.filter(l =>
-          l.name.toLowerCase().includes(filter) ||
-          l.url.toLowerCase().includes(filter)
-        );
-        if (filteredLinks.length === 0) return;
+    function renderDepartments(filter = "") {
+      container.innerHTML = "";
+      const ordered = getSavedOrder();
+      const filtered = departmentsData.filter(({ dep, subs }) =>
+        dep.toLowerCase().includes(filter) || subs.some(sub => sub.toLowerCase().includes(filter))
+      );
 
-        const subSection = document.createElement("div");
-        subSection.className = "sub-department";
-        subSection.innerHTML = `<h3>${sub}</h3><div class="links"></div>`;
-        const linksContainer = subSection.querySelector(".links");
+      const sorted = filter
+        ? filtered
+        : ordered.length
+          ? ordered.map(id => departmentsData.find(d => d.dep === id)).filter(Boolean)
+          : departmentsData;
 
-        filteredLinks.forEach(link => {
-          const card = document.createElement("div");
-          card.className = "link-card";
-          card.innerHTML = `
-            <a href="${link.url}" target="_blank">
-              <img src="${link.image || 'https://source.unsplash.com/300x200/?tech'}" alt="${link.name}">
-              <p>${link.name}</p>
-            </a>
-          `;
-          linksContainer.appendChild(card);
-        });
+      sorted.forEach(({ dep, subs, imageUrl }) => {
+        const box = document.createElement("div");
+        box.className = "dept";
+        box.style.backgroundImage = `url('${imageUrl}')`;
+        box.setAttribute("data-id", dep);
 
-        content.appendChild(subSection);
+        const dropdown = subs.map(sub => `<a href="department.html?dep=${dep}&sub=${sub}">${sub}</a>`).join("");
+
+        box.innerHTML = `
+          <span>${dep}</span>
+          <div class="dropdown">${dropdown}</div>
+        `;
+
+        container.appendChild(box);
+      });
+
+      Sortable.create(container, {
+        animation: 150,
+        onEnd: () => {
+          const ids = [...container.children].map(el => el.getAttribute("data-id"));
+          localStorage.setItem("deptOrder", JSON.stringify(ids));
+        }
       });
     }
 
-    onSnapshot(doc(db, "structure", dep), (snap) => {
-      if (!snap.exists()) return;
-      const data = snap.data();
-      subData = {};
-
-      Object.keys(data).forEach(sub => {
-        if (Array.isArray(data[sub])) {
-          subData[sub] = data[sub]; // for plain array of links
-        } else if (Array.isArray(data[sub].links)) {
-          subData[sub] = data[sub].links; // for structure with links array
-        }
-      });
-
-      renderLinks(searchInput.value.toLowerCase());
+    searchInput.addEventListener("input", e => {
+      renderDepartments(e.target.value.toLowerCase());
     });
 
-    searchInput.addEventListener("input", e => {
-      renderLinks(e.target.value.toLowerCase());
+    // ✅ Real-time listener
+    onSnapshot(doc(db, "structure", "departments"), (snap) => {
+      if (!snap.exists()) return;
+      const data = snap.data();
+      departmentsData = Object.keys(data).map(dep => {
+        const value = data[dep];
+        const subs = Array.isArray(value) ? value : Array.isArray(value.subs) ? value.subs : [];
+        const imageUrl = value.image || `https://source.unsplash.com/600x400/?warehouse,${dep}`;
+        return { dep, subs, imageUrl };
+      });
+      renderDepartments(searchInput.value.toLowerCase());
     });
   </script>
 
