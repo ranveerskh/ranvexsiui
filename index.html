@@ -197,6 +197,7 @@
         <a href="admin.html">Admin Login</a>
         <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
         <button onclick="hardRefresh()">🔄 Refresh</button>
+        <button onclick="clearOrder()">🧹 Clear Saved Order</button>
       </div>
     </div>
   </div>
@@ -240,9 +241,10 @@
 
       const sorted = filter
         ? filtered
-        : ordered.length
-          ? ordered.map(id => departmentsData.find(d => d.dep === id)).filter(Boolean)
-          : departmentsData;
+        : [
+            ...ordered.map(id => departmentsData.find(d => d.dep === id)).filter(Boolean),
+            ...departmentsData.filter(d => !ordered.includes(d.dep))
+          ];
 
       sorted.forEach(({ dep, subs, imageUrl }) => {
         const box = document.createElement("div");
@@ -299,6 +301,11 @@
 
     function hardRefresh() {
       window.location.reload(true);
+    }
+
+    function clearOrder() {
+      localStorage.removeItem("deptOrder");
+      location.reload();
     }
 
     if (localStorage.getItem("darkMode") === "enabled") {
