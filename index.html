@@ -16,6 +16,7 @@
       --text: #fff;
       --card: #1e1e1e;
     }
+
     html, body {
       margin: 0;
       padding: 0;
@@ -26,6 +27,7 @@
       display: flex;
       flex-direction: column;
     }
+
     .header {
       display: flex;
       justify-content: space-between;
@@ -35,11 +37,13 @@
       padding: 10px 20px;
       position: relative;
     }
+
     .header h1 {
       margin: 0;
       font-size: 1.5rem;
       flex: 1;
     }
+
     .header .search {
       position: absolute;
       left: 50%;
@@ -47,6 +51,7 @@
       max-width: 300px;
       width: 100%;
     }
+
     .header .search input {
       width: 100%;
       padding: 6px 12px;
@@ -54,12 +59,14 @@
       border-radius: 6px;
       border: none;
     }
+
     .header .menu {
       flex: 1;
       display: flex;
       justify-content: flex-end;
       position: relative;
     }
+
     .menu-button {
       background: none;
       border: none;
@@ -67,6 +74,7 @@
       font-size: 1.5rem;
       cursor: pointer;
     }
+
     .menu-dropdown {
       display: none;
       position: absolute;
@@ -78,6 +86,7 @@
       z-index: 20;
       min-width: 220px;
     }
+
     .menu-dropdown a, .menu-dropdown button {
       display: block;
       width: 100%;
@@ -90,12 +99,15 @@
       cursor: pointer;
       font-size: 1rem;
     }
+
     .menu-dropdown a:hover, .menu-dropdown button:hover {
       background: #f0f0f0;
     }
+
     .menu:hover .menu-dropdown {
       display: block;
     }
+
     .grid {
       display: grid;
       flex: 1;
@@ -106,6 +118,7 @@
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       grid-auto-rows: 1fr;
     }
+
     .dept {
       position: relative;
       border-radius: 10px;
@@ -120,6 +133,7 @@
       min-height: 200px;
       background-color: var(--card);
     }
+
     .dept::before {
       content: "";
       position: absolute;
@@ -127,6 +141,7 @@
       background: rgba(0,0,0,0.4);
       z-index: 1;
     }
+
     .dept span {
       position: relative;
       z-index: 2;
@@ -135,6 +150,7 @@
       font-weight: bold;
       color: white;
     }
+
     .dropdown {
       position: absolute;
       bottom: 0;
@@ -148,10 +164,12 @@
       z-index: 10;
       display: none;
     }
+
     .dept:hover .dropdown,
     .dept:focus-within .dropdown {
       display: block;
     }
+
     .dropdown a {
       display: block;
       padding: 12px;
@@ -159,6 +177,7 @@
       color: #333;
       font-weight: bold;
     }
+
     .dropdown a:hover {
       background: #f0f0f0;
     }
@@ -249,22 +268,26 @@
       });
     }
 
+    function loadDepartments() {
+      const docRef = doc(db, "structure", "departments");
+      onSnapshot(docRef, (snap) => {
+        if (!snap.exists()) return;
+        const data = snap.data();
+        departmentsData = Object.keys(data).map(dep => {
+          const value = data[dep];
+          const subs = Array.isArray(value) ? value : Array.isArray(value.subs) ? value.subs : [];
+          const imageUrl = value.image || `https://source.unsplash.com/600x400/?warehouse,${dep}`;
+          return { dep, subs, imageUrl };
+        });
+        renderDepartments(searchInput.value.toLowerCase());
+      });
+    }
+
     searchInput.addEventListener("input", e => {
       renderDepartments(e.target.value.toLowerCase());
     });
 
-    // ✅ Real-time listener
-    onSnapshot(doc(db, "structure", "departments"), (snap) => {
-      if (!snap.exists()) return;
-      const data = snap.data();
-      departmentsData = Object.keys(data).map(dep => {
-        const value = data[dep];
-        const subs = Array.isArray(value) ? value : Array.isArray(value.subs) ? value.subs : [];
-        const imageUrl = value.image || `https://source.unsplash.com/600x400/?warehouse,${dep}`;
-        return { dep, subs, imageUrl };
-      });
-      renderDepartments(searchInput.value.toLowerCase());
-    });
+    loadDepartments();
   </script>
 
   <script>
