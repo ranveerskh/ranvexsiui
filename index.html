@@ -204,7 +204,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDoUb1kEA8bo0NaqSTDQSTtH4fWNdmJrAw",
@@ -269,14 +269,13 @@
     }
 
     function loadDepartments() {
-      const docRef = doc(db, "structure", "departments");
-      onSnapshot(docRef, (snap) => {
-        if (!snap.exists()) return;
-        const data = snap.data();
-        departmentsData = Object.keys(data).map(dep => {
-          const value = data[dep];
-          const subs = Array.isArray(value) ? value : Array.isArray(value.subs) ? value.subs : [];
-          const imageUrl = value.image || `https://source.unsplash.com/600x400/?warehouse,${dep}`;
+      const deptRef = collection(db, "structure", "departments");
+      onSnapshot(deptRef, (snapshot) => {
+        departmentsData = snapshot.docs.map(doc => {
+          const data = doc.data();
+          const dep = doc.id;
+          const subs = Array.isArray(data.subs) ? data.subs : [];
+          const imageUrl = data.image || `https://source.unsplash.com/600x400/?warehouse,${dep}`;
           return { dep, subs, imageUrl };
         });
         renderDepartments(searchInput.value.toLowerCase());
