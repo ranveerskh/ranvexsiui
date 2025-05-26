@@ -30,27 +30,26 @@
 
     .header {
       display: flex;
+      flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
       background: #4CAF50;
       color: white;
       padding: 10px 20px;
-      flex-wrap: wrap;
-      position: relative;
+      gap: 10px;
     }
 
-    .header h1 {
+    .left h1 {
       margin: 0;
       font-size: 1.5rem;
-      flex: 1;
     }
 
-    .search {
-      max-width: 300px;
-      width: 100%;
+    .center {
+      flex: 1 1 300px;
+      max-width: 400px;
     }
 
-    .search input {
+    .center input {
       width: 100%;
       padding: 6px 12px;
       font-size: 1rem;
@@ -58,52 +57,11 @@
       border: none;
     }
 
-    .menu {
+    .right {
       display: flex;
-      gap: 10px;
       align-items: center;
-    }
-
-    .menu-button {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 1.5rem;
-      cursor: pointer;
-    }
-
-    .menu-dropdown {
-      display: none;
-      position: absolute;
-      right: 10px;
-      top: 50px;
-      background: white;
-      color: #333;
-      border-radius: 6px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      z-index: 20;
-      min-width: 200px;
-    }
-
-    .menu-dropdown a, .menu-dropdown button {
-      display: block;
-      width: 100%;
-      padding: 10px 20px;
-      text-decoration: none;
-      color: #333;
-      background: none;
-      border: none;
-      text-align: left;
-      cursor: pointer;
-      font-size: 1rem;
-    }
-
-    .menu-dropdown a:hover, .menu-dropdown button:hover {
-      background: #f0f0f0;
-    }
-
-    .menu:hover .menu-dropdown {
-      display: block;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
     .buttons {
@@ -119,6 +77,50 @@
       border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
+    }
+
+    .menu {
+      position: relative;
+    }
+
+    .menu-button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .menu-dropdown {
+      display: none;
+      position: absolute;
+      top: 40px;
+      right: 0;
+      background: white;
+      color: black;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      min-width: 200px;
+      z-index: 100;
+    }
+
+    .menu:hover .menu-dropdown {
+      display: block;
+    }
+
+    .menu-dropdown a, .menu-dropdown button {
+      display: block;
+      padding: 10px 20px;
+      border: none;
+      background: none;
+      text-align: left;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .menu-dropdown a:hover, .menu-dropdown button:hover {
+      background: #f0f0f0;
     }
 
     .foot-icon {
@@ -139,7 +141,7 @@
       padding: 10px;
       box-shadow: 0 2px 12px rgba(0,0,0,0.2);
       white-space: nowrap;
-      z-index: 100;
+      z-index: 200;
     }
 
     .foot-icon:hover .tooltip {
@@ -222,25 +224,32 @@
   </style>
 </head>
 <body>
-  <div class="header">
-    <h1>RANVEXSI UI</h1>
 
-    <div class="search">
+  <div class="header">
+    <div class="left">
+      <h1>RANVEXSI UI</h1>
+    </div>
+
+    <div class="center">
       <input type="text" id="searchInput" placeholder="Search department or sub-department...">
     </div>
 
-    <div class="menu">
+    <div class="right">
       <div class="buttons">
         <button onclick="location.reload()">🔄 Refresh</button>
         <button onclick="localStorage.clear(); location.reload()">🧹 Clear Order</button>
       </div>
-      <button class="menu-button">☰</button>
-      <div class="menu-dropdown">
-        <a href="about.html">About Us</a>
-        <a href="request.html">Request New Feature</a>
-        <a href="admin.html">Admin Login</a>
-        <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
+
+      <div class="menu">
+        <button class="menu-button">☰</button>
+        <div class="menu-dropdown">
+          <a href="about.html">About Us</a>
+          <a href="request.html">Request New Feature</a>
+          <a href="admin.html">Admin Login</a>
+          <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
+        </div>
       </div>
+
       <div class="foot-icon">
         👣
         <div class="tooltip">
@@ -255,7 +264,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDoUb1kEA8bo0NaqSTDQSTtH4fWNdmJrAw",
