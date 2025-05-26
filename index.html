@@ -16,7 +16,6 @@
       --text: #fff;
       --card: #1e1e1e;
     }
-
     html, body {
       margin: 0;
       padding: 0;
@@ -104,7 +103,8 @@
       z-index: 100;
     }
 
-    .menu:hover .menu-dropdown {
+    .menu:hover .menu-dropdown,
+    .menu:focus-within .menu-dropdown {
       display: block;
     }
 
@@ -226,20 +226,15 @@
 <body>
 
   <div class="header">
-    <div class="left">
-      <h1>RANVEXSI UI</h1>
-    </div>
-
+    <div class="left"><h1>RANVEXSI UI</h1></div>
     <div class="center">
       <input type="text" id="searchInput" placeholder="Search department or sub-department...">
     </div>
-
     <div class="right">
       <div class="buttons">
         <button onclick="location.reload()">🔄 Refresh</button>
         <button onclick="localStorage.clear(); location.reload()">🧹 Clear Order</button>
       </div>
-
       <div class="menu">
         <button class="menu-button">☰</button>
         <div class="menu-dropdown">
@@ -249,7 +244,6 @@
           <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
         </div>
       </div>
-
       <div class="foot-icon">
         👣
         <div class="tooltip">
