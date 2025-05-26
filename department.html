@@ -20,6 +20,7 @@
       background: #4CAF50;
       color: white;
       padding: 10px 20px;
+      position: relative;
     }
 
     .header h1 {
@@ -41,6 +42,33 @@
       border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
+    }
+
+    .footsteps {
+      position: absolute;
+      top: 8px;
+      right: 16px;
+      font-size: 1.3rem;
+      cursor: pointer;
+    }
+
+    .footsteps:hover .tooltip {
+      display: block;
+    }
+
+    .tooltip {
+      display: none;
+      position: absolute;
+      top: 25px;
+      right: 0;
+      background: white;
+      color: black;
+      border-radius: 6px;
+      padding: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      font-size: 0.85rem;
+      z-index: 10;
+      min-width: 160px;
     }
 
     .grid {
@@ -98,13 +126,22 @@
       <button onclick="location.reload()">🔄 Refresh</button>
       <button onclick="clearOrder()">🧹 Clear Order</button>
     </div>
+    <div class="footsteps">
+      👣
+      <div class="tooltip" id="footTooltip">
+        Live Visitors: <span id="liveCount">0</span><br>
+        Total Visits: <span id="totalCount">0</span>
+      </div>
+    </div>
   </div>
 
   <div class="grid" id="linkGrid"></div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+    import {
+      getFirestore, doc, onSnapshot, updateDoc, setDoc, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDoUb1kEA8bo0NaqSTDQSTtH4fWNdmJrAw",
@@ -123,11 +160,22 @@
     const sub = params.get("sub");
     const docId = `${dep}-${sub}`;
     const localKey = `linkOrder-${docId}`;
+    const uid = getUID();
 
     document.getElementById("title").textContent = `${dep.toUpperCase()} → ${sub.toUpperCase()}`;
 
     const linkGrid = document.getElementById("linkGrid");
     let linkData = [];
+
+    function getUID() {
+      const key = "visitor-uid";
+      let id = localStorage.getItem(key);
+      if (!id) {
+        id = Math.random().toString(36).substring(2, 10);
+        localStorage.setItem(key, id);
+      }
+      return id;
+    }
 
     function getSavedOrder() {
       try {
@@ -176,9 +224,40 @@
       });
     }
 
-    function loadLinks() {
-      const docRef = doc(db, "links", docId);
-      onSnapshot(docRef, (snap) => {
+    function trackFootsteps() {
+      const ref = doc(db, "analytics", docId);
+      onSnapshot(ref, async (snap) => {
+        let data = snap.exists() ? snap.data() : {};
+        let visitors = Array.isArray(data.visitors) ? data.visitors : [];
+        const now = Date.now();
+        const cutoff = now - 12 * 60 * 60 * 1000;
+
+        visitors = visitors.filter(v => v && v.ts > cutoff);
+        const existing = visitors.find(v => v.uid === uid);
+        if (!existing) {
+          visitors.push({ uid, ts: now });
+          await setDoc(ref, {
+            total: (data.total || 0) + 1,
+            visitors
+          }, { merge: true });
+        } else {
+          existing.ts = now;
+          await setDoc(ref, { visitors }, { merge: true });
+        }
+
+        // Update UI
+        document.getElementById("liveCount").textContent = visitors.length;
+        document.getElementById("totalCount").textContent = data.total || 1;
+      });
+
+      window.addEventListener("focus", () => {
+        trackFootsteps(); // refresh timestamp on tab switch
+      });
+    }
+
+    async function loadLinks() {
+      const ref = doc(db, "links", docId);
+      onSnapshot(ref, (snap) => {
         if (!snap.exists()) {
           linkGrid.innerHTML = `<div class="no-links">No links found for ${sub}</div>`;
           return;
@@ -191,6 +270,7 @@
     }
 
     loadLinks();
+    trackFootsteps();
     window.clearOrder = clearOrder;
   </script>
 </body>
