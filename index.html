@@ -382,6 +382,15 @@
       window.addEventListener("focus", () => trackFootsteps());
     }
 
+    loadDepartments();
+    trackFootsteps();
+
+    searchInput.addEventListener("input", e => {
+      renderDepartments(e.target.value.toLowerCase());
+    });
+  </script>
+
+  <script>
     function toggleDarkMode() {
       const isDark = document.body.classList.toggle("dark");
       localStorage.setItem("darkMode", isDark ? "enabled" : "disabled");
@@ -390,13 +399,6 @@
     if (localStorage.getItem("darkMode") === "enabled") {
       document.body.classList.add("dark");
     }
-
-    loadDepartments();
-    trackFootsteps();
-
-    searchInput.addEventListener("input", e => {
-      renderDepartments(e.target.value.toLowerCase());
-    });
   </script>
 </body>
 </html>
