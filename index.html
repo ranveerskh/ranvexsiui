@@ -356,13 +356,17 @@
         const now = Date.now();
         const cutoff = now - 12 * 60 * 60 * 1000;
 
+        // remove old
         visitors = visitors.filter(v => v && v.ts > cutoff);
-        const existing = visitors.find(v => v.uid === uid);
-        if (!existing) {
+
+        let existing = visitors.find(v => v.uid === uid);
+        if (!existing || existing.ts < cutoff) {
+          visitors = visitors.filter(v => v.uid !== uid);
           visitors.push({ uid, ts: now });
+
           await setDoc(ref, {
-            total: (data.total || 0) + 1,
-            visitors
+            visitors,
+            total: typeof data.total === "number" ? data.total + 1 : 1
           }, { merge: true });
         } else {
           existing.ts = now;
