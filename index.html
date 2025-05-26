@@ -35,6 +35,7 @@
       background: #4CAF50;
       color: white;
       padding: 10px 20px;
+      flex-wrap: wrap;
       position: relative;
     }
 
@@ -44,15 +45,12 @@
       flex: 1;
     }
 
-    .header .search {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
+    .search {
       max-width: 300px;
       width: 100%;
     }
 
-    .header .search input {
+    .search input {
       width: 100%;
       padding: 6px 12px;
       font-size: 1rem;
@@ -60,11 +58,10 @@
       border: none;
     }
 
-    .header .menu {
-      flex: 1;
+    .menu {
       display: flex;
-      justify-content: flex-end;
-      position: relative;
+      gap: 10px;
+      align-items: center;
     }
 
     .menu-button {
@@ -78,13 +75,14 @@
     .menu-dropdown {
       display: none;
       position: absolute;
-      right: 0;
+      right: 10px;
+      top: 50px;
       background: white;
       color: #333;
       border-radius: 6px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.2);
       z-index: 20;
-      min-width: 220px;
+      min-width: 200px;
     }
 
     .menu-dropdown a, .menu-dropdown button {
@@ -105,6 +103,46 @@
     }
 
     .menu:hover .menu-dropdown {
+      display: block;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .buttons button {
+      background: white;
+      color: #4CAF50;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .foot-icon {
+      position: relative;
+      font-size: 1.3rem;
+      cursor: pointer;
+    }
+
+    .foot-icon .tooltip {
+      display: none;
+      position: absolute;
+      top: 28px;
+      right: 0;
+      background: white;
+      color: black;
+      font-size: 0.85rem;
+      border-radius: 8px;
+      padding: 10px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+      white-space: nowrap;
+      z-index: 100;
+    }
+
+    .foot-icon:hover .tooltip {
       display: block;
     }
 
@@ -186,18 +224,29 @@
 <body>
   <div class="header">
     <h1>RANVEXSI UI</h1>
+
     <div class="search">
       <input type="text" id="searchInput" placeholder="Search department or sub-department...">
     </div>
+
     <div class="menu">
+      <div class="buttons">
+        <button onclick="location.reload()">🔄 Refresh</button>
+        <button onclick="localStorage.clear(); location.reload()">🧹 Clear Order</button>
+      </div>
       <button class="menu-button">☰</button>
       <div class="menu-dropdown">
         <a href="about.html">About Us</a>
         <a href="request.html">Request New Feature</a>
         <a href="admin.html">Admin Login</a>
         <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
-        <button onclick="hardRefresh()">🔄 Refresh</button>
-        <button onclick="clearOrder()">🧹 Clear Saved Order</button>
+      </div>
+      <div class="foot-icon">
+        👣
+        <div class="tooltip">
+          🟢 Live Visitors: <span id="liveCount">0</span><br>
+          📊 Total Visits: <span id="totalCount">0</span>
+        </div>
       </div>
     </div>
   </div>
@@ -223,6 +272,16 @@
     const searchInput = document.getElementById("searchInput");
 
     let departmentsData = [];
+
+    const uid = (() => {
+      const key = "visitor-uid";
+      let id = localStorage.getItem(key);
+      if (!id) {
+        id = Math.random().toString(36).substring(2, 10);
+        localStorage.setItem(key, id);
+      }
+      return id;
+    })();
 
     function getSavedOrder() {
       try {
@@ -286,31 +345,49 @@
       });
     }
 
-    searchInput.addEventListener("input", e => {
-      renderDepartments(e.target.value.toLowerCase());
-    });
+    function trackFootsteps() {
+      const ref = doc(db, "analytics", "homepage");
+      onSnapshot(ref, async (snap) => {
+        let data = snap.exists() ? snap.data() : {};
+        let visitors = Array.isArray(data.visitors) ? data.visitors : [];
+        const now = Date.now();
+        const cutoff = now - 12 * 60 * 60 * 1000;
 
-    loadDepartments();
-  </script>
+        visitors = visitors.filter(v => v && v.ts > cutoff);
+        const existing = visitors.find(v => v.uid === uid);
+        if (!existing) {
+          visitors.push({ uid, ts: now });
+          await setDoc(ref, {
+            total: (data.total || 0) + 1,
+            visitors
+          }, { merge: true });
+        } else {
+          existing.ts = now;
+          await setDoc(ref, { visitors }, { merge: true });
+        }
 
-  <script>
+        document.getElementById("liveCount").textContent = visitors.length;
+        document.getElementById("totalCount").textContent = data.total || 1;
+      });
+
+      window.addEventListener("focus", () => trackFootsteps());
+    }
+
     function toggleDarkMode() {
       const isDark = document.body.classList.toggle("dark");
       localStorage.setItem("darkMode", isDark ? "enabled" : "disabled");
     }
 
-    function hardRefresh() {
-      window.location.reload(true);
-    }
-
-    function clearOrder() {
-      localStorage.removeItem("deptOrder");
-      location.reload();
-    }
-
     if (localStorage.getItem("darkMode") === "enabled") {
       document.body.classList.add("dark");
     }
+
+    loadDepartments();
+    trackFootsteps();
+
+    searchInput.addEventListener("input", e => {
+      renderDepartments(e.target.value.toLowerCase());
+    });
   </script>
 </body>
 </html>
