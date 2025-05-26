@@ -20,7 +20,7 @@
       background: #4CAF50;
       color: white;
       padding: 10px 20px;
-      position: relative;
+      flex-wrap: wrap;
     }
 
     .header h1 {
@@ -29,7 +29,14 @@
       text-transform: uppercase;
     }
 
-    .header .buttons {
+    .right-side {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .buttons {
       display: flex;
       gap: 10px;
     }
@@ -45,9 +52,7 @@
     }
 
     .foot-icon {
-      position: absolute;
-      top: 12px;
-      right: 16px;
+      position: relative;
       font-size: 1.3rem;
       cursor: pointer;
     }
@@ -122,15 +127,17 @@
 
   <div class="header">
     <h1 id="title">Loading...</h1>
-    <div class="buttons">
-      <button onclick="location.reload()">🔄 Refresh</button>
-      <button onclick="clearOrder()">🧹 Clear Order</button>
-    </div>
-    <div class="foot-icon">
-      👣
-      <div class="tooltip">
-        🟢 Live Visitors: <span id="liveCount">0</span><br>
-        📊 Total Visits: <span id="totalCount">0</span>
+    <div class="right-side">
+      <div class="buttons">
+        <button onclick="location.reload()">🔄 Refresh</button>
+        <button onclick="clearOrder()">🧹 Clear Order</button>
+      </div>
+      <div class="foot-icon">
+        👣
+        <div class="tooltip">
+          🟢 Live Visitors: <span id="liveCount">0</span><br>
+          📊 Total Visits: <span id="totalCount">0</span>
+        </div>
       </div>
     </div>
   </div>
