@@ -44,31 +44,31 @@
       font-weight: bold;
     }
 
-    .footsteps {
+    .foot-icon {
       position: absolute;
-      top: 8px;
+      top: 12px;
       right: 16px;
       font-size: 1.3rem;
       cursor: pointer;
     }
 
-    .footsteps:hover .tooltip {
-      display: block;
-    }
-
-    .tooltip {
+    .foot-icon .tooltip {
       display: none;
       position: absolute;
-      top: 25px;
+      top: 28px;
       right: 0;
       background: white;
       color: black;
-      border-radius: 6px;
-      padding: 10px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
       font-size: 0.85rem;
-      z-index: 10;
-      min-width: 160px;
+      border-radius: 8px;
+      padding: 10px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+      white-space: nowrap;
+      z-index: 100;
+    }
+
+    .foot-icon:hover .tooltip {
+      display: block;
     }
 
     .grid {
@@ -126,11 +126,11 @@
       <button onclick="location.reload()">🔄 Refresh</button>
       <button onclick="clearOrder()">🧹 Clear Order</button>
     </div>
-    <div class="footsteps">
+    <div class="foot-icon">
       👣
-      <div class="tooltip" id="footTooltip">
-        Live Visitors: <span id="liveCount">0</span><br>
-        Total Visits: <span id="totalCount">0</span>
+      <div class="tooltip">
+        🟢 Live Visitors: <span id="liveCount">0</span><br>
+        📊 Total Visits: <span id="totalCount">0</span>
       </div>
     </div>
   </div>
@@ -140,7 +140,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import {
-      getFirestore, doc, onSnapshot, updateDoc, setDoc, serverTimestamp
+      getFirestore, doc, onSnapshot, setDoc
     } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -245,17 +245,16 @@
           await setDoc(ref, { visitors }, { merge: true });
         }
 
-        // Update UI
         document.getElementById("liveCount").textContent = visitors.length;
         document.getElementById("totalCount").textContent = data.total || 1;
       });
 
       window.addEventListener("focus", () => {
-        trackFootsteps(); // refresh timestamp on tab switch
+        trackFootsteps();
       });
     }
 
-    async function loadLinks() {
+    function loadLinks() {
       const ref = doc(db, "links", docId);
       onSnapshot(ref, (snap) => {
         if (!snap.exists()) {
