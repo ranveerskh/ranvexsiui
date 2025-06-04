@@ -1,4 +1,4 @@
-<!-- START: Admin Panel with Fixes for Missing Sub-Departments and Links -->
+<!-- START: Admin Panel with Link Fixes -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -207,7 +207,7 @@
       list.innerHTML = "";
       for (const dep in departments) {
         const div = document.createElement("div");
-        div.textContent = `${dep}`;
+        div.textContent = dep;
         const edit = document.createElement("button");
         edit.textContent = "✎";
         edit.onclick = () => {
@@ -332,23 +332,24 @@
 
       const docId = `${dep}-${sub}`;
       const ref = doc(db, "links", docId);
+      let items = [];
       const snap = await getDoc(ref);
-      const items = snap.exists() ? snap.data().items || [] : [];
-      const editIndex = sessionStorage.getItem("editLinkIndex");
+      if (snap.exists()) items = snap.data().items || [];
 
+      const editIndex = sessionStorage.getItem("editLinkIndex");
       if (editIndex !== null) {
-        items[editIndex] = { name, url, color, image };
+        items[parseInt(editIndex)] = { name, url, color, image };
         sessionStorage.removeItem("editLinkIndex");
       } else {
         items.push({ name, url, color, image });
       }
 
       await setDoc(ref, { items });
-      renderLinks();
       document.getElementById("linkName").value = "";
       document.getElementById("linkUrl").value = "";
       document.getElementById("linkColor").value = "";
       document.getElementById("linkImage").value = "";
+      renderLinks();
     }
 
     async function renderLinks() {
@@ -364,11 +365,14 @@
         const items = snap.data().items || [];
         if (items.length === 0) {
           list.innerHTML = "<div>No links available</div>";
+          return;
         }
+
         items.forEach((link, index) => {
           const div = document.createElement("div");
           div.innerHTML = link.image ? `<img src="${link.image}" /> ${link.name}` : link.name;
           div.style.background = link.color;
+
           const edit = document.createElement("button");
           edit.textContent = "✎";
           edit.onclick = () => {
@@ -378,13 +382,17 @@
             document.getElementById("linkImage").value = link.image || "";
             sessionStorage.setItem("editLinkIndex", index);
           };
+
           const del = document.createElement("button");
           del.textContent = "✕";
           del.onclick = async () => {
-            items.splice(index, 1);
-            await setDoc(ref, { items });
+            const updatedSnap = await getDoc(ref);
+            const latestItems = updatedSnap.exists() ? updatedSnap.data().items || [] : [];
+            latestItems.splice(index, 1);
+            await setDoc(ref, { items: latestItems });
             renderLinks();
           };
+
           div.appendChild(edit);
           div.appendChild(del);
           list.appendChild(div);
