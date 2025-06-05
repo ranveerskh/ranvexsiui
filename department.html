@@ -12,7 +12,6 @@
       font-family: Arial, sans-serif;
       background: #f0f4f8;
     }
-
     .header {
       display: flex;
       justify-content: space-between;
@@ -22,25 +21,21 @@
       padding: 10px 20px;
       flex-wrap: wrap;
     }
-
     .header h1 {
       margin: 0;
       font-size: 1.2rem;
       text-transform: uppercase;
     }
-
     .right-side {
       display: flex;
       align-items: center;
       gap: 10px;
       flex-wrap: wrap;
     }
-
     .buttons {
       display: flex;
       gap: 10px;
     }
-
     .header button {
       background: white;
       color: #4CAF50;
@@ -50,13 +45,11 @@
       cursor: pointer;
       font-weight: bold;
     }
-
     .foot-icon {
       position: relative;
       font-size: 1.3rem;
       cursor: pointer;
     }
-
     .foot-icon .tooltip {
       display: none;
       position: absolute;
@@ -71,18 +64,26 @@
       white-space: nowrap;
       z-index: 100;
     }
-
     .foot-icon:hover .tooltip {
       display: block;
     }
-
+    .search-bar {
+      padding: 10px 20px;
+    }
+    .search-bar input {
+      width: 100%;
+      max-width: 400px;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 20px;
       padding: 20px;
     }
-
     .link-box {
       position: relative;
       background: #4CAF50;
@@ -98,7 +99,6 @@
       background-position: center;
       text-decoration: none;
     }
-
     .link-box::before {
       content: "";
       position: absolute;
@@ -106,7 +106,6 @@
       background: rgba(0, 0, 0, 0.4);
       z-index: 1;
     }
-
     .link-box span {
       position: relative;
       z-index: 2;
@@ -114,7 +113,6 @@
       font-size: 1.3rem;
       font-weight: bold;
     }
-
     .no-links {
       text-align: center;
       font-size: 1.2rem;
@@ -142,19 +140,23 @@
     </div>
   </div>
 
+  <div class="search-bar">
+    <input type="text" id="linkSearchInput" placeholder="🔍 Search links by name..." oninput="renderLinks()" />
+  </div>
+
   <div class="grid" id="linkGrid"></div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
     import {
-      getFirestore, doc, onSnapshot, setDoc
+      getFirestore, doc, getDoc, onSnapshot, setDoc
     } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDoUb1kEA8bo0NaqSTDQSTtH4fWNdmJrAw",
       authDomain: "ranvexsi-ui.firebaseapp.com",
       projectId: "ranvexsi-ui",
-      storageBucket: "ranvexsi-ui.firebasestorage.app",
+      storageBucket: "ranvexsi-ui.appspot.com",
       messagingSenderId: "639916549058",
       appId: "1:639916549058:web:2c14514e7d00aeaca52c5b"
     };
@@ -168,8 +170,7 @@
     const docId = `${dep}-${sub}`;
     const localKey = `linkOrder-${docId}`;
     const uid = getUID();
-
-    document.getElementById("title").textContent = `${dep.toUpperCase()} → ${sub.toUpperCase()}`;
+    document.getElementById("title").textContent = `${dep.toUpperCase()} → ${sub === "__all__" ? "ALL LINKS" : sub.toUpperCase()}`;
 
     const linkGrid = document.getElementById("linkGrid");
     let linkData = [];
@@ -198,19 +199,23 @@
     }
 
     function renderLinks() {
+      const searchQuery = document.getElementById("linkSearchInput").value.toLowerCase();
       linkGrid.innerHTML = "";
+
       const order = getSavedOrder();
       const sorted = [
         ...order.map(name => linkData.find(l => l.name === name)).filter(Boolean),
         ...linkData.filter(l => !order.includes(l.name))
       ];
 
-      if (sorted.length === 0) {
-        linkGrid.innerHTML = `<div class="no-links">No links found for ${sub}</div>`;
+      const filtered = sorted.filter(link => link.name.toLowerCase().includes(searchQuery));
+
+      if (filtered.length === 0) {
+        linkGrid.innerHTML = `<div class="no-links">No matching links found</div>`;
         return;
       }
 
-      sorted.forEach(link => {
+      filtered.forEach(link => {
         const a = document.createElement("a");
         a.href = link.url;
         a.className = "link-box";
@@ -238,7 +243,6 @@
         let visitors = Array.isArray(data.visitors) ? data.visitors : [];
         const now = Date.now();
         const cutoff = now - 12 * 60 * 60 * 1000;
-
         visitors = visitors.filter(v => v && v.ts > cutoff);
         const existing = visitors.find(v => v.uid === uid);
         if (!existing) {
@@ -251,7 +255,6 @@
           existing.ts = now;
           await setDoc(ref, { visitors }, { merge: true });
         }
-
         document.getElementById("liveCount").textContent = visitors.length;
         document.getElementById("totalCount").textContent = data.total || 1;
       });
@@ -261,18 +264,40 @@
       });
     }
 
-    function loadLinks() {
-      const ref = doc(db, "links", docId);
-      onSnapshot(ref, (snap) => {
-        if (!snap.exists()) {
-          linkGrid.innerHTML = `<div class="no-links">No links found for ${sub}</div>`;
-          return;
+    async function loadLinks() {
+      if (sub === "__all__") {
+        linkData = [];
+        const seen = new Set();
+        const snap = await getDoc(doc(db, "structure", "departments"));
+        const allSubs = snap.exists() ? snap.data()[dep]?.subs || [] : [];
+
+        for (const s of allSubs) {
+          const sDoc = `${dep}-${s}`;
+          const linkSnap = await getDoc(doc(db, "links", sDoc));
+          if (linkSnap.exists()) {
+            const links = linkSnap.data().items || [];
+            links.forEach(link => {
+              const key = link.name.trim().toLowerCase();
+              if (!seen.has(key)) {
+                seen.add(key);
+                linkData.push(link);
+              }
+            });
+          }
         }
 
-        const links = snap.data().items || [];
-        linkData = links;
         renderLinks();
-      });
+      } else {
+        const ref = doc(db, "links", docId);
+        onSnapshot(ref, (snap) => {
+          if (!snap.exists()) {
+            linkGrid.innerHTML = `<div class="no-links">No links found for ${sub}</div>`;
+            return;
+          }
+          linkData = snap.data().items || [];
+          renderLinks();
+        });
+      }
     }
 
     loadLinks();
