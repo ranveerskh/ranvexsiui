@@ -369,7 +369,7 @@
           if (snap.exists()) {
             const links = snap.data().items || [];
             links.forEach(link => {
-              const key = `${link.name}|${link.url}`;
+              const key = link.name.trim().toLowerCase();
               if (!seen.has(key)) {
                 seen.add(key);
                 allLinks.push(link);
