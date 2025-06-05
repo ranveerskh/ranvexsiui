@@ -1,3 +1,4 @@
+<!-- ✅ REPLACE your entire index.html with this updated code -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -264,9 +265,6 @@
       apiKey: "AIzaSyDoUb1kEA8bo0NaqSTDQSTtH4fWNdmJrAw",
       authDomain: "ranvexsi-ui.firebaseapp.com",
       projectId: "ranvexsi-ui",
-      storageBucket: "ranvexsi-ui.firebasestorage.app",
-      messagingSenderId: "639916549058",
-      appId: "1:639916549058:web:2c14514e7d00aeaca52c5b"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -314,7 +312,10 @@
         box.style.backgroundImage = `url('${imageUrl}')`;
         box.setAttribute("data-id", dep);
 
-        const dropdown = subs.map(sub => `<a href="department.html?dep=${dep}&sub=${sub}">${sub}</a>`).join("");
+        const dropdown = [
+          `<a href="department.html?dep=${dep}&sub=__all__">👀 All Links</a>`,
+          ...subs.map(sub => `<a href="department.html?dep=${dep}&sub=${sub}">${sub}</a>`)
+        ].join("");
 
         box.innerHTML = `
           <span>${dep}</span>
@@ -355,15 +356,11 @@
         let visitors = Array.isArray(data.visitors) ? data.visitors : [];
         const now = Date.now();
         const cutoff = now - 12 * 60 * 60 * 1000;
-
-        // remove old
         visitors = visitors.filter(v => v && v.ts > cutoff);
-
         let existing = visitors.find(v => v.uid === uid);
         if (!existing || existing.ts < cutoff) {
           visitors = visitors.filter(v => v.uid !== uid);
           visitors.push({ uid, ts: now });
-
           await setDoc(ref, {
             visitors,
             total: typeof data.total === "number" ? data.total + 1 : 1
@@ -382,7 +379,6 @@
 
     loadDepartments();
     trackFootsteps();
-
     searchInput.addEventListener("input", e => {
       renderDepartments(e.target.value.toLowerCase());
     });
