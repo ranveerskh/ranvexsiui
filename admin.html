@@ -314,6 +314,11 @@
       const dep = document.getElementById("linkDep").value;
       const linkSub = document.getElementById("linkSub");
       linkSub.innerHTML = "";
+
+      // Add "All" option
+      const allOption = new Option(`-- All Links in ${dep} --`, "__all__");
+      linkSub.appendChild(allOption);
+
       (departments[dep]?.subs || []).forEach(sub => {
         linkSub.appendChild(new Option(sub, sub));
       });
@@ -327,7 +332,7 @@
       const url = document.getElementById("linkUrl").value.trim();
       const color = document.getElementById("linkColor").value.trim() || "#4CAF50";
       const image = document.getElementById("linkImage").value.trim();
-      if (!name || !url) return alert("Please enter name and URL");
+      if (!name || !url || sub === "__all__") return alert("Please select valid sub-department and enter name & URL");
 
       const docId = `${dep}-${sub}`;
       const ref = doc(db, "links", docId);
@@ -354,51 +359,65 @@
     async function renderLinks() {
       const dep = document.getElementById("linkDep").value;
       const sub = document.getElementById("linkSub").value;
-      const docId = `${dep}-${sub}`;
-      const ref = doc(db, "links", docId);
-      const snap = await getDoc(ref);
       const list = document.getElementById("linksList");
       list.innerHTML = "";
 
-      if (snap.exists()) {
-        const items = snap.data().items || [];
-        if (items.length === 0) {
-          list.innerHTML = "<div>No links available</div>";
-          return;
+      if (sub === "__all__") {
+        let allLinks = [];
+        for (const s of departments[dep]?.subs || []) {
+          const docId = `${dep}-${s}`;
+          const snap = await getDoc(doc(db, "links", docId));
+          if (snap.exists()) {
+            allLinks = allLinks.concat(snap.data().items || []);
+          }
         }
-
-        items.forEach((link) => {
+        if (allLinks.length === 0) return list.innerHTML = "<div>No links in department</div>";
+        allLinks.forEach(link => {
           const div = document.createElement("div");
           div.innerHTML = link.image ? `<img src="${link.image}" /> ${link.name}` : link.name;
           div.style.background = link.color;
-
-          const edit = document.createElement("button");
-          edit.textContent = "✎";
-          edit.onclick = () => {
-            document.getElementById("linkName").value = link.name;
-            document.getElementById("linkUrl").value = link.url;
-            document.getElementById("linkColor").value = link.color;
-            document.getElementById("linkImage").value = link.image || "";
-            sessionStorage.setItem("editingLinkName", link.name);
-          };
-
-          const del = document.createElement("button");
-          del.textContent = "✕";
-          del.onclick = async () => {
-            const updatedSnap = await getDoc(ref);
-            let latestItems = updatedSnap.exists() ? updatedSnap.data().items || [] : [];
-            latestItems = latestItems.filter(item => item.name !== link.name);
-            await setDoc(ref, { items: latestItems });
-            renderLinks();
-          };
-
-          div.appendChild(edit);
-          div.appendChild(del);
           list.appendChild(div);
         });
-      } else {
-        list.innerHTML = "<div>No links available</div>";
+        return;
       }
+
+      const docId = `${dep}-${sub}`;
+      const ref = doc(db, "links", docId);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) return list.innerHTML = "<div>No links available</div>";
+
+      const items = snap.data().items || [];
+      if (items.length === 0) return list.innerHTML = "<div>No links available</div>";
+
+      items.forEach((link) => {
+        const div = document.createElement("div");
+        div.innerHTML = link.image ? `<img src="${link.image}" /> ${link.name}` : link.name;
+        div.style.background = link.color;
+
+        const edit = document.createElement("button");
+        edit.textContent = "✎";
+        edit.onclick = () => {
+          document.getElementById("linkName").value = link.name;
+          document.getElementById("linkUrl").value = link.url;
+          document.getElementById("linkColor").value = link.color;
+          document.getElementById("linkImage").value = link.image || "";
+          sessionStorage.setItem("editingLinkName", link.name);
+        };
+
+        const del = document.createElement("button");
+        del.textContent = "✕";
+        del.onclick = async () => {
+          const updatedSnap = await getDoc(ref);
+          let latestItems = updatedSnap.exists() ? updatedSnap.data().items || [] : [];
+          latestItems = latestItems.filter(item => item.name !== link.name);
+          await setDoc(ref, { items: latestItems });
+          renderLinks();
+        };
+
+        div.appendChild(edit);
+        div.appendChild(del);
+        list.appendChild(div);
+      });
     }
 
     document.getElementById("addDepBtn").addEventListener("click", addOrUpdateDepartment);
