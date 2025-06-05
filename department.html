@@ -127,6 +127,7 @@
     <h1 id="title">Loading...</h1>
     <div class="right-side">
       <div class="buttons">
+        <button id="allLinksBtn" style="display: none;" onclick="viewAllLinks()">👀 All Links</button>
         <button onclick="location.reload()">🔄 Refresh</button>
         <button onclick="clearOrder()">🧹 Clear Order</button>
       </div>
@@ -170,7 +171,16 @@
     const docId = `${dep}-${sub}`;
     const localKey = `linkOrder-${docId}`;
     const uid = getUID();
+
     document.getElementById("title").textContent = `${dep.toUpperCase()} → ${sub === "__all__" ? "ALL LINKS" : sub.toUpperCase()}`;
+    const allBtn = document.getElementById("allLinksBtn");
+    if (sub !== "__all__") {
+      allBtn.style.display = "inline-block";
+    }
+
+    function viewAllLinks() {
+      window.location.href = `?dep=${dep}&sub=__all__`;
+    }
 
     const linkGrid = document.getElementById("linkGrid");
     let linkData = [];
@@ -303,6 +313,7 @@
     loadLinks();
     trackFootsteps();
     window.clearOrder = clearOrder;
+    window.viewAllLinks = viewAllLinks;
   </script>
 </body>
 </html>
