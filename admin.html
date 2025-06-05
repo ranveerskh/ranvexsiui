@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Panel</title>
   <style>
     :root {
@@ -20,7 +20,6 @@
       background: var(--bg);
       color: var(--text);
       padding: 20px;
-      transition: background 0.3s, color 0.3s;
     }
     h1, h2 { text-align: center; }
     .top-bar {
@@ -315,7 +314,6 @@
       const linkSub = document.getElementById("linkSub");
       linkSub.innerHTML = "";
 
-      // Add "All" option
       const allOption = new Option(`-- All Links in ${dep} --`, "__all__");
       linkSub.appendChild(allOption);
 
@@ -332,7 +330,7 @@
       const url = document.getElementById("linkUrl").value.trim();
       const color = document.getElementById("linkColor").value.trim() || "#4CAF50";
       const image = document.getElementById("linkImage").value.trim();
-      if (!name || !url || sub === "__all__") return alert("Please select valid sub-department and enter name & URL");
+      if (!name || !url || sub === "__all__") return alert("Please enter valid sub and link details");
 
       const docId = `${dep}-${sub}`;
       const ref = doc(db, "links", docId);
@@ -364,14 +362,27 @@
 
       if (sub === "__all__") {
         let allLinks = [];
+        const seen = new Set();
         for (const s of departments[dep]?.subs || []) {
           const docId = `${dep}-${s}`;
           const snap = await getDoc(doc(db, "links", docId));
           if (snap.exists()) {
-            allLinks = allLinks.concat(snap.data().items || []);
+            const links = snap.data().items || [];
+            links.forEach(link => {
+              const key = `${link.name}|${link.url}`;
+              if (!seen.has(key)) {
+                seen.add(key);
+                allLinks.push(link);
+              }
+            });
           }
         }
-        if (allLinks.length === 0) return list.innerHTML = "<div>No links in department</div>";
+
+        if (allLinks.length === 0) {
+          list.innerHTML = "<div>No links in department</div>";
+          return;
+        }
+
         allLinks.forEach(link => {
           const div = document.createElement("div");
           div.innerHTML = link.image ? `<img src="${link.image}" /> ${link.name}` : link.name;
@@ -384,10 +395,16 @@
       const docId = `${dep}-${sub}`;
       const ref = doc(db, "links", docId);
       const snap = await getDoc(ref);
-      if (!snap.exists()) return list.innerHTML = "<div>No links available</div>";
+      if (!snap.exists()) {
+        list.innerHTML = "<div>No links available</div>";
+        return;
+      }
 
       const items = snap.data().items || [];
-      if (items.length === 0) return list.innerHTML = "<div>No links available</div>";
+      if (items.length === 0) {
+        list.innerHTML = "<div>No links available</div>";
+        return;
+      }
 
       items.forEach((link) => {
         const div = document.createElement("div");
