@@ -130,6 +130,7 @@
         <button id="allLinksBtn" style="display: none;" onclick="viewAllLinks()">👀 All Links</button>
         <button onclick="location.reload()">🔄 Refresh</button>
         <button onclick="clearOrder()">🧹 Clear Order</button>
+        <button onclick="document.getElementById('addModal').style.display='flex'">➕ Add Link</button>
       </div>
       <div class="foot-icon">
         👣
@@ -146,6 +147,21 @@
   </div>
 
   <div class="grid" id="linkGrid"></div>
+
+  <!-- Add Link Modal -->
+  <div id="addModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:#0009; align-items:center; justify-content:center; z-index:999;">
+    <div style="background:white; padding:20px; border-radius:12px; width:90%; max-width:400px;">
+      <h3>Add New Link</h3>
+      <input type="text" id="newLinkName" placeholder="Link Name" style="width:100%; padding:10px; margin-bottom:10px;" />
+      <input type="url" id="newLinkURL" placeholder="https://example.com" style="width:100%; padding:10px; margin-bottom:10px;" />
+      <input type="url" id="newLinkImage" placeholder="Image URL (optional)" style="width:100%; padding:10px; margin-bottom:10px;" />
+      <input type="text" id="newLinkColor" placeholder="Background Color (optional)" style="width:100%; padding:10px; margin-bottom:10px;" />
+      <div style="text-align:right;">
+        <button onclick="document.getElementById('addModal').style.display='none'" style="margin-right:10px;">Cancel</button>
+        <button onclick="addLink()">Add</button>
+      </div>
+    </div>
+  </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
@@ -173,9 +189,8 @@
     const uid = getUID();
 
     document.getElementById("title").textContent = `${dep.toUpperCase()} → ${sub === "__all__" ? "ALL LINKS" : sub.toUpperCase()}`;
-    const allBtn = document.getElementById("allLinksBtn");
     if (sub !== "__all__") {
-      allBtn.style.display = "inline-block";
+      document.getElementById("allLinksBtn").style.display = "inline-block";
     }
 
     function viewAllLinks() {
@@ -264,11 +279,12 @@
         } else {
           existing.ts = now;
           await setDoc(ref, { visitors }, { merge: true });
-        }
-        document.getElementById("liveCount").textContent = visitors.length;
+        }        document.getElementById("liveCount").textContent = visitors.length;
         document.getElementById("totalCount").textContent = data.total || visitors.length;
       });
     }
+
+    async function    }
 
     async function loadLinks() {
       try {
@@ -290,7 +306,7 @@
             const sDoc = `${dep}-${s}`;
             const linkSnap = await getDoc(doc(db, "links", sDoc));
             if (linkSnap.exists()) {
-              const links = linkSnap.data().items || [];
+              const links = Array.isArray(linkSnap.data().items) ? linkSnap.data().items : [];
               links.forEach(link => {
                 const key = link.name.trim().toLowerCase();
                 if (!seen.has(key)) {
@@ -314,7 +330,13 @@
               linkGrid.innerHTML = `<div class="no-links">No links found for "${sub}"</div>`;
               return;
             }
-            linkData = snap.data().items || [];
+            const data = snap.data();
+            if (Array.isArray(data.items)) {
+              linkData = data.items;
+            } else {
+              console.warn("items field was not an array. Resetting.");
+              linkData = [];
+            }
             renderLinks();
           });
         }
@@ -324,10 +346,49 @@
       }
     }
 
+    async function addLink() {
+      const name = document.getElementById("newLinkName").value.trim();
+      const url = document.getElementById("newLinkURL").value.trim();
+      const image = document.getElementById("newLinkImage").value.trim();
+      const color = document.getElementById("newLinkColor").value.trim();
+
+      if (!name || !url) {
+        alert("Name and URL are required.");
+        return;
+      }
+
+      const newItem = { name, url, image, color };
+
+      const ref = doc(db, "links", docId);
+      const snap = await getDoc(ref);
+
+      let existing = [];
+      if (snap.exists()) {
+        const data = snap.data();
+        if (Array.isArray(data.items)) {
+          existing = data.items;
+        } else {
+          console.warn("Existing items field is invalid, resetting to empty array.");
+        }
+      }
+
+      const updated = [...existing, newItem];
+      await setDoc(ref, { items: updated });
+
+      document.getElementById('addModal').style.display = 'none';
+      document.getElementById("newLinkName").value = '';
+      document.getElementById("newLinkURL").value = '';
+      document.getElementById("newLinkImage").value = '';
+      document.getElementById("newLinkColor").value = '';
+      alert("Link added successfully.");
+    }
+
+    // Initial load
     loadLinks();
     trackFootsteps();
     window.clearOrder = clearOrder;
     window.viewAllLinks = viewAllLinks;
+    window.addLink = addLink;
   </script>
 </body>
 </html>
