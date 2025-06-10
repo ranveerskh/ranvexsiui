@@ -246,7 +246,7 @@
       });
     }
 
-    function trackFootsteps() {
+    async function trackFootsteps() {
       const ref = doc(db, "analytics", docId);
       onSnapshot(ref, async (snap) => {
         let data = snap.exists() ? snap.data() : {};
@@ -266,47 +266,61 @@
           await setDoc(ref, { visitors }, { merge: true });
         }
         document.getElementById("liveCount").textContent = visitors.length;
-        document.getElementById("totalCount").textContent = data.total || 1;
-      });
-
-      window.addEventListener("focus", () => {
-        trackFootsteps();
+        document.getElementById("totalCount").textContent = data.total || visitors.length;
       });
     }
 
     async function loadLinks() {
-      if (sub === "__all__") {
-        linkData = [];
-        const seen = new Set();
-        const snap = await getDoc(doc(db, "structure", "departments"));
-        const allSubs = snap.exists() ? snap.data()[dep]?.subs || [] : [];
+      try {
+        linkGrid.innerHTML = `<div class="no-links">Loading...</div>`;
 
-        for (const s of allSubs) {
-          const sDoc = `${dep}-${s}`;
-          const linkSnap = await getDoc(doc(db, "links", sDoc));
-          if (linkSnap.exists()) {
-            const links = linkSnap.data().items || [];
-            links.forEach(link => {
-              const key = link.name.trim().toLowerCase();
-              if (!seen.has(key)) {
-                seen.add(key);
-                linkData.push(link);
-              }
-            });
-          }
-        }
+        if (sub === "__all__") {
+          linkData = [];
+          const seen = new Set();
+          const snap = await getDoc(doc(db, "structure", "departments"));
 
-        renderLinks();
-      } else {
-        const ref = doc(db, "links", docId);
-        onSnapshot(ref, (snap) => {
           if (!snap.exists()) {
-            linkGrid.innerHTML = `<div class="no-links">No links found for ${sub}</div>`;
+            linkGrid.innerHTML = `<div class="no-links">No department data found</div>`;
             return;
           }
-          linkData = snap.data().items || [];
-          renderLinks();
-        });
+
+          const subs = snap.data()[dep]?.subs || [];
+
+          for (const s of subs) {
+            const sDoc = `${dep}-${s}`;
+            const linkSnap = await getDoc(doc(db, "links", sDoc));
+            if (linkSnap.exists()) {
+              const links = linkSnap.data().items || [];
+              links.forEach(link => {
+                const key = link.name.trim().toLowerCase();
+                if (!seen.has(key)) {
+                  seen.add(key);
+                  linkData.push(link);
+                }
+              });
+            }
+          }
+
+          if (linkData.length === 0) {
+            linkGrid.innerHTML = `<div class="no-links">No links available under any sub-departments</div>`;
+          } else {
+            renderLinks();
+          }
+
+        } else {
+          const ref = doc(db, "links", docId);
+          onSnapshot(ref, (snap) => {
+            if (!snap.exists()) {
+              linkGrid.innerHTML = `<div class="no-links">No links found for "${sub}"</div>`;
+              return;
+            }
+            linkData = snap.data().items || [];
+            renderLinks();
+          });
+        }
+      } catch (err) {
+        console.error("Error loading links:", err);
+        linkGrid.innerHTML = `<div class="no-links">Error loading links</div>`;
       }
     }
 
