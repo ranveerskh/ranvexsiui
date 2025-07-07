@@ -315,39 +315,43 @@
     }
 
     async function loadDepartments() {
-      const res = await fetch(sheetURL);
-      const raw = await res.json();
+  const res = await fetch(sheetURL);
+  const raw = await res.json();
 
-      const map = {};
+  const map = {};
 
-      raw.forEach(row => {
-        const dep = row.Department?.trim();
-        const sub = row.SubDepartment?.trim();
-        const image = row.ImageURL?.trim();
+  raw.forEach(row => {
+    const dep = row.Department?.trim();
+    const sub = row.SubDepartment?.trim();
+    const image = row.DIURL?.trim(); // new column
+    if (!dep) return;
 
-        if (!dep) return;
-
-        if (!map[dep]) {
-          map[dep] = {
-            dep,
-            subs: [],
-            imageUrl: image || `https://source.unsplash.com/600x400/?warehouse,${dep}`
-          };
-        }
-
-        if (sub && !map[dep].subs.includes(sub)) {
-          map[dep].subs.push(sub);
-        }
-      });
-
-      departmentsData = Object.values(map);
-      renderDepartments(searchInput.value.toLowerCase());
+    if (!map[dep]) {
+      map[dep] = {
+        dep,
+        subs: [],
+        imageUrl: image || ""
+      };
     }
 
-    loadDepartments();
-    searchInput.addEventListener("input", e => {
-      renderDepartments(e.target.value.toLowerCase());
-    });
+    // If not set yet, use DIURL if found
+    if (!map[dep].imageUrl && image) {
+      map[dep].imageUrl = image;
+    }
+
+    if (sub && !map[dep].subs.includes(sub)) {
+      map[dep].subs.push(sub);
+    }
+  });
+
+  // Apply fallback if no DIURL found
+  departmentsData = Object.values(map).map(entry => ({
+    ...entry,
+    imageUrl: entry.imageUrl || `https://source.unsplash.com/600x400/?warehouse,${entry.dep}`
+  }));
+
+  renderDepartments(searchInput.value.toLowerCase());
+}
 
     function toggleDarkMode() {
       const isDark = document.body.classList.toggle("dark");
