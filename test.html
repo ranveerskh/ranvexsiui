@@ -315,46 +315,39 @@
     }
 
     async function loadDepartments() {
-  const res = await fetch(sheetURL);
-  const raw = await res.json();
+      const res = await fetch(sheetURL);
+      const raw = await res.json();
 
-  const map = {};
+      const map = {};
 
-  raw.forEach(row => {
-    const dep = row.Department?.trim();
-    const sub = row.SubDepartment?.trim();
-    const image = row.DIURL?.trim(); // new column
-    if (!dep) return;
+      raw.forEach(row => {
+        const dep = row.Department?.trim();
+        const sub = row.SubDepartment?.trim();
+        const image = row.DIURL?.trim(); // department image column
+        if (!dep) return;
 
-    if (!map[dep]) {
-      map[dep] = {
-        dep,
-        subs: [],
-        imageUrl: image || ""
-      };
-    }
+        if (!map[dep]) {
+          map[dep] = {
+            dep,
+            subs: [],
+            imageUrl: image || ""
+          };
+        }
 
-    // If not set yet, use DIURL if found
-    if (!map[dep].imageUrl && image) {
-      map[dep].imageUrl = image;
-    }
+        if (!map[dep].imageUrl && image) {
+          map[dep].imageUrl = image;
+        }
 
-    if (sub && !map[dep].subs.includes(sub)) {
-      map[dep].subs.push(sub);
-    }
-  });
-
-  // Apply fallback if no DIURL found
-  departmentsData = Object.values(map).map(entry => ({
-    ...entry,
-    imageUrl: entry.imageUrl || `https://source.unsplash.com/600x400/?warehouse,${entry.dep}`
-  }));
-
-  renderDepartments(searchInput.value.toLowerCase());
-}
+        if (sub && !map[dep].subs.includes(sub)) {
+          map[dep].subs.push(sub);
+        }
       });
 
-      departmentsData = Object.values(map);
+      departmentsData = Object.values(map).map(entry => ({
+        ...entry,
+        imageUrl: entry.imageUrl || `https://source.unsplash.com/600x400/?warehouse,${entry.dep}`
+      }));
+
       renderDepartments(searchInput.value.toLowerCase());
     }
 
