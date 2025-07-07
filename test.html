@@ -352,6 +352,16 @@
 
   renderDepartments(searchInput.value.toLowerCase());
 }
+      });
+
+      departmentsData = Object.values(map);
+      renderDepartments(searchInput.value.toLowerCase());
+    }
+
+    loadDepartments();
+    searchInput.addEventListener("input", e => {
+      renderDepartments(e.target.value.toLowerCase());
+    });
 
     function toggleDarkMode() {
       const isDark = document.body.classList.toggle("dark");
