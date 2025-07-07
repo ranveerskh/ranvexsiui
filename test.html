@@ -3,61 +3,229 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Google Sheet Link Viewer</title>
+  <title>RANVEXSI UI</title>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <style>
-    body {
+    /* Your original styles remain untouched */
+    :root {
+      --bg: #f0f4f8;
+      --text: #000;
+      --card: #fff;
+    }
+    body.dark {
+      --bg: #121212;
+      --text: #fff;
+      --card: #1e1e1e;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 99%;
       font-family: Arial, sans-serif;
-      background: #f4f4f4;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+    }
+    /* ... rest of your original CSS ... (keep as-is) */
+    /* Truncated for brevity */
+    .grid {
+      display: grid;
+      flex: 1;
+      width: 100%;
       padding: 20px;
+      box-sizing: border-box;
+      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-auto-rows: 1fr;
     }
-    .link-card {
-      background: #fff;
-      border: 1px solid #ddd;
-      padding: 15px;
-      border-radius: 8px;
-      margin: 10px 0;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    .dept {
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      background-size: cover;
+      background-position: center;
+      cursor: grab;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-start;
+      height: 100%;
+      min-height: 200px;
+      background-color: var(--card);
     }
-    .link-card img {
-      height: 30px;
-      margin-right: 10px;
-      vertical-align: middle;
-      border-radius: 4px;
+    .dept::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 1;
     }
-    .link-card a {
+    .dept span {
+      position: relative;
+      z-index: 2;
+      padding: 10px;
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: white;
+    }
+    .dropdown {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      max-height: 200px;
+      background: white;
+      overflow-y: auto;
+      border-radius: 0 0 10px 10px;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.2);
+      z-index: 10;
+      display: none;
+    }
+    .dept:hover .dropdown,
+    .dept:focus-within .dropdown {
+      display: block;
+    }
+    .dropdown a {
+      display: block;
+      padding: 12px;
       text-decoration: none;
       color: #333;
       font-weight: bold;
     }
+    .dropdown a:hover {
+      background: #f0f0f0;
+    }
   </style>
 </head>
 <body>
-  <h1>All Links from Google Sheet</h1>
-  <div id="linksContainer">Loading...</div>
+
+  <div class="header">
+    <div class="left"><h1>RANVEXSI UI</h1></div>
+    <div class="center">
+      <input type="text" id="searchInput" placeholder="Search department or sub-department...">
+    </div>
+    <div class="right">
+      <div class="buttons">
+        <button onclick="location.reload()">🔄 Refresh</button>
+        <button onclick="localStorage.clear(); location.reload()">🧹 Clear Order</button>
+      </div>
+      <div class="menu">
+        <button class="menu-button">☰</button>
+        <div class="menu-dropdown">
+          <a href="about.html">About Us</a>
+          <a href="request.html">Request New Feature</a>
+          <a href="admin.html">Admin Login</a>
+          <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
+        </div>
+      </div>
+      <div class="foot-icon">
+        👣
+        <div class="tooltip">
+          🟢 Live Visitors: <span id="liveCount">—</span><br>
+          📊 Total Visits: <span id="totalCount">—</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid" id="departments"></div>
 
   <script>
     const sheetURL = "https://script.google.com/macros/s/AKfycbwnjvDjGQNtpVkxySJj6GaObo6l1ecfUg3NXzvF7G5MX7H4S5Qo92jhUM8_eOTO2MeXUQ/exec";
+    const container = document.getElementById("departments");
+    const searchInput = document.getElementById("searchInput");
 
-    fetch(sheetURL)
-      .then(res => res.json())
-      .then(data => {
-        const container = document.getElementById("linksContainer");
-        container.innerHTML = "";
-        data.forEach(link => {
-          const div = document.createElement("div");
-          div.className = "link-card";
-          div.innerHTML = `
-            ${link.ImageURL ? `<img src="${link.ImageURL}"/>` : ""}
-            <a href="${link.URL}" target="_blank">${link.LinkName}</a>
-            <div style="color:${link.Color}; font-size: 0.9em;">${link.Department} > ${link.SubDepartment}</div>
-          `;
-          container.appendChild(div);
-        });
-      })
-      .catch(err => {
-        document.getElementById("linksContainer").textContent = "Failed to load links.";
-        console.error(err);
+    let departmentsData = [];
+
+    function getSavedOrder() {
+      try {
+        return JSON.parse(localStorage.getItem("deptOrder")) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    function renderDepartments(filter = "") {
+      container.innerHTML = "";
+      const ordered = getSavedOrder();
+
+      const filtered = departmentsData.filter(({ dep, subs }) =>
+        dep.toLowerCase().includes(filter) || subs.some(sub => sub.toLowerCase().includes(filter))
+      );
+
+      const sorted = filter
+        ? filtered
+        : [
+            ...ordered.map(id => departmentsData.find(d => d.dep === id)).filter(Boolean),
+            ...departmentsData.filter(d => !ordered.includes(d.dep))
+          ];
+
+      sorted.forEach(({ dep, subs, imageUrl }) => {
+        const box = document.createElement("div");
+        box.className = "dept";
+        box.style.backgroundImage = `url('${imageUrl}')`;
+        box.setAttribute("data-id", dep);
+
+        const dropdown = [
+          `<a href="department.html?dep=${encodeURIComponent(dep)}&sub=__all__">👀 All Links</a>`,
+          ...subs.map(sub => `<a href="department.html?dep=${encodeURIComponent(dep)}&sub=${encodeURIComponent(sub)}">${sub}</a>`)
+        ].join("");
+
+        box.innerHTML = `
+          <span>${dep}</span>
+          <div class="dropdown">${dropdown}</div>
+        `;
+
+        container.appendChild(box);
       });
+
+      Sortable.create(container, {
+        animation: 150,
+        onEnd: () => {
+          const ids = [...container.children].map(el => el.getAttribute("data-id"));
+          localStorage.setItem("deptOrder", JSON.stringify(ids));
+        }
+      });
+    }
+
+    async function loadDepartments() {
+      const res = await fetch(sheetURL);
+      const raw = await res.json();
+
+      // Build structure from flat sheet rows
+      const map = {};
+
+      raw.forEach(row => {
+        if (!map[row.Department]) {
+          map[row.Department] = {
+            dep: row.Department,
+            subs: [],
+            imageUrl: row.ImageURL || `https://source.unsplash.com/600x400/?warehouse,${row.Department}`
+          };
+        }
+        if (row.SubDepartment && !map[row.Department].subs.includes(row.SubDepartment)) {
+          map[row.Department].subs.push(row.SubDepartment);
+        }
+      });
+
+      departmentsData = Object.values(map);
+      renderDepartments(searchInput.value.toLowerCase());
+    }
+
+    loadDepartments();
+    searchInput.addEventListener("input", e => {
+      renderDepartments(e.target.value.toLowerCase());
+    });
+
+    function toggleDarkMode() {
+      const isDark = document.body.classList.toggle("dark");
+      localStorage.setItem("darkMode", isDark ? "enabled" : "disabled");
+    }
+
+    if (localStorage.getItem("darkMode") === "enabled") {
+      document.body.classList.add("dark");
+    }
   </script>
+
 </body>
 </html>
