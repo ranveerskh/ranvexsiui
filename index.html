@@ -1,4 +1,3 @@
-<!-- ✅ REPLACE your entire index.html with this updated code -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -248,8 +247,8 @@
       <div class="foot-icon">
         👣
         <div class="tooltip">
-          🟢 Live Visitors: <span id="liveCount">0</span><br>
-          📊 Total Visits: <span id="totalCount">0</span>
+          🟢 Live Visitors: <span id="liveCount">—</span><br>
+          📊 Total Visits: <span id="totalCount">—</span>
         </div>
       </div>
     </div>
@@ -257,32 +256,12 @@
 
   <div class="grid" id="departments"></div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDoUb1kEA8bo0NaqSTDQSTtH4fWNdmJrAw",
-      authDomain: "ranvexsi-ui.firebaseapp.com",
-      projectId: "ranvexsi-ui",
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+  <script>
+    const sheetURL = "https://script.google.com/macros/s/AKfycbwnjvDjGQNtpVkxySJj6GaObo6l1ecfUg3NXzvF7G5MX7H4S5Qo92jhUM8_eOTO2MeXUQ/exec";
     const container = document.getElementById("departments");
     const searchInput = document.getElementById("searchInput");
 
     let departmentsData = [];
-
-    const uid = (() => {
-      const key = "visitor-uid";
-      let id = localStorage.getItem(key);
-      if (!id) {
-        id = Math.random().toString(36).substring(2, 10);
-        localStorage.setItem(key, id);
-      }
-      return id;
-    })();
 
     function getSavedOrder() {
       try {
@@ -295,6 +274,7 @@
     function renderDepartments(filter = "") {
       container.innerHTML = "";
       const ordered = getSavedOrder();
+
       const filtered = departmentsData.filter(({ dep, subs }) =>
         dep.toLowerCase().includes(filter) || subs.some(sub => sub.toLowerCase().includes(filter))
       );
@@ -313,8 +293,8 @@
         box.setAttribute("data-id", dep);
 
         const dropdown = [
-          `<a href="department.html?dep=${dep}&sub=__all__">👀 All Links</a>`,
-          ...subs.map(sub => `<a href="department.html?dep=${dep}&sub=${sub}">${sub}</a>`)
+          `<a href="department.html?dep=${encodeURIComponent(dep)}&sub=__all__">👀 All Links</a>`,
+          ...subs.map(sub => `<a href="department.html?dep=${encodeURIComponent(dep)}&sub=${encodeURIComponent(sub)}">${sub}</a>`)
         ].join("");
 
         box.innerHTML = `
@@ -334,57 +314,48 @@
       });
     }
 
-    function loadDepartments() {
-      const ref = doc(db, "structure", "departments");
-      onSnapshot(ref, (snap) => {
-        if (!snap.exists()) return;
-        const data = snap.data();
-        departmentsData = Object.keys(data).map(dep => {
-          const value = data[dep];
-          const subs = Array.isArray(value) ? value : Array.isArray(value.subs) ? value.subs : [];
-          const imageUrl = value.image || `https://source.unsplash.com/600x400/?warehouse,${dep}`;
-          return { dep, subs, imageUrl };
-        });
-        renderDepartments(searchInput.value.toLowerCase());
-      });
-    }
+    async function loadDepartments() {
+      const res = await fetch(sheetURL);
+      const raw = await res.json();
 
-    function trackFootsteps() {
-      const ref = doc(db, "analytics", "homepage");
-      onSnapshot(ref, async (snap) => {
-        let data = snap.exists() ? snap.data() : {};
-        let visitors = Array.isArray(data.visitors) ? data.visitors : [];
-        const now = Date.now();
-        const cutoff = now - 12 * 60 * 60 * 1000;
-        visitors = visitors.filter(v => v && v.ts > cutoff);
-        let existing = visitors.find(v => v.uid === uid);
-        if (!existing || existing.ts < cutoff) {
-          visitors = visitors.filter(v => v.uid !== uid);
-          visitors.push({ uid, ts: now });
-          await setDoc(ref, {
-            visitors,
-            total: typeof data.total === "number" ? data.total + 1 : 1
-          }, { merge: true });
-        } else {
-          existing.ts = now;
-          await setDoc(ref, { visitors }, { merge: true });
+      const map = {};
+
+      raw.forEach(row => {
+        const dep = row.Department?.trim();
+        const sub = row.SubDepartment?.trim();
+        const image = row.DIURL?.trim(); // department image column
+        if (!dep) return;
+
+        if (!map[dep]) {
+          map[dep] = {
+            dep,
+            subs: [],
+            imageUrl: image || ""
+          };
         }
 
-        document.getElementById("liveCount").textContent = visitors.length;
-        document.getElementById("totalCount").textContent = data.total || 1;
+        if (!map[dep].imageUrl && image) {
+          map[dep].imageUrl = image;
+        }
+
+        if (sub && !map[dep].subs.includes(sub)) {
+          map[dep].subs.push(sub);
+        }
       });
 
-      window.addEventListener("focus", () => trackFootsteps());
+      departmentsData = Object.values(map).map(entry => ({
+        ...entry,
+        imageUrl: entry.imageUrl || `https://source.unsplash.com/600x400/?warehouse,${entry.dep}`
+      }));
+
+      renderDepartments(searchInput.value.toLowerCase());
     }
 
     loadDepartments();
-    trackFootsteps();
     searchInput.addEventListener("input", e => {
       renderDepartments(e.target.value.toLowerCase());
     });
-  </script>
 
-  <script>
     function toggleDarkMode() {
       const isDark = document.body.classList.toggle("dark");
       localStorage.setItem("darkMode", isDark ? "enabled" : "disabled");
@@ -394,5 +365,6 @@
       document.body.classList.add("dark");
     }
   </script>
+
 </body>
 </html>
