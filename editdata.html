@@ -3,95 +3,90 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Google Sheet Links Viewer</title>
+  <title>Google Sheet Button Links</title>
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f9f9f9;
+      background: #f5f7fa;
       padding: 20px;
     }
+
     h1 {
       text-align: center;
       color: #333;
+      margin-bottom: 20px;
     }
+
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 20px;
-      margin-top: 20px;
     }
-    .card {
-      position: relative;
-      height: 180px;
-      border-radius: 12px;
-      overflow: hidden;
-      cursor: pointer;
-      background-size: cover;
-      background-position: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      display: flex;
-      align-items: flex-end;
-    }
-    .card::before {
-      content: \"\";
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.4);
-      z-index: 1;
-    }
-    .card span {
-      z-index: 2;
+
+    .link-button {
+      background: #4CAF50;
       color: white;
-      padding: 12px;
+      border: none;
+      padding: 20px;
       font-size: 1.2rem;
+      border-radius: 12px;
+      text-align: center;
+      text-decoration: none;
       font-weight: bold;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      transition: background 0.2s ease, transform 0.1s ease;
+      display: block;
     }
+
+    .link-button:hover {
+      background: #45a049;
+      transform: scale(1.02);
+    }
+
     .no-data {
       text-align: center;
       margin-top: 40px;
-      color: #666;
+      color: #777;
     }
   </style>
 </head>
 <body>
 
-  <h1>Links from Google Sheet</h1>
-  <div class="grid" id="linkGrid">
-    <div class="no-data">Loading links...</div>
+  <h1>Google Sheet Links</h1>
+  <div class="grid" id="buttonGrid">
+    <div class="no-data">Loading buttons...</div>
   </div>
 
   <script>
-    const SHEET_URL = \"https://script.google.com/macros/s/AKfycbwkiGG1c4M1ASRksgRXzSTc7M0tD2-O0jH-p1ciAv95cDjr9Xq_mOdA6KJpUEJZ_OMk/exec\";
+    const SHEET_URL = "https://script.google.com/macros/s/AKfycbwkiGG1c4M1ASRksgRXzSTc7M0tD2-O0jH-p1ciAv95cDjr9Xq_mOdA6KJpUEJZ_OMk/exec";
 
-    async function loadLinks() {
+    async function loadButtons() {
       const res = await fetch(SHEET_URL);
       const data = await res.json();
 
-      const grid = document.getElementById(\"linkGrid\");
-      grid.innerHTML = \"\";
+      const grid = document.getElementById("buttonGrid");
+      grid.innerHTML = "";
 
       if (!data || !Array.isArray(data) || data.length === 0) {
-        grid.innerHTML = '<div class=\"no-data\">No links found.</div>';
+        grid.innerHTML = '<div class="no-data">No links found.</div>';
         return;
       }
 
       data.forEach(item => {
-        const name = item.name || item.Name || \"No Name\";
-        const url = item.url || item.URL || \"#\";
-        const image = item.image || item.Image || \"https://via.placeholder.com/400x300?text=No+Image\";
+        const name = item.name || item.Name || "No Name";
+        const url = item.url || item.URL || "#";
 
-        const card = document.createElement(\"a\");
-        card.href = url;
-        card.target = \"_blank\";
-        card.className = \"card\";
-        card.style.backgroundImage = `url('${image}')`;
-        card.innerHTML = `<span>${name}</span>`;
-        grid.appendChild(card);
+        const btn = document.createElement("a");
+        btn.href = url;
+        btn.target = "_blank";
+        btn.className = "link-button";
+        btn.textContent = name;
+        grid.appendChild(btn);
       });
     }
 
-    loadLinks();
+    loadButtons();
   </script>
 
 </body>
