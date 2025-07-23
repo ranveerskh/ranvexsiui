@@ -1,93 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Google Sheet Button Links</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quick Access Links</title>
   <style>
     body {
-      margin: 0;
       font-family: Arial, sans-serif;
-      background: #f5f7fa;
-      padding: 20px;
-    }
-
-    h1 {
-      text-align: center;
-      color: #333;
-      margin-bottom: 20px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      background: #f7f7f7;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       gap: 20px;
     }
-
+    h1 {
+      color: #333;
+    }
     .link-button {
-      background: #4CAF50;
+      background-color: #4CAF50;
       color: white;
+      padding: 16px 32px;
       border: none;
-      padding: 20px;
-      font-size: 1.2rem;
-      border-radius: 12px;
-      text-align: center;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      cursor: pointer;
       text-decoration: none;
-      font-weight: bold;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-      transition: background 0.2s ease, transform 0.1s ease;
-      display: block;
-    }
-
-    .link-button:hover {
-      background: #45a049;
-      transform: scale(1.02);
-    }
-
-    .no-data {
       text-align: center;
-      margin-top: 40px;
-      color: #777;
+      width: 100%;
+      max-width: 400px;
+      transition: background 0.3s;
+    }
+    .link-button:hover {
+      background-color: #45a049;
     }
   </style>
 </head>
 <body>
 
-  <h1>Google Sheet Links</h1>
-  <div class="grid" id="buttonGrid">
-    <div class="no-data">Loading buttons...</div>
-  </div>
+  <h1>Quick Access</h1>
 
-  <script>
-    const SHEET_URL = "https://script.google.com/macros/s/AKfycbwkiGG1c4M1ASRksgRXzSTc7M0tD2-O0jH-p1ciAv95cDjr9Xq_mOdA6KJpUEJZ_OMk/exec";
+  <a class="link-button" href="https://docs.google.com/spreadsheets/d/1uAhvSvDtgXuk4p3962utjnVwHSrnN78FZ5qjYNaNFEQ/edit?usp=drive_link" target="_blank">
+    🧾 Google Sheet
+  </a>
 
-    async function loadButtons() {
-      const res = await fetch(SHEET_URL);
-      const data = await res.json();
+  <a class="link-button" href="https://script.google.com/home/projects/1l9ydTx2ZRQmKAHybv1J14biXEc4Ww_nK3gDrtpbPUF29LTzwtv4ye3YA/edit" target="_blank">
+    🧠 Apps Script Project
+  </a>
 
-      const grid = document.getElementById("buttonGrid");
-      grid.innerHTML = "";
-
-      if (!data || !Array.isArray(data) || data.length === 0) {
-        grid.innerHTML = '<div class="no-data">No links found.</div>';
-        return;
-      }
-
-      data.forEach(item => {
-        const name = item.name || item.Name || "No Name";
-        const url = item.url || item.URL || "#";
-
-        const btn = document.createElement("a");
-        btn.href = url;
-        btn.target = "_blank";
-        btn.className = "link-button";
-        btn.textContent = name;
-        grid.appendChild(btn);
-      });
-    }
-
-    loadButtons();
-  </script>
+  <a class="link-button" href="https://postimages.org/" target="_blank">
+    🖼️ PostImages
+  </a>
 
 </body>
 </html>
