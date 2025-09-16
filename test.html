@@ -3,30 +3,37 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=1280, initial-scale=1.0"/>
-<title>RANVEXSI UI — Liquid Glass</title>
+<title>RANVEXSI UI — Liquid Glass Lite</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <style>
-  /* ====== Liquid Glass Theme (Laptop-first) ====== */
+  /* ===================== THEME: Liquid Glass Lite ===================== */
   :root{
+    /* Colors */
     --bg1:#0f1220;
     --bg2:#101a2b;
-    --glass:#ffffff1c;
+    --panel:#11172c;         /* solid for performance */
+    --panel-2:#0f162a;
     --ink:#eaf1ff;
     --muted:#a9b5e6;
-    --accent1:#7aa4ff;
-    --accent2:#6a11cb;
-    --accent3:#2575fc;
-    --card:#0f1a33a3; /* translucent for glass */
-    --border:#91a2ff2b;
+    --border:#1f2b4d;
+    --accent1:#6a11cb;
+    --accent2:#2575fc;
     --ok:#31d296;
     --warn:#f8b84a;
-    --danger:#ff6b7b;
+
+    /* Layout */
+    --round:16px;
+    --shadow:0 10px 30px rgba(5,10,25,.35);
     --tap:44px;
-    --shadow:0 10px 40px rgba(5,10,25,.35);
-    --round:18px;
-    --grid-gap:18px;
+
+    /* Grid controls (user adjustable) */
+    --grid-gap:16px;
+    --grid-cols:auto-fill;        /* auto or number (2..8) */
+    --card-ratio: 1.777;          /* 16:9 */
+    --density-scale:1;            /* 1=Comfort, .9=Compact, 1.1=Cozy */
+    --image-opacity:.55;          /* 0..1 */
   }
   *{box-sizing:border-box}
   html,body{height:100%}
@@ -34,190 +41,156 @@
     margin:0;
     font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     color:var(--ink);
-    background: radial-gradient(1200px 800px at 20% -10%, #2442ff20, transparent 60%),
-                radial-gradient(1000px 700px at 120% 30%, #8a2be220, transparent 60%),
-                linear-gradient(135deg,var(--bg1),var(--bg2));
-    overflow: hidden; /* fixed laptop layout */
-  }
-
-  /* Animated background blobs for “liquid” vibe */
-  .blob{
-    position:fixed; filter:blur(60px); opacity:.35; z-index:0; pointer-events:none;
-    width:550px; height:550px; border-radius:50%;
-    background: conic-gradient(from 120deg, #6a11cb, #2575fc, #00ffd0, #6a11cb);
-    animation: drift 26s ease-in-out infinite alternate;
-    mix-blend-mode: screen;
-  }
-  .blob.two{ left:70%; top:10%; animation-duration:32s; transform:scale(.8)}
-  .blob.one{ left:-10%; top:40%; transform:scale(1.1)}
-  @keyframes drift {
-    0%   {transform:translate3d(0,0,0) scale(1)}
-    100% {transform:translate3d(40px,-30px,0) scale(1.15)}
+    background:
+      radial-gradient(1200px 800px at 20% -10%, #2442ff18, transparent 60%),
+      radial-gradient(1000px 700px at 120% 30%, #8a2be218, transparent 60%),
+      linear-gradient(135deg,var(--bg1),var(--bg2));
   }
 
   /* App shell */
   .app{
-    position:relative; z-index:1;
-    height:100%; display:grid;
-    grid-template-rows: 76px 1fr 34px;
-    gap: 0;
-  }
-  .glass{
-    background: linear-gradient(180deg, var(--glass), #ffffff0f);
-    backdrop-filter: blur(12px) saturate(120%);
-    -webkit-backdrop-filter: blur(12px) saturate(120%);
-    border:1px solid var(--border);
-    box-shadow: var(--shadow);
+    min-height:100vh; display:grid; grid-template-rows: 70px 1fr; gap:0;
   }
   .header{
-    display:flex; align-items:center; gap:16px;
-    padding:12px 18px; border-bottom:1px solid #ffffff14;
+    display:flex; align-items:center; gap:14px;
+    padding:10px 16px; border-bottom:1px solid var(--border);
+    background:linear-gradient(180deg, #0f162a, #0e1527);
+    position:sticky; top:0; z-index:10;
   }
-  .brand{display:flex; align-items:center; gap:12px; white-space:nowrap}
+  .brand{display:flex; align-items:center; gap:10px; white-space:nowrap}
   .logo{
-    width:40px; height:40px; border-radius:12px;
-    background: linear-gradient(135deg, #6a11cb, #2575fc);
-    display:grid; place-items:center; font-weight:800; color:white;
-    letter-spacing: -0.5px;
+    width:38px; height:38px; border-radius:12px;
+    background: linear-gradient(135deg, var(--accent1), var(--accent2));
+    display:grid; place-items:center; font-weight:800; color:white; letter-spacing:-.3px;
   }
-  .title{font-weight:800; font-size:1.1rem; letter-spacing:.2px}
+  .title{font-weight:800; font-size:1.05rem; letter-spacing:.2px}
   .grow{flex:1}
   .search{
-    position:relative; width:520px; max-width:520px;
+    position:relative; width:520px; max-width:520px; transform:scale(var(--density-scale));
   }
   .search input{
-    width:100%; padding:12px 14px 12px 40px; border-radius:12px; border:1px solid #ffffff24;
-    background:#0e1426c0; color:var(--ink); outline:none;
+    width:100%; padding:11px 14px 11px 40px; border-radius:12px; border:1px solid var(--border);
+    background:var(--panel-2); color:var(--ink); outline:none;
   }
   .search svg{position:absolute; left:12px; top:50%; transform:translateY(-50%); opacity:.7}
-  .actions{display:flex; align-items:center; gap:10px}
+  .actions{display:flex; align-items:center; gap:8px}
   .btn{
-    height:38px; padding:0 14px; border-radius:12px; border:1px solid #ffffff26;
-    background:#0e1426c0; color:var(--ink); cursor:pointer; font-weight:600;
+    height:38px; padding:0 12px; border-radius:10px; border:1px solid var(--border);
+    background:var(--panel-2); color:var(--ink); cursor:pointer; font-weight:600;
   }
   .btn.prim{
-    background: linear-gradient(135deg, #6a11cb, #2575fc);
-    border-color: transparent;
+    background: linear-gradient(135deg, var(--accent1), var(--accent2)); border-color:transparent;
   }
   .badge{
-    display:inline-flex; align-items:center; gap:8px;
-    height:38px; padding:0 12px; border-radius:999px;
-    background:#0e1426c0; border:1px solid #ffffff26; font-weight:600; font-size:.95rem;
+    display:inline-flex; align-items:center; gap:6px;
+    height:38px; padding:0 10px; border-radius:999px;
+    background:var(--panel-2); border:1px solid var(--border); font-weight:600; font-size:.95rem;
   }
-  .stats{display:flex; align-items:center; gap:8px}
-  .stats .dot{width:8px; height:8px; border-radius:50%}
-  .dot.ok{background:var(--ok)} .dot.warn{background:var(--warn)}
 
+  /* Main layout */
   .main{
-    padding:18px; display:grid; grid-template-columns: 320px 1fr; gap:18px; min-height:0;
+    padding:16px; display:grid; grid-template-columns: 300px 1fr; gap:16px;
   }
-  .panel{border-radius:var(--round)}
-  .sidebar{
-    padding:14px; display:flex; flex-direction:column; gap:12px; min-height:0; overflow:auto;
+  .panel{
+    background:var(--panel); border:1px solid var(--border); border-radius:var(--round); box-shadow:var(--shadow);
   }
-  .section-title{font-size:.9rem; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); margin:4px 8px}
-  .list{
-    display:flex; flex-direction:column; gap:10px;
-  }
+
+  /* Sidebar */
+  .sidebar{ padding:12px; display:flex; flex-direction:column; gap:10px; min-height:0; }
+  .section-title{font-size:.88rem; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); margin:4px 8px}
+  .list{ display:flex; flex-direction:column; gap:8px; min-height:0; overflow:auto; }
   .chip{
-    display:flex; align-items:center; gap:10px;
-    padding:10px 12px; border-radius:12px; cursor:pointer;
-    border:1px solid #ffffff1f; background:#0e1426c0;
+    display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; cursor:pointer;
+    border:1px solid var(--border); background:var(--panel-2);
   }
   .chip.active{
-    background: linear-gradient(135deg, #1b2443, #1d2a55);
-    border-color:#5e75ff6b;
-    box-shadow: inset 0 0 0 1px #91a2ff28;
+    background: linear-gradient(135deg, #182145, #1a2652);
+    border-color:#5e75ff6b; box-shadow: inset 0 0 0 1px #91a2ff28;
   }
   .mini{font-size:.85rem; color:var(--muted)}
+  .sidebar .rail{ display:none } /* becomes visible in sub full mode with class */
 
-  .content{
-    padding:14px; min-width:0; display:flex; flex-direction:column; gap:14px; overflow:hidden;
-  }
-  .toolbar{
-    display:flex; align-items:center; gap:10px; flex-wrap:wrap;
-  }
-  .crumbs{font-size:.95rem; color:var(--muted)}
-  .crumbs b{color:var(--ink)}
-  .toolbar .right{margin-left:auto; display:flex; gap:10px}
+  /* Content */
+  .content{ padding:12px; display:flex; flex-direction:column; gap:12px; min-width:0; }
+  .toolbar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap }
+  .crumbs{ font-size:.95rem; color:var(--muted) }
+  .crumbs b{ color:var(--ink) }
+  .toolbar .right{ margin-left:auto; display:flex; gap:10px; flex-wrap:wrap }
 
+  .subrow{ display:flex; gap:8px; align-items:center; flex-wrap:wrap }
+  select, .input, .range{
+    height:38px; padding:0 10px; border-radius:10px; border:1px solid var(--border);
+    background:var(--panel-2); color:var(--ink);
+  }
+  .range{ width:140px; height:auto; padding:0 }
+
+  /* Grids */
   .grid{
     display:grid; gap:var(--grid-gap); min-height:0; overflow:auto;
-    grid-template-columns: repeat( auto-fill, minmax(260px, 1fr) );
+    grid-template-columns: repeat( var(--grid-cols), minmax(240px, 1fr) );
+    padding-bottom:8px;
+    contain: content;  /* performance hint */
   }
 
-  /* Cards */
+  /* Cards - Department */
   .card{
-    position:relative; border-radius:16px; min-height:180px; overflow:hidden; cursor:grab;
-    background: linear-gradient(180deg, #1a2242cc, #0f162fcc);
-    border:1px solid #ffffff1f;
-    box-shadow: var(--shadow);
+    position:relative; border-radius:14px; min-height:140px; overflow:hidden; cursor:pointer;
+    background: linear-gradient(180deg, #1a2242, #0f162f);
+    border:1px solid var(--border); box-shadow: var(--shadow);
+    aspect-ratio: var(--card-ratio);
   }
-  .card .bg{
-    position:absolute; inset:0; background-size:cover; background-position:center; opacity:.55;
-  }
-  .card::after{
-    content:""; position:absolute; inset:0;
-    background:radial-gradient(120% 80% at 20% -10%, #00000000, #00000070 70%);
+  .card .img, .link .img{
+    position:absolute; inset:0; object-fit:cover; width:100%; height:100%;
+    opacity: var(--image-opacity); display:var(--media-display, block);
   }
   .card .label{
-    position:absolute; left:12px; bottom:10px; right:12px; z-index:2;
-    font-weight:800; letter-spacing:.3px; font-size:1.15rem;
-    text-shadow:0 2px 12px rgba(0,0,0,.6);
+    position:absolute; left:12px; bottom:10px; right:12px; z-index:1;
+    font-weight:800; letter-spacing:.3px; font-size:calc(1.0rem * var(--density-scale));
+    text-shadow:0 2px 10px rgba(0,0,0,.5);
     display:flex; align-items:center; gap:8px; justify-content:space-between;
   }
   .pill{
     display:inline-flex; align-items:center; gap:6px;
     padding:6px 10px; font-size:.8rem; border-radius:999px;
-    background:#0b132cc0; border:1px solid #ffffff24;
+    background:#0b132c; border:1px solid var(--border);
   }
 
-  /* Link item */
+  /* Cards - Link */
   .link{
-    position:relative; border-radius:16px; min-height:150px; overflow:hidden; cursor:pointer;
-    border:1px solid #ffffff1f; background:#101a2fcc;
+    position:relative; border-radius:14px; overflow:hidden; cursor:pointer;
+    border:1px solid var(--border); background:#101a2f; aspect-ratio: var(--card-ratio);
   }
-  .link .bg{position:absolute; inset:0; background-size:cover; background-position:center; opacity:.5}
-  .link::after{content:""; position:absolute; inset:0; background:linear-gradient(180deg, #0000, #0008)}
-  .link .label{position:absolute; left:12px; bottom:10px; right:12px; z-index:2; font-weight:800}
+  .link::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, #0000, #0008) }
+  .link .label{ position:absolute; left:12px; bottom:10px; right:12px; z-index:1; font-weight:800; font-size:calc(1.0rem * var(--density-scale)); }
 
-  .footer{
-    display:flex; align-items:center; justify-content:space-between; font-size:.9rem;
-    color:var(--muted); padding:8px 14px; border-top:1px solid #ffffff14;
-  }
-  .hl{color:var(--ink)}
-
-  /* Sub-filter row */
-  .subrow{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
-  select, .input{
-    height:38px; padding:0 12px; border-radius:10px; border:1px solid #ffffff26;
-    background:#0e1426c0; color:var(--ink);
+  /* Full-page sub-departments view */
+  .sub-grid .subchip{
+    display:flex; align-items:center; justify-content:center; text-align:center;
+    border-radius:12px; border:1px solid var(--border); background:var(--panel-2); min-height:120px; font-weight:700; cursor:pointer;
+    aspect-ratio: 1.2; padding:10px;
   }
 
   /* Scrollbars (desktop) */
   ::-webkit-scrollbar{height:10px; width:10px}
   ::-webkit-scrollbar-thumb{background:#3a4677; border-radius:999px}
   ::-webkit-scrollbar-track{background:#0d1426}
-
-  a, .link a{color:inherit; text-decoration:none}
 </style>
 </head>
 <body>
-  <div class="blob one"></div>
-  <div class="blob two"></div>
-
   <div class="app">
-    <!-- Header -->
-    <div class="header glass">
+    <!-- HEADER -->
+    <div class="header">
       <div class="brand">
         <div class="logo">RV</div>
-        <div class="title">RANVEXSI UI <span class="mini">• Liquid Glass</span></div>
+        <div class="title">RANVEXSI UI <span class="mini">• Liquid Glass Lite</span></div>
       </div>
       <div class="grow"></div>
-      <div class="search" title="Search departments or links">
+
+      <div class="search" title="Search departments, subs or links">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.3-4.3M10.8 18.2a7.4 7.4 0 1 1 0-14.8 7.4 7.4 0 0 1 0 14.8Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-        <input id="search" placeholder="Search departments or links..." autocomplete="off" />
+        <input id="search" placeholder="Search departments, sub-departments, or links..." autocomplete="off" />
       </div>
+
       <div class="actions">
         <button class="btn" id="btnRefresh" title="Reload data">🔄 Refresh</button>
         <button class="btn" id="btnClear" title="Clear saved order">🧹 Clear Order</button>
@@ -230,63 +203,87 @@
       </div>
     </div>
 
-    <!-- Main -->
+    <!-- MAIN -->
     <div class="main">
-      <!-- Sidebar: Departments & Subdepartments -->
-      <div class="sidebar glass panel">
+      <!-- Sidebar: Departments & Subs (collapses in full-sub mode) -->
+      <div class="sidebar panel" id="sidebar">
         <div class="section-title">Departments</div>
         <div id="depList" class="list"></div>
 
-        <div class="section-title" style="margin-top:10px">Sub-Departments</div>
+        <div class="section-title" style="margin-top:8px">Sub-Departments</div>
         <div class="list" id="subList">
-          <div class="mini" style="padding:8px 10px; border:1px dashed #ffffff2a; border-radius:10px">
+          <div class="mini" style="padding:8px 10px; border:1px dashed var(--border); border-radius:10px">
             Select a department to see sub-departments.
           </div>
         </div>
       </div>
 
-      <!-- Content area -->
-      <div class="content glass panel">
+      <!-- Content -->
+      <div class="content panel" id="content">
         <div class="toolbar">
           <div class="crumbs" id="crumbs">Home</div>
           <div class="right">
             <div class="subrow">
-              <label class="mini">View</label>
-              <select id="viewMode">
+              <label class="mini">Mode</label>
+              <select id="viewMode" title="Choose view">
                 <option value="departments">Departments</option>
+                <option value="subpage">Sub-Departments (Full Page)</option>
                 <option value="links">Links</option>
               </select>
+
               <label class="mini">Sub</label>
               <select id="subFilter" disabled>
                 <option value="__all__">All</option>
               </select>
-              <button class="btn prim" id="btnToggleSort" title="Toggle Drag Sort">↕️ Sort</button>
+
+              <button class="btn" id="btnToggleSort" title="Toggle Drag Sorting">↕️ Sort</button>
+              <button class="btn prim" id="btnOpenK">⌘/Ctrl+K</button>
+            </div>
+
+            <!-- Grid controls -->
+            <div class="subrow">
+              <label class="mini">Cols</label>
+              <input id="cols" type="range" class="range" min="2" max="8" step="1" value="0" title="0 = Auto" />
+              <label class="mini">Density</label>
+              <select id="density">
+                <option value="1">Comfort</option>
+                <option value="0.9">Compact</option>
+                <option value="1.1">Cozy</option>
+              </select>
+              <label class="mini">Ratio</label>
+              <select id="ratio">
+                <option value="1.777">16:9</option>
+                <option value="1.333">4:3</option>
+                <option value="1">1:1</option>
+              </select>
+              <label class="mini">Images</label>
+              <select id="media">
+                <option value="on">On</option>
+                <option value="off">Off</option>
+              </select>
             </div>
           </div>
         </div>
 
         <!-- Grids -->
         <div class="grid" id="depGrid" aria-label="Departments grid"></div>
+        <div class="grid sub-grid" id="subGrid" aria-label="Sub-departments grid" style="display:none"></div>
         <div class="grid" id="linkGrid" aria-label="Links grid" style="display:none"></div>
       </div>
-    </div>
-
-    <!-- Footer -->
-    <div class="footer glass">
-      <div>Theme: <span class="hl">Liquid Glass</span> • Blur + Gradients + Subtle neon edges. Honestly prettier than it has any right to be.</div>
-      <div>Orders saved per device. Data source: Google Apps Script JSON.</div>
     </div>
   </div>
 
 <script>
-/* ================= Config & State ================ */
+/* ===================== CONFIG ===================== */
 const sheetURL = "https://script.google.com/macros/s/AKfycbwnjvDjGQNtpVkxySJj6GaObo6l1ecfUg3NXzvF7G5MX7H4S5Qo92jhUM8_eOTO2MeXUQ/exec";
 
+/* ===================== STATE ===================== */
 const els = {
   search: document.getElementById('search'),
   depList: document.getElementById('depList'),
   subList: document.getElementById('subList'),
   depGrid: document.getElementById('depGrid'),
+  subGrid: document.getElementById('subGrid'),
   linkGrid: document.getElementById('linkGrid'),
   crumbs: document.getElementById('crumbs'),
   viewMode: document.getElementById('viewMode'),
@@ -294,26 +291,36 @@ const els = {
   btnToggleSort: document.getElementById('btnToggleSort'),
   btnRefresh: document.getElementById('btnRefresh'),
   btnClear: document.getElementById('btnClear'),
+  btnOpenK: document.getElementById('btnOpenK'),
+  density: document.getElementById('density'),
+  ratio: document.getElementById('ratio'),
+  media: document.getElementById('media'),
+  cols: document.getElementById('cols'),
   steps: document.getElementById('steps'),
-  stepsTotal: document.getElementById('stepsTotal')
+  stepsTotal: document.getElementById('stepsTotal'),
+  sidebar: document.getElementById('sidebar'),
+  content: document.getElementById('content')
 };
 
 let rawRows = [];
-let departmentsData = []; // [{ dep, subs:[..], imageUrl }]
+let departmentsData = [];         // [{ dep, subs:[..], imageUrl }]
 let currentDep = null;
 let currentSub = "__all__";
 let sortingEnabled = false;
 let depSortable = null;
 let linkSortable = null;
 
+/* persistent keys */
 const LS_KEYS = {
   DEPT_ORDER: "deptOrder",
   LINK_ORDER: (dep, sub) => `linkOrder-${dep}--${sub}`,
-  STEPS_TOTAL: "rv_steps_total"
+  STEPS_TOTAL: "rv_steps_total",
+  GRID_PREFS: "rv_grid_prefs_v1"
 };
+
 let sessionSteps = 0;
 
-/* ================= Utility ================= */
+/* ===================== UTILITIES ===================== */
 function bumpStep(by=1){
   sessionSteps += by;
   els.steps.textContent = sessionSteps;
@@ -325,7 +332,7 @@ function bumpStep(by=1){
   els.steps.textContent = "0";
   const total = Number(localStorage.getItem(LS_KEYS.STEPS_TOTAL) || 0);
   els.stepsTotal.textContent = total;
-  bumpStep(1); // count page open
+  bumpStep(1); // page load
 })();
 
 function debounce(fn, ms){
@@ -343,22 +350,65 @@ function savedLinkOrder(dep, sub){
 function setSavedLinkOrder(dep, sub, arr){
   localStorage.setItem(LS_KEYS.LINK_ORDER(dep, sub), JSON.stringify(arr));
 }
-function imageFallback(el){
-  // If background image fails, we just keep the colored card; nothing to load here.
-}
 
-/* ================= Data Load ================= */
+/* Grid preferences */
+function loadGridPrefs(){
+  try{
+    const p = JSON.parse(localStorage.getItem(LS_KEYS.GRID_PREFS) || "{}");
+    if(p.cols) setCols(p.cols);
+    if(p.density) setDensity(p.density);
+    if(p.ratio) setRatio(p.ratio);
+    if(p.media) setMedia(p.media);
+    // reflect in controls
+    els.cols.value = p.cols === "auto" ? 0 : (p.cols || 0);
+    els.density.value = p.density || "1";
+    els.ratio.value = p.ratio || "1.777";
+    els.media.value = p.media || "on";
+  }catch{}
+}
+function saveGridPrefs(){
+  const prefs = {
+    cols: getCols(), density: getDensity(), ratio: getRatio(), media: getMedia()
+  };
+  localStorage.setItem(LS_KEYS.GRID_PREFS, JSON.stringify(prefs));
+}
+function setCols(v){
+  if(v === "auto"){ document.documentElement.style.setProperty('--grid-cols', 'auto-fill'); }
+  else{ document.documentElement.style.setProperty('--grid-cols', v); }
+}
+function getCols(){
+  const val = Number(els.cols.value);
+  return val === 0 ? "auto" : String(val);
+}
+function setDensity(v){ document.documentElement.style.setProperty('--density-scale', v); }
+function getDensity(){ return els.density.value; }
+function setRatio(v){ document.documentElement.style.setProperty('--card-ratio', v); }
+function getRatio(){ return els.ratio.value; }
+function setMedia(mode){
+  if(mode === "off"){
+    document.documentElement.style.setProperty('--image-opacity', '0');
+    document.documentElement.style.setProperty('--media-display', 'none');
+  }else{
+    document.documentElement.style.setProperty('--image-opacity', '.55');
+    document.documentElement.style.setProperty('--media-display', 'block');
+  }
+}
+function getMedia(){ return els.media.value; }
+
+/* ===================== DATA ===================== */
 async function loadData(){
   try{
-    const res = await fetch(sheetURL);
+    const res = await fetch(sheetURL, { cache: "no-store" });
     rawRows = await res.json();
     buildMaps();
     renderSidebar();
-    renderDepartments();
+    if(els.viewMode.value === "departments") renderDepartments();
+    else if(els.viewMode.value === "subpage") renderSubPage();
+    else renderLinks();
     updateCrumbs();
   }catch(e){
     console.error(e);
-    els.depGrid.innerHTML = `<div class="mini">Failed to load data. Check Apps Script CORS or URL.</div>`;
+    els.depGrid.innerHTML = `<div class="mini">Failed to load data. Check Apps Script URL or CORS.</div>`;
   }
 }
 function buildMaps(){
@@ -386,9 +436,8 @@ function buildMaps(){
   })).sort((a,b)=>a.dep.localeCompare(b.dep));
 }
 
-/* ================= Render: Sidebar ================= */
+/* ===================== SIDEBAR ===================== */
 function renderSidebar(){
-  // Departments list
   els.depList.innerHTML = "";
   const order = savedDeptOrder();
   const ordered = [
@@ -399,27 +448,26 @@ function renderSidebar(){
   ordered.forEach(d=>{
     const chip = document.createElement('div');
     chip.className = 'chip' + (currentDep===d.dep ? ' active' : '');
-    chip.innerHTML = `<div style="width:8px;height:8px;border-radius:50%;background:#6a8cff;"></div>
+    chip.innerHTML = `<div style="width:8px;height:8px;border-radius:50%;background:${'#6a8cff'};"></div>
                       <div style="font-weight:600">${d.dep}</div>
                       <div class="mini" style="margin-left:auto">${d.subs.length}</div>`;
     chip.addEventListener('click', ()=>{
       currentDep = d.dep;
       currentSub = "__all__";
-      els.viewMode.value = "links";
+      if(els.viewMode.value === "departments"){ els.viewMode.value = "subpage"; }
       renderSidebarSubs();
-      renderLinks();
+      if(els.viewMode.value === "subpage") renderSubPage(); else renderLinks();
       updateCrumbs();
       bumpStep();
     });
     els.depList.appendChild(chip);
   });
-  // Sub list for current dep
   renderSidebarSubs();
 }
 function renderSidebarSubs(){
   els.subList.innerHTML = "";
   if(!currentDep){
-    els.subList.innerHTML = `<div class="mini" style="padding:8px 10px; border:1px dashed #ffffff2a; border-radius:10px">
+    els.subList.innerHTML = `<div class="mini" style="padding:8px 10px; border:1px dashed var(--border); border-radius:10px">
       Select a department to see sub-departments.
     </div>`;
     els.subFilter.disabled = true;
@@ -431,7 +479,7 @@ function renderSidebarSubs(){
 
   const allChip = document.createElement('div');
   allChip.className = 'chip' + (currentSub==="__all__" ? ' active' : '');
-  allChip.innerHTML = `<div style="width:8px;height:8px;border-radius:50%;background:#31d296;"></div>
+  allChip.innerHTML = `<div style="width:8px;height:8px;border-radius:50%;background:${'#31d296'};"></div>
                        <div style="font-weight:600">All Links</div>`;
   allChip.addEventListener('click', ()=>{
     currentSub="__all__";
@@ -454,7 +502,6 @@ function renderSidebarSubs(){
     els.subList.appendChild(chip);
   });
 
-  // Sub filter dropdown sync
   els.subFilter.disabled = false;
   els.subFilter.innerHTML = `<option value="__all__">All</option>` + subs.map(s=>`<option value="${s}">${s}</option>`).join('');
   els.subFilter.value = currentSub;
@@ -469,11 +516,9 @@ function highlightSideSubs(){
   });
 }
 
-/* ================= Render: Grids ================= */
+/* ===================== RENDER: DEPARTMENTS ===================== */
 function renderDepartments(){
-  els.viewMode.value = "departments";
-  els.linkGrid.style.display = "none";
-  els.depGrid.style.display = "grid";
+  showOnly('depGrid');
 
   const q = els.search.value.trim().toLowerCase();
   const order = savedDeptOrder();
@@ -490,7 +535,7 @@ function renderDepartments(){
     card.className = 'card';
     card.setAttribute('data-id', dep);
     card.innerHTML = `
-      <div class="bg" style="background-image:url('${imageUrl}')"></div>
+      <img class="img" loading="lazy" src="${imageUrl}" alt="${dep}"/>
       <div class="label">
         <span>${dep}</span>
         <span class="pill">Subs: ${subs.length}</span>
@@ -500,26 +545,62 @@ function renderDepartments(){
       currentDep = dep;
       currentSub = "__all__";
       renderSidebar();
-      renderLinks();
-      els.viewMode.value="links";
+      if(els.viewMode.value === "departments") els.viewMode.value="subpage";
+      if(els.viewMode.value === "subpage") renderSubPage(); else renderLinks();
       updateCrumbs();
       bumpStep();
     });
     els.depGrid.appendChild(card);
   });
 
-  // Sortable enable/disable
   if(depSortable){ depSortable.destroy(); depSortable=null; }
   if(sortingEnabled){
     depSortable = Sortable.create(els.depGrid, {
-      animation:150,
+      animation:120,
       onEnd: ()=>{
         const ids = [...els.depGrid.children].map(el=>el.getAttribute('data-id'));
         setSavedDeptOrder(ids);
+        bumpStep();
       }
     });
   }
 }
+
+/* ===================== RENDER: SUB-PAGE (FULL PAGE SUB-DEPARTMENTS) ===================== */
+function renderSubPage(){
+  showOnly('subGrid');
+
+  if(!currentDep){
+    els.subGrid.innerHTML = `<div class="mini" style="padding:12px">Choose a department from the left.</div>`;
+    return;
+  }
+  const depObj = departmentsData.find(d=>d.dep===currentDep);
+  const subs = depObj?.subs || [];
+
+  // search-aware
+  const q = els.search.value.trim().toLowerCase();
+  const filtered = q ? subs.filter(s => s.toLowerCase().includes(q)) : subs;
+
+  els.subGrid.innerHTML = "";
+  if(filtered.length === 0){
+    els.subGrid.innerHTML = `<div class="mini" style="padding:12px">No sub-departments match.</div>`;
+    return;
+  }
+  filtered.forEach(s=>{
+    const chip = document.createElement('div');
+    chip.className = 'subchip';
+    chip.textContent = s;
+    chip.addEventListener('click', ()=>{
+      currentSub = s;
+      els.viewMode.value = "links";
+      renderLinks(); updateCrumbs(); bumpStep();
+      highlightSideSubs();
+    });
+    els.subGrid.appendChild(chip);
+  });
+}
+
+/* ===================== RENDER: LINKS ===================== */
 function linksFor(dep, sub){
   const lowerDep = dep?.toLowerCase();
   const lowerSub = sub?.toLowerCase();
@@ -538,28 +619,22 @@ function linksFor(dep, sub){
   }));
 }
 function renderLinks(){
-  els.depGrid.style.display = "none";
-  els.linkGrid.style.display = "grid";
+  showOnly('linkGrid');
 
   if(!currentDep){
-    els.linkGrid.innerHTML = `<div class="mini" style="padding:12px">Choose a department from the left or from the grid.</div>`;
+    els.linkGrid.innerHTML = `<div class="mini" style="padding:12px">Choose a department first.</div>`;
     return;
   }
 
-  // sync sub dropdown if user changed sidebar chips
-  if(els.subFilter.value !== currentSub){
-    els.subFilter.value = currentSub;
-  }
+  if(els.subFilter.value !== currentSub){ els.subFilter.value = currentSub; }
 
   let data = linksFor(currentDep, currentSub);
 
-  // Search filter (by link name)
   const q = els.search.value.trim().toLowerCase();
   if(q){
-    data = data.filter(l => l.name.toLowerCase().includes(q));
+    data = data.filter(l => l.name.toLowerCase().includes(q) || l.url.toLowerCase().includes(q));
   }
 
-  // Apply saved order
   const order = savedLinkOrder(currentDep, currentSub);
   const sorted = [
     ...order.map(n => data.find(l=>l.name===n)).filter(Boolean),
@@ -577,11 +652,8 @@ function renderLinks(){
       item.href = l.url;
       item.target = "_blank";
       item.rel="noopener";
-      const bgStyle = l.image ? `background-image:url('${l.image}')` : '';
-      item.innerHTML = `
-        <div class="bg" style="${bgStyle}"></div>
-        <div class="label">${l.name}</div>
-      `;
+      const img = l.image ? `<img class="img" loading="lazy" src="${l.image}" alt="">` : '';
+      item.innerHTML = `${img}<div class="label">${l.name}</div>`;
       item.addEventListener('click', ()=> bumpStep());
       els.linkGrid.appendChild(item);
     });
@@ -590,35 +662,50 @@ function renderLinks(){
   if(linkSortable){ linkSortable.destroy(); linkSortable=null; }
   if(sortingEnabled){
     linkSortable = Sortable.create(els.linkGrid, {
-      animation:150,
+      animation:120,
       onEnd: ()=>{
         const names = [...els.linkGrid.children].map(el=>el.getAttribute('data-name'));
         setSavedLinkOrder(currentDep, currentSub, names);
+        bumpStep();
       }
     });
   }
 }
 
-/* ================= UI: Crumbs & Controls ================= */
+/* ===================== VIEW HELPERS ===================== */
+function showOnly(which){
+  els.depGrid.style.display = which==='depGrid' ? "grid" : "none";
+  els.subGrid.style.display = which==='subGrid' ? "grid" : "none";
+  els.linkGrid.style.display = which==='linkGrid' ? "grid" : "none";
+}
 function updateCrumbs(){
   if(!currentDep){
     els.crumbs.innerHTML = `Home`;
     return;
   }
   const subTxt = currentSub==="__all__" ? "All" : currentSub;
-  els.crumbs.innerHTML = `<b>${currentDep}</b> <span style="opacity:.6">/</span> ${subTxt}`;
+  if(els.viewMode.value === "subpage"){
+    els.crumbs.innerHTML = `<b>${currentDep}</b> <span style="opacity:.6">/</span> Sub-departments`;
+  }else if(els.viewMode.value === "links"){
+    els.crumbs.innerHTML = `<b>${currentDep}</b> <span style="opacity:.6">/</span> ${subTxt}`;
+  }else{
+    els.crumbs.innerHTML = `Home`;
+  }
 }
 
-/* ================= Handlers ================= */
+/* ===================== CONTROLS & EVENTS ===================== */
 els.viewMode.addEventListener('change', ()=>{
   const v = els.viewMode.value;
-  if(v==="departments"){ renderDepartments(); }
-  else{ renderLinks(); }
+  if(v==="departments") renderDepartments();
+  else if(v==="subpage") renderSubPage();
+  else renderLinks();
+  updateCrumbs();
   bumpStep();
 });
 
 els.subFilter.addEventListener('change', ()=>{
   currentSub = els.subFilter.value;
+  els.viewMode.value = "links";
   renderLinks();
   updateCrumbs();
   bumpStep();
@@ -627,31 +714,95 @@ els.subFilter.addEventListener('change', ()=>{
 els.btnToggleSort.addEventListener('click', ()=>{
   sortingEnabled = !sortingEnabled;
   els.btnToggleSort.textContent = sortingEnabled ? '✅ Sorting' : '↕️ Sort';
-  if(els.viewMode.value==="departments"){ renderDepartments(); }
-  else{ renderLinks(); }
+  const v = els.viewMode.value;
+  if(v==="departments") renderDepartments();
+  else if(v==="subpage") renderSubPage();
+  else renderLinks();
   bumpStep();
 });
 
 els.btnRefresh.addEventListener('click', ()=>{
-  loadData(); bumpStep();
+  loadData();
+  bumpStep();
 });
 
 els.btnClear.addEventListener('click', ()=>{
   localStorage.removeItem(LS_KEYS.DEPT_ORDER);
-  // wipe all link orders
   Object.keys(localStorage).forEach(k=>{
-    if(k.startsWith('linkOrder-') || k.startsWith('linkOrder_') || k.includes('--')) localStorage.removeItem(k);
+    if(k.startsWith('linkOrder-') || k.includes('--')) localStorage.removeItem(k);
   });
-  if(els.viewMode.value==="departments"){ renderDepartments(); } else { renderLinks(); }
+  const v = els.viewMode.value;
+  if(v==="departments") renderDepartments();
+  else if(v==="subpage") renderSubPage();
+  else renderLinks();
   bumpStep();
 });
 
-els.search.addEventListener('input', debounce(()=>{
-  if(els.viewMode.value==="departments"){ renderDepartments(); }
-  else{ renderLinks(); }
-}, 120));
+/* Grid controls */
+els.cols.addEventListener('input', ()=>{
+  const v = getCols();
+  setCols(v); saveGridPrefs();
+});
+els.density.addEventListener('change', ()=>{
+  setDensity(getDensity()); saveGridPrefs();
+});
+els.ratio.addEventListener('change', ()=>{
+  setRatio(getRatio()); saveGridPrefs();
+});
+els.media.addEventListener('change', ()=>{
+  setMedia(getMedia()); saveGridPrefs();
+});
 
-/* ================= Kickoff ================= */
+/* Search */
+els.search.addEventListener('input', debounce(()=>{
+  const v = els.viewMode.value;
+  if(v==="departments") renderDepartments();
+  else if(v==="subpage") renderSubPage();
+  else renderLinks();
+}, 250));
+
+/* Command palette shortcut (demo jump) */
+els.btnOpenK.addEventListener('click', ()=>{ openQuickJump(); });
+window.addEventListener('keydown', (e)=>{
+  const mod = e.ctrlKey || e.metaKey;
+  if(mod && e.key.toLowerCase()==='k'){ e.preventDefault(); openQuickJump(); }
+  /* Arrow navigation in sub full page */
+  if(els.viewMode.value==='subpage' && (e.key==='ArrowLeft' || e.key==='ArrowRight')){
+    flipSub(e.key==='ArrowRight' ? 1 : -1);
+  }
+});
+
+function openQuickJump(){
+  // Minimal quick jump: cycle views for now; extend to a real palette later if needed.
+  const modes = ['departments','subpage','links'];
+  const i = modes.indexOf(els.viewMode.value);
+  const next = modes[(i+1)%modes.length];
+  els.viewMode.value = next;
+  if(next==='departments') renderDepartments();
+  else if(next==='subpage') renderSubPage();
+  else renderLinks();
+  updateCrumbs();
+  bumpStep();
+}
+
+function flipSub(dir){
+  if(!currentDep) return;
+  const depObj = departmentsData.find(d=>d.dep===currentDep);
+  const subs = depObj?.subs || [];
+  if(subs.length===0) return;
+  const idx = Math.max(0, subs.indexOf(currentSub));
+  let next = idx + dir;
+  if(next < 0) next = subs.length - 1;
+  if(next >= subs.length) next = 0;
+  currentSub = subs[next];
+  els.viewMode.value = "links";
+  els.subFilter.value = currentSub;
+  renderLinks(); updateCrumbs(); bumpStep();
+}
+
+/* ===================== INIT ===================== */
+loadGridPrefs();
+setCols(getCols()); setDensity(getDensity()); setRatio(getRatio()); setMedia(getMedia());
 loadData();
 </script>
 </body>
