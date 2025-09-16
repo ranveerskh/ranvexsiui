@@ -1,370 +1,658 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>RANVEXSI UI</title>
-  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-  <style>
-    :root {
-      --bg: #f0f4f8;
-      --text: #000;
-      --card: #fff;
-    }
-    body.dark {
-      --bg: #121212;
-      --text: #fff;
-      --card: #1e1e1e;
-    }
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 99%;
-      font-family: Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      display: flex;
-      flex-direction: column;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1280, initial-scale=1.0"/>
+<title>RANVEXSI UI — Liquid Glass</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<style>
+  /* ====== Liquid Glass Theme (Laptop-first) ====== */
+  :root{
+    --bg1:#0f1220;
+    --bg2:#101a2b;
+    --glass:#ffffff1c;
+    --ink:#eaf1ff;
+    --muted:#a9b5e6;
+    --accent1:#7aa4ff;
+    --accent2:#6a11cb;
+    --accent3:#2575fc;
+    --card:#0f1a33a3; /* translucent for glass */
+    --border:#91a2ff2b;
+    --ok:#31d296;
+    --warn:#f8b84a;
+    --danger:#ff6b7b;
+    --tap:44px;
+    --shadow:0 10px 40px rgba(5,10,25,.35);
+    --round:18px;
+    --grid-gap:18px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    color:var(--ink);
+    background: radial-gradient(1200px 800px at 20% -10%, #2442ff20, transparent 60%),
+                radial-gradient(1000px 700px at 120% 30%, #8a2be220, transparent 60%),
+                linear-gradient(135deg,var(--bg1),var(--bg2));
+    overflow: hidden; /* fixed laptop layout */
+  }
 
-    .header {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      background: #4CAF50;
-      color: white;
-      padding: 10px 20px;
-      gap: 10px;
-    }
+  /* Animated background blobs for “liquid” vibe */
+  .blob{
+    position:fixed; filter:blur(60px); opacity:.35; z-index:0; pointer-events:none;
+    width:550px; height:550px; border-radius:50%;
+    background: conic-gradient(from 120deg, #6a11cb, #2575fc, #00ffd0, #6a11cb);
+    animation: drift 26s ease-in-out infinite alternate;
+    mix-blend-mode: screen;
+  }
+  .blob.two{ left:70%; top:10%; animation-duration:32s; transform:scale(.8)}
+  .blob.one{ left:-10%; top:40%; transform:scale(1.1)}
+  @keyframes drift {
+    0%   {transform:translate3d(0,0,0) scale(1)}
+    100% {transform:translate3d(40px,-30px,0) scale(1.15)}
+  }
 
-    .left h1 {
-      margin: 0;
-      font-size: 1.5rem;
-    }
+  /* App shell */
+  .app{
+    position:relative; z-index:1;
+    height:100%; display:grid;
+    grid-template-rows: 76px 1fr 34px;
+    gap: 0;
+  }
+  .glass{
+    background: linear-gradient(180deg, var(--glass), #ffffff0f);
+    backdrop-filter: blur(12px) saturate(120%);
+    -webkit-backdrop-filter: blur(12px) saturate(120%);
+    border:1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+  .header{
+    display:flex; align-items:center; gap:16px;
+    padding:12px 18px; border-bottom:1px solid #ffffff14;
+  }
+  .brand{display:flex; align-items:center; gap:12px; white-space:nowrap}
+  .logo{
+    width:40px; height:40px; border-radius:12px;
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    display:grid; place-items:center; font-weight:800; color:white;
+    letter-spacing: -0.5px;
+  }
+  .title{font-weight:800; font-size:1.1rem; letter-spacing:.2px}
+  .grow{flex:1}
+  .search{
+    position:relative; width:520px; max-width:520px;
+  }
+  .search input{
+    width:100%; padding:12px 14px 12px 40px; border-radius:12px; border:1px solid #ffffff24;
+    background:#0e1426c0; color:var(--ink); outline:none;
+  }
+  .search svg{position:absolute; left:12px; top:50%; transform:translateY(-50%); opacity:.7}
+  .actions{display:flex; align-items:center; gap:10px}
+  .btn{
+    height:38px; padding:0 14px; border-radius:12px; border:1px solid #ffffff26;
+    background:#0e1426c0; color:var(--ink); cursor:pointer; font-weight:600;
+  }
+  .btn.prim{
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    border-color: transparent;
+  }
+  .badge{
+    display:inline-flex; align-items:center; gap:8px;
+    height:38px; padding:0 12px; border-radius:999px;
+    background:#0e1426c0; border:1px solid #ffffff26; font-weight:600; font-size:.95rem;
+  }
+  .stats{display:flex; align-items:center; gap:8px}
+  .stats .dot{width:8px; height:8px; border-radius:50%}
+  .dot.ok{background:var(--ok)} .dot.warn{background:var(--warn)}
 
-    .center {
-      flex: 1 1 300px;
-      max-width: 400px;
-    }
+  .main{
+    padding:18px; display:grid; grid-template-columns: 320px 1fr; gap:18px; min-height:0;
+  }
+  .panel{border-radius:var(--round)}
+  .sidebar{
+    padding:14px; display:flex; flex-direction:column; gap:12px; min-height:0; overflow:auto;
+  }
+  .section-title{font-size:.9rem; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); margin:4px 8px}
+  .list{
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .chip{
+    display:flex; align-items:center; gap:10px;
+    padding:10px 12px; border-radius:12px; cursor:pointer;
+    border:1px solid #ffffff1f; background:#0e1426c0;
+  }
+  .chip.active{
+    background: linear-gradient(135deg, #1b2443, #1d2a55);
+    border-color:#5e75ff6b;
+    box-shadow: inset 0 0 0 1px #91a2ff28;
+  }
+  .mini{font-size:.85rem; color:var(--muted)}
 
-    .center input {
-      width: 100%;
-      padding: 6px 12px;
-      font-size: 1rem;
-      border-radius: 6px;
-      border: none;
-    }
+  .content{
+    padding:14px; min-width:0; display:flex; flex-direction:column; gap:14px; overflow:hidden;
+  }
+  .toolbar{
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  }
+  .crumbs{font-size:.95rem; color:var(--muted)}
+  .crumbs b{color:var(--ink)}
+  .toolbar .right{margin-left:auto; display:flex; gap:10px}
 
-    .right {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
+  .grid{
+    display:grid; gap:var(--grid-gap); min-height:0; overflow:auto;
+    grid-template-columns: repeat( auto-fill, minmax(260px, 1fr) );
+  }
 
-    .buttons {
-      display: flex;
-      gap: 10px;
-    }
+  /* Cards */
+  .card{
+    position:relative; border-radius:16px; min-height:180px; overflow:hidden; cursor:grab;
+    background: linear-gradient(180deg, #1a2242cc, #0f162fcc);
+    border:1px solid #ffffff1f;
+    box-shadow: var(--shadow);
+  }
+  .card .bg{
+    position:absolute; inset:0; background-size:cover; background-position:center; opacity:.55;
+  }
+  .card::after{
+    content:""; position:absolute; inset:0;
+    background:radial-gradient(120% 80% at 20% -10%, #00000000, #00000070 70%);
+  }
+  .card .label{
+    position:absolute; left:12px; bottom:10px; right:12px; z-index:2;
+    font-weight:800; letter-spacing:.3px; font-size:1.15rem;
+    text-shadow:0 2px 12px rgba(0,0,0,.6);
+    display:flex; align-items:center; gap:8px; justify-content:space-between;
+  }
+  .pill{
+    display:inline-flex; align-items:center; gap:6px;
+    padding:6px 10px; font-size:.8rem; border-radius:999px;
+    background:#0b132cc0; border:1px solid #ffffff24;
+  }
 
-    .buttons button {
-      background: white;
-      color: #4CAF50;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-    }
+  /* Link item */
+  .link{
+    position:relative; border-radius:16px; min-height:150px; overflow:hidden; cursor:pointer;
+    border:1px solid #ffffff1f; background:#101a2fcc;
+  }
+  .link .bg{position:absolute; inset:0; background-size:cover; background-position:center; opacity:.5}
+  .link::after{content:""; position:absolute; inset:0; background:linear-gradient(180deg, #0000, #0008)}
+  .link .label{position:absolute; left:12px; bottom:10px; right:12px; z-index:2; font-weight:800}
 
-    .menu {
-      position: relative;
-    }
+  .footer{
+    display:flex; align-items:center; justify-content:space-between; font-size:.9rem;
+    color:var(--muted); padding:8px 14px; border-top:1px solid #ffffff14;
+  }
+  .hl{color:var(--ink)}
 
-    .menu-button {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 1.5rem;
-      cursor: pointer;
-    }
+  /* Sub-filter row */
+  .subrow{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+  select, .input{
+    height:38px; padding:0 12px; border-radius:10px; border:1px solid #ffffff26;
+    background:#0e1426c0; color:var(--ink);
+  }
 
-    .menu-dropdown {
-      display: none;
-      position: absolute;
-      top: 40px;
-      right: 0;
-      background: white;
-      color: black;
-      border-radius: 6px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      min-width: 200px;
-      z-index: 100;
-    }
+  /* Scrollbars (desktop) */
+  ::-webkit-scrollbar{height:10px; width:10px}
+  ::-webkit-scrollbar-thumb{background:#3a4677; border-radius:999px}
+  ::-webkit-scrollbar-track{background:#0d1426}
 
-    .menu:hover .menu-dropdown,
-    .menu:focus-within .menu-dropdown {
-      display: block;
-    }
-
-    .menu-dropdown a, .menu-dropdown button {
-      display: block;
-      padding: 10px 20px;
-      border: none;
-      background: none;
-      text-align: left;
-      font-size: 1rem;
-      cursor: pointer;
-      width: 100%;
-    }
-
-    .menu-dropdown a:hover, .menu-dropdown button:hover {
-      background: #f0f0f0;
-    }
-
-    .foot-icon {
-      position: relative;
-      font-size: 1.3rem;
-      cursor: pointer;
-    }
-
-    .foot-icon .tooltip {
-      display: none;
-      position: absolute;
-      top: 28px;
-      right: 0;
-      background: white;
-      color: black;
-      font-size: 0.85rem;
-      border-radius: 8px;
-      padding: 10px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.2);
-      white-space: nowrap;
-      z-index: 200;
-    }
-
-    .foot-icon:hover .tooltip {
-      display: block;
-    }
-
-    .grid {
-      display: grid;
-      flex: 1;
-      width: 100%;
-      padding: 20px;
-      box-sizing: border-box;
-      gap: 20px;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      grid-auto-rows: 1fr;
-    }
-
-    .dept {
-      position: relative;
-      border-radius: 10px;
-      overflow: hidden;
-      background-size: cover;
-      background-position: center;
-      cursor: grab;
-      display: flex;
-      align-items: flex-end;
-      justify-content: flex-start;
-      height: 100%;
-      min-height: 200px;
-      background-color: var(--card);
-    }
-
-    .dept::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: rgba(0,0,0,0.4);
-      z-index: 1;
-    }
-
-    .dept span {
-      position: relative;
-      z-index: 2;
-      padding: 10px;
-      font-size: 1.4rem;
-      font-weight: bold;
-      color: white;
-    }
-
-    .dropdown {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      max-height: 200px;
-      background: white;
-      overflow-y: auto;
-      border-radius: 0 0 10px 10px;
-      box-shadow: 0 -2px 8px rgba(0,0,0,0.2);
-      z-index: 10;
-      display: none;
-    }
-
-    .dept:hover .dropdown,
-    .dept:focus-within .dropdown {
-      display: block;
-    }
-
-    .dropdown a {
-      display: block;
-      padding: 12px;
-      text-decoration: none;
-      color: #333;
-      font-weight: bold;
-    }
-
-    .dropdown a:hover {
-      background: #f0f0f0;
-    }
-  </style>
+  a, .link a{color:inherit; text-decoration:none}
+</style>
 </head>
 <body>
+  <div class="blob one"></div>
+  <div class="blob two"></div>
 
-  <div class="header">
-    <div class="left"><h1>RANVEXSI UI</h1></div>
-    <div class="center">
-      <input type="text" id="searchInput" placeholder="Search department or sub-department...">
+  <div class="app">
+    <!-- Header -->
+    <div class="header glass">
+      <div class="brand">
+        <div class="logo">RV</div>
+        <div class="title">RANVEXSI UI <span class="mini">• Liquid Glass</span></div>
+      </div>
+      <div class="grow"></div>
+      <div class="search" title="Search departments or links">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.3-4.3M10.8 18.2a7.4 7.4 0 1 1 0-14.8 7.4 7.4 0 0 1 0 14.8Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <input id="search" placeholder="Search departments or links..." autocomplete="off" />
+      </div>
+      <div class="actions">
+        <button class="btn" id="btnRefresh" title="Reload data">🔄 Refresh</button>
+        <button class="btn" id="btnClear" title="Clear saved order">🧹 Clear Order</button>
+        <div class="badge" title="Session steps (clicks, opens)">
+          👣 Steps: <span id="steps">0</span>
+        </div>
+        <div class="badge" title="Total steps on this device">
+          📊 Total: <span id="stepsTotal">0</span>
+        </div>
+      </div>
     </div>
-    <div class="right">
-      <div class="buttons">
-        <button onclick="location.reload()">🔄 Refresh</button>
-        <button onclick="localStorage.clear(); location.reload()">🧹 Clear Order</button>
-      </div>
-      <div class="menu">
-        <button class="menu-button">☰</button>
-        <div class="menu-dropdown">
-          <a href="about.html">About Us</a>
-          <a href="request.html">Request New Feature</a>
-          <a href="admin.html">Admin Login</a>
-          <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
+
+    <!-- Main -->
+    <div class="main">
+      <!-- Sidebar: Departments & Subdepartments -->
+      <div class="sidebar glass panel">
+        <div class="section-title">Departments</div>
+        <div id="depList" class="list"></div>
+
+        <div class="section-title" style="margin-top:10px">Sub-Departments</div>
+        <div class="list" id="subList">
+          <div class="mini" style="padding:8px 10px; border:1px dashed #ffffff2a; border-radius:10px">
+            Select a department to see sub-departments.
+          </div>
         </div>
       </div>
-      <div class="foot-icon">
-        👣
-        <div class="tooltip">
-          🟢 Live Visitors: <span id="liveCount">—</span><br>
-          📊 Total Visits: <span id="totalCount">—</span>
+
+      <!-- Content area -->
+      <div class="content glass panel">
+        <div class="toolbar">
+          <div class="crumbs" id="crumbs">Home</div>
+          <div class="right">
+            <div class="subrow">
+              <label class="mini">View</label>
+              <select id="viewMode">
+                <option value="departments">Departments</option>
+                <option value="links">Links</option>
+              </select>
+              <label class="mini">Sub</label>
+              <select id="subFilter" disabled>
+                <option value="__all__">All</option>
+              </select>
+              <button class="btn prim" id="btnToggleSort" title="Toggle Drag Sort">↕️ Sort</button>
+            </div>
+          </div>
         </div>
+
+        <!-- Grids -->
+        <div class="grid" id="depGrid" aria-label="Departments grid"></div>
+        <div class="grid" id="linkGrid" aria-label="Links grid" style="display:none"></div>
       </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer glass">
+      <div>Theme: <span class="hl">Liquid Glass</span> • Blur + Gradients + Subtle neon edges. Honestly prettier than it has any right to be.</div>
+      <div>Orders saved per device. Data source: Google Apps Script JSON.</div>
     </div>
   </div>
 
-  <div class="grid" id="departments"></div>
+<script>
+/* ================= Config & State ================ */
+const sheetURL = "https://script.google.com/macros/s/AKfycbwnjvDjGQNtpVkxySJj6GaObo6l1ecfUg3NXzvF7G5MX7H4S5Qo92jhUM8_eOTO2MeXUQ/exec";
 
-  <script>
-    const sheetURL = "https://script.google.com/macros/s/AKfycbwnjvDjGQNtpVkxySJj6GaObo6l1ecfUg3NXzvF7G5MX7H4S5Qo92jhUM8_eOTO2MeXUQ/exec";
-    const container = document.getElementById("departments");
-    const searchInput = document.getElementById("searchInput");
+const els = {
+  search: document.getElementById('search'),
+  depList: document.getElementById('depList'),
+  subList: document.getElementById('subList'),
+  depGrid: document.getElementById('depGrid'),
+  linkGrid: document.getElementById('linkGrid'),
+  crumbs: document.getElementById('crumbs'),
+  viewMode: document.getElementById('viewMode'),
+  subFilter: document.getElementById('subFilter'),
+  btnToggleSort: document.getElementById('btnToggleSort'),
+  btnRefresh: document.getElementById('btnRefresh'),
+  btnClear: document.getElementById('btnClear'),
+  steps: document.getElementById('steps'),
+  stepsTotal: document.getElementById('stepsTotal')
+};
 
-    let departmentsData = [];
+let rawRows = [];
+let departmentsData = []; // [{ dep, subs:[..], imageUrl }]
+let currentDep = null;
+let currentSub = "__all__";
+let sortingEnabled = false;
+let depSortable = null;
+let linkSortable = null;
 
-    function getSavedOrder() {
-      try {
-        return JSON.parse(localStorage.getItem("deptOrder")) || [];
-      } catch {
-        return [];
-      }
+const LS_KEYS = {
+  DEPT_ORDER: "deptOrder",
+  LINK_ORDER: (dep, sub) => `linkOrder-${dep}--${sub}`,
+  STEPS_TOTAL: "rv_steps_total"
+};
+let sessionSteps = 0;
+
+/* ================= Utility ================= */
+function bumpStep(by=1){
+  sessionSteps += by;
+  els.steps.textContent = sessionSteps;
+  const total = Number(localStorage.getItem(LS_KEYS.STEPS_TOTAL) || 0) + by;
+  localStorage.setItem(LS_KEYS.STEPS_TOTAL, String(total));
+  els.stepsTotal.textContent = total;
+}
+(function initSteps(){
+  els.steps.textContent = "0";
+  const total = Number(localStorage.getItem(LS_KEYS.STEPS_TOTAL) || 0);
+  els.stepsTotal.textContent = total;
+  bumpStep(1); // count page open
+})();
+
+function debounce(fn, ms){
+  let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms); };
+}
+function savedDeptOrder(){
+  try{ return JSON.parse(localStorage.getItem(LS_KEYS.DEPT_ORDER)) || [] }catch{ return [] }
+}
+function setSavedDeptOrder(arr){
+  localStorage.setItem(LS_KEYS.DEPT_ORDER, JSON.stringify(arr));
+}
+function savedLinkOrder(dep, sub){
+  try{ return JSON.parse(localStorage.getItem(LS_KEYS.LINK_ORDER(dep, sub))) || [] }catch{return []}
+}
+function setSavedLinkOrder(dep, sub, arr){
+  localStorage.setItem(LS_KEYS.LINK_ORDER(dep, sub), JSON.stringify(arr));
+}
+function imageFallback(el){
+  // If background image fails, we just keep the colored card; nothing to load here.
+}
+
+/* ================= Data Load ================= */
+async function loadData(){
+  try{
+    const res = await fetch(sheetURL);
+    rawRows = await res.json();
+    buildMaps();
+    renderSidebar();
+    renderDepartments();
+    updateCrumbs();
+  }catch(e){
+    console.error(e);
+    els.depGrid.innerHTML = `<div class="mini">Failed to load data. Check Apps Script CORS or URL.</div>`;
+  }
+}
+function buildMaps(){
+  const map = {}; // dep -> {dep, subs:[], imageUrl}
+  rawRows.forEach(row=>{
+    const dep = row.Department?.trim();
+    if(!dep) return;
+
+    const sub = row.SubDepartment?.trim();
+    const di = row.DIURL?.trim();
+
+    if(!map[dep]){
+      map[dep] = { dep, subs:[], imageUrl: di || "" };
+    }else if(!map[dep].imageUrl && di){
+      map[dep].imageUrl = di;
     }
-
-    function renderDepartments(filter = "") {
-      container.innerHTML = "";
-      const ordered = getSavedOrder();
-
-      const filtered = departmentsData.filter(({ dep, subs }) =>
-        dep.toLowerCase().includes(filter) || subs.some(sub => sub.toLowerCase().includes(filter))
-      );
-
-      const sorted = filter
-        ? filtered
-        : [
-            ...ordered.map(id => departmentsData.find(d => d.dep === id)).filter(Boolean),
-            ...departmentsData.filter(d => !ordered.includes(d.dep))
-          ];
-
-      sorted.forEach(({ dep, subs, imageUrl }) => {
-        const box = document.createElement("div");
-        box.className = "dept";
-        box.style.backgroundImage = `url('${imageUrl}')`;
-        box.setAttribute("data-id", dep);
-
-        const dropdown = [
-          `<a href="department.html?dep=${encodeURIComponent(dep)}&sub=__all__">👀 All Links</a>`,
-          ...subs.map(sub => `<a href="department.html?dep=${encodeURIComponent(dep)}&sub=${encodeURIComponent(sub)}">${sub}</a>`)
-        ].join("");
-
-        box.innerHTML = `
-          <span>${dep}</span>
-          <div class="dropdown">${dropdown}</div>
-        `;
-
-        container.appendChild(box);
-      });
-
-      Sortable.create(container, {
-        animation: 150,
-        onEnd: () => {
-          const ids = [...container.children].map(el => el.getAttribute("data-id"));
-          localStorage.setItem("deptOrder", JSON.stringify(ids));
-        }
-      });
+    if(sub && !map[dep].subs.includes(sub)){
+      map[dep].subs.push(sub);
     }
+  });
 
-    async function loadDepartments() {
-      const res = await fetch(sheetURL);
-      const raw = await res.json();
+  departmentsData = Object.values(map).map(entry=>({
+    ...entry,
+    imageUrl: entry.imageUrl || `https://source.unsplash.com/1200x800/?warehouse,${encodeURIComponent(entry.dep)}`
+  })).sort((a,b)=>a.dep.localeCompare(b.dep));
+}
 
-      const map = {};
+/* ================= Render: Sidebar ================= */
+function renderSidebar(){
+  // Departments list
+  els.depList.innerHTML = "";
+  const order = savedDeptOrder();
+  const ordered = [
+    ...order.map(id=>departmentsData.find(d=>d.dep===id)).filter(Boolean),
+    ...departmentsData.filter(d=>!order.includes(d.dep))
+  ];
 
-      raw.forEach(row => {
-        const dep = row.Department?.trim();
-        const sub = row.SubDepartment?.trim();
-        const image = row.DIURL?.trim(); // department image column
-        if (!dep) return;
-
-        if (!map[dep]) {
-          map[dep] = {
-            dep,
-            subs: [],
-            imageUrl: image || ""
-          };
-        }
-
-        if (!map[dep].imageUrl && image) {
-          map[dep].imageUrl = image;
-        }
-
-        if (sub && !map[dep].subs.includes(sub)) {
-          map[dep].subs.push(sub);
-        }
-      });
-
-      departmentsData = Object.values(map).map(entry => ({
-        ...entry,
-        imageUrl: entry.imageUrl || `https://source.unsplash.com/600x400/?warehouse,${entry.dep}`
-      }));
-
-      renderDepartments(searchInput.value.toLowerCase());
-    }
-
-    loadDepartments();
-    searchInput.addEventListener("input", e => {
-      renderDepartments(e.target.value.toLowerCase());
+  ordered.forEach(d=>{
+    const chip = document.createElement('div');
+    chip.className = 'chip' + (currentDep===d.dep ? ' active' : '');
+    chip.innerHTML = `<div style="width:8px;height:8px;border-radius:50%;background:#6a8cff;"></div>
+                      <div style="font-weight:600">${d.dep}</div>
+                      <div class="mini" style="margin-left:auto">${d.subs.length}</div>`;
+    chip.addEventListener('click', ()=>{
+      currentDep = d.dep;
+      currentSub = "__all__";
+      els.viewMode.value = "links";
+      renderSidebarSubs();
+      renderLinks();
+      updateCrumbs();
+      bumpStep();
     });
+    els.depList.appendChild(chip);
+  });
+  // Sub list for current dep
+  renderSidebarSubs();
+}
+function renderSidebarSubs(){
+  els.subList.innerHTML = "";
+  if(!currentDep){
+    els.subList.innerHTML = `<div class="mini" style="padding:8px 10px; border:1px dashed #ffffff2a; border-radius:10px">
+      Select a department to see sub-departments.
+    </div>`;
+    els.subFilter.disabled = true;
+    els.subFilter.innerHTML = `<option value="__all__">All</option>`;
+    return;
+  }
+  const depObj = departmentsData.find(d=>d.dep===currentDep);
+  const subs = depObj?.subs || [];
 
-    function toggleDarkMode() {
-      const isDark = document.body.classList.toggle("dark");
-      localStorage.setItem("darkMode", isDark ? "enabled" : "disabled");
-    }
+  const allChip = document.createElement('div');
+  allChip.className = 'chip' + (currentSub==="__all__" ? ' active' : '');
+  allChip.innerHTML = `<div style="width:8px;height:8px;border-radius:50%;background:#31d296;"></div>
+                       <div style="font-weight:600">All Links</div>`;
+  allChip.addEventListener('click', ()=>{
+    currentSub="__all__";
+    els.viewMode.value = "links";
+    renderLinks(); updateCrumbs(); bumpStep();
+    highlightSideSubs();
+  });
+  els.subList.appendChild(allChip);
 
-    if (localStorage.getItem("darkMode") === "enabled") {
-      document.body.classList.add("dark");
-    }
-  </script>
+  subs.forEach(s=>{
+    const chip = document.createElement('div');
+    chip.className = 'chip' + (currentSub===s ? ' active' : '');
+    chip.textContent = s;
+    chip.addEventListener('click', ()=>{
+      currentSub = s;
+      els.viewMode.value = "links";
+      renderLinks(); updateCrumbs(); bumpStep();
+      highlightSideSubs();
+    });
+    els.subList.appendChild(chip);
+  });
 
+  // Sub filter dropdown sync
+  els.subFilter.disabled = false;
+  els.subFilter.innerHTML = `<option value="__all__">All</option>` + subs.map(s=>`<option value="${s}">${s}</option>`).join('');
+  els.subFilter.value = currentSub;
+}
+function highlightSideSubs(){
+  [...els.subList.children].forEach(node=>{
+    if(!node.classList.contains('chip')) return;
+    const label = node.textContent.trim();
+    const isAll = label==="All Links" && currentSub==="__all__";
+    const matches = isAll || label===currentSub;
+    node.classList.toggle('active', matches);
+  });
+}
+
+/* ================= Render: Grids ================= */
+function renderDepartments(){
+  els.viewMode.value = "departments";
+  els.linkGrid.style.display = "none";
+  els.depGrid.style.display = "grid";
+
+  const q = els.search.value.trim().toLowerCase();
+  const order = savedDeptOrder();
+  const base = q
+    ? departmentsData.filter(({dep, subs})=> dep.toLowerCase().includes(q) || subs.some(s=>s.toLowerCase().includes(q)))
+    : [
+        ...order.map(id => departmentsData.find(d=>d.dep===id)).filter(Boolean),
+        ...departmentsData.filter(d=>!order.includes(d.dep))
+      ];
+
+  els.depGrid.innerHTML = "";
+  base.forEach(({dep, subs, imageUrl})=>{
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.setAttribute('data-id', dep);
+    card.innerHTML = `
+      <div class="bg" style="background-image:url('${imageUrl}')"></div>
+      <div class="label">
+        <span>${dep}</span>
+        <span class="pill">Subs: ${subs.length}</span>
+      </div>
+    `;
+    card.addEventListener('click', ()=>{
+      currentDep = dep;
+      currentSub = "__all__";
+      renderSidebar();
+      renderLinks();
+      els.viewMode.value="links";
+      updateCrumbs();
+      bumpStep();
+    });
+    els.depGrid.appendChild(card);
+  });
+
+  // Sortable enable/disable
+  if(depSortable){ depSortable.destroy(); depSortable=null; }
+  if(sortingEnabled){
+    depSortable = Sortable.create(els.depGrid, {
+      animation:150,
+      onEnd: ()=>{
+        const ids = [...els.depGrid.children].map(el=>el.getAttribute('data-id'));
+        setSavedDeptOrder(ids);
+      }
+    });
+  }
+}
+function linksFor(dep, sub){
+  const lowerDep = dep?.toLowerCase();
+  const lowerSub = sub?.toLowerCase();
+  const rows = rawRows.filter(r=>{
+    const rDep = r.Department?.toLowerCase().trim();
+    const rSub = r.SubDepartment?.toLowerCase().trim();
+    if(rDep !== lowerDep) return false;
+    if(sub==="__all__") return true;
+    return rSub === lowerSub;
+  });
+  return rows.map(r=>({
+    name: r.LinkName?.trim() || "Unnamed",
+    url : r.URL?.trim() || "#",
+    color: r.Color?.trim() || "",
+    image: r.ImageURL?.trim() || ""
+  }));
+}
+function renderLinks(){
+  els.depGrid.style.display = "none";
+  els.linkGrid.style.display = "grid";
+
+  if(!currentDep){
+    els.linkGrid.innerHTML = `<div class="mini" style="padding:12px">Choose a department from the left or from the grid.</div>`;
+    return;
+  }
+
+  // sync sub dropdown if user changed sidebar chips
+  if(els.subFilter.value !== currentSub){
+    els.subFilter.value = currentSub;
+  }
+
+  let data = linksFor(currentDep, currentSub);
+
+  // Search filter (by link name)
+  const q = els.search.value.trim().toLowerCase();
+  if(q){
+    data = data.filter(l => l.name.toLowerCase().includes(q));
+  }
+
+  // Apply saved order
+  const order = savedLinkOrder(currentDep, currentSub);
+  const sorted = [
+    ...order.map(n => data.find(l=>l.name===n)).filter(Boolean),
+    ...data.filter(l => !order.includes(l.name))
+  ];
+
+  els.linkGrid.innerHTML = "";
+  if(sorted.length===0){
+    els.linkGrid.innerHTML = `<div class="mini" style="padding:12px">No matching links found.</div>`;
+  }else{
+    sorted.forEach(l=>{
+      const item = document.createElement('a');
+      item.className = 'link';
+      item.setAttribute('data-name', l.name);
+      item.href = l.url;
+      item.target = "_blank";
+      item.rel="noopener";
+      const bgStyle = l.image ? `background-image:url('${l.image}')` : '';
+      item.innerHTML = `
+        <div class="bg" style="${bgStyle}"></div>
+        <div class="label">${l.name}</div>
+      `;
+      item.addEventListener('click', ()=> bumpStep());
+      els.linkGrid.appendChild(item);
+    });
+  }
+
+  if(linkSortable){ linkSortable.destroy(); linkSortable=null; }
+  if(sortingEnabled){
+    linkSortable = Sortable.create(els.linkGrid, {
+      animation:150,
+      onEnd: ()=>{
+        const names = [...els.linkGrid.children].map(el=>el.getAttribute('data-name'));
+        setSavedLinkOrder(currentDep, currentSub, names);
+      }
+    });
+  }
+}
+
+/* ================= UI: Crumbs & Controls ================= */
+function updateCrumbs(){
+  if(!currentDep){
+    els.crumbs.innerHTML = `Home`;
+    return;
+  }
+  const subTxt = currentSub==="__all__" ? "All" : currentSub;
+  els.crumbs.innerHTML = `<b>${currentDep}</b> <span style="opacity:.6">/</span> ${subTxt}`;
+}
+
+/* ================= Handlers ================= */
+els.viewMode.addEventListener('change', ()=>{
+  const v = els.viewMode.value;
+  if(v==="departments"){ renderDepartments(); }
+  else{ renderLinks(); }
+  bumpStep();
+});
+
+els.subFilter.addEventListener('change', ()=>{
+  currentSub = els.subFilter.value;
+  renderLinks();
+  updateCrumbs();
+  bumpStep();
+});
+
+els.btnToggleSort.addEventListener('click', ()=>{
+  sortingEnabled = !sortingEnabled;
+  els.btnToggleSort.textContent = sortingEnabled ? '✅ Sorting' : '↕️ Sort';
+  if(els.viewMode.value==="departments"){ renderDepartments(); }
+  else{ renderLinks(); }
+  bumpStep();
+});
+
+els.btnRefresh.addEventListener('click', ()=>{
+  loadData(); bumpStep();
+});
+
+els.btnClear.addEventListener('click', ()=>{
+  localStorage.removeItem(LS_KEYS.DEPT_ORDER);
+  // wipe all link orders
+  Object.keys(localStorage).forEach(k=>{
+    if(k.startsWith('linkOrder-') || k.startsWith('linkOrder_') || k.includes('--')) localStorage.removeItem(k);
+  });
+  if(els.viewMode.value==="departments"){ renderDepartments(); } else { renderLinks(); }
+  bumpStep();
+});
+
+els.search.addEventListener('input', debounce(()=>{
+  if(els.viewMode.value==="departments"){ renderDepartments(); }
+  else{ renderLinks(); }
+}, 120));
+
+/* ================= Kickoff ================= */
+loadData();
+</script>
 </body>
 </html>
