@@ -3,18 +3,18 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=1280, initial-scale=1.0"/>
-<title>RANVEXSI UI — Compact</title>
+<title>RANVEXSI UI — Compact (Calm Light, No Side Scroll)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <style>
   :root{
-    /* Softer Light Theme */
-    --bg: #e9eef6;          /* slightly darker to reduce glare */
+    /* Calmer Light Theme */
+    --bg: #e6ebf3;          /* darker than pure white to cut glare */
     --ink: #0f1324;
     --muted:#6c7286;
     --card:#f7f9fe;
-    --line:#d6deec;
+    --line:#cfd8ea;
     --accent:#3a6cf4;
     --accent-ink:#ffffff;
 
@@ -22,18 +22,18 @@
     --round:12px;
     --shadow:0 6px 18px rgba(16,19,36,0.06);
     --grid-gap:16px;
-    --cols:auto-fill;      /* auto-fill or a number (2..8) */
-    --ratio:1.777;         /* 16:9 default */
-    --density:1;           /* 0.9 compact, 1 comfort, 1.1 cozy */
-    --media-display:block; /* block or none */
-    --img-opacity:.38;     /* calmer image in light mode */
+    --card-min:300px;       /* dynamically recalculated when the user picks a column count */
+    --ratio:1.777;          /* 16:9 default */
+    --density:1;            /* 0.9 compact, 1 comfort, 1.1 cozy */
+    --media-display:block;  /* block or none */
+    --img-opacity:.38;      /* calmer image in light mode */
   }
   .dark{
     --bg:#0f1220;
     --ink:#eaf1ff;
     --muted:#9aa6c8;
     --card:#141a2c;
-    --line:#222b46;
+    --line:#2a3452;
     --accent:#5b83ff;
     --accent-ink:#0b1020;
     --shadow:0 8px 24px rgba(0,0,0,.22);
@@ -47,6 +47,7 @@
     font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     color:var(--ink);
     background:var(--bg);
+    overflow-x:hidden; /* belt-and-suspenders: never allow horizontal scroll */
   }
 
   /* ================= Header (compact) ================= */
@@ -72,10 +73,11 @@
   .search input{
     height:32px; width:100%;
     padding:0 10px 0 32px; border-radius:8px;
-    border:1px solid var(--line); background:#fff; outline:none; color:#111; font-size:.92rem;
+    border:1px solid var(--line); background:#ffffff; outline:none; color:#111; font-size:.92rem;
   }
-  .dark .search input{ background:#0f1426; color:var(--ink); border-color:#2a3452 }
+  .dark .search input{ background:#0f1426; color:var(--ink); }
   .search svg{position:absolute; left:8px; top:50%; transform:translateY(-50%); opacity:.65}
+  ::placeholder{ color:#6b7280 } .dark ::placeholder{ color:#b6c2e0 }
 
   /* icon buttons */
   .actions{display:flex; align-items:center; gap:6px}
@@ -85,12 +87,10 @@
     cursor:pointer; position:relative;
   }
   .iconbtn:hover{ filter:brightness(0.98) }
-  .dark .iconbtn{ border-color:#2a3452 }
   .badge{
     height:28px; padding:0 8px; border-radius:999px;
     border:1px solid var(--line); background:var(--card); display:flex; align-items:center; gap:6px; font-size:.86rem;
   }
-  .dark .badge{ border-color:#2a3452 }
 
   /* tooltips */
   .iconbtn[data-tip]:hover::after{
@@ -117,12 +117,13 @@
     height:32px; padding:0 8px; border-radius:8px; border:1px solid var(--line);
     background:var(--card); color:var(--ink); font-weight:600; cursor:pointer; font-size:.9rem;
   }
-  .range{ width:120px; padding:0 }
+  .range{ width:140px; padding:0 }
 
   /* ================= Grid ================= */
   .grid{
     display:grid; gap:var(--grid-gap);
-    grid-template-columns: repeat( var(--cols), minmax(300px, 1fr) ); /* raise min width for stability */
+    /* Auto-fit guarantees no overflow; --card-min computed to match selected column count */
+    grid-template-columns: repeat( auto-fit, minmax(var(--card-min), 1fr) );
   }
 
   /* Department card */
@@ -135,11 +136,11 @@
   .card .img, .link .img{
     position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
     display:var(--media-display); opacity:var(--img-opacity);
-    filter:none; /* remove bright washout */
+    filter:none;
   }
   .card .overlay, .link .overlay{
     position:absolute; inset:0; pointer-events:none;
-    background: linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,.65) 100%); /* bottom shading */
+    background: linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,.72) 100%);
   }
   .card .label{
     position:absolute; left:12px; right:12px; bottom:10px; z-index:1;
@@ -148,7 +149,7 @@
     text-shadow:0 1px 6px rgba(0,0,0,.35);
     color:#fff;
   }
-  .pill{ font-size:.78rem; padding:4px 8px; border-radius:999px; background:rgba(255,255,255,.15); color:#fff }
+  .pill{ font-size:.78rem; padding:4px 8px; border-radius:999px; background:rgba(255,255,255,.16); color:#fff }
 
   /* Sub full-page items */
   .subchip{
@@ -172,10 +173,6 @@
 
   /* Helpers */
   .hidden{ display:none !important }
-
-  /* Placeholder colors for readability */
-  ::placeholder{ color:#6b7280 }
-  .dark ::placeholder{ color:#b6c2e0 }
 </style>
 </head>
 <body>
@@ -201,7 +198,7 @@
     </div>
   </div>
 
-  <div class="wrap">
+  <div class="wrap" id="wrap">
     <!-- Crumbs -->
     <div class="toolbar">
       <div class="crumbs" id="crumbs">Home</div>
@@ -228,7 +225,8 @@
         <button class="btn" id="btnSort">Enable Sort</button>
 
         <label class="chip">Cols
-          <input id="cols" type="range" class="range" min="2" max="8" step="1" value="0" title="0 = Auto" />
+          <!-- 0 = Auto; 2..6 = exact columns, computed without overflow -->
+          <input id="cols" type="range" class="range" min="0" max="6" step="1" value="0" />
         </label>
 
         <label class="chip">Density
@@ -286,7 +284,8 @@ const els = {
   media: document.getElementById('media'),
   steps: document.getElementById('steps'),
   stepsTotal: document.getElementById('stepsTotal'),
-  settings: document.getElementById('settings')
+  settings: document.getElementById('settings'),
+  wrap: document.getElementById('wrap')
 };
 
 let rawRows = [];
@@ -302,10 +301,10 @@ const LS = {
   DEPT_ORDER: "rv_dept_order",
   LINK_ORDER: (dep, sub) => `rv_link_order_${dep}__${sub}`,
   STEPS: "rv_steps_total",
-  GRID: "rv_grid_prefs_compact",
+  GRID: "rv_grid_prefs_compact_v2",
   THEME: "rv_theme",
   SETTINGS_OPEN: "rv_settings_open",
-  SETTINGS_OPEN_NONDEP: "rv_settings_open_nd" // separate state for non-departments
+  SETTINGS_OPEN_NONDEP: "rv_settings_open_nd"
 };
 
 /* ===== Steps ===== */
@@ -338,31 +337,54 @@ els.btnTheme.addEventListener('click', ()=>{
 function setSettingsOpen(open){
   els.settings.classList.toggle('hidden', !open);
 }
-els.btnSettings.addEventListener('click', ()=>{
+document.getElementById('btnSettings').addEventListener('click', ()=>{
   const open = els.settings.classList.contains('hidden');
   const mode = els.viewMode.value || "departments";
   setSettingsOpen(open);
-  // remember separately for departments vs others
   if(mode === "departments") localStorage.setItem(LS.SETTINGS_OPEN, open ? "1" : "0");
   else localStorage.setItem(LS.SETTINGS_OPEN_NONDEP, open ? "1" : "0");
 });
 
 /* ===== Grid prefs ===== */
+function cssVar(name){
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+function setCardMin(px){
+  document.documentElement.style.setProperty('--card-min', px + 'px');
+}
+function computeCardMinForCols(n){
+  // compute min card width so n columns fit without horizontal scroll
+  const wrap = els.wrap.clientWidth; // includes paddings already subtracted in clientWidth
+  const gap = parseInt(cssVar('--grid-gap') || '16', 10);
+  if(n <= 1) return Math.max(240, Math.floor(wrap)); // single column
+  const totalGap = (n - 1) * gap;
+  const min = Math.max(240, Math.floor((wrap - totalGap) / n));
+  return min;
+}
 function applyPrefs(p){
-  if(p.cols === "auto" || !p.cols){ document.documentElement.style.setProperty('--cols', 'auto-fill'); els.cols.value = 0; }
-  else{ document.documentElement.style.setProperty('--cols', p.cols); els.cols.value = Number(p.cols); }
+  // density
   document.documentElement.style.setProperty('--density', p.density || "1");
   els.density.value = p.density || "1";
+  // ratio
   document.documentElement.style.setProperty('--ratio', p.ratio || "1.777");
   els.ratio.value = p.ratio || "1.777";
+  // media
   if((p.media || "on") === "off"){
     document.documentElement.style.setProperty('--media-display', 'none');
     document.documentElement.style.setProperty('--img-opacity', '0');
     els.media.value = "off";
   }else{
     document.documentElement.style.setProperty('--media-display', 'block');
-    // opacity is set in CSS root; we keep it
+    // leave root opacity variables
     els.media.value = "on";
+  }
+  // columns -> set --card-min so auto-fit yields EXACT count without overflow
+  const cols = Number(p.cols || 0);
+  els.cols.value = cols;
+  if(cols === 0){
+    setCardMin(300); // default auto sizing
+  }else{
+    setCardMin(computeCardMinForCols(cols));
   }
 }
 function readPrefs(){
@@ -371,10 +393,12 @@ function readPrefs(){
 function savePrefs(p){ localStorage.setItem(LS.GRID, JSON.stringify(p)); }
 applyPrefs(readPrefs());
 
+/* Controls */
 els.cols.addEventListener('input', ()=>{
-  const v = Number(els.cols.value);
-  const cols = v === 0 ? "auto" : String(v);
-  const prefs = readPrefs(); prefs.cols = cols; savePrefs(prefs); applyPrefs(prefs);
+  const prefs = readPrefs();
+  prefs.cols = Number(els.cols.value);
+  savePrefs(prefs);
+  applyPrefs(prefs);
 });
 els.density.addEventListener('change', ()=>{
   const prefs = readPrefs(); prefs.density = els.density.value; savePrefs(prefs); applyPrefs(prefs);
@@ -384,6 +408,12 @@ els.ratio.addEventListener('change', ()=>{
 });
 els.media.addEventListener('change', ()=>{
   const prefs = readPrefs(); prefs.media = els.media.value; savePrefs(prefs); applyPrefs(prefs);
+});
+window.addEventListener('resize', ()=>{
+  const prefs = readPrefs();
+  if(Number(prefs.cols || 0) > 0){
+    setCardMin(computeCardMinForCols(Number(prefs.cols)));
+  }
 });
 
 /* ===== Data load ===== */
@@ -434,10 +464,9 @@ function setLinkOrder(dep, sub, arr){
 /* ===== Views ===== */
 function render(){
   const mode = els.viewMode.value || "departments";
-
   // settings visibility by view
   if(mode === "departments"){
-    setSettingsOpen(false); // always default hidden for departments
+    setSettingsOpen(false); // hidden by default in departments
     localStorage.setItem(LS.SETTINGS_OPEN, "0");
   }else{
     const saved = localStorage.getItem(LS.SETTINGS_OPEN_NONDEP);
@@ -450,7 +479,7 @@ function render(){
   updateCrumbs();
 }
 
-/* Departments: full screen */
+/* Departments */
 function renderDepartments(){
   showOnly('depGrid');
 
@@ -500,7 +529,7 @@ function renderDepartments(){
   }
 }
 
-/* Sub-departments: full page grid */
+/* Sub-departments */
 function renderSubPage(){
   showOnly('subGrid');
 
@@ -541,7 +570,7 @@ function renderSubPage(){
   });
 }
 
-/* Links grid */
+/* Links */
 function linksFor(dep, sub){
   const lowerDep = dep?.toLowerCase();
   const lowerSub = sub?.toLowerCase();
@@ -636,7 +665,7 @@ function updateCrumbs(){
   }
 }
 
-/* ===== Events ===== */
+/* ===== Sorting/Refresh/Clear ===== */
 els.viewMode.addEventListener('change', ()=>{ render(); step(); });
 els.subFilter.addEventListener('change', ()=>{
   currentSub = els.subFilter.value;
