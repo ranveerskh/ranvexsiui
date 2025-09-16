@@ -1,692 +1,370 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=1280, initial-scale=1.0"/>
-<title>RANVEXSI UI — Compact (Dark by default, Fixed Light)</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-<style>
-  :root{
-    /* Light Theme (calm, no washout) */
-    --bg: #e9edf5;
-    --ink: #101423;
-    --muted:#6d7387;
-    --card:#f8faff;
-    --line:#cfd7e7;
-    --accent:#3a6cf4;
-    --accent-ink:#ffffff;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RANVEXSI UI</title>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <style>
+    :root {
+      --bg: #f0f4f8;
+      --text: #000;
+      --card: #fff;
+    }
+    body.dark {
+      --bg: #121212;
+      --text: #fff;
+      --card: #1e1e1e;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 99%;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+    }
 
-    /* Layout */
-    --round:12px;
-    --shadow:0 6px 18px rgba(16,19,36,0.06);
-    --grid-gap:16px;
-    --card-min:300px;       /* recomputed by JS when user chooses a column count */
-    --ratio:1.777;
-    --density:1;
-    --media-display:block;
+    .header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      background: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      gap: 10px;
+    }
 
-    /* Image tuning:
-       Light mode: near-opaque image + a very subtle uniform veil to keep UI cohesive.
-       Dark mode (below): slightly lower opacity so labels/overlay read well. */
-    --img-opacity:.88;             /* LIGHT image strength (no more milky wash) */
-    --img-veil:rgba(0,0,0,.06);    /* LIGHT very subtle global veil */
-    --overlay-end:.70;             /* bottom gradient darkness (0..1) */
-  }
-  .dark{
-    --bg:#0f1220;
-    --ink:#eaf1ff;
-    --muted:#9aa6c8;
-    --card:#141a2c;
-    --line:#2a3452;
-    --accent:#5b83ff;
-    --accent-ink:#0b1020;
-    --shadow:0 8px 24px rgba(0,0,0,.22);
+    .left h1 {
+      margin: 0;
+      font-size: 1.5rem;
+    }
 
-    --img-opacity:.55;             /* DARK image strength */
-    --img-veil:rgba(0,0,0,.00);    /* no extra veil in dark */
-    --overlay-end:.72;
-  }
+    .center {
+      flex: 1 1 300px;
+      max-width: 400px;
+    }
 
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0;
-    font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-    color:var(--ink);
-    background:var(--bg);
-    overflow-x:hidden; /* never allow sideways scroll */
-  }
+    .center input {
+      width: 100%;
+      padding: 6px 12px;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: none;
+    }
 
-  /* ================= Header (compact) ================= */
-  .header{
-    position:sticky; top:0; z-index:30;
-    display:flex; align-items:center; gap:8px;
-    padding:6px 10px; height:48px;
-    background:var(--card); border-bottom:1px solid var(--line); box-shadow:var(--shadow);
-  }
-  .brand{display:flex; align-items:center; gap:8px}
-  .logo{
-    width:28px; height:28px; border-radius:8px;
-    background:var(--accent); color:var(--accent-ink);
-    display:grid; place-items:center; font-weight:800; font-size:0.9rem; letter-spacing:-.2px;
-  }
-  .title{font-weight:800; font-size:.92rem; line-height:1}
-  .grow{flex:1}
+    .right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
 
-  /* search compact */
-  .search{
-    position:relative; width:520px; max-width:45vw; transform:scale(var(--density));
-  }
-  .search input{
-    height:32px; width:100%;
-    padding:0 10px 0 32px; border-radius:8px;
-    border:1px solid var(--line); background:#ffffff; outline:none; color:#111; font-size:.92rem;
-  }
-  .dark .search input{ background:#0f1426; color:var(--ink); }
-  .search svg{position:absolute; left:8px; top:50%; transform:translateY(-50%); opacity:.65}
-  ::placeholder{ color:#6b7280 } .dark ::placeholder{ color:#b6c2e0 }
+    .buttons {
+      display: flex;
+      gap: 10px;
+    }
 
-  /* icon buttons */
-  .actions{display:flex; align-items:center; gap:6px}
-  .iconbtn{
-    width:32px; height:32px; display:grid; place-items:center;
-    border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--ink);
-    cursor:pointer; position:relative;
-  }
-  .iconbtn:hover{ filter:brightness(0.98) }
-  .badge{
-    height:28px; padding:0 8px; border-radius:999px;
-    border:1px solid var(--line); background:var(--card); display:flex; align-items:center; gap:6px; font-size:.86rem;
-  }
+    .buttons button {
+      background: white;
+      color: #4CAF50;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
 
-  /* tooltips */
-  .iconbtn[data-tip]:hover::after{
-    content:attr(data-tip); position:absolute; bottom:-30px; left:50%; transform:translateX(-50%);
-    background:#111; color:#fff; font-size:.75rem; padding:4px 6px; border-radius:6px; white-space:nowrap;
-  }
+    .menu {
+      position: relative;
+    }
 
-  /* ================= Main ================= */
-  .wrap{ max-width:1280px; margin:12px auto 18px; padding:0 12px }
+    .menu-button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
 
-  /* crumbs */
-  .toolbar{ display:flex; align-items:center; gap:10px; margin:8px 0 }
-  .crumbs{ font-size:.92rem; color:var(--muted) }
-  .crumbs b{ color:var(--ink) }
+    .menu-dropdown {
+      display: none;
+      position: absolute;
+      top: 40px;
+      right: 0;
+      background: white;
+      color: black;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      min-width: 200px;
+      z-index: 100;
+    }
 
-  /* collapsible settings */
-  .settings{
-    border:1px solid var(--line); border-radius:10px; background:var(--card);
-    box-shadow:var(--shadow); padding:8px; margin-bottom:12px;
-  }
-  .settings.hidden{ display:none }
-  .controls{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
-  .chip, .btn, select, .range{
-    height:32px; padding:0 8px; border-radius:8px; border:1px solid var(--line);
-    background:var(--card); color:var(--ink); font-weight:600; cursor:pointer; font-size:.9rem;
-  }
-  .range{ width:140px; padding:0 }
+    .menu:hover .menu-dropdown,
+    .menu:focus-within .menu-dropdown {
+      display: block;
+    }
 
-  /* ================= Grid ================= */
-  .grid{
-    display:grid; gap:var(--grid-gap);
-    /* auto-fit with min derived from JS to prevent overflow */
-    grid-template-columns: repeat( auto-fit, minmax(var(--card-min), 1fr) );
-  }
+    .menu-dropdown a, .menu-dropdown button {
+      display: block;
+      padding: 10px 20px;
+      border: none;
+      background: none;
+      text-align: left;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 100%;
+    }
 
-  /* Card base */
-  .card, .link{
-    position:relative; border:1px solid var(--line); border-radius:var(--round);
-    background:var(--card); box-shadow:var(--shadow);
-    aspect-ratio: var(--ratio);
-    overflow:hidden; cursor:pointer;
-  }
-  /* Photo */
-  .card .img, .link .img{
-    position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
-    display:var(--media-display); opacity:var(--img-opacity);
-    filter:none;
-  }
-  /* Very light uniform veil in LIGHT mode only, does nothing in dark */
-  .card .veil, .link .veil{
-    position:absolute; inset:0; background:var(--img-veil); pointer-events:none;
-  }
-  /* Bottom gradient for label readability */
-  .card .overlay, .link .overlay{
-    position:absolute; inset:0; pointer-events:none;
-    background: linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,var(--overlay-end)) 100%);
-  }
-  /* Label */
-  .card .label, .link .label{
-    position:absolute; left:12px; right:12px; bottom:10px; z-index:1;
-    display:flex; justify-content:space-between; align-items:center;
-    font-weight:800; font-size:calc(.98rem * var(--density));
-    text-shadow:0 1px 6px rgba(0,0,0,.35);
-    color:#fff;
-  }
-  .pill{ font-size:.78rem; padding:4px 8px; border-radius:999px; background:rgba(255,255,255,.16); color:#fff }
+    .menu-dropdown a:hover, .menu-dropdown button:hover {
+      background: #f0f0f0;
+    }
 
-  /* Sub full-page items */
-  .subchip{
-    display:flex; align-items:center; justify-content:center; text-align:center;
-    border:1px solid var(--line); border-radius:10px; background:var(--card);
-    min-height:120px; font-weight:700; cursor:pointer; aspect-ratio:1.1; padding:10px;
-    box-shadow:var(--shadow);
-  }
+    .foot-icon {
+      position: relative;
+      font-size: 1.3rem;
+      cursor: pointer;
+    }
 
-  a.link{ color:inherit; text-decoration:none }
+    .foot-icon .tooltip {
+      display: none;
+      position: absolute;
+      top: 28px;
+      right: 0;
+      background: white;
+      color: black;
+      font-size: 0.85rem;
+      border-radius: 8px;
+      padding: 10px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+      white-space: nowrap;
+      z-index: 200;
+    }
 
-  .hidden{ display:none !important }
-</style>
+    .foot-icon:hover .tooltip {
+      display: block;
+    }
+
+    .grid {
+      display: grid;
+      flex: 1;
+      width: 100%;
+      padding: 20px;
+      box-sizing: border-box;
+      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      grid-auto-rows: 1fr;
+    }
+
+    .dept {
+      position: relative;
+      border-radius: 10px;
+      overflow: hidden;
+      background-size: cover;
+      background-position: center;
+      cursor: grab;
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-start;
+      height: 100%;
+      min-height: 200px;
+      background-color: var(--card);
+    }
+
+    .dept::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 1;
+    }
+
+    .dept span {
+      position: relative;
+      z-index: 2;
+      padding: 10px;
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: white;
+    }
+
+    .dropdown {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      max-height: 200px;
+      background: white;
+      overflow-y: auto;
+      border-radius: 0 0 10px 10px;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.2);
+      z-index: 10;
+      display: none;
+    }
+
+    .dept:hover .dropdown,
+    .dept:focus-within .dropdown {
+      display: block;
+    }
+
+    .dropdown a {
+      display: block;
+      padding: 12px;
+      text-decoration: none;
+      color: #333;
+      font-weight: bold;
+    }
+
+    .dropdown a:hover {
+      background: #f0f0f0;
+    }
+  </style>
 </head>
 <body>
+
   <div class="header">
-    <div class="brand">
-      <div class="logo">RV</div>
-      <div class="title">RANVEXSI UI</div>
+    <div class="left"><h1>RANVEXSI UI</h1></div>
+    <div class="center">
+      <input type="text" id="searchInput" placeholder="Search department or sub-department...">
     </div>
-
-    <div class="grow"></div>
-
-    <div class="search" title="Search departments, subs or links">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.3-4.3M10.8 18.2a7.4 7.4 0 1 1 0-14.8 7.4 7.4 0 0 1 0 14.8Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-      <input id="search" placeholder="Search departments, sub-departments, or links..." autocomplete="off" />
-    </div>
-
-    <div class="actions">
-      <button class="iconbtn" id="btnSettings" data-tip="Settings">⚙️</button>
-      <button class="iconbtn" id="btnRefresh" data-tip="Reload">↻</button>
-      <button class="iconbtn" id="btnClear" data-tip="Clear Order">🧹</button>
-      <button class="iconbtn" id="btnTheme" data-tip="Light/Dark">🌗</button>
-      <div class="badge" title="Steps | Total">👣 <span id="steps">0</span> | 📊 <span id="stepsTotal">0</span></div>
+    <div class="right">
+      <div class="buttons">
+        <button onclick="location.reload()">🔄 Refresh</button>
+        <button onclick="localStorage.clear(); location.reload()">🧹 Clear Order</button>
+      </div>
+      <div class="menu">
+        <button class="menu-button">☰</button>
+        <div class="menu-dropdown">
+          <a href="about.html">About Us</a>
+          <a href="request.html">Request New Feature</a>
+          <a href="admin.html">Admin Login</a>
+          <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
+        </div>
+      </div>
+      <div class="foot-icon">
+        👣
+        <div class="tooltip">
+          🟢 Live Visitors: <span id="liveCount">—</span><br>
+          📊 Total Visits: <span id="totalCount">—</span>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="wrap" id="wrap">
-    <!-- Crumbs -->
-    <div class="toolbar">
-      <div class="crumbs" id="crumbs">Home</div>
-      <div class="grow"></div>
-    </div>
+  <div class="grid" id="departments"></div>
 
-    <!-- Collapsible Settings -->
-    <div id="settings" class="settings">
-      <div class="controls">
-        <label class="chip">View
-          <select id="viewMode" style="margin-left:6px">
-            <option value="departments">Departments</option>
-            <option value="subpage">Sub-Departments (Full)</option>
-            <option value="links">Links</option>
-          </select>
-        </label>
+  <script>
+    const sheetURL = "https://script.google.com/macros/s/AKfycbwnjvDjGQNtpVkxySJj6GaObo6l1ecfUg3NXzvF7G5MX7H4S5Qo92jhUM8_eOTO2MeXUQ/exec";
+    const container = document.getElementById("departments");
+    const searchInput = document.getElementById("searchInput");
 
-        <label class="chip">Sub
-          <select id="subFilter" style="margin-left:6px" disabled>
-            <option value="__all__">All</option>
-          </select>
-        </label>
+    let departmentsData = [];
 
-        <button class="btn" id="btnSort">Enable Sort</button>
-
-        <label class="chip">Cols
-          <!-- 0 = Auto; 2..6 = exact columns, computed without overflow -->
-          <input id="cols" type="range" class="range" min="0" max="6" step="1" value="0" />
-        </label>
-
-        <label class="chip">Density
-          <select id="density" style="margin-left:6px">
-            <option value="1">Comfort</option>
-            <option value="0.9">Compact</option>
-            <option value="1.1">Cozy</option>
-          </select>
-        </label>
-
-        <label class="chip">Ratio
-          <select id="ratio" style="margin-left:6px">
-            <option value="1.777">16:9</option>
-            <option value="1.333">4:3</option>
-            <option value="1">1:1</option>
-          </select>
-        </label>
-
-        <label class="chip">Images
-          <select id="media" style="margin-left:6px">
-            <option value="on">On</option>
-            <option value="off">Off</option>
-          </select>
-        </label>
-      </div>
-    </div>
-
-    <!-- Views -->
-    <div id="depGrid" class="grid" aria-label="Departments grid"></div>
-    <div id="subGrid" class="grid hidden" aria-label="Sub-departments grid"></div>
-    <div id="linkGrid" class="grid hidden" aria-label="Links grid"></div>
-  </div>
-
-<script>
-/* ===== Config ===== */
-const sheetURL = "https://script.google.com/macros/s/AKfycbwnjvDjGQNtpVkxySJj6GaObo6l1ecfUg3NXzvF7G5MX7H4S5Qo92jhUM8_eOTO2MeXUQ/exec";
-
-/* ===== State/Refs ===== */
-const els = {
-  search: document.getElementById('search'),
-  depGrid: document.getElementById('depGrid'),
-  subGrid: document.getElementById('subGrid'),
-  linkGrid: document.getElementById('linkGrid'),
-  crumbs: document.getElementById('crumbs'),
-  viewMode: document.getElementById('viewMode'),
-  subFilter: document.getElementById('subFilter'),
-  btnSort: document.getElementById('btnSort'),
-  btnRefresh: document.getElementById('btnRefresh'),
-  btnClear: document.getElementById('btnClear'),
-  btnTheme: document.getElementById('btnTheme'),
-  btnSettings: document.getElementById('btnSettings'),
-  cols: document.getElementById('cols'),
-  density: document.getElementById('density'),
-  ratio: document.getElementById('ratio'),
-  media: document.getElementById('media'),
-  steps: document.getElementById('steps'),
-  stepsTotal: document.getElementById('stepsTotal'),
-  settings: document.getElementById('settings'),
-  wrap: document.getElementById('wrap')
-};
-
-let rawRows = [];
-let departmentsData = [];   // [{dep, subs:[], imageUrl}]
-let currentDep = null;
-let currentSub = "__all__";
-let sorting = false;
-let depSortable = null;
-let linkSortable = null;
-
-/* ===== Local Storage Keys ===== */
-const LS = {
-  DEPT_ORDER: "rv_dept_order",
-  LINK_ORDER: (dep, sub) => `rv_link_order_${dep}__${sub}`,
-  STEPS: "rv_steps_total",
-  GRID: "rv_grid_prefs_compact_v3",
-  THEME: "rv_theme",
-  SETTINGS_OPEN: "rv_settings_open",
-  SETTINGS_OPEN_NONDEP: "rv_settings_open_nd"
-};
-
-/* ===== Steps ===== */
-let sessionSteps = 0;
-function step(n=1){
-  sessionSteps += n;
-  els.steps.textContent = sessionSteps;
-  const t = Number(localStorage.getItem(LS.STEPS) || 0) + n;
-  localStorage.setItem(LS.STEPS, String(t));
-  els.stepsTotal.textContent = t;
-}
-(function initSteps(){
-  els.steps.textContent = "0";
-  els.stepsTotal.textContent = Number(localStorage.getItem(LS.STEPS) || 0);
-  step(1); // load
-})();
-
-/* ===== Theme ===== */
-/* Default to DARK unless user has a saved choice */
-(function initTheme(){
-  let saved = localStorage.getItem(LS.THEME);
-  if(!saved){ saved = "dark"; localStorage.setItem(LS.THEME, saved); }
-  document.body.classList.toggle('dark', saved === "dark");
-})();
-els.btnTheme.addEventListener('click', ()=>{
-  const dark = !document.body.classList.contains('dark');
-  document.body.classList.toggle('dark', dark);
-  localStorage.setItem(LS.THEME, dark ? "dark" : "light");
-});
-
-/* ===== Settings Panel Toggle ===== */
-function setSettingsOpen(open){
-  els.settings.classList.toggle('hidden', !open);
-}
-document.getElementById('btnSettings').addEventListener('click', ()=>{
-  const open = els.settings.classList.contains('hidden');
-  const mode = els.viewMode.value || "departments";
-  setSettingsOpen(open);
-  if(mode === "departments") localStorage.setItem(LS.SETTINGS_OPEN, open ? "1" : "0");
-  else localStorage.setItem(LS.SETTINGS_OPEN_NONDEP, open ? "1" : "0");
-});
-
-/* ===== Grid prefs ===== */
-function cssVar(name){
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-}
-function setCardMin(px){
-  document.documentElement.style.setProperty('--card-min', px + 'px');
-}
-function computeCardMinForCols(n){
-  const wrap = els.wrap.clientWidth;
-  const gap = parseInt(cssVar('--grid-gap') || '16', 10);
-  if(n <= 1) return Math.max(240, Math.floor(wrap));
-  const totalGap = (n - 1) * gap;
-  return Math.max(240, Math.floor((wrap - totalGap) / n));
-}
-function applyPrefs(p){
-  document.documentElement.style.setProperty('--density', p.density || "1");
-  els.density.value = p.density || "1";
-
-  document.documentElement.style.setProperty('--ratio', p.ratio || "1.777");
-  els.ratio.value = p.ratio || "1.777";
-
-  if((p.media || "on") === "off"){
-    document.documentElement.style.setProperty('--media-display', 'none');
-    document.documentElement.style.setProperty('--img-opacity', '0');
-    els.media.value = "off";
-  }else{
-    document.documentElement.style.setProperty('--media-display', 'block');
-    // keep theme-defined opacities
-    els.media.value = "on";
-  }
-
-  const cols = Number(p.cols || 0);
-  els.cols.value = cols;
-  if(cols === 0) setCardMin(300);
-  else setCardMin(computeCardMinForCols(cols));
-}
-function readPrefs(){
-  try{ return JSON.parse(localStorage.getItem(LS.GRID) || "{}"); }catch{ return {} }
-}
-function savePrefs(p){ localStorage.setItem(LS.GRID, JSON.stringify(p)); }
-applyPrefs(readPrefs());
-
-/* Controls */
-els.cols.addEventListener('input', ()=>{
-  const prefs = readPrefs(); prefs.cols = Number(els.cols.value);
-  savePrefs(prefs); applyPrefs(prefs);
-});
-els.density.addEventListener('change', ()=>{
-  const prefs = readPrefs(); prefs.density = els.density.value; savePrefs(prefs); applyPrefs(prefs);
-});
-els.ratio.addEventListener('change', ()=>{
-  const prefs = readPrefs(); prefs.ratio = els.ratio.value; savePrefs(prefs); applyPrefs(prefs);
-});
-els.media.addEventListener('change', ()=>{
-  const prefs = readPrefs(); prefs.media = els.media.value; savePrefs(prefs); applyPrefs(prefs);
-});
-window.addEventListener('resize', ()=>{
-  const prefs = readPrefs();
-  if(Number(prefs.cols || 0) > 0){
-    setCardMin(computeCardMinForCols(Number(prefs.cols)));
-  }
-});
-
-/* ===== Data load ===== */
-async function loadData(){
-  try{
-    const res = await fetch(sheetURL, { cache:"no-store" });
-    rawRows = await res.json();
-    buildMaps();
-    render();
-  }catch(e){
-    console.error(e);
-    els.depGrid.innerHTML = `<div class="chip">Failed to load data.</div>`;
-  }
-}
-function buildMaps(){
-  const map = {};
-  rawRows.forEach(row=>{
-    const dep = row.Department?.trim();
-    if(!dep) return;
-    const sub = row.SubDepartment?.trim();
-    const di = row.DIURL?.trim();
-
-    if(!map[dep]) map[dep] = { dep, subs:[], imageUrl: di || "" };
-    else if(!map[dep].imageUrl && di) map[dep].imageUrl = di;
-
-    if(sub && !map[dep].subs.includes(sub)) map[dep].subs.push(sub);
-  });
-  departmentsData = Object.values(map).map(x=>({
-    ...x,
-    imageUrl: x.imageUrl || `https://source.unsplash.com/1200x800/?workspace,${encodeURIComponent(x.dep)}`
-  })).sort((a,b)=>a.dep.localeCompare(b.dep));
-}
-
-/* ===== Orders ===== */
-function getDeptOrder(){
-  try{ return JSON.parse(localStorage.getItem(LS.DEPT_ORDER) || "[]"); }catch{ return [] }
-}
-function setDeptOrder(ids){
-  localStorage.setItem(LS.DEPT_ORDER, JSON.stringify(ids));
-}
-function getLinkOrder(dep, sub){
-  try{ return JSON.parse(localStorage.getItem(LS.LINK_ORDER(dep, sub)) || "[]"); }catch{ return [] }
-}
-function setLinkOrder(dep, sub, arr){
-  localStorage.setItem(LS.LINK_ORDER(dep, sub), JSON.stringify(arr));
-}
-
-/* ===== Views ===== */
-function render(){
-  const mode = els.viewMode.value || "departments";
-  if(mode === "departments"){
-    setSettingsOpen(false);
-    localStorage.setItem(LS.SETTINGS_OPEN, "0");
-  }else{
-    const saved = localStorage.getItem(LS.SETTINGS_OPEN_NONDEP);
-    setSettingsOpen(saved !== "0");
-  }
-
-  if(mode === "departments") renderDepartments();
-  else if(mode === "subpage") renderSubPage();
-  else renderLinks();
-  updateCrumbs();
-}
-
-/* Departments */
-function renderDepartments(){
-  showOnly('depGrid');
-
-  const q = els.search.value.trim().toLowerCase();
-  const order = getDeptOrder();
-  const base = q
-    ? departmentsData.filter(({dep, subs})=> dep.toLowerCase().includes(q) || subs.some(s=>s.toLowerCase().includes(q)))
-    : [
-        ...order.map(id => departmentsData.find(d=>d.dep===id)).filter(Boolean),
-        ...departmentsData.filter(d=>!order.includes(d.dep))
-      ];
-
-  els.depGrid.innerHTML = "";
-  base.forEach(({dep, subs, imageUrl})=>{
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.setAttribute('data-id', dep);
-    card.innerHTML = `
-      <img class="img" loading="lazy" decoding="async" src="${imageUrl}" alt="${dep}" width="1200" height="675">
-      <div class="veil"></div>
-      <div class="overlay"></div>
-      <div class="label">
-        <span>${dep}</span>
-        <span class="pill">Subs: ${subs.length}</span>
-      </div>
-    `;
-    card.addEventListener('click', ()=>{
-      currentDep = dep;
-      currentSub = "__all__";
-      els.viewMode.value = "subpage";
-      renderSubPage();
-      updateCrumbs();
-      step();
-    });
-    els.depGrid.appendChild(card);
-  });
-
-  if(depSortable){ depSortable.destroy(); depSortable=null; }
-  if(sorting){
-    depSortable = Sortable.create(els.depGrid, {
-      animation:120,
-      onEnd: ()=>{
-        const ids = [...els.depGrid.children].map(el=>el.getAttribute('data-id'));
-        setDeptOrder(ids); step();
+    function getSavedOrder() {
+      try {
+        return JSON.parse(localStorage.getItem("deptOrder")) || [];
+      } catch {
+        return [];
       }
+    }
+
+    function renderDepartments(filter = "") {
+      container.innerHTML = "";
+      const ordered = getSavedOrder();
+
+      const filtered = departmentsData.filter(({ dep, subs }) =>
+        dep.toLowerCase().includes(filter) || subs.some(sub => sub.toLowerCase().includes(filter))
+      );
+
+      const sorted = filter
+        ? filtered
+        : [
+            ...ordered.map(id => departmentsData.find(d => d.dep === id)).filter(Boolean),
+            ...departmentsData.filter(d => !ordered.includes(d.dep))
+          ];
+
+      sorted.forEach(({ dep, subs, imageUrl }) => {
+        const box = document.createElement("div");
+        box.className = "dept";
+        box.style.backgroundImage = `url('${imageUrl}')`;
+        box.setAttribute("data-id", dep);
+
+        const dropdown = [
+          `<a href="department.html?dep=${encodeURIComponent(dep)}&sub=__all__">👀 All Links</a>`,
+          ...subs.map(sub => `<a href="department.html?dep=${encodeURIComponent(dep)}&sub=${encodeURIComponent(sub)}">${sub}</a>`)
+        ].join("");
+
+        box.innerHTML = `
+          <span>${dep}</span>
+          <div class="dropdown">${dropdown}</div>
+        `;
+
+        container.appendChild(box);
+      });
+
+      Sortable.create(container, {
+        animation: 150,
+        onEnd: () => {
+          const ids = [...container.children].map(el => el.getAttribute("data-id"));
+          localStorage.setItem("deptOrder", JSON.stringify(ids));
+        }
+      });
+    }
+
+    async function loadDepartments() {
+      const res = await fetch(sheetURL);
+      const raw = await res.json();
+
+      const map = {};
+
+      raw.forEach(row => {
+        const dep = row.Department?.trim();
+        const sub = row.SubDepartment?.trim();
+        const image = row.DIURL?.trim(); // department image column
+        if (!dep) return;
+
+        if (!map[dep]) {
+          map[dep] = {
+            dep,
+            subs: [],
+            imageUrl: image || ""
+          };
+        }
+
+        if (!map[dep].imageUrl && image) {
+          map[dep].imageUrl = image;
+        }
+
+        if (sub && !map[dep].subs.includes(sub)) {
+          map[dep].subs.push(sub);
+        }
+      });
+
+      departmentsData = Object.values(map).map(entry => ({
+        ...entry,
+        imageUrl: entry.imageUrl || `https://source.unsplash.com/600x400/?warehouse,${entry.dep}`
+      }));
+
+      renderDepartments(searchInput.value.toLowerCase());
+    }
+
+    loadDepartments();
+    searchInput.addEventListener("input", e => {
+      renderDepartments(e.target.value.toLowerCase());
     });
-  }
-}
 
-/* Sub-departments */
-function renderSubPage(){
-  showOnly('subGrid');
+    function toggleDarkMode() {
+      const isDark = document.body.classList.toggle("dark");
+      localStorage.setItem("darkMode", isDark ? "enabled" : "disabled");
+    }
 
-  if(!currentDep){
-    els.viewMode.value = "departments";
-    renderDepartments();
-    return;
-  }
+    if (localStorage.getItem("darkMode") === "enabled") {
+      document.body.classList.add("dark");
+    }
+  </script>
 
-  const depObj = departmentsData.find(d=>d.dep===currentDep);
-  const subs = depObj?.subs || [];
-
-  els.subFilter.disabled = false;
-  els.subFilter.innerHTML = `<option value="__all__">All</option>` + subs.map(s=>`<option value="${s}">${s}</option>`).join('');
-  els.subFilter.value = "__all__";
-
-  const q = els.search.value.trim().toLowerCase();
-  const filtered = q ? subs.filter(s=>s.toLowerCase().includes(q)) : subs;
-
-  els.subGrid.innerHTML = "";
-  if(filtered.length === 0){
-    els.subGrid.innerHTML = `<div class="chip" style="grid-column:1/-1">No sub-departments match.</div>`;
-    return;
-  }
-
-  filtered.forEach(s=>{
-    const chip = document.createElement('div');
-    chip.className = 'subchip';
-    chip.textContent = s;
-    chip.addEventListener('click', ()=>{
-      currentSub = s;
-      els.subFilter.value = s;
-      els.viewMode.value = "links";
-      renderLinks(); updateCrumbs(); step();
-    });
-    els.subGrid.appendChild(chip);
-  });
-}
-
-/* Links */
-function linksFor(dep, sub){
-  const lowerDep = dep?.toLowerCase();
-  const lowerSub = sub?.toLowerCase();
-  const rows = rawRows.filter(r=>{
-    const rDep = r.Department?.toLowerCase().trim();
-    const rSub = r.SubDepartment?.toLowerCase().trim();
-    if(rDep !== lowerDep) return false;
-    if(sub==="__all__") return true;
-    return rSub === lowerSub;
-  });
-  return rows.map(r=>({
-    name: r.LinkName?.trim() || "Unnamed",
-    url : r.URL?.trim() || "#",
-    image: r.ImageURL?.trim() || ""
-  }));
-}
-function renderLinks(){
-  showOnly('linkGrid');
-
-  if(!currentDep){
-    els.viewMode.value = "departments";
-    renderDepartments();
-    return;
-  }
-
-  if(els.subFilter.disabled){
-    const depObj = departmentsData.find(d=>d.dep===currentDep);
-    const subs = depObj?.subs || [];
-    els.subFilter.disabled = false;
-    els.subFilter.innerHTML = `<option value="__all__">All</option>` + subs.map(s=>`<option value="${s}">${s}</option>`).join('');
-  }
-  els.subFilter.value = currentSub;
-
-  let data = linksFor(currentDep, currentSub);
-  const q = els.search.value.trim().toLowerCase();
-  if(q){
-    data = data.filter(l => l.name.toLowerCase().includes(q) || l.url.toLowerCase().includes(q));
-  }
-
-  const order = getLinkOrder(currentDep, currentSub);
-  const sorted = [
-    ...order.map(n => data.find(l=>l.name===n)).filter(Boolean),
-    ...data.filter(l => !order.includes(l.name))
-  ];
-
-  els.linkGrid.innerHTML = "";
-  if(sorted.length === 0){
-    els.linkGrid.innerHTML = `<div class="chip" style="grid-column:1/-1">No links found.</div>`;
-  }else{
-    sorted.forEach(l=>{
-      const item = document.createElement('a');
-      item.className = 'link';
-      item.setAttribute('data-name', l.name);
-      item.href = l.url;
-      item.target = "_blank";
-      item.rel="noopener";
-      const img = l.image ? `<img class="img" loading="lazy" decoding="async" src="${l.image}" alt="" width="1200" height="675">` : '';
-      item.innerHTML = `${img}<div class="veil"></div><div class="overlay"></div><div class="label">${l.name}</div>`;
-      item.addEventListener('click', ()=> step());
-      els.linkGrid.appendChild(item);
-    });
-  }
-
-  if(linkSortable){ linkSortable.destroy(); linkSortable=null; }
-  if(sorting){
-    linkSortable = Sortable.create(els.linkGrid, {
-      animation:120,
-      onEnd: ()=>{
-        const names = [...els.linkGrid.children].map(el=>el.getAttribute('data-name'));
-        setLinkOrder(currentDep, currentSub, names); step();
-      }
-    });
-  }
-}
-
-/* ===== Helpers ===== */
-function showOnly(which){
-  els.depGrid.classList.toggle('hidden', which!=='depGrid');
-  els.subGrid.classList.toggle('hidden', which!=='subGrid');
-  els.linkGrid.classList.toggle('hidden', which!=='linkGrid');
-}
-function updateCrumbs(){
-  const mode = els.viewMode?.value || "departments";
-  if(mode === "departments" || !currentDep){
-    els.crumbs.textContent = "Home";
-  }else if(mode === "subpage"){
-    els.crumbs.innerHTML = `<b>${currentDep}</b> / Sub-departments`;
-  }else{
-    const subTxt = currentSub==="__all__" ? "All" : currentSub;
-    els.crumbs.innerHTML = `<b>${currentDep}</b> / ${subTxt}`;
-  }
-}
-
-/* ===== Sorting/Refresh/Clear ===== */
-els.viewMode.addEventListener('change', ()=>{ render(); step(); });
-els.subFilter.addEventListener('change', ()=>{
-  currentSub = els.subFilter.value;
-  els.viewMode.value = "links";
-  renderLinks(); updateCrumbs(); step();
-});
-els.btnSort.addEventListener('click', ()=>{
-  sorting = !sorting;
-  els.btnSort.textContent = sorting ? "Disable Sort" : "Enable Sort";
-  render();
-});
-els.btnRefresh.addEventListener('click', ()=>{ loadData(); step(); });
-els.btnClear.addEventListener('click', ()=>{
-  localStorage.removeItem(LS.DEPT_ORDER);
-  Object.keys(localStorage).forEach(k=>{ if(k.startsWith('rv_link_order_')) localStorage.removeItem(k); });
-  render();
-});
-
-/* search debounce */
-let t; els.search.addEventListener('input', ()=>{
-  clearTimeout(t); t = setTimeout(()=>{ render(); }, 220);
-});
-
-/* ===== Init ===== */
-loadData();
-</script>
 </body>
 </html>
