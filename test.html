@@ -3,40 +3,41 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=1280, initial-scale=1.0"/>
-<title>RANVEXSI UI — Clean</title>
+<title>RANVEXSI UI — Clean (Softer Light)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <style>
   :root{
-    /* Light theme */
-    --bg:#f5f7fb;
-    --ink:#101322;
-    --muted:#6b7280;
-    --card:#ffffff;
-    --line:#e7eaf0;
+    /* Softer Light Theme */
+    --bg:#eef1f6;            /* softer off-white */
+    --ink:#0f1324;
+    --muted:#677089;
+    --card:#f9fbff;          /* gentle card */
+    --line:#dae1ee;          /* light border */
     --accent:#3a6cf4;
     --accent-ink:#ffffff;
 
     /* Layout */
     --round:14px;
-    --shadow:0 6px 20px rgba(16,19,34,0.06);
+    --shadow:0 6px 18px rgba(16,19,36,0.05);
     --grid-gap:16px;
     --cols:auto-fill;      /* auto-fill or a number (2..8) */
     --ratio:1.777;         /* 16:9 default */
     --density:1;           /* 0.9 compact, 1 comfort, 1.1 cozy */
     --media-display:block; /* block or none */
-    --img-opacity:.55;     /* 0..1 */
+    --img-opacity:.5;      /* toned down brightness */
   }
   .dark{
     --bg:#0f1220;
     --ink:#eaf1ff;
     --muted:#9aa6c8;
-    --card:#151a2e;
-    --line:#222b46;
+    --card:#141a2c;
+    --line:#212a46;
     --accent:#5b83ff;
     --accent-ink:#0b1020;
-    --shadow:0 8px 26px rgba(0,0,0,.22);
+    --shadow:0 8px 24px rgba(0,0,0,.22);
+    --img-opacity:.55;
   }
 
   *{box-sizing:border-box}
@@ -45,13 +46,14 @@
     margin:0;
     font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     color:var(--ink);
-    background:var(--bg);
+    background:
+      linear-gradient(180deg, #f3f6fb 0%, var(--bg) 100%);
     overflow:auto;
   }
 
   /* Header */
   .header{
-    position:sticky; top:0; z-index:10;
+    position:sticky; top:0; z-index:20;
     display:flex; align-items:center; gap:12px; padding:10px 16px;
     background:var(--card); border-bottom:1px solid var(--line); box-shadow:var(--shadow);
   }
@@ -68,7 +70,7 @@
   }
   .search input{
     width:100%; height:38px; padding:0 12px 0 36px; border-radius:10px;
-    border:1px solid var(--line); background:#fff; outline:none; color:#111;
+    border:1px solid var(--line); background:#ffffff; outline:none; color:#111;
   }
   .dark .search input{ background:#0f1426; color:var(--ink) }
   .search svg{position:absolute; left:10px; top:50%; transform:translateY(-50%); opacity:.6}
@@ -81,11 +83,23 @@
   .badge{display:inline-flex; align-items:center; gap:6px; height:36px; padding:0 10px; border-radius:999px; border:1px solid var(--line); background:var(--card)}
   .range{ width:120px; padding:0 }
 
-  /* Main content wrapper keeps grids from spilling */
+  /* Main wrapper */
   .wrap{ max-width:1280px; margin:16px auto; padding:0 16px }
-  .toolbar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px }
+
+  /* Top info bar (crumbs) */
+  .toolbar{
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px
+  }
   .crumbs{ font-size:.95rem; color:var(--muted) }
   .crumbs b{ color:var(--ink) }
+
+  /* Collapsible settings panel */
+  .settings{
+    border:1px solid var(--line); border-radius:12px; background:var(--card);
+    box-shadow:var(--shadow); padding:10px; margin-bottom:12px;
+  }
+  .settings.hidden{ display:none }
+  .settings .controls{ gap:10px }
 
   /* Grid */
   .grid{
@@ -103,12 +117,14 @@
   .card .img, .link .img{
     position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
     display:var(--media-display); opacity:var(--img-opacity);
+    filter:saturate(.9) brightness(.95);    /* softer */
   }
+  .dark .card .img, .dark .link .img{ filter:none }
   .card .label{
     position:absolute; left:12px; right:12px; bottom:10px; z-index:1;
     display:flex; justify-content:space-between; align-items:center;
     font-weight:800; font-size:calc(1.0rem * var(--density));
-    text-shadow:0 1px 8px rgba(0,0,0,.25);
+    text-shadow:0 1px 8px rgba(0,0,0,.18);
   }
   .pill{ font-size:.8rem; padding:6px 10px; border-radius:999px; background:rgba(0,0,0,.05) }
   .dark .pill{ background:rgba(255,255,255,.08) }
@@ -127,7 +143,7 @@
     background:var(--card); box-shadow:var(--shadow);
     aspect-ratio: var(--ratio); overflow:hidden; cursor:pointer;
   }
-  .link::after{content:""; position:absolute; inset:0; background:linear-gradient(180deg, #0000, #0008)}
+  .link::after{content:""; position:absolute; inset:0; background:linear-gradient(180deg, #0000, #0007)}
   .link .label{ position:absolute; left:12px; right:12px; bottom:10px; font-weight:800; font-size:calc(1.0rem * var(--density)) }
   a.link{ color:inherit; text-decoration:none }
 
@@ -150,6 +166,7 @@
     </div>
 
     <div class="controls">
+      <button class="btn" id="btnSettings">⚙️ Settings</button>
       <button class="btn" id="btnRefresh">Reload</button>
       <button class="btn" id="btnClear">Clear Order</button>
       <div class="badge">👣 Steps: <span id="steps">0</span></div>
@@ -159,11 +176,14 @@
   </div>
 
   <div class="wrap">
-    <!-- Top toolbar -->
+    <!-- Top info -->
     <div class="toolbar">
       <div class="crumbs" id="crumbs">Home</div>
       <div class="grow"></div>
+    </div>
 
+    <!-- Collapsible Settings -->
+    <div id="settings" class="settings">
       <div class="controls">
         <label class="chip">View
           <select id="viewMode" style="margin-left:6px">
@@ -233,12 +253,14 @@ const els = {
   btnRefresh: document.getElementById('btnRefresh'),
   btnClear: document.getElementById('btnClear'),
   btnTheme: document.getElementById('btnTheme'),
+  btnSettings: document.getElementById('btnSettings'),
   cols: document.getElementById('cols'),
   density: document.getElementById('density'),
   ratio: document.getElementById('ratio'),
   media: document.getElementById('media'),
   steps: document.getElementById('steps'),
-  stepsTotal: document.getElementById('stepsTotal')
+  stepsTotal: document.getElementById('stepsTotal'),
+  settings: document.getElementById('settings')
 };
 
 let rawRows = [];
@@ -254,8 +276,9 @@ const LS = {
   DEPT_ORDER: "rv_dept_order",
   LINK_ORDER: (dep, sub) => `rv_link_order_${dep}__${sub}`,
   STEPS: "rv_steps_total",
-  GRID: "rv_grid_prefs_v2",
-  THEME: "rv_theme"
+  GRID: "rv_grid_prefs_v3",
+  THEME: "rv_theme",
+  SETTINGS_OPEN: "rv_settings_open"  // remember panel toggle
 };
 
 /* ===== Steps ===== */
@@ -284,39 +307,44 @@ els.btnTheme.addEventListener('click', ()=>{
   localStorage.setItem(LS.THEME, dark ? "dark" : "light");
 });
 
+/* ===== Settings Panel Toggle ===== */
+function setSettingsOpen(open){
+  els.settings.classList.toggle('hidden', !open);
+  localStorage.setItem(LS.SETTINGS_OPEN, open ? "1" : "0");
+}
+els.btnSettings.addEventListener('click', ()=>{
+  const open = els.settings.classList.contains('hidden');
+  setSettingsOpen(open);
+});
+(function initSettingsOpen(){
+  const saved = localStorage.getItem(LS.SETTINGS_OPEN);
+  // default: open except when in departments view (handled after mode set)
+  if(saved === "0") setSettingsOpen(false);
+  else setSettingsOpen(true);
+})();
+
 /* ===== Grid prefs ===== */
 function applyPrefs(p){
-  // columns
-  if(p.cols === "auto" || !p.cols){
-    document.documentElement.style.setProperty('--cols', 'auto-fill');
-    els.cols.value = 0;
-  } else {
-    document.documentElement.style.setProperty('--cols', p.cols);
-    els.cols.value = Number(p.cols);
-  }
-  // density
+  if(p.cols === "auto" || !p.cols){ document.documentElement.style.setProperty('--cols', 'auto-fill'); els.cols.value = 0; }
+  else{ document.documentElement.style.setProperty('--cols', p.cols); els.cols.value = Number(p.cols); }
   document.documentElement.style.setProperty('--density', p.density || "1");
   els.density.value = p.density || "1";
-  // ratio
   document.documentElement.style.setProperty('--ratio', p.ratio || "1.777");
   els.ratio.value = p.ratio || "1.777";
-  // media
   if((p.media || "on") === "off"){
     document.documentElement.style.setProperty('--media-display', 'none');
     document.documentElement.style.setProperty('--img-opacity', '0');
     els.media.value = "off";
   }else{
     document.documentElement.style.setProperty('--media-display', 'block');
-    document.documentElement.style.setProperty('--img-opacity', '.55');
+    document.documentElement.style.setProperty('--img-opacity', '.5');
     els.media.value = "on";
   }
 }
 function readPrefs(){
   try{ return JSON.parse(localStorage.getItem(LS.GRID) || "{}"); }catch{ return {} }
 }
-function savePrefs(p){
-  localStorage.setItem(LS.GRID, JSON.stringify(p));
-}
+function savePrefs(p){ localStorage.setItem(LS.GRID, JSON.stringify(p)); }
 applyPrefs(readPrefs());
 
 els.cols.addEventListener('input', ()=>{
@@ -381,14 +409,22 @@ function setLinkOrder(dep, sub, arr){
 
 /* ===== Views ===== */
 function render(){
-  const mode = els.viewMode.value;
+  const mode = els.viewMode.value || "departments";
+  // Hide settings by default when opening departments
+  if(mode === "departments") setSettingsOpen(false);
+  else{
+    // respect saved preference for non-department views
+    const saved = localStorage.getItem(LS.SETTINGS_OPEN);
+    setSettingsOpen(saved !== "0");
+  }
+
   if(mode === "departments") renderDepartments();
   else if(mode === "subpage") renderSubPage();
   else renderLinks();
   updateCrumbs();
 }
 
-/* Departments: full screen, no sidebar */
+/* Departments: full screen, settings hidden by default */
 function renderDepartments(){
   showOnly('depGrid');
 
@@ -416,7 +452,6 @@ function renderDepartments(){
     card.addEventListener('click', ()=>{
       currentDep = dep;
       currentSub = "__all__";
-      // go to sub full page first to choose sub easily
       els.viewMode.value = "subpage";
       renderSubPage();
       updateCrumbs();
@@ -425,7 +460,6 @@ function renderDepartments(){
     els.depGrid.appendChild(card);
   });
 
-  // sorting
   if(depSortable){ depSortable.destroy(); depSortable=null; }
   if(sorting){
     depSortable = Sortable.create(els.depGrid, {
@@ -444,7 +478,6 @@ function renderSubPage(){
   showOnly('subGrid');
 
   if(!currentDep){
-    // if no dep chosen, show departments instead
     els.viewMode.value = "departments";
     renderDepartments();
     return;
@@ -507,7 +540,6 @@ function renderLinks(){
     return;
   }
 
-  // ensure dropdown in sync
   if(els.subFilter.disabled){
     const depObj = departmentsData.find(d=>d.dep===currentDep);
     const subs = depObj?.subs || [];
@@ -522,7 +554,6 @@ function renderLinks(){
     data = data.filter(l => l.name.toLowerCase().includes(q) || l.url.toLowerCase().includes(q));
   }
 
-  // order
   const order = getLinkOrder(currentDep, currentSub);
   const sorted = [
     ...order.map(n => data.find(l=>l.name===n)).filter(Boolean),
@@ -567,7 +598,7 @@ function showOnly(which){
   els.linkGrid.classList.toggle('hidden', which!=='linkGrid');
 }
 function updateCrumbs(){
-  const mode = els.viewMode.value;
+  const mode = els.viewMode?.value || "departments";
   if(mode === "departments" || !currentDep){
     els.crumbs.textContent = "Home";
   }else if(mode === "subpage"){
