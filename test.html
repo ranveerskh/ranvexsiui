@@ -3,525 +3,397 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=1280, initial-scale=1.0"/>
-<title>RANVEXSI UI — Liquid Glass Lite</title>
+<title>RANVEXSI UI — Clean</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <style>
-  /* ===================== THEME: Liquid Glass Lite ===================== */
   :root{
-    /* Colors */
-    --bg1:#0f1220;
-    --bg2:#101a2b;
-    --panel:#11172c;         /* solid for performance */
-    --panel-2:#0f162a;
-    --ink:#eaf1ff;
-    --muted:#a9b5e6;
-    --border:#1f2b4d;
-    --accent1:#6a11cb;
-    --accent2:#2575fc;
-    --ok:#31d296;
-    --warn:#f8b84a;
+    /* Light theme */
+    --bg:#f5f7fb;
+    --ink:#101322;
+    --muted:#6b7280;
+    --card:#ffffff;
+    --line:#e7eaf0;
+    --accent:#3a6cf4;
+    --accent-ink:#ffffff;
 
     /* Layout */
-    --round:16px;
-    --shadow:0 10px 30px rgba(5,10,25,.35);
-    --tap:44px;
-
-    /* Grid controls (user adjustable) */
+    --round:14px;
+    --shadow:0 6px 20px rgba(16,19,34,0.06);
     --grid-gap:16px;
-    --grid-cols:auto-fill;        /* auto or number (2..8) */
-    --card-ratio: 1.777;          /* 16:9 */
-    --density-scale:1;            /* 1=Comfort, .9=Compact, 1.1=Cozy */
-    --image-opacity:.55;          /* 0..1 */
+    --cols:auto-fill;      /* auto-fill or a number (2..8) */
+    --ratio:1.777;         /* 16:9 default */
+    --density:1;           /* 0.9 compact, 1 comfort, 1.1 cozy */
+    --media-display:block; /* block or none */
+    --img-opacity:.55;     /* 0..1 */
   }
+  .dark{
+    --bg:#0f1220;
+    --ink:#eaf1ff;
+    --muted:#9aa6c8;
+    --card:#151a2e;
+    --line:#222b46;
+    --accent:#5b83ff;
+    --accent-ink:#0b1020;
+    --shadow:0 8px 26px rgba(0,0,0,.22);
+  }
+
   *{box-sizing:border-box}
   html,body{height:100%}
   body{
     margin:0;
     font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     color:var(--ink);
-    background:
-      radial-gradient(1200px 800px at 20% -10%, #2442ff18, transparent 60%),
-      radial-gradient(1000px 700px at 120% 30%, #8a2be218, transparent 60%),
-      linear-gradient(135deg,var(--bg1),var(--bg2));
+    background:var(--bg);
+    overflow:auto;
   }
 
-  /* App shell */
-  .app{
-    min-height:100vh; display:grid; grid-template-rows: 70px 1fr; gap:0;
-  }
+  /* Header */
   .header{
-    display:flex; align-items:center; gap:14px;
-    padding:10px 16px; border-bottom:1px solid var(--border);
-    background:linear-gradient(180deg, #0f162a, #0e1527);
     position:sticky; top:0; z-index:10;
+    display:flex; align-items:center; gap:12px; padding:10px 16px;
+    background:var(--card); border-bottom:1px solid var(--line); box-shadow:var(--shadow);
   }
-  .brand{display:flex; align-items:center; gap:10px; white-space:nowrap}
+  .brand{display:flex; align-items:center; gap:10px}
   .logo{
-    width:38px; height:38px; border-radius:12px;
-    background: linear-gradient(135deg, var(--accent1), var(--accent2));
-    display:grid; place-items:center; font-weight:800; color:white; letter-spacing:-.3px;
+    width:36px; height:36px; border-radius:10px;
+    background:var(--accent); color:var(--accent-ink);
+    display:grid; place-items:center; font-weight:800; letter-spacing:-.2px;
   }
-  .title{font-weight:800; font-size:1.05rem; letter-spacing:.2px}
+  .title{font-weight:800}
   .grow{flex:1}
   .search{
-    position:relative; width:520px; max-width:520px; transform:scale(var(--density-scale));
+    position:relative; width:520px; max-width:45vw; transform:scale(var(--density));
   }
   .search input{
-    width:100%; padding:11px 14px 11px 40px; border-radius:12px; border:1px solid var(--border);
-    background:var(--panel-2); color:var(--ink); outline:none;
+    width:100%; height:38px; padding:0 12px 0 36px; border-radius:10px;
+    border:1px solid var(--line); background:#fff; outline:none; color:#111;
   }
-  .search svg{position:absolute; left:12px; top:50%; transform:translateY(-50%); opacity:.7}
-  .actions{display:flex; align-items:center; gap:8px}
-  .btn{
-    height:38px; padding:0 12px; border-radius:10px; border:1px solid var(--border);
-    background:var(--panel-2); color:var(--ink); cursor:pointer; font-weight:600;
+  .dark .search input{ background:#0f1426; color:var(--ink) }
+  .search svg{position:absolute; left:10px; top:50%; transform:translateY(-50%); opacity:.6}
+  .controls{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+  .btn, select, .range, .chip{
+    height:36px; padding:0 10px; border-radius:10px; border:1px solid var(--line);
+    background:var(--card); color:var(--ink); font-weight:600; cursor:pointer;
   }
-  .btn.prim{
-    background: linear-gradient(135deg, var(--accent1), var(--accent2)); border-color:transparent;
-  }
-  .badge{
-    display:inline-flex; align-items:center; gap:6px;
-    height:38px; padding:0 10px; border-radius:999px;
-    background:var(--panel-2); border:1px solid var(--border); font-weight:600; font-size:.95rem;
-  }
+  .btn.primary{ background:var(--accent); color:var(--accent-ink); border-color:transparent }
+  .badge{display:inline-flex; align-items:center; gap:6px; height:36px; padding:0 10px; border-radius:999px; border:1px solid var(--line); background:var(--card)}
+  .range{ width:120px; padding:0 }
 
-  /* Main layout */
-  .main{
-    padding:16px; display:grid; grid-template-columns: 300px 1fr; gap:16px;
-  }
-  .panel{
-    background:var(--panel); border:1px solid var(--border); border-radius:var(--round); box-shadow:var(--shadow);
-  }
-
-  /* Sidebar */
-  .sidebar{ padding:12px; display:flex; flex-direction:column; gap:10px; min-height:0; }
-  .section-title{font-size:.88rem; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); margin:4px 8px}
-  .list{ display:flex; flex-direction:column; gap:8px; min-height:0; overflow:auto; }
-  .chip{
-    display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; cursor:pointer;
-    border:1px solid var(--border); background:var(--panel-2);
-  }
-  .chip.active{
-    background: linear-gradient(135deg, #182145, #1a2652);
-    border-color:#5e75ff6b; box-shadow: inset 0 0 0 1px #91a2ff28;
-  }
-  .mini{font-size:.85rem; color:var(--muted)}
-  .sidebar .rail{ display:none } /* becomes visible in sub full mode with class */
-
-  /* Content */
-  .content{ padding:12px; display:flex; flex-direction:column; gap:12px; min-width:0; }
-  .toolbar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap }
+  /* Main content wrapper keeps grids from spilling */
+  .wrap{ max-width:1280px; margin:16px auto; padding:0 16px }
+  .toolbar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px }
   .crumbs{ font-size:.95rem; color:var(--muted) }
   .crumbs b{ color:var(--ink) }
-  .toolbar .right{ margin-left:auto; display:flex; gap:10px; flex-wrap:wrap }
 
-  .subrow{ display:flex; gap:8px; align-items:center; flex-wrap:wrap }
-  select, .input, .range{
-    height:38px; padding:0 10px; border-radius:10px; border:1px solid var(--border);
-    background:var(--panel-2); color:var(--ink);
-  }
-  .range{ width:140px; height:auto; padding:0 }
-
-  /* Grids */
+  /* Grid */
   .grid{
-    display:grid; gap:var(--grid-gap); min-height:0; overflow:auto;
-    grid-template-columns: repeat( var(--grid-cols), minmax(240px, 1fr) );
-    padding-bottom:8px;
-    contain: content;  /* performance hint */
+    display:grid; gap:var(--grid-gap);
+    grid-template-columns: repeat( var(--cols), minmax(240px, 1fr) );
   }
 
-  /* Cards - Department */
+  /* Department card */
   .card{
-    position:relative; border-radius:14px; min-height:140px; overflow:hidden; cursor:pointer;
-    background: linear-gradient(180deg, #1a2242, #0f162f);
-    border:1px solid var(--border); box-shadow: var(--shadow);
-    aspect-ratio: var(--card-ratio);
+    position:relative; border:1px solid var(--line); border-radius:var(--round);
+    background:var(--card); box-shadow:var(--shadow);
+    aspect-ratio: var(--ratio);
+    overflow:hidden; cursor:pointer;
   }
   .card .img, .link .img{
-    position:absolute; inset:0; object-fit:cover; width:100%; height:100%;
-    opacity: var(--image-opacity); display:var(--media-display, block);
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+    display:var(--media-display); opacity:var(--img-opacity);
   }
   .card .label{
-    position:absolute; left:12px; bottom:10px; right:12px; z-index:1;
-    font-weight:800; letter-spacing:.3px; font-size:calc(1.0rem * var(--density-scale));
-    text-shadow:0 2px 10px rgba(0,0,0,.5);
-    display:flex; align-items:center; gap:8px; justify-content:space-between;
+    position:absolute; left:12px; right:12px; bottom:10px; z-index:1;
+    display:flex; justify-content:space-between; align-items:center;
+    font-weight:800; font-size:calc(1.0rem * var(--density));
+    text-shadow:0 1px 8px rgba(0,0,0,.25);
   }
-  .pill{
-    display:inline-flex; align-items:center; gap:6px;
-    padding:6px 10px; font-size:.8rem; border-radius:999px;
-    background:#0b132c; border:1px solid var(--border);
-  }
+  .pill{ font-size:.8rem; padding:6px 10px; border-radius:999px; background:rgba(0,0,0,.05) }
+  .dark .pill{ background:rgba(255,255,255,.08) }
 
-  /* Cards - Link */
-  .link{
-    position:relative; border-radius:14px; overflow:hidden; cursor:pointer;
-    border:1px solid var(--border); background:#101a2f; aspect-ratio: var(--card-ratio);
-  }
-  .link::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg, #0000, #0008) }
-  .link .label{ position:absolute; left:12px; bottom:10px; right:12px; z-index:1; font-weight:800; font-size:calc(1.0rem * var(--density-scale)); }
-
-  /* Full-page sub-departments view */
-  .sub-grid .subchip{
+  /* Sub full-page items */
+  .subchip{
     display:flex; align-items:center; justify-content:center; text-align:center;
-    border-radius:12px; border:1px solid var(--border); background:var(--panel-2); min-height:120px; font-weight:700; cursor:pointer;
-    aspect-ratio: 1.2; padding:10px;
+    border:1px solid var(--line); border-radius:12px; background:var(--card);
+    min-height:120px; font-weight:700; cursor:pointer; aspect-ratio:1.1; padding:10px;
+    box-shadow:var(--shadow);
   }
 
-  /* Scrollbars (desktop) */
-  ::-webkit-scrollbar{height:10px; width:10px}
-  ::-webkit-scrollbar-thumb{background:#3a4677; border-radius:999px}
-  ::-webkit-scrollbar-track{background:#0d1426}
+  /* Link card */
+  .link{
+    position:relative; border:1px solid var(--line); border-radius:var(--round);
+    background:var(--card); box-shadow:var(--shadow);
+    aspect-ratio: var(--ratio); overflow:hidden; cursor:pointer;
+  }
+  .link::after{content:""; position:absolute; inset:0; background:linear-gradient(180deg, #0000, #0008)}
+  .link .label{ position:absolute; left:12px; right:12px; bottom:10px; font-weight:800; font-size:calc(1.0rem * var(--density)) }
+  a.link{ color:inherit; text-decoration:none }
+
+  /* Helpers */
+  .hidden{ display:none !important }
 </style>
 </head>
 <body>
-  <div class="app">
-    <!-- HEADER -->
-    <div class="header">
-      <div class="brand">
-        <div class="logo">RV</div>
-        <div class="title">RANVEXSI UI <span class="mini">• Liquid Glass Lite</span></div>
-      </div>
-      <div class="grow"></div>
-
-      <div class="search" title="Search departments, subs or links">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.3-4.3M10.8 18.2a7.4 7.4 0 1 1 0-14.8 7.4 7.4 0 0 1 0 14.8Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-        <input id="search" placeholder="Search departments, sub-departments, or links..." autocomplete="off" />
-      </div>
-
-      <div class="actions">
-        <button class="btn" id="btnRefresh" title="Reload data">🔄 Refresh</button>
-        <button class="btn" id="btnClear" title="Clear saved order">🧹 Clear Order</button>
-        <div class="badge" title="Session steps (clicks, opens)">
-          👣 Steps: <span id="steps">0</span>
-        </div>
-        <div class="badge" title="Total steps on this device">
-          📊 Total: <span id="stepsTotal">0</span>
-        </div>
-      </div>
+  <div class="header">
+    <div class="brand">
+      <div class="logo">RV</div>
+      <div class="title">RANVEXSI UI</div>
     </div>
 
-    <!-- MAIN -->
-    <div class="main">
-      <!-- Sidebar: Departments & Subs (collapses in full-sub mode) -->
-      <div class="sidebar panel" id="sidebar">
-        <div class="section-title">Departments</div>
-        <div id="depList" class="list"></div>
+    <div class="grow"></div>
 
-        <div class="section-title" style="margin-top:8px">Sub-Departments</div>
-        <div class="list" id="subList">
-          <div class="mini" style="padding:8px 10px; border:1px dashed var(--border); border-radius:10px">
-            Select a department to see sub-departments.
-          </div>
-        </div>
-      </div>
+    <div class="search" title="Search departments, subs or links">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.3-4.3M10.8 18.2a7.4 7.4 0 1 1 0-14.8 7.4 7.4 0 0 1 0 14.8Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <input id="search" placeholder="Search departments, sub-departments, or links..." autocomplete="off" />
+    </div>
 
-      <!-- Content -->
-      <div class="content panel" id="content">
-        <div class="toolbar">
-          <div class="crumbs" id="crumbs">Home</div>
-          <div class="right">
-            <div class="subrow">
-              <label class="mini">Mode</label>
-              <select id="viewMode" title="Choose view">
-                <option value="departments">Departments</option>
-                <option value="subpage">Sub-Departments (Full Page)</option>
-                <option value="links">Links</option>
-              </select>
-
-              <label class="mini">Sub</label>
-              <select id="subFilter" disabled>
-                <option value="__all__">All</option>
-              </select>
-
-              <button class="btn" id="btnToggleSort" title="Toggle Drag Sorting">↕️ Sort</button>
-              <button class="btn prim" id="btnOpenK">⌘/Ctrl+K</button>
-            </div>
-
-            <!-- Grid controls -->
-            <div class="subrow">
-              <label class="mini">Cols</label>
-              <input id="cols" type="range" class="range" min="2" max="8" step="1" value="0" title="0 = Auto" />
-              <label class="mini">Density</label>
-              <select id="density">
-                <option value="1">Comfort</option>
-                <option value="0.9">Compact</option>
-                <option value="1.1">Cozy</option>
-              </select>
-              <label class="mini">Ratio</label>
-              <select id="ratio">
-                <option value="1.777">16:9</option>
-                <option value="1.333">4:3</option>
-                <option value="1">1:1</option>
-              </select>
-              <label class="mini">Images</label>
-              <select id="media">
-                <option value="on">On</option>
-                <option value="off">Off</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <!-- Grids -->
-        <div class="grid" id="depGrid" aria-label="Departments grid"></div>
-        <div class="grid sub-grid" id="subGrid" aria-label="Sub-departments grid" style="display:none"></div>
-        <div class="grid" id="linkGrid" aria-label="Links grid" style="display:none"></div>
-      </div>
+    <div class="controls">
+      <button class="btn" id="btnRefresh">Reload</button>
+      <button class="btn" id="btnClear">Clear Order</button>
+      <div class="badge">👣 Steps: <span id="steps">0</span></div>
+      <div class="badge">📊 Total: <span id="stepsTotal">0</span></div>
+      <button class="btn" id="btnTheme">Light/Dark</button>
     </div>
   </div>
 
+  <div class="wrap">
+    <!-- Top toolbar -->
+    <div class="toolbar">
+      <div class="crumbs" id="crumbs">Home</div>
+      <div class="grow"></div>
+
+      <div class="controls">
+        <label class="chip">View
+          <select id="viewMode" style="margin-left:6px">
+            <option value="departments">Departments</option>
+            <option value="subpage">Sub-Departments (Full)</option>
+            <option value="links">Links</option>
+          </select>
+        </label>
+
+        <label class="chip">Sub
+          <select id="subFilter" style="margin-left:6px" disabled>
+            <option value="__all__">All</option>
+          </select>
+        </label>
+
+        <button class="btn" id="btnSort">Enable Sort</button>
+
+        <label class="chip">Cols
+          <input id="cols" type="range" class="range" min="2" max="8" step="1" value="0" title="0 = Auto" />
+        </label>
+
+        <label class="chip">Density
+          <select id="density" style="margin-left:6px">
+            <option value="1">Comfort</option>
+            <option value="0.9">Compact</option>
+            <option value="1.1">Cozy</option>
+          </select>
+        </label>
+
+        <label class="chip">Ratio
+          <select id="ratio" style="margin-left:6px">
+            <option value="1.777">16:9</option>
+            <option value="1.333">4:3</option>
+            <option value="1">1:1</option>
+          </select>
+        </label>
+
+        <label class="chip">Images
+          <select id="media" style="margin-left:6px">
+            <option value="on">On</option>
+            <option value="off">Off</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <!-- Views -->
+    <div id="depGrid" class="grid" aria-label="Departments grid"></div>
+    <div id="subGrid" class="grid hidden" aria-label="Sub-departments grid"></div>
+    <div id="linkGrid" class="grid hidden" aria-label="Links grid"></div>
+  </div>
+
 <script>
-/* ===================== CONFIG ===================== */
+/* ===== Config ===== */
 const sheetURL = "https://script.google.com/macros/s/AKfycbwnjvDjGQNtpVkxySJj6GaObo6l1ecfUg3NXzvF7G5MX7H4S5Qo92jhUM8_eOTO2MeXUQ/exec";
 
-/* ===================== STATE ===================== */
+/* ===== State/Refs ===== */
 const els = {
   search: document.getElementById('search'),
-  depList: document.getElementById('depList'),
-  subList: document.getElementById('subList'),
   depGrid: document.getElementById('depGrid'),
   subGrid: document.getElementById('subGrid'),
   linkGrid: document.getElementById('linkGrid'),
   crumbs: document.getElementById('crumbs'),
   viewMode: document.getElementById('viewMode'),
   subFilter: document.getElementById('subFilter'),
-  btnToggleSort: document.getElementById('btnToggleSort'),
+  btnSort: document.getElementById('btnSort'),
   btnRefresh: document.getElementById('btnRefresh'),
   btnClear: document.getElementById('btnClear'),
-  btnOpenK: document.getElementById('btnOpenK'),
+  btnTheme: document.getElementById('btnTheme'),
+  cols: document.getElementById('cols'),
   density: document.getElementById('density'),
   ratio: document.getElementById('ratio'),
   media: document.getElementById('media'),
-  cols: document.getElementById('cols'),
   steps: document.getElementById('steps'),
-  stepsTotal: document.getElementById('stepsTotal'),
-  sidebar: document.getElementById('sidebar'),
-  content: document.getElementById('content')
+  stepsTotal: document.getElementById('stepsTotal')
 };
 
 let rawRows = [];
-let departmentsData = [];         // [{ dep, subs:[..], imageUrl }]
+let departmentsData = [];   // [{dep, subs:[], imageUrl}]
 let currentDep = null;
 let currentSub = "__all__";
-let sortingEnabled = false;
+let sorting = false;
 let depSortable = null;
 let linkSortable = null;
 
-/* persistent keys */
-const LS_KEYS = {
-  DEPT_ORDER: "deptOrder",
-  LINK_ORDER: (dep, sub) => `linkOrder-${dep}--${sub}`,
-  STEPS_TOTAL: "rv_steps_total",
-  GRID_PREFS: "rv_grid_prefs_v1"
+/* ===== Local Storage Keys ===== */
+const LS = {
+  DEPT_ORDER: "rv_dept_order",
+  LINK_ORDER: (dep, sub) => `rv_link_order_${dep}__${sub}`,
+  STEPS: "rv_steps_total",
+  GRID: "rv_grid_prefs_v2",
+  THEME: "rv_theme"
 };
 
+/* ===== Steps ===== */
 let sessionSteps = 0;
-
-/* ===================== UTILITIES ===================== */
-function bumpStep(by=1){
-  sessionSteps += by;
+function step(n=1){
+  sessionSteps += n;
   els.steps.textContent = sessionSteps;
-  const total = Number(localStorage.getItem(LS_KEYS.STEPS_TOTAL) || 0) + by;
-  localStorage.setItem(LS_KEYS.STEPS_TOTAL, String(total));
-  els.stepsTotal.textContent = total;
+  const t = Number(localStorage.getItem(LS.STEPS) || 0) + n;
+  localStorage.setItem(LS.STEPS, String(t));
+  els.stepsTotal.textContent = t;
 }
 (function initSteps(){
   els.steps.textContent = "0";
-  const total = Number(localStorage.getItem(LS_KEYS.STEPS_TOTAL) || 0);
-  els.stepsTotal.textContent = total;
-  bumpStep(1); // page load
+  els.stepsTotal.textContent = Number(localStorage.getItem(LS.STEPS) || 0);
+  step(1); // load
 })();
 
-function debounce(fn, ms){
-  let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms); };
-}
-function savedDeptOrder(){
-  try{ return JSON.parse(localStorage.getItem(LS_KEYS.DEPT_ORDER)) || [] }catch{ return [] }
-}
-function setSavedDeptOrder(arr){
-  localStorage.setItem(LS_KEYS.DEPT_ORDER, JSON.stringify(arr));
-}
-function savedLinkOrder(dep, sub){
-  try{ return JSON.parse(localStorage.getItem(LS_KEYS.LINK_ORDER(dep, sub))) || [] }catch{return []}
-}
-function setSavedLinkOrder(dep, sub, arr){
-  localStorage.setItem(LS_KEYS.LINK_ORDER(dep, sub), JSON.stringify(arr));
-}
+/* ===== Theme ===== */
+(function initTheme(){
+  const saved = localStorage.getItem(LS.THEME) || "light";
+  document.body.classList.toggle('dark', saved === "dark");
+})();
+els.btnTheme.addEventListener('click', ()=>{
+  const dark = !document.body.classList.contains('dark');
+  document.body.classList.toggle('dark', dark);
+  localStorage.setItem(LS.THEME, dark ? "dark" : "light");
+});
 
-/* Grid preferences */
-function loadGridPrefs(){
-  try{
-    const p = JSON.parse(localStorage.getItem(LS_KEYS.GRID_PREFS) || "{}");
-    if(p.cols) setCols(p.cols);
-    if(p.density) setDensity(p.density);
-    if(p.ratio) setRatio(p.ratio);
-    if(p.media) setMedia(p.media);
-    // reflect in controls
-    els.cols.value = p.cols === "auto" ? 0 : (p.cols || 0);
-    els.density.value = p.density || "1";
-    els.ratio.value = p.ratio || "1.777";
-    els.media.value = p.media || "on";
-  }catch{}
-}
-function saveGridPrefs(){
-  const prefs = {
-    cols: getCols(), density: getDensity(), ratio: getRatio(), media: getMedia()
-  };
-  localStorage.setItem(LS_KEYS.GRID_PREFS, JSON.stringify(prefs));
-}
-function setCols(v){
-  if(v === "auto"){ document.documentElement.style.setProperty('--grid-cols', 'auto-fill'); }
-  else{ document.documentElement.style.setProperty('--grid-cols', v); }
-}
-function getCols(){
-  const val = Number(els.cols.value);
-  return val === 0 ? "auto" : String(val);
-}
-function setDensity(v){ document.documentElement.style.setProperty('--density-scale', v); }
-function getDensity(){ return els.density.value; }
-function setRatio(v){ document.documentElement.style.setProperty('--card-ratio', v); }
-function getRatio(){ return els.ratio.value; }
-function setMedia(mode){
-  if(mode === "off"){
-    document.documentElement.style.setProperty('--image-opacity', '0');
+/* ===== Grid prefs ===== */
+function applyPrefs(p){
+  // columns
+  if(p.cols === "auto" || !p.cols){
+    document.documentElement.style.setProperty('--cols', 'auto-fill');
+    els.cols.value = 0;
+  } else {
+    document.documentElement.style.setProperty('--cols', p.cols);
+    els.cols.value = Number(p.cols);
+  }
+  // density
+  document.documentElement.style.setProperty('--density', p.density || "1");
+  els.density.value = p.density || "1";
+  // ratio
+  document.documentElement.style.setProperty('--ratio', p.ratio || "1.777");
+  els.ratio.value = p.ratio || "1.777";
+  // media
+  if((p.media || "on") === "off"){
     document.documentElement.style.setProperty('--media-display', 'none');
+    document.documentElement.style.setProperty('--img-opacity', '0');
+    els.media.value = "off";
   }else{
-    document.documentElement.style.setProperty('--image-opacity', '.55');
     document.documentElement.style.setProperty('--media-display', 'block');
+    document.documentElement.style.setProperty('--img-opacity', '.55');
+    els.media.value = "on";
   }
 }
-function getMedia(){ return els.media.value; }
+function readPrefs(){
+  try{ return JSON.parse(localStorage.getItem(LS.GRID) || "{}"); }catch{ return {} }
+}
+function savePrefs(p){
+  localStorage.setItem(LS.GRID, JSON.stringify(p));
+}
+applyPrefs(readPrefs());
 
-/* ===================== DATA ===================== */
+els.cols.addEventListener('input', ()=>{
+  const v = Number(els.cols.value);
+  const cols = v === 0 ? "auto" : String(v);
+  const prefs = readPrefs(); prefs.cols = cols; savePrefs(prefs); applyPrefs(prefs);
+});
+els.density.addEventListener('change', ()=>{
+  const prefs = readPrefs(); prefs.density = els.density.value; savePrefs(prefs); applyPrefs(prefs);
+});
+els.ratio.addEventListener('change', ()=>{
+  const prefs = readPrefs(); prefs.ratio = els.ratio.value; savePrefs(prefs); applyPrefs(prefs);
+});
+els.media.addEventListener('change', ()=>{
+  const prefs = readPrefs(); prefs.media = els.media.value; savePrefs(prefs); applyPrefs(prefs);
+});
+
+/* ===== Data load ===== */
 async function loadData(){
   try{
-    const res = await fetch(sheetURL, { cache: "no-store" });
+    const res = await fetch(sheetURL, { cache:"no-store" });
     rawRows = await res.json();
     buildMaps();
-    renderSidebar();
-    if(els.viewMode.value === "departments") renderDepartments();
-    else if(els.viewMode.value === "subpage") renderSubPage();
-    else renderLinks();
-    updateCrumbs();
+    render(); // default view
   }catch(e){
     console.error(e);
-    els.depGrid.innerHTML = `<div class="mini">Failed to load data. Check Apps Script URL or CORS.</div>`;
+    els.depGrid.innerHTML = `<div class="chip">Failed to load data.</div>`;
   }
 }
 function buildMaps(){
-  const map = {}; // dep -> {dep, subs:[], imageUrl}
+  const map = {};
   rawRows.forEach(row=>{
     const dep = row.Department?.trim();
     if(!dep) return;
-
     const sub = row.SubDepartment?.trim();
     const di = row.DIURL?.trim();
 
-    if(!map[dep]){
-      map[dep] = { dep, subs:[], imageUrl: di || "" };
-    }else if(!map[dep].imageUrl && di){
-      map[dep].imageUrl = di;
-    }
-    if(sub && !map[dep].subs.includes(sub)){
-      map[dep].subs.push(sub);
-    }
-  });
+    if(!map[dep]) map[dep] = { dep, subs:[], imageUrl: di || "" };
+    else if(!map[dep].imageUrl && di) map[dep].imageUrl = di;
 
-  departmentsData = Object.values(map).map(entry=>({
-    ...entry,
-    imageUrl: entry.imageUrl || `https://source.unsplash.com/1200x800/?warehouse,${encodeURIComponent(entry.dep)}`
+    if(sub && !map[dep].subs.includes(sub)) map[dep].subs.push(sub);
+  });
+  departmentsData = Object.values(map).map(x=>({
+    ...x,
+    imageUrl: x.imageUrl || `https://source.unsplash.com/1200x800/?workspace,${encodeURIComponent(x.dep)}`
   })).sort((a,b)=>a.dep.localeCompare(b.dep));
 }
 
-/* ===================== SIDEBAR ===================== */
-function renderSidebar(){
-  els.depList.innerHTML = "";
-  const order = savedDeptOrder();
-  const ordered = [
-    ...order.map(id=>departmentsData.find(d=>d.dep===id)).filter(Boolean),
-    ...departmentsData.filter(d=>!order.includes(d.dep))
-  ];
-
-  ordered.forEach(d=>{
-    const chip = document.createElement('div');
-    chip.className = 'chip' + (currentDep===d.dep ? ' active' : '');
-    chip.innerHTML = `<div style="width:8px;height:8px;border-radius:50%;background:${'#6a8cff'};"></div>
-                      <div style="font-weight:600">${d.dep}</div>
-                      <div class="mini" style="margin-left:auto">${d.subs.length}</div>`;
-    chip.addEventListener('click', ()=>{
-      currentDep = d.dep;
-      currentSub = "__all__";
-      if(els.viewMode.value === "departments"){ els.viewMode.value = "subpage"; }
-      renderSidebarSubs();
-      if(els.viewMode.value === "subpage") renderSubPage(); else renderLinks();
-      updateCrumbs();
-      bumpStep();
-    });
-    els.depList.appendChild(chip);
-  });
-  renderSidebarSubs();
+/* ===== Orders ===== */
+function getDeptOrder(){
+  try{ return JSON.parse(localStorage.getItem(LS.DEPT_ORDER) || "[]"); }catch{ return [] }
 }
-function renderSidebarSubs(){
-  els.subList.innerHTML = "";
-  if(!currentDep){
-    els.subList.innerHTML = `<div class="mini" style="padding:8px 10px; border:1px dashed var(--border); border-radius:10px">
-      Select a department to see sub-departments.
-    </div>`;
-    els.subFilter.disabled = true;
-    els.subFilter.innerHTML = `<option value="__all__">All</option>`;
-    return;
-  }
-  const depObj = departmentsData.find(d=>d.dep===currentDep);
-  const subs = depObj?.subs || [];
-
-  const allChip = document.createElement('div');
-  allChip.className = 'chip' + (currentSub==="__all__" ? ' active' : '');
-  allChip.innerHTML = `<div style="width:8px;height:8px;border-radius:50%;background:${'#31d296'};"></div>
-                       <div style="font-weight:600">All Links</div>`;
-  allChip.addEventListener('click', ()=>{
-    currentSub="__all__";
-    els.viewMode.value = "links";
-    renderLinks(); updateCrumbs(); bumpStep();
-    highlightSideSubs();
-  });
-  els.subList.appendChild(allChip);
-
-  subs.forEach(s=>{
-    const chip = document.createElement('div');
-    chip.className = 'chip' + (currentSub===s ? ' active' : '');
-    chip.textContent = s;
-    chip.addEventListener('click', ()=>{
-      currentSub = s;
-      els.viewMode.value = "links";
-      renderLinks(); updateCrumbs(); bumpStep();
-      highlightSideSubs();
-    });
-    els.subList.appendChild(chip);
-  });
-
-  els.subFilter.disabled = false;
-  els.subFilter.innerHTML = `<option value="__all__">All</option>` + subs.map(s=>`<option value="${s}">${s}</option>`).join('');
-  els.subFilter.value = currentSub;
+function setDeptOrder(ids){
+  localStorage.setItem(LS.DEPT_ORDER, JSON.stringify(ids));
 }
-function highlightSideSubs(){
-  [...els.subList.children].forEach(node=>{
-    if(!node.classList.contains('chip')) return;
-    const label = node.textContent.trim();
-    const isAll = label==="All Links" && currentSub==="__all__";
-    const matches = isAll || label===currentSub;
-    node.classList.toggle('active', matches);
-  });
+function getLinkOrder(dep, sub){
+  try{ return JSON.parse(localStorage.getItem(LS.LINK_ORDER(dep, sub)) || "[]"); }catch{ return [] }
+}
+function setLinkOrder(dep, sub, arr){
+  localStorage.setItem(LS.LINK_ORDER(dep, sub), JSON.stringify(arr));
 }
 
-/* ===================== RENDER: DEPARTMENTS ===================== */
+/* ===== Views ===== */
+function render(){
+  const mode = els.viewMode.value;
+  if(mode === "departments") renderDepartments();
+  else if(mode === "subpage") renderSubPage();
+  else renderLinks();
+  updateCrumbs();
+}
+
+/* Departments: full screen, no sidebar */
 function renderDepartments(){
   showOnly('depGrid');
 
   const q = els.search.value.trim().toLowerCase();
-  const order = savedDeptOrder();
+  const order = getDeptOrder();
   const base = q
     ? departmentsData.filter(({dep, subs})=> dep.toLowerCase().includes(q) || subs.some(s=>s.toLowerCase().includes(q)))
     : [
@@ -535,7 +407,7 @@ function renderDepartments(){
     card.className = 'card';
     card.setAttribute('data-id', dep);
     card.innerHTML = `
-      <img class="img" loading="lazy" src="${imageUrl}" alt="${dep}"/>
+      <img class="img" loading="lazy" src="${imageUrl}" alt="${dep}">
       <div class="label">
         <span>${dep}</span>
         <span class="pill">Subs: ${subs.length}</span>
@@ -544,63 +416,72 @@ function renderDepartments(){
     card.addEventListener('click', ()=>{
       currentDep = dep;
       currentSub = "__all__";
-      renderSidebar();
-      if(els.viewMode.value === "departments") els.viewMode.value="subpage";
-      if(els.viewMode.value === "subpage") renderSubPage(); else renderLinks();
+      // go to sub full page first to choose sub easily
+      els.viewMode.value = "subpage";
+      renderSubPage();
       updateCrumbs();
-      bumpStep();
+      step();
     });
     els.depGrid.appendChild(card);
   });
 
+  // sorting
   if(depSortable){ depSortable.destroy(); depSortable=null; }
-  if(sortingEnabled){
+  if(sorting){
     depSortable = Sortable.create(els.depGrid, {
       animation:120,
       onEnd: ()=>{
         const ids = [...els.depGrid.children].map(el=>el.getAttribute('data-id'));
-        setSavedDeptOrder(ids);
-        bumpStep();
+        setDeptOrder(ids);
+        step();
       }
     });
   }
 }
 
-/* ===================== RENDER: SUB-PAGE (FULL PAGE SUB-DEPARTMENTS) ===================== */
+/* Sub-departments: full page grid */
 function renderSubPage(){
   showOnly('subGrid');
 
   if(!currentDep){
-    els.subGrid.innerHTML = `<div class="mini" style="padding:12px">Choose a department from the left.</div>`;
+    // if no dep chosen, show departments instead
+    els.viewMode.value = "departments";
+    renderDepartments();
     return;
   }
+
   const depObj = departmentsData.find(d=>d.dep===currentDep);
   const subs = depObj?.subs || [];
 
-  // search-aware
+  // sync dropdown
+  els.subFilter.disabled = false;
+  els.subFilter.innerHTML = `<option value="__all__">All</option>` + subs.map(s=>`<option value="${s}">${s}</option>`).join('');
+  els.subFilter.value = "__all__";
+
   const q = els.search.value.trim().toLowerCase();
-  const filtered = q ? subs.filter(s => s.toLowerCase().includes(q)) : subs;
+  const filtered = q ? subs.filter(s=>s.toLowerCase().includes(q)) : subs;
 
   els.subGrid.innerHTML = "";
   if(filtered.length === 0){
-    els.subGrid.innerHTML = `<div class="mini" style="padding:12px">No sub-departments match.</div>`;
+    els.subGrid.innerHTML = `<div class="chip" style="grid-column:1/-1">No sub-departments match.</div>`;
     return;
   }
+
   filtered.forEach(s=>{
     const chip = document.createElement('div');
     chip.className = 'subchip';
     chip.textContent = s;
     chip.addEventListener('click', ()=>{
       currentSub = s;
+      els.subFilter.value = s;
       els.viewMode.value = "links";
-      renderLinks(); updateCrumbs(); bumpStep();
-      highlightSideSubs();
+      renderLinks(); updateCrumbs(); step();
     });
     els.subGrid.appendChild(chip);
   });
 }
 
-/* ===================== RENDER: LINKS ===================== */
+/* Links grid */
 function linksFor(dep, sub){
   const lowerDep = dep?.toLowerCase();
   const lowerSub = sub?.toLowerCase();
@@ -614,7 +495,6 @@ function linksFor(dep, sub){
   return rows.map(r=>({
     name: r.LinkName?.trim() || "Unnamed",
     url : r.URL?.trim() || "#",
-    color: r.Color?.trim() || "",
     image: r.ImageURL?.trim() || ""
   }));
 }
@@ -622,28 +502,36 @@ function renderLinks(){
   showOnly('linkGrid');
 
   if(!currentDep){
-    els.linkGrid.innerHTML = `<div class="mini" style="padding:12px">Choose a department first.</div>`;
+    els.viewMode.value = "departments";
+    renderDepartments();
     return;
   }
 
-  if(els.subFilter.value !== currentSub){ els.subFilter.value = currentSub; }
+  // ensure dropdown in sync
+  if(els.subFilter.disabled){
+    const depObj = departmentsData.find(d=>d.dep===currentDep);
+    const subs = depObj?.subs || [];
+    els.subFilter.disabled = false;
+    els.subFilter.innerHTML = `<option value="__all__">All</option>` + subs.map(s=>`<option value="${s}">${s}</option>`).join('');
+  }
+  els.subFilter.value = currentSub;
 
   let data = linksFor(currentDep, currentSub);
-
   const q = els.search.value.trim().toLowerCase();
   if(q){
     data = data.filter(l => l.name.toLowerCase().includes(q) || l.url.toLowerCase().includes(q));
   }
 
-  const order = savedLinkOrder(currentDep, currentSub);
+  // order
+  const order = getLinkOrder(currentDep, currentSub);
   const sorted = [
     ...order.map(n => data.find(l=>l.name===n)).filter(Boolean),
     ...data.filter(l => !order.includes(l.name))
   ];
 
   els.linkGrid.innerHTML = "";
-  if(sorted.length===0){
-    els.linkGrid.innerHTML = `<div class="mini" style="padding:12px">No matching links found.</div>`;
+  if(sorted.length === 0){
+    els.linkGrid.innerHTML = `<div class="chip" style="grid-column:1/-1">No links found.</div>`;
   }else{
     sorted.forEach(l=>{
       const item = document.createElement('a');
@@ -654,155 +542,67 @@ function renderLinks(){
       item.rel="noopener";
       const img = l.image ? `<img class="img" loading="lazy" src="${l.image}" alt="">` : '';
       item.innerHTML = `${img}<div class="label">${l.name}</div>`;
-      item.addEventListener('click', ()=> bumpStep());
+      item.addEventListener('click', ()=> step());
       els.linkGrid.appendChild(item);
     });
   }
 
   if(linkSortable){ linkSortable.destroy(); linkSortable=null; }
-  if(sortingEnabled){
+  if(sorting){
     linkSortable = Sortable.create(els.linkGrid, {
       animation:120,
       onEnd: ()=>{
         const names = [...els.linkGrid.children].map(el=>el.getAttribute('data-name'));
-        setSavedLinkOrder(currentDep, currentSub, names);
-        bumpStep();
+        setLinkOrder(currentDep, currentSub, names);
+        step();
       }
     });
   }
 }
 
-/* ===================== VIEW HELPERS ===================== */
+/* ===== Helpers ===== */
 function showOnly(which){
-  els.depGrid.style.display = which==='depGrid' ? "grid" : "none";
-  els.subGrid.style.display = which==='subGrid' ? "grid" : "none";
-  els.linkGrid.style.display = which==='linkGrid' ? "grid" : "none";
+  els.depGrid.classList.toggle('hidden', which!=='depGrid');
+  els.subGrid.classList.toggle('hidden', which!=='subGrid');
+  els.linkGrid.classList.toggle('hidden', which!=='linkGrid');
 }
 function updateCrumbs(){
-  if(!currentDep){
-    els.crumbs.innerHTML = `Home`;
-    return;
-  }
-  const subTxt = currentSub==="__all__" ? "All" : currentSub;
-  if(els.viewMode.value === "subpage"){
-    els.crumbs.innerHTML = `<b>${currentDep}</b> <span style="opacity:.6">/</span> Sub-departments`;
-  }else if(els.viewMode.value === "links"){
-    els.crumbs.innerHTML = `<b>${currentDep}</b> <span style="opacity:.6">/</span> ${subTxt}`;
+  const mode = els.viewMode.value;
+  if(mode === "departments" || !currentDep){
+    els.crumbs.textContent = "Home";
+  }else if(mode === "subpage"){
+    els.crumbs.innerHTML = `<b>${currentDep}</b> / Sub-departments`;
   }else{
-    els.crumbs.innerHTML = `Home`;
+    const subTxt = currentSub==="__all__" ? "All" : currentSub;
+    els.crumbs.innerHTML = `<b>${currentDep}</b> / ${subTxt}`;
   }
 }
 
-/* ===================== CONTROLS & EVENTS ===================== */
-els.viewMode.addEventListener('change', ()=>{
-  const v = els.viewMode.value;
-  if(v==="departments") renderDepartments();
-  else if(v==="subpage") renderSubPage();
-  else renderLinks();
-  updateCrumbs();
-  bumpStep();
-});
-
+/* ===== Events ===== */
+els.viewMode.addEventListener('change', ()=>{ render(); step(); });
 els.subFilter.addEventListener('change', ()=>{
   currentSub = els.subFilter.value;
   els.viewMode.value = "links";
-  renderLinks();
-  updateCrumbs();
-  bumpStep();
+  renderLinks(); updateCrumbs(); step();
 });
-
-els.btnToggleSort.addEventListener('click', ()=>{
-  sortingEnabled = !sortingEnabled;
-  els.btnToggleSort.textContent = sortingEnabled ? '✅ Sorting' : '↕️ Sort';
-  const v = els.viewMode.value;
-  if(v==="departments") renderDepartments();
-  else if(v==="subpage") renderSubPage();
-  else renderLinks();
-  bumpStep();
+els.btnSort.addEventListener('click', ()=>{
+  sorting = !sorting;
+  els.btnSort.textContent = sorting ? "Disable Sort" : "Enable Sort";
+  render();
 });
-
-els.btnRefresh.addEventListener('click', ()=>{
-  loadData();
-  bumpStep();
-});
-
+els.btnRefresh.addEventListener('click', ()=>{ loadData(); step(); });
 els.btnClear.addEventListener('click', ()=>{
-  localStorage.removeItem(LS_KEYS.DEPT_ORDER);
-  Object.keys(localStorage).forEach(k=>{
-    if(k.startsWith('linkOrder-') || k.includes('--')) localStorage.removeItem(k);
-  });
-  const v = els.viewMode.value;
-  if(v==="departments") renderDepartments();
-  else if(v==="subpage") renderSubPage();
-  else renderLinks();
-  bumpStep();
+  localStorage.removeItem(LS.DEPT_ORDER);
+  Object.keys(localStorage).forEach(k=>{ if(k.startsWith('rv_link_order_')) localStorage.removeItem(k); });
+  render();
 });
 
-/* Grid controls */
-els.cols.addEventListener('input', ()=>{
-  const v = getCols();
-  setCols(v); saveGridPrefs();
-});
-els.density.addEventListener('change', ()=>{
-  setDensity(getDensity()); saveGridPrefs();
-});
-els.ratio.addEventListener('change', ()=>{
-  setRatio(getRatio()); saveGridPrefs();
-});
-els.media.addEventListener('change', ()=>{
-  setMedia(getMedia()); saveGridPrefs();
+/* search debounce */
+let t; els.search.addEventListener('input', ()=>{
+  clearTimeout(t); t = setTimeout(()=>{ render(); }, 220);
 });
 
-/* Search */
-els.search.addEventListener('input', debounce(()=>{
-  const v = els.viewMode.value;
-  if(v==="departments") renderDepartments();
-  else if(v==="subpage") renderSubPage();
-  else renderLinks();
-}, 250));
-
-/* Command palette shortcut (demo jump) */
-els.btnOpenK.addEventListener('click', ()=>{ openQuickJump(); });
-window.addEventListener('keydown', (e)=>{
-  const mod = e.ctrlKey || e.metaKey;
-  if(mod && e.key.toLowerCase()==='k'){ e.preventDefault(); openQuickJump(); }
-  /* Arrow navigation in sub full page */
-  if(els.viewMode.value==='subpage' && (e.key==='ArrowLeft' || e.key==='ArrowRight')){
-    flipSub(e.key==='ArrowRight' ? 1 : -1);
-  }
-});
-
-function openQuickJump(){
-  // Minimal quick jump: cycle views for now; extend to a real palette later if needed.
-  const modes = ['departments','subpage','links'];
-  const i = modes.indexOf(els.viewMode.value);
-  const next = modes[(i+1)%modes.length];
-  els.viewMode.value = next;
-  if(next==='departments') renderDepartments();
-  else if(next==='subpage') renderSubPage();
-  else renderLinks();
-  updateCrumbs();
-  bumpStep();
-}
-
-function flipSub(dir){
-  if(!currentDep) return;
-  const depObj = departmentsData.find(d=>d.dep===currentDep);
-  const subs = depObj?.subs || [];
-  if(subs.length===0) return;
-  const idx = Math.max(0, subs.indexOf(currentSub));
-  let next = idx + dir;
-  if(next < 0) next = subs.length - 1;
-  if(next >= subs.length) next = 0;
-  currentSub = subs[next];
-  els.viewMode.value = "links";
-  els.subFilter.value = currentSub;
-  renderLinks(); updateCrumbs(); bumpStep();
-}
-
-/* ===================== INIT ===================== */
-loadGridPrefs();
-setCols(getCols()); setDensity(getDensity()); setRatio(getRatio()); setMedia(getMedia());
+/* ===== Init ===== */
 loadData();
 </script>
 </body>
