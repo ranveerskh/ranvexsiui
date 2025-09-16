@@ -3,41 +3,41 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=1280, initial-scale=1.0"/>
-<title>RANVEXSI UI — Clean (Softer Light)</title>
+<title>RANVEXSI UI — Compact</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <style>
   :root{
     /* Softer Light Theme */
-    --bg:#eef1f6;            /* softer off-white */
-    --ink:#0f1324;
-    --muted:#677089;
-    --card:#f9fbff;          /* gentle card */
-    --line:#dae1ee;          /* light border */
+    --bg: #e9eef6;          /* slightly darker to reduce glare */
+    --ink: #0f1324;
+    --muted:#6c7286;
+    --card:#f7f9fe;
+    --line:#d6deec;
     --accent:#3a6cf4;
     --accent-ink:#ffffff;
 
     /* Layout */
-    --round:14px;
-    --shadow:0 6px 18px rgba(16,19,36,0.05);
+    --round:12px;
+    --shadow:0 6px 18px rgba(16,19,36,0.06);
     --grid-gap:16px;
     --cols:auto-fill;      /* auto-fill or a number (2..8) */
     --ratio:1.777;         /* 16:9 default */
     --density:1;           /* 0.9 compact, 1 comfort, 1.1 cozy */
     --media-display:block; /* block or none */
-    --img-opacity:.5;      /* toned down brightness */
+    --img-opacity:.38;     /* calmer image in light mode */
   }
   .dark{
     --bg:#0f1220;
     --ink:#eaf1ff;
     --muted:#9aa6c8;
     --card:#141a2c;
-    --line:#212a46;
+    --line:#222b46;
     --accent:#5b83ff;
     --accent-ink:#0b1020;
     --shadow:0 8px 24px rgba(0,0,0,.22);
-    --img-opacity:.55;
+    --img-opacity:.5;
   }
 
   *{box-sizing:border-box}
@@ -46,65 +46,83 @@
     margin:0;
     font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     color:var(--ink);
-    background:
-      linear-gradient(180deg, #f3f6fb 0%, var(--bg) 100%);
-    overflow:auto;
+    background:var(--bg);
   }
 
-  /* Header */
+  /* ================= Header (compact) ================= */
   .header{
-    position:sticky; top:0; z-index:20;
-    display:flex; align-items:center; gap:12px; padding:10px 16px;
+    position:sticky; top:0; z-index:30;
+    display:flex; align-items:center; gap:8px;
+    padding:6px 10px; height:48px;
     background:var(--card); border-bottom:1px solid var(--line); box-shadow:var(--shadow);
   }
-  .brand{display:flex; align-items:center; gap:10px}
+  .brand{display:flex; align-items:center; gap:8px}
   .logo{
-    width:36px; height:36px; border-radius:10px;
+    width:28px; height:28px; border-radius:8px;
     background:var(--accent); color:var(--accent-ink);
-    display:grid; place-items:center; font-weight:800; letter-spacing:-.2px;
+    display:grid; place-items:center; font-weight:800; font-size:0.9rem; letter-spacing:-.2px;
   }
-  .title{font-weight:800}
+  .title{font-weight:800; font-size:.92rem; line-height:1}
   .grow{flex:1}
+
+  /* search compact */
   .search{
     position:relative; width:520px; max-width:45vw; transform:scale(var(--density));
   }
   .search input{
-    width:100%; height:38px; padding:0 12px 0 36px; border-radius:10px;
-    border:1px solid var(--line); background:#ffffff; outline:none; color:#111;
+    height:32px; width:100%;
+    padding:0 10px 0 32px; border-radius:8px;
+    border:1px solid var(--line); background:#fff; outline:none; color:#111; font-size:.92rem;
   }
-  .dark .search input{ background:#0f1426; color:var(--ink) }
-  .search svg{position:absolute; left:10px; top:50%; transform:translateY(-50%); opacity:.6}
-  .controls{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
-  .btn, select, .range, .chip{
-    height:36px; padding:0 10px; border-radius:10px; border:1px solid var(--line);
-    background:var(--card); color:var(--ink); font-weight:600; cursor:pointer;
-  }
-  .btn.primary{ background:var(--accent); color:var(--accent-ink); border-color:transparent }
-  .badge{display:inline-flex; align-items:center; gap:6px; height:36px; padding:0 10px; border-radius:999px; border:1px solid var(--line); background:var(--card)}
-  .range{ width:120px; padding:0 }
+  .dark .search input{ background:#0f1426; color:var(--ink); border-color:#2a3452 }
+  .search svg{position:absolute; left:8px; top:50%; transform:translateY(-50%); opacity:.65}
 
-  /* Main wrapper */
-  .wrap{ max-width:1280px; margin:16px auto; padding:0 16px }
-
-  /* Top info bar (crumbs) */
-  .toolbar{
-    display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:10px
+  /* icon buttons */
+  .actions{display:flex; align-items:center; gap:6px}
+  .iconbtn{
+    width:32px; height:32px; display:grid; place-items:center;
+    border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--ink);
+    cursor:pointer; position:relative;
   }
-  .crumbs{ font-size:.95rem; color:var(--muted) }
+  .iconbtn:hover{ filter:brightness(0.98) }
+  .dark .iconbtn{ border-color:#2a3452 }
+  .badge{
+    height:28px; padding:0 8px; border-radius:999px;
+    border:1px solid var(--line); background:var(--card); display:flex; align-items:center; gap:6px; font-size:.86rem;
+  }
+  .dark .badge{ border-color:#2a3452 }
+
+  /* tooltips */
+  .iconbtn[data-tip]:hover::after{
+    content:attr(data-tip); position:absolute; bottom:-30px; left:50%; transform:translateX(-50%);
+    background:#111; color:#fff; font-size:.75rem; padding:4px 6px; border-radius:6px; white-space:nowrap;
+  }
+
+  /* ================= Main ================= */
+  .wrap{ max-width:1280px; margin:12px auto 18px; padding:0 12px }
+
+  /* crumbs */
+  .toolbar{ display:flex; align-items:center; gap:10px; margin:8px 0 }
+  .crumbs{ font-size:.92rem; color:var(--muted) }
   .crumbs b{ color:var(--ink) }
 
-  /* Collapsible settings panel */
+  /* collapsible settings */
   .settings{
-    border:1px solid var(--line); border-radius:12px; background:var(--card);
-    box-shadow:var(--shadow); padding:10px; margin-bottom:12px;
+    border:1px solid var(--line); border-radius:10px; background:var(--card);
+    box-shadow:var(--shadow); padding:8px; margin-bottom:12px;
   }
   .settings.hidden{ display:none }
-  .settings .controls{ gap:10px }
+  .controls{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+  .chip, .btn, select, .range{
+    height:32px; padding:0 8px; border-radius:8px; border:1px solid var(--line);
+    background:var(--card); color:var(--ink); font-weight:600; cursor:pointer; font-size:.9rem;
+  }
+  .range{ width:120px; padding:0 }
 
-  /* Grid */
+  /* ================= Grid ================= */
   .grid{
     display:grid; gap:var(--grid-gap);
-    grid-template-columns: repeat( var(--cols), minmax(240px, 1fr) );
+    grid-template-columns: repeat( var(--cols), minmax(300px, 1fr) ); /* raise min width for stability */
   }
 
   /* Department card */
@@ -117,22 +135,25 @@
   .card .img, .link .img{
     position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
     display:var(--media-display); opacity:var(--img-opacity);
-    filter:saturate(.9) brightness(.95);    /* softer */
+    filter:none; /* remove bright washout */
   }
-  .dark .card .img, .dark .link .img{ filter:none }
+  .card .overlay, .link .overlay{
+    position:absolute; inset:0; pointer-events:none;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,.65) 100%); /* bottom shading */
+  }
   .card .label{
     position:absolute; left:12px; right:12px; bottom:10px; z-index:1;
     display:flex; justify-content:space-between; align-items:center;
-    font-weight:800; font-size:calc(1.0rem * var(--density));
-    text-shadow:0 1px 8px rgba(0,0,0,.18);
+    font-weight:800; font-size:calc(.98rem * var(--density));
+    text-shadow:0 1px 6px rgba(0,0,0,.35);
+    color:#fff;
   }
-  .pill{ font-size:.8rem; padding:6px 10px; border-radius:999px; background:rgba(0,0,0,.05) }
-  .dark .pill{ background:rgba(255,255,255,.08) }
+  .pill{ font-size:.78rem; padding:4px 8px; border-radius:999px; background:rgba(255,255,255,.15); color:#fff }
 
   /* Sub full-page items */
   .subchip{
     display:flex; align-items:center; justify-content:center; text-align:center;
-    border:1px solid var(--line); border-radius:12px; background:var(--card);
+    border:1px solid var(--line); border-radius:10px; background:var(--card);
     min-height:120px; font-weight:700; cursor:pointer; aspect-ratio:1.1; padding:10px;
     box-shadow:var(--shadow);
   }
@@ -143,12 +164,18 @@
     background:var(--card); box-shadow:var(--shadow);
     aspect-ratio: var(--ratio); overflow:hidden; cursor:pointer;
   }
-  .link::after{content:""; position:absolute; inset:0; background:linear-gradient(180deg, #0000, #0007)}
-  .link .label{ position:absolute; left:12px; right:12px; bottom:10px; font-weight:800; font-size:calc(1.0rem * var(--density)) }
+  .link .label{
+    position:absolute; left:12px; right:12px; bottom:10px; font-weight:800; font-size:calc(.98rem * var(--density));
+    color:#fff; text-shadow:0 1px 6px rgba(0,0,0,.35);
+  }
   a.link{ color:inherit; text-decoration:none }
 
   /* Helpers */
   .hidden{ display:none !important }
+
+  /* Placeholder colors for readability */
+  ::placeholder{ color:#6b7280 }
+  .dark ::placeholder{ color:#b6c2e0 }
 </style>
 </head>
 <body>
@@ -161,22 +188,21 @@
     <div class="grow"></div>
 
     <div class="search" title="Search departments, subs or links">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.3-4.3M10.8 18.2a7.4 7.4 0 1 1 0-14.8 7.4 7.4 0 0 1 0 14.8Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.3-4.3M10.8 18.2a7.4 7.4 0 1 1 0-14.8 7.4 7.4 0 0 1 0 14.8Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
       <input id="search" placeholder="Search departments, sub-departments, or links..." autocomplete="off" />
     </div>
 
-    <div class="controls">
-      <button class="btn" id="btnSettings">⚙️ Settings</button>
-      <button class="btn" id="btnRefresh">Reload</button>
-      <button class="btn" id="btnClear">Clear Order</button>
-      <div class="badge">👣 Steps: <span id="steps">0</span></div>
-      <div class="badge">📊 Total: <span id="stepsTotal">0</span></div>
-      <button class="btn" id="btnTheme">Light/Dark</button>
+    <div class="actions">
+      <button class="iconbtn" id="btnSettings" data-tip="Settings">⚙️</button>
+      <button class="iconbtn" id="btnRefresh" data-tip="Reload">↻</button>
+      <button class="iconbtn" id="btnClear" data-tip="Clear Order">🧹</button>
+      <button class="iconbtn" id="btnTheme" data-tip="Light/Dark">🌗</button>
+      <div class="badge" title="Steps | Total">👣 <span id="steps">0</span> | 📊 <span id="stepsTotal">0</span></div>
     </div>
   </div>
 
   <div class="wrap">
-    <!-- Top info -->
+    <!-- Crumbs -->
     <div class="toolbar">
       <div class="crumbs" id="crumbs">Home</div>
       <div class="grow"></div>
@@ -276,9 +302,10 @@ const LS = {
   DEPT_ORDER: "rv_dept_order",
   LINK_ORDER: (dep, sub) => `rv_link_order_${dep}__${sub}`,
   STEPS: "rv_steps_total",
-  GRID: "rv_grid_prefs_v3",
+  GRID: "rv_grid_prefs_compact",
   THEME: "rv_theme",
-  SETTINGS_OPEN: "rv_settings_open"  // remember panel toggle
+  SETTINGS_OPEN: "rv_settings_open",
+  SETTINGS_OPEN_NONDEP: "rv_settings_open_nd" // separate state for non-departments
 };
 
 /* ===== Steps ===== */
@@ -310,18 +337,15 @@ els.btnTheme.addEventListener('click', ()=>{
 /* ===== Settings Panel Toggle ===== */
 function setSettingsOpen(open){
   els.settings.classList.toggle('hidden', !open);
-  localStorage.setItem(LS.SETTINGS_OPEN, open ? "1" : "0");
 }
 els.btnSettings.addEventListener('click', ()=>{
   const open = els.settings.classList.contains('hidden');
+  const mode = els.viewMode.value || "departments";
   setSettingsOpen(open);
+  // remember separately for departments vs others
+  if(mode === "departments") localStorage.setItem(LS.SETTINGS_OPEN, open ? "1" : "0");
+  else localStorage.setItem(LS.SETTINGS_OPEN_NONDEP, open ? "1" : "0");
 });
-(function initSettingsOpen(){
-  const saved = localStorage.getItem(LS.SETTINGS_OPEN);
-  // default: open except when in departments view (handled after mode set)
-  if(saved === "0") setSettingsOpen(false);
-  else setSettingsOpen(true);
-})();
 
 /* ===== Grid prefs ===== */
 function applyPrefs(p){
@@ -337,7 +361,7 @@ function applyPrefs(p){
     els.media.value = "off";
   }else{
     document.documentElement.style.setProperty('--media-display', 'block');
-    document.documentElement.style.setProperty('--img-opacity', '.5');
+    // opacity is set in CSS root; we keep it
     els.media.value = "on";
   }
 }
@@ -410,11 +434,13 @@ function setLinkOrder(dep, sub, arr){
 /* ===== Views ===== */
 function render(){
   const mode = els.viewMode.value || "departments";
-  // Hide settings by default when opening departments
-  if(mode === "departments") setSettingsOpen(false);
-  else{
-    // respect saved preference for non-department views
-    const saved = localStorage.getItem(LS.SETTINGS_OPEN);
+
+  // settings visibility by view
+  if(mode === "departments"){
+    setSettingsOpen(false); // always default hidden for departments
+    localStorage.setItem(LS.SETTINGS_OPEN, "0");
+  }else{
+    const saved = localStorage.getItem(LS.SETTINGS_OPEN_NONDEP);
     setSettingsOpen(saved !== "0");
   }
 
@@ -424,7 +450,7 @@ function render(){
   updateCrumbs();
 }
 
-/* Departments: full screen, settings hidden by default */
+/* Departments: full screen */
 function renderDepartments(){
   showOnly('depGrid');
 
@@ -443,7 +469,8 @@ function renderDepartments(){
     card.className = 'card';
     card.setAttribute('data-id', dep);
     card.innerHTML = `
-      <img class="img" loading="lazy" src="${imageUrl}" alt="${dep}">
+      <img class="img" loading="lazy" decoding="async" src="${imageUrl}" alt="${dep}" width="1200" height="675">
+      <div class="overlay"></div>
       <div class="label">
         <span>${dep}</span>
         <span class="pill">Subs: ${subs.length}</span>
@@ -571,8 +598,8 @@ function renderLinks(){
       item.href = l.url;
       item.target = "_blank";
       item.rel="noopener";
-      const img = l.image ? `<img class="img" loading="lazy" src="${l.image}" alt="">` : '';
-      item.innerHTML = `${img}<div class="label">${l.name}</div>`;
+      const img = l.image ? `<img class="img" loading="lazy" decoding="async" src="${l.image}" alt="" width="1200" height="675">` : '';
+      item.innerHTML = `${img}<div class="overlay"></div><div class="label">${l.name}</div>`;
       item.addEventListener('click', ()=> step());
       els.linkGrid.appendChild(item);
     });
