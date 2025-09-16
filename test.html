@@ -3,18 +3,18 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=1280, initial-scale=1.0"/>
-<title>RANVEXSI UI — Compact (Calm Light, No Side Scroll)</title>
+<title>RANVEXSI UI — Compact (Dark by default, Fixed Light)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <style>
   :root{
-    /* Calmer Light Theme */
-    --bg: #e6ebf3;          /* darker than pure white to cut glare */
-    --ink: #0f1324;
-    --muted:#6c7286;
-    --card:#f7f9fe;
-    --line:#cfd8ea;
+    /* Light Theme (calm, no washout) */
+    --bg: #e9edf5;
+    --ink: #101423;
+    --muted:#6d7387;
+    --card:#f8faff;
+    --line:#cfd7e7;
     --accent:#3a6cf4;
     --accent-ink:#ffffff;
 
@@ -22,11 +22,17 @@
     --round:12px;
     --shadow:0 6px 18px rgba(16,19,36,0.06);
     --grid-gap:16px;
-    --card-min:300px;       /* dynamically recalculated when the user picks a column count */
-    --ratio:1.777;          /* 16:9 default */
-    --density:1;            /* 0.9 compact, 1 comfort, 1.1 cozy */
-    --media-display:block;  /* block or none */
-    --img-opacity:.38;      /* calmer image in light mode */
+    --card-min:300px;       /* recomputed by JS when user chooses a column count */
+    --ratio:1.777;
+    --density:1;
+    --media-display:block;
+
+    /* Image tuning:
+       Light mode: near-opaque image + a very subtle uniform veil to keep UI cohesive.
+       Dark mode (below): slightly lower opacity so labels/overlay read well. */
+    --img-opacity:.88;             /* LIGHT image strength (no more milky wash) */
+    --img-veil:rgba(0,0,0,.06);    /* LIGHT very subtle global veil */
+    --overlay-end:.70;             /* bottom gradient darkness (0..1) */
   }
   .dark{
     --bg:#0f1220;
@@ -37,7 +43,10 @@
     --accent:#5b83ff;
     --accent-ink:#0b1020;
     --shadow:0 8px 24px rgba(0,0,0,.22);
-    --img-opacity:.5;
+
+    --img-opacity:.55;             /* DARK image strength */
+    --img-veil:rgba(0,0,0,.00);    /* no extra veil in dark */
+    --overlay-end:.72;
   }
 
   *{box-sizing:border-box}
@@ -47,7 +56,7 @@
     font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     color:var(--ink);
     background:var(--bg);
-    overflow-x:hidden; /* belt-and-suspenders: never allow horizontal scroll */
+    overflow-x:hidden; /* never allow sideways scroll */
   }
 
   /* ================= Header (compact) ================= */
@@ -122,27 +131,34 @@
   /* ================= Grid ================= */
   .grid{
     display:grid; gap:var(--grid-gap);
-    /* Auto-fit guarantees no overflow; --card-min computed to match selected column count */
+    /* auto-fit with min derived from JS to prevent overflow */
     grid-template-columns: repeat( auto-fit, minmax(var(--card-min), 1fr) );
   }
 
-  /* Department card */
-  .card{
+  /* Card base */
+  .card, .link{
     position:relative; border:1px solid var(--line); border-radius:var(--round);
     background:var(--card); box-shadow:var(--shadow);
     aspect-ratio: var(--ratio);
     overflow:hidden; cursor:pointer;
   }
+  /* Photo */
   .card .img, .link .img{
     position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
     display:var(--media-display); opacity:var(--img-opacity);
     filter:none;
   }
+  /* Very light uniform veil in LIGHT mode only, does nothing in dark */
+  .card .veil, .link .veil{
+    position:absolute; inset:0; background:var(--img-veil); pointer-events:none;
+  }
+  /* Bottom gradient for label readability */
   .card .overlay, .link .overlay{
     position:absolute; inset:0; pointer-events:none;
-    background: linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,.72) 100%);
+    background: linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,var(--overlay-end)) 100%);
   }
-  .card .label{
+  /* Label */
+  .card .label, .link .label{
     position:absolute; left:12px; right:12px; bottom:10px; z-index:1;
     display:flex; justify-content:space-between; align-items:center;
     font-weight:800; font-size:calc(.98rem * var(--density));
@@ -159,19 +175,8 @@
     box-shadow:var(--shadow);
   }
 
-  /* Link card */
-  .link{
-    position:relative; border:1px solid var(--line); border-radius:var(--round);
-    background:var(--card); box-shadow:var(--shadow);
-    aspect-ratio: var(--ratio); overflow:hidden; cursor:pointer;
-  }
-  .link .label{
-    position:absolute; left:12px; right:12px; bottom:10px; font-weight:800; font-size:calc(.98rem * var(--density));
-    color:#fff; text-shadow:0 1px 6px rgba(0,0,0,.35);
-  }
   a.link{ color:inherit; text-decoration:none }
 
-  /* Helpers */
   .hidden{ display:none !important }
 </style>
 </head>
@@ -301,7 +306,7 @@ const LS = {
   DEPT_ORDER: "rv_dept_order",
   LINK_ORDER: (dep, sub) => `rv_link_order_${dep}__${sub}`,
   STEPS: "rv_steps_total",
-  GRID: "rv_grid_prefs_compact_v2",
+  GRID: "rv_grid_prefs_compact_v3",
   THEME: "rv_theme",
   SETTINGS_OPEN: "rv_settings_open",
   SETTINGS_OPEN_NONDEP: "rv_settings_open_nd"
@@ -323,8 +328,10 @@ function step(n=1){
 })();
 
 /* ===== Theme ===== */
+/* Default to DARK unless user has a saved choice */
 (function initTheme(){
-  const saved = localStorage.getItem(LS.THEME) || "light";
+  let saved = localStorage.getItem(LS.THEME);
+  if(!saved){ saved = "dark"; localStorage.setItem(LS.THEME, saved); }
   document.body.classList.toggle('dark', saved === "dark");
 })();
 els.btnTheme.addEventListener('click', ()=>{
@@ -353,39 +360,33 @@ function setCardMin(px){
   document.documentElement.style.setProperty('--card-min', px + 'px');
 }
 function computeCardMinForCols(n){
-  // compute min card width so n columns fit without horizontal scroll
-  const wrap = els.wrap.clientWidth; // includes paddings already subtracted in clientWidth
+  const wrap = els.wrap.clientWidth;
   const gap = parseInt(cssVar('--grid-gap') || '16', 10);
-  if(n <= 1) return Math.max(240, Math.floor(wrap)); // single column
+  if(n <= 1) return Math.max(240, Math.floor(wrap));
   const totalGap = (n - 1) * gap;
-  const min = Math.max(240, Math.floor((wrap - totalGap) / n));
-  return min;
+  return Math.max(240, Math.floor((wrap - totalGap) / n));
 }
 function applyPrefs(p){
-  // density
   document.documentElement.style.setProperty('--density', p.density || "1");
   els.density.value = p.density || "1";
-  // ratio
+
   document.documentElement.style.setProperty('--ratio', p.ratio || "1.777");
   els.ratio.value = p.ratio || "1.777";
-  // media
+
   if((p.media || "on") === "off"){
     document.documentElement.style.setProperty('--media-display', 'none');
     document.documentElement.style.setProperty('--img-opacity', '0');
     els.media.value = "off";
   }else{
     document.documentElement.style.setProperty('--media-display', 'block');
-    // leave root opacity variables
+    // keep theme-defined opacities
     els.media.value = "on";
   }
-  // columns -> set --card-min so auto-fit yields EXACT count without overflow
+
   const cols = Number(p.cols || 0);
   els.cols.value = cols;
-  if(cols === 0){
-    setCardMin(300); // default auto sizing
-  }else{
-    setCardMin(computeCardMinForCols(cols));
-  }
+  if(cols === 0) setCardMin(300);
+  else setCardMin(computeCardMinForCols(cols));
 }
 function readPrefs(){
   try{ return JSON.parse(localStorage.getItem(LS.GRID) || "{}"); }catch{ return {} }
@@ -395,10 +396,8 @@ applyPrefs(readPrefs());
 
 /* Controls */
 els.cols.addEventListener('input', ()=>{
-  const prefs = readPrefs();
-  prefs.cols = Number(els.cols.value);
-  savePrefs(prefs);
-  applyPrefs(prefs);
+  const prefs = readPrefs(); prefs.cols = Number(els.cols.value);
+  savePrefs(prefs); applyPrefs(prefs);
 });
 els.density.addEventListener('change', ()=>{
   const prefs = readPrefs(); prefs.density = els.density.value; savePrefs(prefs); applyPrefs(prefs);
@@ -422,7 +421,7 @@ async function loadData(){
     const res = await fetch(sheetURL, { cache:"no-store" });
     rawRows = await res.json();
     buildMaps();
-    render(); // default view
+    render();
   }catch(e){
     console.error(e);
     els.depGrid.innerHTML = `<div class="chip">Failed to load data.</div>`;
@@ -464,9 +463,8 @@ function setLinkOrder(dep, sub, arr){
 /* ===== Views ===== */
 function render(){
   const mode = els.viewMode.value || "departments";
-  // settings visibility by view
   if(mode === "departments"){
-    setSettingsOpen(false); // hidden by default in departments
+    setSettingsOpen(false);
     localStorage.setItem(LS.SETTINGS_OPEN, "0");
   }else{
     const saved = localStorage.getItem(LS.SETTINGS_OPEN_NONDEP);
@@ -499,6 +497,7 @@ function renderDepartments(){
     card.setAttribute('data-id', dep);
     card.innerHTML = `
       <img class="img" loading="lazy" decoding="async" src="${imageUrl}" alt="${dep}" width="1200" height="675">
+      <div class="veil"></div>
       <div class="overlay"></div>
       <div class="label">
         <span>${dep}</span>
@@ -522,8 +521,7 @@ function renderDepartments(){
       animation:120,
       onEnd: ()=>{
         const ids = [...els.depGrid.children].map(el=>el.getAttribute('data-id'));
-        setDeptOrder(ids);
-        step();
+        setDeptOrder(ids); step();
       }
     });
   }
@@ -542,7 +540,6 @@ function renderSubPage(){
   const depObj = departmentsData.find(d=>d.dep===currentDep);
   const subs = depObj?.subs || [];
 
-  // sync dropdown
   els.subFilter.disabled = false;
   els.subFilter.innerHTML = `<option value="__all__">All</option>` + subs.map(s=>`<option value="${s}">${s}</option>`).join('');
   els.subFilter.value = "__all__";
@@ -628,7 +625,7 @@ function renderLinks(){
       item.target = "_blank";
       item.rel="noopener";
       const img = l.image ? `<img class="img" loading="lazy" decoding="async" src="${l.image}" alt="" width="1200" height="675">` : '';
-      item.innerHTML = `${img}<div class="overlay"></div><div class="label">${l.name}</div>`;
+      item.innerHTML = `${img}<div class="veil"></div><div class="overlay"></div><div class="label">${l.name}</div>`;
       item.addEventListener('click', ()=> step());
       els.linkGrid.appendChild(item);
     });
@@ -640,8 +637,7 @@ function renderLinks(){
       animation:120,
       onEnd: ()=>{
         const names = [...els.linkGrid.children].map(el=>el.getAttribute('data-name'));
-        setLinkOrder(currentDep, currentSub, names);
-        step();
+        setLinkOrder(currentDep, currentSub, names); step();
       }
     });
   }
