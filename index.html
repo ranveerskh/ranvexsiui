@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=1280, initial-scale=1.0"/>
-<title>RANVEXSI UI — Compact (Dark default, Back Button)</title>
+<title>RANVEXSI UI — Compact (Back Button fixed)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
@@ -185,7 +185,7 @@
 <body>
   <div class="header">
     <div class="brand">
-      <!-- Back button sits right next to logo; hidden on Home -->
+      <!-- Back button next to logo; hidden on Home -->
       <button id="btnBack" class="backbtn hidden" data-tip="Back">←</button>
       <div class="logo">RV</div>
       <div class="title">RANVEXSI UI</div>
@@ -307,7 +307,7 @@ const LS = {
   DEPT_ORDER: "rv_dept_order",
   LINK_ORDER: (dep, sub) => `rv_link_order_${dep}__${sub}`,
   STEPS: "rv_steps_total",
-  GRID: "rv_grid_prefs_compact_v4",
+  GRID: "rv_grid_prefs_backfix",
   THEME: "rv_theme",
   SETTINGS_OPEN: "rv_settings_open",
   SETTINGS_OPEN_NONDEP: "rv_settings_open_nd"
@@ -329,7 +329,7 @@ function step(n=1){
 })();
 
 /* ===== Theme ===== */
-/* Default to DARK unless a choice exists */
+/* Default to DARK unless user saved choice */
 (function initTheme(){
   let saved = localStorage.getItem(LS.THEME);
   if(!saved){ saved = "dark"; localStorage.setItem(LS.THEME, saved); }
@@ -370,10 +370,8 @@ function computeCardMinForCols(n){
 function applyPrefs(p){
   document.documentElement.style.setProperty('--density', p.density || "1");
   els.density.value = p.density || "1";
-
   document.documentElement.style.setProperty('--ratio', p.ratio || "1.777");
   els.ratio.value = p.ratio || "1.777";
-
   if((p.media || "on") === "off"){
     document.documentElement.style.setProperty('--media-display', 'none');
     document.documentElement.style.setProperty('--img-opacity', '0');
@@ -382,7 +380,6 @@ function applyPrefs(p){
     document.documentElement.style.setProperty('--media-display', 'block');
     els.media.value = "on";
   }
-
   const cols = Number(p.cols || 0);
   els.cols.value = cols;
   if(cols === 0) setCardMin(300);
@@ -421,7 +418,7 @@ async function loadData(){
     const res = await fetch(sheetURL, { cache:"no-store" });
     rawRows = await res.json();
     buildMaps();
-    render();
+    render();                 // render once
   }catch(e){
     console.error(e);
     els.depGrid.innerHTML = `<div class="chip">Failed to load data.</div>`;
@@ -475,8 +472,7 @@ function goBack(){
     currentDep = null;
     currentSub = "__all__";
   }
-  render();
-  updateCrumbs();
+  render();                                       // always route through render()
   step();
 }
 els.btnBack.addEventListener('click', goBack);
@@ -485,6 +481,7 @@ els.btnBack.addEventListener('click', goBack);
 function render(){
   const mode = els.viewMode.value || "departments";
 
+  // settings visibility
   if(mode === "departments"){
     setSettingsOpen(false);
     localStorage.setItem(LS.SETTINGS_OPEN, "0");
@@ -498,7 +495,7 @@ function render(){
   else renderLinks();
 
   updateCrumbs();
-  updateBackVisibility();
+  updateBackVisibility();                          // ensure button visibility after every render
 }
 
 /* Departments */
@@ -532,8 +529,7 @@ function renderDepartments(){
       currentDep = dep;
       currentSub = "__all__";
       els.viewMode.value = "subpage";
-      renderSubPage();
-      updateCrumbs();
+      render();                                    // FIX: go through render(), not direct sub-render
       step();
     });
     els.depGrid.appendChild(card);
@@ -557,7 +553,7 @@ function renderSubPage(){
 
   if(!currentDep){
     els.viewMode.value = "departments";
-    renderDepartments();
+    render();
     return;
   }
 
@@ -585,7 +581,8 @@ function renderSubPage(){
       currentSub = s;
       els.subFilter.value = s;
       els.viewMode.value = "links";
-      renderLinks(); updateCrumbs(); step();
+      render();                                    // FIX: go through render()
+      step();
     });
     els.subGrid.appendChild(chip);
   });
@@ -613,7 +610,7 @@ function renderLinks(){
 
   if(!currentDep){
     els.viewMode.value = "departments";
-    renderDepartments();
+    render();
     return;
   }
 
@@ -690,7 +687,8 @@ els.viewMode.addEventListener('change', ()=>{ render(); step(); });
 els.subFilter.addEventListener('change', ()=>{
   currentSub = els.subFilter.value;
   els.viewMode.value = "links";
-  renderLinks(); updateCrumbs(); step();
+  render();                                        // FIX: go through render()
+  step();
 });
 els.btnSort.addEventListener('click', ()=>{
   sorting = !sorting;
