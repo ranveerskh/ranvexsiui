@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=1280, initial-scale=1.0"/>
-<title>RANVEXSI UI — Compact (Dark by default, Fixed Light)</title>
+<title>RANVEXSI UI — Compact (Dark default, Back Button)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <style>
   :root{
-    /* Light Theme (calm, no washout) */
+    /* Light Theme */
     --bg: #e9edf5;
     --ink: #101423;
     --muted:#6d7387;
@@ -22,17 +22,15 @@
     --round:12px;
     --shadow:0 6px 18px rgba(16,19,36,0.06);
     --grid-gap:16px;
-    --card-min:300px;       /* recomputed by JS when user chooses a column count */
+    --card-min:300px;
     --ratio:1.777;
     --density:1;
     --media-display:block;
 
-    /* Image tuning:
-       Light mode: near-opaque image + a very subtle uniform veil to keep UI cohesive.
-       Dark mode (below): slightly lower opacity so labels/overlay read well. */
-    --img-opacity:.88;             /* LIGHT image strength (no more milky wash) */
-    --img-veil:rgba(0,0,0,.06);    /* LIGHT very subtle global veil */
-    --overlay-end:.70;             /* bottom gradient darkness (0..1) */
+    /* Images */
+    --img-opacity:.88;
+    --img-veil:rgba(0,0,0,.06);
+    --overlay-end:.70;
   }
   .dark{
     --bg:#0f1220;
@@ -44,8 +42,8 @@
     --accent-ink:#0b1020;
     --shadow:0 8px 24px rgba(0,0,0,.22);
 
-    --img-opacity:.55;             /* DARK image strength */
-    --img-veil:rgba(0,0,0,.00);    /* no extra veil in dark */
+    --img-opacity:.55;
+    --img-veil:rgba(0,0,0,0);
     --overlay-end:.72;
   }
 
@@ -56,7 +54,7 @@
     font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     color:var(--ink);
     background:var(--bg);
-    overflow-x:hidden; /* never allow sideways scroll */
+    overflow-x:hidden;
   }
 
   /* ================= Header (compact) ================= */
@@ -74,6 +72,19 @@
   }
   .title{font-weight:800; font-size:.92rem; line-height:1}
   .grow{flex:1}
+
+  /* Back button (tiny) */
+  .backbtn{
+    width:28px; height:28px; display:grid; place-items:center;
+    border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--ink);
+    cursor:pointer; position:relative; padding:0;
+  }
+  .backbtn:hover{ filter:brightness(0.98) }
+  .backbtn[data-tip]:hover::after{
+    content:attr(data-tip); position:absolute; bottom:-30px; left:50%; transform:translateX(-50%);
+    background:#111; color:#fff; font-size:.75rem; padding:4px 6px; border-radius:6px; white-space:nowrap;
+  }
+  .backbtn.hidden{ display:none; }
 
   /* search compact */
   .search{
@@ -100,8 +111,6 @@
     height:28px; padding:0 8px; border-radius:999px;
     border:1px solid var(--line); background:var(--card); display:flex; align-items:center; gap:6px; font-size:.86rem;
   }
-
-  /* tooltips */
   .iconbtn[data-tip]:hover::after{
     content:attr(data-tip); position:absolute; bottom:-30px; left:50%; transform:translateX(-50%);
     background:#111; color:#fff; font-size:.75rem; padding:4px 6px; border-radius:6px; white-space:nowrap;
@@ -115,7 +124,7 @@
   .crumbs{ font-size:.92rem; color:var(--muted) }
   .crumbs b{ color:var(--ink) }
 
-  /* collapsible settings */
+  /* settings */
   .settings{
     border:1px solid var(--line); border-radius:10px; background:var(--card);
     box-shadow:var(--shadow); padding:8px; margin-bottom:12px;
@@ -131,33 +140,28 @@
   /* ================= Grid ================= */
   .grid{
     display:grid; gap:var(--grid-gap);
-    /* auto-fit with min derived from JS to prevent overflow */
     grid-template-columns: repeat( auto-fit, minmax(var(--card-min), 1fr) );
   }
 
-  /* Card base */
+  /* Cards */
   .card, .link{
     position:relative; border:1px solid var(--line); border-radius:var(--round);
     background:var(--card); box-shadow:var(--shadow);
     aspect-ratio: var(--ratio);
     overflow:hidden; cursor:pointer;
   }
-  /* Photo */
   .card .img, .link .img{
     position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
     display:var(--media-display); opacity:var(--img-opacity);
     filter:none;
   }
-  /* Very light uniform veil in LIGHT mode only, does nothing in dark */
   .card .veil, .link .veil{
     position:absolute; inset:0; background:var(--img-veil); pointer-events:none;
   }
-  /* Bottom gradient for label readability */
   .card .overlay, .link .overlay{
     position:absolute; inset:0; pointer-events:none;
     background: linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,var(--overlay-end)) 100%);
   }
-  /* Label */
   .card .label, .link .label{
     position:absolute; left:12px; right:12px; bottom:10px; z-index:1;
     display:flex; justify-content:space-between; align-items:center;
@@ -167,7 +171,6 @@
   }
   .pill{ font-size:.78rem; padding:4px 8px; border-radius:999px; background:rgba(255,255,255,.16); color:#fff }
 
-  /* Sub full-page items */
   .subchip{
     display:flex; align-items:center; justify-content:center; text-align:center;
     border:1px solid var(--line); border-radius:10px; background:var(--card);
@@ -176,13 +179,14 @@
   }
 
   a.link{ color:inherit; text-decoration:none }
-
   .hidden{ display:none !important }
 </style>
 </head>
 <body>
   <div class="header">
     <div class="brand">
+      <!-- Back button sits right next to logo; hidden on Home -->
+      <button id="btnBack" class="backbtn hidden" data-tip="Back">←</button>
       <div class="logo">RV</div>
       <div class="title">RANVEXSI UI</div>
     </div>
@@ -204,13 +208,11 @@
   </div>
 
   <div class="wrap" id="wrap">
-    <!-- Crumbs -->
     <div class="toolbar">
       <div class="crumbs" id="crumbs">Home</div>
       <div class="grow"></div>
     </div>
 
-    <!-- Collapsible Settings -->
     <div id="settings" class="settings">
       <div class="controls">
         <label class="chip">View
@@ -230,7 +232,6 @@
         <button class="btn" id="btnSort">Enable Sort</button>
 
         <label class="chip">Cols
-          <!-- 0 = Auto; 2..6 = exact columns, computed without overflow -->
           <input id="cols" type="range" class="range" min="0" max="6" step="1" value="0" />
         </label>
 
@@ -259,7 +260,6 @@
       </div>
     </div>
 
-    <!-- Views -->
     <div id="depGrid" class="grid" aria-label="Departments grid"></div>
     <div id="subGrid" class="grid hidden" aria-label="Sub-departments grid"></div>
     <div id="linkGrid" class="grid hidden" aria-label="Links grid"></div>
@@ -283,6 +283,7 @@ const els = {
   btnClear: document.getElementById('btnClear'),
   btnTheme: document.getElementById('btnTheme'),
   btnSettings: document.getElementById('btnSettings'),
+  btnBack: document.getElementById('btnBack'),
   cols: document.getElementById('cols'),
   density: document.getElementById('density'),
   ratio: document.getElementById('ratio'),
@@ -306,7 +307,7 @@ const LS = {
   DEPT_ORDER: "rv_dept_order",
   LINK_ORDER: (dep, sub) => `rv_link_order_${dep}__${sub}`,
   STEPS: "rv_steps_total",
-  GRID: "rv_grid_prefs_compact_v3",
+  GRID: "rv_grid_prefs_compact_v4",
   THEME: "rv_theme",
   SETTINGS_OPEN: "rv_settings_open",
   SETTINGS_OPEN_NONDEP: "rv_settings_open_nd"
@@ -328,7 +329,7 @@ function step(n=1){
 })();
 
 /* ===== Theme ===== */
-/* Default to DARK unless user has a saved choice */
+/* Default to DARK unless a choice exists */
 (function initTheme(){
   let saved = localStorage.getItem(LS.THEME);
   if(!saved){ saved = "dark"; localStorage.setItem(LS.THEME, saved); }
@@ -379,7 +380,6 @@ function applyPrefs(p){
     els.media.value = "off";
   }else{
     document.documentElement.style.setProperty('--media-display', 'block');
-    // keep theme-defined opacities
     els.media.value = "on";
   }
 
@@ -460,9 +460,31 @@ function setLinkOrder(dep, sub, arr){
   localStorage.setItem(LS.LINK_ORDER(dep, sub), JSON.stringify(arr));
 }
 
+/* ===== Back button logic ===== */
+function updateBackVisibility(){
+  const mode = els.viewMode.value || "departments";
+  const show = (mode === "subpage" || mode === "links");
+  els.btnBack.classList.toggle('hidden', !show);
+}
+function goBack(){
+  const mode = els.viewMode.value || "departments";
+  if(mode === "links"){
+    els.viewMode.value = "subpage";               // Links → Sub-Departments
+  }else if(mode === "subpage"){
+    els.viewMode.value = "departments";           // Sub-Departments → Home
+    currentDep = null;
+    currentSub = "__all__";
+  }
+  render();
+  updateCrumbs();
+  step();
+}
+els.btnBack.addEventListener('click', goBack);
+
 /* ===== Views ===== */
 function render(){
   const mode = els.viewMode.value || "departments";
+
   if(mode === "departments"){
     setSettingsOpen(false);
     localStorage.setItem(LS.SETTINGS_OPEN, "0");
@@ -474,7 +496,9 @@ function render(){
   if(mode === "departments") renderDepartments();
   else if(mode === "subpage") renderSubPage();
   else renderLinks();
+
   updateCrumbs();
+  updateBackVisibility();
 }
 
 /* Departments */
