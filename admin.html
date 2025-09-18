@@ -1,446 +1,1127 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Panel</title>
-  <style>
-    :root {
-      --bg: #f4f4f4;
-      --text: #000;
-      --section: #fff;
-    }
-    body.dark {
-      --bg: #121212;
-      --text: #eee;
-      --section: #1f1f1f;
-    }
-    body {
-      font-family: Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      padding: 20px;
-    }
-    h1, h2 { text-align: center; }
-    .top-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #4caf50;
-      color: white;
-      padding: 10px 20px;
-      margin-bottom: 20px;
-      border-radius: 8px;
-    }
-    .top-bar button {
-      margin-left: 8px;
-      background: white;
-      color: #4caf50;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .section {
-      background: var(--section);
-      padding: 20px;
-      margin-bottom: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    input, select, button {
-      padding: 10px;
-      margin: 5px;
-      width: calc(100% - 20px);
-      max-width: 400px;
-    }
-    .list {
-      margin-top: 10px;
-    }
-    .list div {
-      margin: 5px 0;
-      background: #ccc;
-      color: #000;
-      padding: 10px;
-      border-radius: 5px;
-      position: relative;
-    }
-    .list button {
-      position: absolute;
-      top: 6px;
-      padding: 4px 8px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    .list button:first-of-type {
-      right: 40px;
-      background: #2196F3;
-      color: white;
-    }
-    .list button:last-of-type {
-      right: 10px;
-      background: red;
-      color: white;
-    }
-    .dark .list div {
-      background: #333;
-      color: #fff;
-    }
-    .list img {
-      height: 30px;
-      vertical-align: middle;
-      margin-right: 10px;
-      border-radius: 4px;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=1280, initial-scale=1.0"/>
+<title>RANVEXSI UI — Admin Overlay (No Sheet Changes)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<style>
+  :root{
+    /* Light Theme */
+    --bg: #e9edf5;
+    --ink: #101423;
+    --muted:#6d7387;
+    --card:#f8faff;
+    --line:#cfd7e7;
+    --accent:#3a6cf4;
+    --accent-ink:#ffffff;
+
+    /* Layout */
+    --round:12px;
+    --shadow:0 6px 18px rgba(16,19,36,0.06);
+    --grid-gap:16px;
+    --card-min:300px;
+    --ratio:1.777;
+    --density:1;
+    --media-display:block;
+
+    /* Images */
+    --img-opacity:.88;
+    --img-veil:rgba(0,0,0,.06);
+    --overlay-end:.70;
+  }
+  .dark{
+    --bg:#0f1220;
+    --ink:#eaf1ff;
+    --muted:#9aa6c8;
+    --card:#141a2c;
+    --line:#2a3452;
+    --accent:#5b83ff;
+    --accent-ink:#0b1020;
+    --shadow:0 8px 24px rgba(0,0,0,.22);
+
+    --img-opacity:.55;
+    --img-veil:rgba(0,0,0,0);
+    --overlay-end:.72;
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    color:var(--ink);
+    background:var(--bg);
+    overflow-x:hidden;
+  }
+
+  /* ================= Header (compact) ================= */
+  .header{
+    position:sticky; top:0; z-index:40;
+    display:flex; align-items:center; gap:8px;
+    padding:6px 10px; height:48px;
+    background:var(--card); border-bottom:1px solid var(--line); box-shadow:var(--shadow);
+  }
+  .brand{display:flex; align-items:center; gap:8px}
+  .logo{
+    width:28px; height:28px; border-radius:8px;
+    background:var(--accent); color:var(--accent-ink);
+    display:grid; place-items:center; font-weight:800; font-size:0.9rem; letter-spacing:-.2px;
+  }
+  .title{font-weight:800; font-size:.92rem; line-height:1}
+  .grow{flex:1}
+
+  /* Back button (tiny) */
+  .backbtn{
+    width:28px; height:28px; display:grid; place-items:center;
+    border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--ink);
+    cursor:pointer; position:relative; padding:0;
+  }
+  .backbtn:hover{ filter:brightness(0.98) }
+  .backbtn[data-tip]:hover::after{
+    content:attr(data-tip); position:absolute; bottom:-30px; left:50%; transform:translateX(-50%);
+    background:#111; color:#fff; font-size:.75rem; padding:4px 6px; border-radius:6px; white-space:nowrap;
+  }
+  .backbtn.hidden{ display:none; }
+
+  /* search compact */
+  .search{
+    position:relative; width:520px; max-width:45vw; transform:scale(var(--density));
+  }
+  .search input{
+    height:32px; width:100%;
+    padding:0 10px 0 32px; border-radius:8px;
+    border:1px solid var(--line); background:#ffffff; outline:none; color:#111; font-size:.92rem;
+  }
+  .dark .search input{ background:#0f1426; color:var(--ink); }
+  .search svg{position:absolute; left:8px; top:50%; transform:translateY(-50%); opacity:.65}
+  ::placeholder{ color:#6b7280 } .dark ::placeholder{ color:#b6c2e0 }
+
+  /* icon buttons */
+  .actions{display:flex; align-items:center; gap:6px}
+  .iconbtn{
+    width:32px; height:32px; display:grid; place-items:center;
+    border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--ink);
+    cursor:pointer; position:relative;
+  }
+  .iconbtn:hover{ filter:brightness(0.98) }
+  .badge{
+    height:28px; padding:0 8px; border-radius:999px;
+    border:1px solid var(--line); background:var(--card); display:flex; align-items:center; gap:6px; font-size:.86rem;
+  }
+  .iconbtn[data-tip]:hover::after{
+    content:attr(data-tip); position:absolute; bottom:-30px; left:50%; transform:translateX(-50%);
+    background:#111; color:#fff; font-size:.75rem; padding:4px 6px; border-radius:6px; white-space:nowrap;
+  }
+
+  /* ================= Main ================= */
+  .wrap{ max-width:1280px; margin:12px auto 18px; padding:0 12px }
+
+  /* crumbs */
+  .toolbar{ display:flex; align-items:center; gap:10px; margin:8px 0 }
+  .crumbs{ font-size:.92rem; color:var(--muted) }
+  .crumbs b{ color:var(--ink) }
+
+  /* settings */
+  .settings{
+    border:1px solid var(--line); border-radius:10px; background:var(--card);
+    box-shadow:var(--shadow); padding:8px; margin-bottom:12px;
+  }
+  .settings.hidden{ display:none }
+  .controls{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+  .chip, .btn, select, .range{
+    height:32px; padding:0 8px; border-radius:8px; border:1px solid var(--line);
+    background:var(--card); color:var(--ink); font-weight:600; cursor:pointer; font-size:.9rem;
+  }
+  .btn.primary{ background:var(--accent); color:#fff; border-color:transparent }
+  .range{ width:140px; padding:0 }
+
+  /* ================= Grid ================= */
+  .grid{
+    display:grid; gap:var(--grid-gap);
+    grid-template-columns: repeat( auto-fit, minmax(var(--card-min), 1fr) );
+  }
+
+  /* Cards */
+  .card, .link{
+    position:relative; border:1px solid var(--line); border-radius:var(--round);
+    background:var(--card); box-shadow:var(--shadow);
+    aspect-ratio: var(--ratio);
+    overflow:hidden; cursor:pointer;
+  }
+  .card .img, .link .img{
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+    display:var(--media-display); opacity:var(--img-opacity);
+    filter:none;
+  }
+  .card .veil, .link .veil{
+    position:absolute; inset:0; background:var(--img-veil); pointer-events:none;
+  }
+  .card .overlay, .link .overlay{
+    position:absolute; inset:0; pointer-events:none;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,var(--overlay-end)) 100%);
+  }
+  .card .label, .link .label{
+    position:absolute; left:12px; right:12px; bottom:10px; z-index:1;
+    display:flex; justify-content:space-between; align-items:center;
+    font-weight:800; font-size:calc(.98rem * var(--density));
+    text-shadow:0 1px 6px rgba(0,0,0,.35);
+    color:#fff;
+  }
+  .pill{ font-size:.78rem; padding:4px 8px; border-radius:999px; background:rgba(255,255,255,.16); color:#fff }
+
+  .subchip{
+    display:flex; align-items:center; justify-content:center; text-align:center;
+    border:1px solid var(--line); border-radius:10px; background:var(--card);
+    min-height:120px; font-weight:700; cursor:pointer; aspect-ratio:1.1; padding:10px;
+    box-shadow:var(--shadow);
+  }
+
+  a.link{ color:inherit; text-decoration:none }
+  .hidden{ display:none !important }
+
+  /* ===== Edit badges on items ===== */
+  .editBadge{
+    position:absolute; top:8px; right:8px; z-index:2;
+    display:flex; gap:6px;
+  }
+  .editBadge .mini{
+    width:28px; height:28px; border-radius:8px; border:1px solid var(--line);
+    background:rgba(20,24,44,.8); color:#fff; display:grid; place-items:center; cursor:pointer;
+    backdrop-filter: blur(4px);
+  }
+  .dark .editBadge .mini{ background:rgba(20,24,44,.6) }
+  .editBadge .mini:hover{ filter:brightness(1.1) }
+
+  /* ===== Admin Drawer ===== */
+  .drawer{
+    position:fixed; right:12px; bottom:12px; z-index:50;
+    width:320px; max-width:92vw;
+    background:var(--card); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  .drawer .head{
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    padding:10px 12px; border-bottom:1px solid var(--line); font-weight:800;
+  }
+  .drawer .body{ padding:10px 12px; display:grid; gap:10px; max-height:60vh; overflow:auto }
+  .row{ display:grid; gap:6px }
+  .row label{ font-size:.82rem; color:var(--muted) }
+  .row input, .row select, .row textarea{
+    height:34px; padding:6px 8px; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--ink);
+  }
+  .row textarea{ min-height:72px; resize:vertical }
+  .drawer .bar{ display:flex; gap:8px; align-items:center; justify-content:flex-end; padding:10px 12px; border-top:1px solid var(--line) }
+  .drawer .tabs{ display:flex; gap:6px; padding:8px 12px; border-bottom:1px solid var(--line) }
+  .tab{ padding:6px 10px; border:1px solid var(--line); border-radius:8px; cursor:pointer; font-weight:600; }
+  .tab.active{ background:var(--accent); color:#fff; border-color:transparent }
+</style>
 </head>
 <body>
-  <div id="loginSection" class="section">
-    <h2>Login</h2>
-    <input type="email" id="email" placeholder="Email" />
-    <input type="password" id="password" placeholder="Password" />
-    <button id="loginBtn">Login</button>
+  <div class="header">
+    <div class="brand">
+      <!-- Back button next to logo; hidden on Home -->
+      <button id="btnBack" class="backbtn hidden" data-tip="Back">←</button>
+      <div class="logo">RV</div>
+      <div class="title">RANVEXSI UI</div>
+    </div>
+
+    <div class="grow"></div>
+
+    <div class="search" title="Search departments, subs or links">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.3-4.3M10.8 18.2a7.4 7.4 0 1 1 0-14.8 7.4 7.4 0 0 1 0 14.8Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      <input id="search" placeholder="Search departments, sub-departments, or links..." autocomplete="off" />
+    </div>
+
+    <div class="actions">
+      <button class="iconbtn" id="btnSettings" data-tip="Settings">⚙️</button>
+      <button class="iconbtn" id="btnRefresh" data-tip="Reload">↻</button>
+      <button class="iconbtn" id="btnClear" data-tip="Clear Order">🧹</button>
+      <button class="iconbtn" id="btnTheme" data-tip="Light/Dark">🌗</button>
+      <button class="iconbtn" id="btnEdit" data-tip="Edit Mode">✏️</button>
+      <div class="badge" title="Steps | Total">👣 <span id="steps">0</span> | 📊 <span id="stepsTotal">0</span></div>
+    </div>
   </div>
 
-  <div id="adminContent" style="display:none;">
-    <div class="top-bar">
-      <h1>Admin Panel</h1>
-      <div>
-        <button onclick="window.open('feature.html', '_blank')">📋 Feature Requests</button>
-        <button onclick="window.open('https://postimages.org/', '_blank')">🖼️ Upload Image</button>
-        <button id="darkModeToggle">🌙</button>
-        <button id="logoutBtn">Logout</button>
+  <div class="wrap" id="wrap">
+    <div class="toolbar">
+      <div class="crumbs" id="crumbs">Home</div>
+      <div class="grow"></div>
+    </div>
+
+    <div id="settings" class="settings">
+      <div class="controls">
+        <label class="chip">View
+          <select id="viewMode" style="margin-left:6px">
+            <option value="departments">Departments</option>
+            <option value="subpage">Sub-Departments (Full)</option>
+            <option value="links">Links</option>
+          </select>
+        </label>
+
+        <label class="chip">Sub
+          <select id="subFilter" style="margin-left:6px" disabled>
+            <option value="__all__">All</option>
+          </select>
+        </label>
+
+        <button class="btn" id="btnSort">Enable Sort</button>
+
+        <label class="chip">Cols
+          <input id="cols" type="range" class="range" min="0" max="6" step="1" value="0" />
+        </label>
+
+        <label class="chip">Density
+          <select id="density" style="margin-left:6px">
+            <option value="1">Comfort</option>
+            <option value="0.9">Compact</option>
+            <option value="1.1">Cozy</option>
+          </select>
+        </label>
+
+        <label class="chip">Ratio
+          <select id="ratio" style="margin-left:6px">
+            <option value="1.777">16:9</option>
+            <option value="1.333">4:3</option>
+            <option value="1">1:1</option>
+          </select>
+        </label>
+
+        <label class="chip">Images
+          <select id="media" style="margin-left:6px">
+            <option value="on">On</option>
+            <option value="off">Off</option>
+          </select>
+        </label>
       </div>
     </div>
 
-    <div class="section">
-      <h2>Departments</h2>
-      <input type="text" id="depName" placeholder="Department Name" />
-      <input type="text" id="depImage" placeholder="Background Image URL" />
-      <button id="addDepBtn">Add / Update Department</button>
-      <div class="list" id="departmentsList"></div>
-      <button id="saveAllBtn">💾 Save All</button>
-    </div>
+    <div id="depGrid" class="grid" aria-label="Departments grid"></div>
+    <div id="subGrid" class="grid hidden" aria-label="Sub-departments grid"></div>
+    <div id="linkGrid" class="grid hidden" aria-label="Links grid"></div>
+  </div>
 
-    <div class="section">
-      <h2>Sub-Departments</h2>
-      <select id="parentDep"></select>
-      <input type="text" id="subName" placeholder="Sub-Department Name" />
-      <button id="addSubBtn">Add / Update Sub-Department</button>
-      <div class="list" id="subsList"></div>
+  <!-- ===== Admin Drawer (Local overrides) ===== -->
+  <div class="drawer hidden" id="drawer">
+    <div class="head">
+      <span>Local Admin</span>
+      <div>
+        <button class="btn" id="btnExportJSON" title="Export local overrides JSON">Export</button>
+        <button class="btn" id="btnClearLocal" title="Remove all local overrides">Reset</button>
+        <button class="btn primary" id="btnCloseDrawer">Close</button>
+      </div>
     </div>
+    <div class="tabs">
+      <button class="tab active" data-tab="tabDept">Department</button>
+      <button class="tab" data-tab="tabSub">Sub-Department</button>
+      <button class="tab" data-tab="tabLink">Link</button>
+      <button class="tab" data-tab="tabHidden">Hidden Items</button>
+    </div>
+    <div class="body">
+      <!-- Department -->
+      <div id="tabDept" class="row">
+        <label>Add local Department</label>
+        <input id="depName" placeholder="Department name">
+        <input id="depImg" placeholder="Optional image URL (1200x675 preferred)">
+        <button class="btn primary" id="addDept">Add Department</button>
+      </div>
 
-    <div class="section">
-      <h2>Links</h2>
-      <select id="linkDep"></select>
-      <select id="linkSub"></select>
-      <input type="text" id="linkName" placeholder="Link Name" />
-      <input type="text" id="linkUrl" placeholder="Link URL" />
-      <input type="text" id="linkColor" placeholder="Background Color (e.g., #4CAF50)" />
-      <input type="text" id="linkImage" placeholder="Image URL (optional)" />
-      <button id="addLinkBtn">Add / Update Link</button>
-      <div class="list" id="linksList"></div>
+      <!-- Sub -->
+      <div id="tabSub" class="row hidden">
+        <label>Add local Sub-Department</label>
+        <select id="subDep"></select>
+        <input id="subName" placeholder="Sub-department name">
+        <button class="btn primary" id="addSub">Add Sub-Department</button>
+      </div>
+
+      <!-- Link -->
+      <div id="tabLink" class="row hidden">
+        <label>Add local Link</label>
+        <select id="linkDep"></select>
+        <select id="linkSub"><option value="__all__">Choose sub after Dep</option></select>
+        <input id="linkName" placeholder="Link name">
+        <input id="linkUrl" placeholder="https://example.com">
+        <input id="linkImg" placeholder="Optional image URL">
+        <button class="btn primary" id="addLink">Add Link</button>
+      </div>
+
+      <!-- Hidden management -->
+      <div id="tabHidden" class="row hidden">
+        <label>Hidden items (click to unhide)</label>
+        <div id="hiddenList" class="row" style="gap:8px"></div>
+      </div>
+    </div>
+    <div class="bar">
+      <small style="color:var(--muted)">Local only. Sheet stays untouched.</small>
     </div>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
-    import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
-    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-auth.js";
+<script>
+/* ===== Config ===== */
+const sheetURL = "https://script.google.com/macros/s/AKfycbwnjvDjGQNtpVkxySJj6GaObo6l1ecfUg3NXzvF7G5MX7H4S5Qo92jhUM8_eOTO2MeXUQ/exec";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyDoUb1kEA8bo0NaqSTDQSTtH4fWNdmJrAw",
-      authDomain: "ranvexsi-ui.firebaseapp.com",
-      projectId: "ranvexsi-ui",
-      storageBucket: "ranvexsi-ui.appspot.com",
-      messagingSenderId: "639916549058",
-      appId: "1:639916549058:web:2c14514e7d00aeaca52c5b"
-    };
+/* ===== State/Refs ===== */
+const els = {
+  search: document.getElementById('search'),
+  depGrid: document.getElementById('depGrid'),
+  subGrid: document.getElementById('subGrid'),
+  linkGrid: document.getElementById('linkGrid'),
+  crumbs: document.getElementById('crumbs'),
+  viewMode: document.getElementById('viewMode'),
+  subFilter: document.getElementById('subFilter'),
+  btnSort: document.getElementById('btnSort'),
+  btnRefresh: document.getElementById('btnRefresh'),
+  btnClear: document.getElementById('btnClear'),
+  btnTheme: document.getElementById('btnTheme'),
+  btnSettings: document.getElementById('btnSettings'),
+  btnBack: document.getElementById('btnBack'),
+  btnEdit: document.getElementById('btnEdit'),
+  cols: document.getElementById('cols'),
+  density: document.getElementById('density'),
+  ratio: document.getElementById('ratio'),
+  media: document.getElementById('media'),
+  steps: document.getElementById('steps'),
+  stepsTotal: document.getElementById('stepsTotal'),
+  settings: document.getElementById('settings'),
+  wrap: document.getElementById('wrap'),
+  drawer: document.getElementById('drawer'),
+  // drawer fields
+  depName: document.getElementById('depName'),
+  depImg: document.getElementById('depImg'),
+  addDept: document.getElementById('addDept'),
+  subDep: document.getElementById('subDep'),
+  subName: document.getElementById('subName'),
+  addSub: document.getElementById('addSub'),
+  linkDep: document.getElementById('linkDep'),
+  linkSub: document.getElementById('linkSub'),
+  linkName: document.getElementById('linkName'),
+  linkUrl: document.getElementById('linkUrl'),
+  linkImg: document.getElementById('linkImg'),
+  addLink: document.getElementById('addLink'),
+  btnExportJSON: document.getElementById('btnExportJSON'),
+  btnClearLocal: document.getElementById('btnClearLocal'),
+  btnCloseDrawer: document.getElementById('btnCloseDrawer'),
+  hiddenList: document.getElementById('hiddenList')
+};
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    const auth = getAuth(app);
+let rawRows = [];
+let departmentsData = [];   // [{dep, subs:[], imageUrl}]
+let currentDep = null;
+let currentSub = "__all__";
+let sorting = false;
+let editMode = false;
+let depSortable = null;
+let linkSortable = null;
 
-    if (localStorage.getItem("admin-dark-mode") === "on") {
-      document.body.classList.add("dark");
+/* ===== Local Storage Keys ===== */
+const LS = {
+  DEPT_ORDER: "rv_dept_order",
+  LINK_ORDER: (dep, sub) => `rv_link_order_${dep}__${sub}`,
+  STEPS: "rv_steps_total",
+  GRID: "rv_grid_prefs_backfix",
+  THEME: "rv_theme",
+  SETTINGS_OPEN: "rv_settings_open",
+  SETTINGS_OPEN_NONDEP: "rv_settings_open_nd",
+  // Admin overlays
+  LOCAL_DEPTS: "rv_local_depts",                 // [{dep,imageUrl}]
+  LOCAL_SUBS: "rv_local_subs",                   // [{dep, sub}]
+  LOCAL_LINKS: "rv_local_links",                 // [{dep, sub, name, url, image}]
+  HIDDEN_DEPTS: "rv_hidden_depts",               // [dep]
+  HIDDEN_SUBS: "rv_hidden_subs",                 // ["dep::sub"]
+  HIDDEN_LINKS: "rv_hidden_links"                // ["dep::sub::name"]
+};
+
+/* ===== Steps ===== */
+let sessionSteps = 0;
+function step(n=1){
+  sessionSteps += n;
+  els.steps.textContent = sessionSteps;
+  const t = Number(localStorage.getItem(LS.STEPS) || 0) + n;
+  localStorage.setItem(LS.STEPS, String(t));
+  els.stepsTotal.textContent = t;
+}
+(function initSteps(){
+  els.steps.textContent = "0";
+  els.stepsTotal.textContent = Number(localStorage.getItem(LS.STEPS) || 0);
+  step(1); // load
+})();
+
+/* ===== Theme ===== */
+/* Default to DARK unless user saved choice */
+(function initTheme(){
+  let saved = localStorage.getItem(LS.THEME);
+  if(!saved){ saved = "dark"; localStorage.setItem(LS.THEME, saved); }
+  document.body.classList.toggle('dark', saved === "dark");
+})();
+els.btnTheme.addEventListener('click', ()=>{
+  const dark = !document.body.classList.contains('dark');
+  document.body.classList.toggle('dark', dark);
+  localStorage.setItem(LS.THEME, dark ? "dark" : "light");
+});
+
+/* ===== Settings Panel Toggle ===== */
+function setSettingsOpen(open){
+  els.settings.classList.toggle('hidden', !open);
+}
+document.getElementById('btnSettings').addEventListener('click', ()=>{
+  const open = els.settings.classList.contains('hidden');
+  const mode = els.viewMode.value || "departments";
+  setSettingsOpen(open);
+  if(mode === "departments") localStorage.setItem(LS.SETTINGS_OPEN, open ? "1" : "0");
+  else localStorage.setItem(LS.SETTINGS_OPEN_NONDEP, open ? "1" : "0");
+});
+
+/* ===== Grid prefs ===== */
+function cssVar(name){
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+function setCardMin(px){
+  document.documentElement.style.setProperty('--card-min', px + 'px');
+}
+function computeCardMinForCols(n){
+  const wrap = els.wrap.clientWidth;
+  const gap = parseInt(cssVar('--grid-gap') || '16', 10);
+  if(n <= 1) return Math.max(240, Math.floor(wrap));
+  const totalGap = (n - 1) * gap;
+  return Math.max(240, Math.floor((wrap - totalGap) / n));
+}
+function applyPrefs(p){
+  document.documentElement.style.setProperty('--density', p.density || "1");
+  els.density.value = p.density || "1";
+  document.documentElement.style.setProperty('--ratio', p.ratio || "1.777");
+  els.ratio.value = p.ratio || "1.777";
+  if((p.media || "on") === "off"){
+    document.documentElement.style.setProperty('--media-display', 'none');
+    document.documentElement.style.setProperty('--img-opacity', '0');
+    els.media.value = "off";
+  }else{
+    document.documentElement.style.setProperty('--media-display', 'block');
+    els.media.value = "on";
+  }
+  const cols = Number(p.cols || 0);
+  els.cols.value = cols;
+  if(cols === 0) setCardMin(300);
+  else setCardMin(computeCardMinForCols(cols));
+}
+function readPrefs(){
+  try{ return JSON.parse(localStorage.getItem(LS.GRID) || "{}"); }catch{ return {} }
+}
+function savePrefs(p){ localStorage.setItem(LS.GRID, JSON.stringify(p)); }
+applyPrefs(readPrefs());
+
+/* Controls */
+els.cols.addEventListener('input', ()=>{
+  const prefs = readPrefs(); prefs.cols = Number(els.cols.value);
+  savePrefs(prefs); applyPrefs(prefs);
+});
+els.density.addEventListener('change', ()=>{
+  const prefs = readPrefs(); prefs.density = els.density.value; savePrefs(prefs); applyPrefs(prefs);
+});
+els.ratio.addEventListener('change', ()=>{
+  const prefs = readPrefs(); prefs.ratio = els.ratio.value; savePrefs(prefs); applyPrefs(prefs);
+});
+els.media.addEventListener('change', ()=>{
+  const prefs = readPrefs(); prefs.media = els.media.value; savePrefs(prefs); applyPrefs(prefs);
+});
+window.addEventListener('resize', ()=>{
+  const prefs = readPrefs();
+  if(Number(prefs.cols || 0) > 0){
+    setCardMin(computeCardMinForCols(Number(prefs.cols)));
+  }
+});
+
+/* ===== Local Admin helpers ===== */
+function readJSON(key, fallback){
+  try{ return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); }catch{ return fallback }
+}
+function writeJSON(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
+function hiddenKeySub(dep, sub){ return `${dep}::${sub}`; }
+function hiddenKeyLink(dep, sub, name){ return `${dep}::${sub}::${name}`; }
+
+/* ===== Data load ===== */
+async function loadData(){
+  try{
+    const res = await fetch(sheetURL, { cache:"no-store" });
+    rawRows = await res.json();
+    buildMaps();
+    render();                 // render once
+  }catch(e){
+    console.error(e);
+    els.depGrid.innerHTML = `<div class="chip">Failed to load data.</div>`;
+  }
+}
+
+function baseMapFromSheet(){
+  const map = {};
+  const hiddenDeps = new Set(readJSON(LS.HIDDEN_DEPTS, []));
+  const hiddenSubs = new Set(readJSON(LS.HIDDEN_SUBS, []));
+  rawRows.forEach(row=>{
+    const dep = (row.Department || '').trim();
+    if(!dep || hiddenDeps.has(dep)) return;
+    const sub = (row.SubDepartment || '').trim();
+    const di = (row.DIURL || '').trim();
+
+    if(!map[dep]) map[dep] = { dep, subs:new Set(), imageUrl: di || "" };
+    else if(!map[dep].imageUrl && di) map[dep].imageUrl = di;
+
+    if(sub){
+      const hs = hiddenKeySub(dep, sub);
+      if(!hiddenSubs.has(hs)) map[dep].subs.add(sub);
     }
+  });
+  return map;
+}
 
-    document.getElementById("darkModeToggle").addEventListener("click", () => {
-      const isDark = document.body.classList.toggle("dark");
-      localStorage.setItem("admin-dark-mode", isDark ? "on" : "off");
+function injectLocalOverlays(map){
+  const localDepts = readJSON(LS.LOCAL_DEPTS, []);
+  const localSubs = readJSON(LS.LOCAL_SUBS, []);
+  // Departments
+  localDepts.forEach(d=>{
+    if(!map[d.dep]) map[d.dep] = { dep:d.dep, subs:new Set(), imageUrl:(d.imageUrl || "") };
+    if(d.imageUrl) map[d.dep].imageUrl = d.imageUrl;
+  });
+  // Subs
+  localSubs.forEach(s=>{
+    if(!map[s.dep]) map[s.dep] = { dep:s.dep, subs:new Set(), imageUrl:"" };
+    map[s.dep].subs.add(s.sub);
+  });
+}
+
+function buildMaps(){
+  const map = baseMapFromSheet();
+  injectLocalOverlays(map);
+  departmentsData = Object.values(map).map(x=>({
+    dep: x.dep,
+    subs: Array.from(x.subs),
+    imageUrl: x.imageUrl || `https://source.unsplash.com/1200x800/?workspace,${encodeURIComponent(x.dep)}`
+  })).sort((a,b)=>a.dep.localeCompare(b.dep));
+}
+
+/* ===== Orders ===== */
+function getDeptOrder(){
+  try{ return JSON.parse(localStorage.getItem(LS.DEPT_ORDER) || "[]"); }catch{ return [] }
+}
+function setDeptOrder(ids){
+  localStorage.setItem(LS.DEPT_ORDER, JSON.stringify(ids));
+}
+function getLinkOrder(dep, sub){
+  try{ return JSON.parse(localStorage.getItem(LS.LINK_ORDER(dep, sub)) || "[]"); }catch{ return [] }
+}
+function setLinkOrder(dep, sub, arr){
+  localStorage.setItem(LS.LINK_ORDER(dep, sub), JSON.stringify(arr));
+}
+
+/* ===== Back button logic ===== */
+function updateBackVisibility(){
+  const mode = els.viewMode.value || "departments";
+  const show = (mode === "subpage" || mode === "links");
+  els.btnBack.classList.toggle('hidden', !show);
+}
+function goBack(){
+  const mode = els.viewMode.value || "departments";
+  if(mode === "links"){
+    els.viewMode.value = "subpage";               // Links → Sub-Departments
+  }else if(mode === "subpage"){
+    els.viewMode.value = "departments";           // Sub-Departments → Home
+    currentDep = null;
+    currentSub = "__all__";
+  }
+  render();                                       // always route through render()
+  step();
+}
+els.btnBack.addEventListener('click', goBack);
+
+/* ===== Views ===== */
+function render(){
+  const mode = els.viewMode.value || "departments";
+
+  // settings visibility
+  if(mode === "departments"){
+    setSettingsOpen(false);
+    localStorage.setItem(LS.SETTINGS_OPEN, "0");
+  }else{
+    const saved = localStorage.getItem(LS.SETTINGS_OPEN_NONDEP);
+    setSettingsOpen(saved !== "0");
+  }
+
+  if(mode === "departments") renderDepartments();
+  else if(mode === "subpage") renderSubPage();
+  else renderLinks();
+
+  updateCrumbs();
+  updateBackVisibility();                          // ensure button visibility after every render
+}
+
+/* Departments */
+function renderDepartments(){
+  showOnly('depGrid');
+
+  const q = els.search.value.trim().toLowerCase();
+  const order = getDeptOrder();
+  const hiddenDeps = new Set(readJSON(LS.HIDDEN_DEPTS, []));
+  let base = q
+    ? departmentsData.filter(({dep, subs})=> (dep.toLowerCase().includes(q) || subs.some(s=>s.toLowerCase().includes(q))) && !hiddenDeps.has(dep))
+    : [
+        ...order.map(id => departmentsData.find(d=>d.dep===id)).filter(Boolean),
+        ...departmentsData.filter(d=>!order.includes(d.dep) && !hiddenDeps.has(d.dep))
+      ];
+
+  els.depGrid.innerHTML = "";
+  base.forEach(({dep, subs, imageUrl})=>{
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.setAttribute('data-id', dep);
+    card.innerHTML = `
+      <img class="img" loading="lazy" decoding="async" src="${imageUrl}" alt="${dep}" width="1200" height="675">
+      <div class="veil"></div>
+      <div class="overlay"></div>
+      <div class="label">
+        <span>${dep}</span>
+        <span class="pill">Subs: ${subs.length}</span>
+      </div>
+    `;
+    if(editMode){
+      const badge = document.createElement('div');
+      badge.className = 'editBadge';
+      const hideBtn = document.createElement('div');
+      hideBtn.className = 'mini'; hideBtn.title = 'Hide department';
+      hideBtn.textContent = '🙈';
+      hideBtn.onclick = (e)=>{ e.stopPropagation(); hideDepartment(dep); };
+      badge.appendChild(hideBtn);
+      card.appendChild(badge);
+    }
+    card.addEventListener('click', ()=>{
+      currentDep = dep;
+      currentSub = "__all__";
+      els.viewMode.value = "subpage";
+      render();                                    // go through render()
+      step();
     });
+    els.depGrid.appendChild(card);
+  });
 
-    let departments = {};
-
-    onAuthStateChanged(auth, user => {
-      document.getElementById("loginSection").style.display = user ? "none" : "block";
-      document.getElementById("adminContent").style.display = user ? "block" : "none";
-      if (user) loadDepartments();
-    });
-
-    document.getElementById("loginBtn").addEventListener("click", async () => {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
-      try {
-        await signInWithEmailAndPassword(auth, email, password);
-      } catch (err) {
-        alert("Login failed: " + err.message);
+  if(depSortable){ depSortable.destroy(); depSortable=null; }
+  if(sorting){
+    depSortable = Sortable.create(els.depGrid, {
+      animation:120,
+      onEnd: ()=>{
+        const ids = [...els.depGrid.children].map(el=>el.getAttribute('data-id'));
+        setDeptOrder(ids); step();
       }
     });
+  }
+}
 
-    document.getElementById("logoutBtn").addEventListener("click", () => signOut(auth));
+/* Sub-departments */
+function renderSubPage(){
+  showOnly('subGrid');
 
-    async function loadDepartments() {
-      const snap = await getDoc(doc(db, "structure", "departments"));
-      if (snap.exists()) {
-        departments = snap.data();
-        renderDepartments();
-        populateDropdowns();
-      }
+  if(!currentDep){
+    els.viewMode.value = "departments";
+    render();
+    return;
+  }
+
+  const depObj = departmentsData.find(d=>d.dep===currentDep);
+  const subs = depObj?.subs || [];
+  const hiddenSubs = new Set(readJSON(LS.HIDDEN_SUBS, []));
+  const visibleSubs = subs.filter(s => !hiddenSubs.has(hiddenKeySub(currentDep, s)));
+
+  els.subFilter.disabled = false;
+  els.subFilter.innerHTML = `<option value="__all__">All</option>` + visibleSubs.map(s=>`<option value="${s}">${s}</option>`).join('');
+  els.subFilter.value = "__all__";
+
+  const q = els.search.value.trim().toLowerCase();
+  const filtered = q ? visibleSubs.filter(s=>s.toLowerCase().includes(q)) : visibleSubs;
+
+  els.subGrid.innerHTML = "";
+  if(filtered.length === 0){
+    els.subGrid.innerHTML = `<div class="chip" style="grid-column:1/-1">No sub-departments match.</div>`;
+    return;
+  }
+
+  filtered.forEach(s=>{
+    const chip = document.createElement('div');
+    chip.className = 'subchip';
+    chip.textContent = s;
+
+    if(editMode){
+      const badge = document.createElement('div');
+      badge.className = 'editBadge';
+      const hideBtn = document.createElement('div');
+      hideBtn.className = 'mini'; hideBtn.title = 'Hide sub-dept';
+      hideBtn.textContent = '🙈';
+      hideBtn.onclick = (e)=>{ e.stopPropagation(); hideSub(currentDep, s); };
+      badge.appendChild(hideBtn);
+      chip.style.position = 'relative';
+      chip.appendChild(badge);
     }
 
-    function renderDepartments() {
-      const list = document.getElementById("departmentsList");
-      list.innerHTML = "";
-      for (const dep in departments) {
-        const div = document.createElement("div");
-        div.textContent = dep;
-        const edit = document.createElement("button");
-        edit.textContent = "✎";
-        edit.onclick = () => {
-          document.getElementById("depName").value = dep;
-          document.getElementById("depImage").value = departments[dep].image || "";
-        };
-        const del = document.createElement("button");
-        del.textContent = "✕";
-        del.onclick = () => {
-          delete departments[dep];
-          renderDepartments();
-          populateDropdowns();
-        };
-        div.appendChild(edit);
-        div.appendChild(del);
-        list.appendChild(div);
-      }
-    }
+    chip.addEventListener('click', ()=>{
+      currentSub = s;
+      els.subFilter.value = s;
+      els.viewMode.value = "links";
+      render();                                    // go through render()
+      step();
+    });
+    els.subGrid.appendChild(chip);
+  });
+}
 
-    function addOrUpdateDepartment() {
-      const name = document.getElementById("depName").value.trim();
-      const image = document.getElementById("depImage").value.trim();
-      if (!name) return alert("Please enter a department name");
-      departments[name] = {
-        image,
-        subs: departments[name]?.subs || []
-      };
-      renderDepartments();
-      populateDropdowns();
-      document.getElementById("depName").value = "";
-      document.getElementById("depImage").value = "";
-    }
+/* Links */
+function linksFor(dep, sub){
+  const hiddenLinks = new Set(readJSON(LS.HIDDEN_LINKS, []));
+  const lowerDep = dep?.toLowerCase();
+  const lowerSub = sub?.toLowerCase();
 
-    async function saveDepartments() {
-      await setDoc(doc(db, "structure", "departments"), departments);
-      alert("Saved to Firebase");
-    }
+  // From Sheet
+  let rows = rawRows.filter(r=>{
+    const rDep = (r.Department || '').toLowerCase().trim();
+    if(rDep !== lowerDep) return false;
+    if(sub==="__all__") return true;
+    const rSub = (r.SubDepartment || '').toLowerCase().trim();
+    return rSub === lowerSub;
+  }).map(r=>({
+    name: r.LinkName?.trim() || "Unnamed",
+    url : r.URL?.trim() || "#",
+    image: r.ImageURL?.trim() || "",
+    _origin: 'sheet',
+    _key: hiddenKeyLink(dep, (sub==="__all__" ? (r.SubDepartment||'').trim() : currentSub), (r.LinkName||'').trim() || 'Unnamed')
+  })).filter(item=> !hiddenLinks.has(item._key));
 
-    function populateDropdowns() {
-      const parentDep = document.getElementById("parentDep");
-      const linkDep = document.getElementById("linkDep");
-      parentDep.innerHTML = "";
-      linkDep.innerHTML = "";
-      for (const dep in departments) {
-        parentDep.appendChild(new Option(dep, dep));
-        linkDep.appendChild(new Option(dep, dep));
-      }
-      renderSubDepartments();
-      populateSubDropdown();
-    }
+  // Local overlays
+  const locals = readJSON(LS.LOCAL_LINKS, []).filter(x=>{
+    if(x.dep !== dep) return false;
+    if(sub==="__all__") return true;
+    return (x.sub || "").trim().toLowerCase() === lowerSub;
+  }).map(x=>({
+    name: x.name, url: x.url, image: x.image||"", _origin:'local', _key: hiddenKeyLink(dep, (x.sub||'').trim(), x.name)
+  })).filter(item=> !hiddenLinks.has(item._key));
 
-    document.getElementById("parentDep").addEventListener("change", renderSubDepartments);
-    document.getElementById("linkDep").addEventListener("change", populateSubDropdown);
-    document.getElementById("linkSub").addEventListener("change", renderLinks);
+  return [...rows, ...locals];
+}
 
-    function addSubDepartment() {
-      const dep = document.getElementById("parentDep").value;
-      const sub = document.getElementById("subName").value.trim();
-      if (!dep || !sub) return alert("Both fields are required");
+function renderLinks(){
+  showOnly('linkGrid');
 
-      const editIndex = sessionStorage.getItem("editSub");
-      if (editIndex !== null) {
-        departments[dep].subs[editIndex] = sub;
-        sessionStorage.removeItem("editSub");
-      } else if (!departments[dep].subs.includes(sub)) {
-        departments[dep].subs.push(sub);
-      }
+  if(!currentDep){
+    els.viewMode.value = "departments";
+    render();
+    return;
+  }
 
-      document.getElementById("subName").value = "";
-      renderSubDepartments();
-      populateSubDropdown();
-    }
+  if(els.subFilter.disabled){
+    const depObj = departmentsData.find(d=>d.dep===currentDep);
+    const subs = depObj?.subs || [];
+    els.subFilter.disabled = false;
+    els.subFilter.innerHTML = `<option value="__all__">All</option>` + subs.map(s=>`<option value="${s}">${s}</option>`).join('');
+  }
+  els.subFilter.value = currentSub;
 
-    function renderSubDepartments() {
-      const subsList = document.getElementById("subsList");
-      subsList.innerHTML = "";
-      const dep = document.getElementById("parentDep").value;
-      const subs = departments[dep]?.subs || [];
-      if (subs.length === 0) {
-        subsList.innerHTML = "<div>No sub-departments found</div>";
-      }
-      subs.forEach((sub, index) => {
-        const div = document.createElement("div");
-        div.textContent = sub;
-        const edit = document.createElement("button");
-        edit.textContent = "✎";
-        edit.onclick = () => {
-          document.getElementById("subName").value = sub;
-          sessionStorage.setItem("editSub", index);
-        };
-        const del = document.createElement("button");
-        del.textContent = "✕";
-        del.onclick = () => {
-          departments[dep].subs.splice(index, 1);
-          renderSubDepartments();
-          populateSubDropdown();
-        };
-        div.appendChild(edit);
-        div.appendChild(del);
-        subsList.appendChild(div);
-      });
-    }
+  let data = linksFor(currentDep, currentSub);
+  const q = els.search.value.trim().toLowerCase();
+  if(q){
+    data = data.filter(l => l.name.toLowerCase().includes(q) || l.url.toLowerCase().includes(q));
+  }
 
-    function populateSubDropdown() {
-      const dep = document.getElementById("linkDep").value;
-      const linkSub = document.getElementById("linkSub");
-      linkSub.innerHTML = "";
+  const order = getLinkOrder(currentDep, currentSub);
+  const sorted = [
+    ...order.map(n => data.find(l=>l.name===n)).filter(Boolean),
+    ...data.filter(l => !order.includes(l.name))
+  ];
 
-      const allOption = new Option(`-- All Links in ${dep} --`, "__all__");
-      linkSub.appendChild(allOption);
+  els.linkGrid.innerHTML = "";
+  if(sorted.length === 0){
+    els.linkGrid.innerHTML = `<div class="chip" style="grid-column:1/-1">No links found.</div>`;
+  }else{
+    sorted.forEach(l=>{
+      const item = document.createElement('a');
+      item.className = 'link';
+      item.setAttribute('data-name', l.name);
+      item.href = l.url;
+      item.target = "_blank";
+      item.rel="noopener";
+      const img = l.image ? `<img class="img" loading="lazy" decoding="async" src="${l.image}" alt="" width="1200" height="675">` : '';
+      item.innerHTML = `${img}<div class="veil"></div><div class="overlay"></div><div class="label">${l.name}</div>`;
 
-      (departments[dep]?.subs || []).forEach(sub => {
-        linkSub.appendChild(new Option(sub, sub));
-      });
-      renderLinks();
-    }
-
-    async function addLink() {
-      const dep = document.getElementById("linkDep").value;
-      const sub = document.getElementById("linkSub").value;
-      const name = document.getElementById("linkName").value.trim();
-      const url = document.getElementById("linkUrl").value.trim();
-      const color = document.getElementById("linkColor").value.trim() || "#4CAF50";
-      const image = document.getElementById("linkImage").value.trim();
-      if (!name || !url || sub === "__all__") return alert("Please enter valid sub and link details");
-
-      const docId = `${dep}-${sub}`;
-      const ref = doc(db, "links", docId);
-      let items = [];
-      const snap = await getDoc(ref);
-      if (snap.exists()) items = snap.data().items || [];
-
-      const editingName = sessionStorage.getItem("editingLinkName");
-      if (editingName) {
-        items = items.map(item => item.name === editingName ? { name, url, color, image } : item);
-        sessionStorage.removeItem("editingLinkName");
-      } else {
-        items.push({ name, url, color, image });
-      }
-
-      await setDoc(ref, { items });
-      document.getElementById("linkName").value = "";
-      document.getElementById("linkUrl").value = "";
-      document.getElementById("linkColor").value = "";
-      document.getElementById("linkImage").value = "";
-      renderLinks();
-    }
-
-    async function renderLinks() {
-      const dep = document.getElementById("linkDep").value;
-      const sub = document.getElementById("linkSub").value;
-      const list = document.getElementById("linksList");
-      list.innerHTML = "";
-
-      if (sub === "__all__") {
-        let allLinks = [];
-        const seen = new Set();
-        for (const s of departments[dep]?.subs || []) {
-          const docId = `${dep}-${s}`;
-          const snap = await getDoc(doc(db, "links", docId));
-          if (snap.exists()) {
-            const links = snap.data().items || [];
-            links.forEach(link => {
-              const key = link.name.trim().toLowerCase();
-              if (!seen.has(key)) {
-                seen.add(key);
-                allLinks.push(link);
-              }
-            });
-          }
+      if(editMode){
+        const badge = document.createElement('div');
+        badge.className = 'editBadge';
+        // hide
+        const hideBtn = document.createElement('div');
+        hideBtn.className = 'mini'; hideBtn.title = 'Hide link'; hideBtn.textContent = '🙈';
+        hideBtn.onclick = (e)=>{ e.preventDefault(); e.stopPropagation(); hideLink(l); };
+        badge.appendChild(hideBtn);
+        // delete local (only if local)
+        if(l._origin === 'local'){
+          const delBtn = document.createElement('div');
+          delBtn.className = 'mini'; delBtn.title = 'Delete local link'; delBtn.textContent = '🗑️';
+          delBtn.onclick = (e)=>{ e.preventDefault(); e.stopPropagation(); deleteLocalLink(l); };
+          badge.appendChild(delBtn);
         }
-
-        if (allLinks.length === 0) {
-          list.innerHTML = "<div>No links in department</div>";
-          return;
-        }
-
-        allLinks.forEach(link => {
-          const div = document.createElement("div");
-          div.innerHTML = link.image ? `<img src="${link.image}" /> ${link.name}` : link.name;
-          div.style.background = link.color;
-          list.appendChild(div);
-        });
-        return;
+        item.appendChild(badge);
       }
 
-      const docId = `${dep}-${sub}`;
-      const ref = doc(db, "links", docId);
-      const snap = await getDoc(ref);
-      if (!snap.exists()) {
-        list.innerHTML = "<div>No links available</div>";
-        return;
+      item.addEventListener('click', ()=> step());
+      els.linkGrid.appendChild(item);
+    });
+  }
+
+  if(linkSortable){ linkSortable.destroy(); linkSortable=null; }
+  if(sorting){
+    linkSortable = Sortable.create(els.linkGrid, {
+      animation:120,
+      onEnd: ()=>{
+        const names = [...els.linkGrid.children].map(el=>el.getAttribute('data-name'));
+        setLinkOrder(currentDep, currentSub, names); step();
       }
+    });
+  }
+}
 
-      const items = snap.data().items || [];
-      if (items.length === 0) {
-        list.innerHTML = "<div>No links available</div>";
-        return;
-      }
+/* ===== Hide/unhide helpers ===== */
+function hideDepartment(dep){
+  const hidden = new Set(readJSON(LS.HIDDEN_DEPTS, []));
+  hidden.add(dep);
+  writeJSON(LS.HIDDEN_DEPTS, Array.from(hidden));
+  buildMaps(); render();
+}
+function hideSub(dep, sub){
+  const hidden = new Set(readJSON(LS.HIDDEN_SUBS, []));
+  hidden.add(hiddenKeySub(dep, sub));
+  writeJSON(LS.HIDDEN_SUBS, Array.from(hidden));
+  buildMaps(); render();
+}
+function hideLink(link){
+  const key = link._key;
+  const hidden = new Set(readJSON(LS.HIDDEN_LINKS, []));
+  hidden.add(key);
+  writeJSON(LS.HIDDEN_LINKS, Array.from(hidden));
+  render();
+}
+function unhideByKey(type, key){
+  if(type==='dep'){
+    const arr = readJSON(LS.HIDDEN_DEPTS, []).filter(x=>x!==key);
+    writeJSON(LS.HIDDEN_DEPTS, arr);
+    buildMaps(); render();
+  }else if(type==='sub'){
+    const arr = readJSON(LS.HIDDEN_SUBS, []).filter(x=>x!==key);
+    writeJSON(LS.HIDDEN_SUBS, arr);
+    buildMaps(); render();
+  }else if(type==='link'){
+    const arr = readJSON(LS.HIDDEN_LINKS, []).filter(x=>x!==key);
+    writeJSON(LS.HIDDEN_LINKS, arr);
+    render();
+  }
+}
 
-      items.forEach((link) => {
-        const div = document.createElement("div");
-        div.innerHTML = link.image ? `<img src="${link.image}" /> ${link.name}` : link.name;
-        div.style.background = link.color;
+/* ===== Admin Drawer logic ===== */
+function setDrawer(open){
+  els.drawer.classList.toggle('hidden', !open);
+  if(open){ refreshAdminSelectors(); refreshHiddenList(); }
+}
+function setActiveTab(id){
+  document.querySelectorAll('.tab').forEach(t=>{
+    t.classList.toggle('active', t.getAttribute('data-tab') === id);
+  });
+  document.querySelectorAll('.body > .row').forEach(r=>{
+    r.classList.toggle('hidden', r.id !== id);
+  });
+}
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click', ()=> setActiveTab(t.getAttribute('data-tab')));
+});
+els.btnEdit.addEventListener('click', ()=>{
+  editMode = !editMode;
+  setDrawer(editMode);
+  render();
+});
+els.btnCloseDrawer.addEventListener('click', ()=>{ editMode=false; setDrawer(false); render(); });
 
-        const edit = document.createElement("button");
-        edit.textContent = "✎";
-        edit.onclick = () => {
-          document.getElementById("linkName").value = link.name;
-          document.getElementById("linkUrl").value = link.url;
-          document.getElementById("linkColor").value = link.color;
-          document.getElementById("linkImage").value = link.image || "";
-          sessionStorage.setItem("editingLinkName", link.name);
-        };
+function refreshAdminSelectors(){
+  // Department selects
+  const deps = departmentsData.map(d=>d.dep).sort((a,b)=>a.localeCompare(b));
+  els.subDep.innerHTML = deps.map(d=>`<option value="${d}">${d}</option>`).join('');
+  els.linkDep.innerHTML = `<option value="">Select department</option>` + deps.map(d=>`<option value="${d}">${d}</option>`).join('');
+  els.linkSub.innerHTML = `<option value="">Select department first</option>`;
+}
 
-        const del = document.createElement("button");
-        del.textContent = "✕";
-        del.onclick = async () => {
-          const updatedSnap = await getDoc(ref);
-          let latestItems = updatedSnap.exists() ? updatedSnap.data().items || [] : [];
-          latestItems = latestItems.filter(item => item.name !== link.name);
-          await setDoc(ref, { items: latestItems });
-          renderLinks();
-        };
+els.linkDep.addEventListener('change', ()=>{
+  const dep = els.linkDep.value;
+  const depObj = departmentsData.find(d=>d.dep===dep);
+  const subs = depObj ? depObj.subs : [];
+  els.linkSub.innerHTML = subs.map(s=>`<option value="${s}">${s}</option>`).join('');
+});
 
-        div.appendChild(edit);
-        div.appendChild(del);
-        list.appendChild(div);
-      });
+/* Add Department */
+els.addDept.addEventListener('click', ()=>{
+  const name = (els.depName.value || '').trim();
+  if(!name){ alert('Department name required'); return; }
+  const img = (els.depImg.value || '').trim();
+  const list = readJSON(LS.LOCAL_DEPTS, []);
+  if(list.find(x=>x.dep.toLowerCase() === name.toLowerCase())){ alert('Already exists'); return; }
+  list.push({ dep:name, imageUrl:img });
+  writeJSON(LS.LOCAL_DEPTS, list);
+  els.depName.value = ''; els.depImg.value = '';
+  buildMaps(); render(); step();
+});
+
+/* Add Sub */
+els.addSub.addEventListener('click', ()=>{
+  const dep = els.subDep.value;
+  const sub = (els.subName.value || '').trim();
+  if(!dep || !sub){ alert('Select department and enter sub name'); return; }
+  const list = readJSON(LS.LOCAL_SUBS, []);
+  if(list.find(x=>x.dep===dep && x.sub.toLowerCase()===sub.toLowerCase())){ alert('Already exists'); return; }
+  list.push({ dep, sub });
+  writeJSON(LS.LOCAL_SUBS, list);
+  els.subName.value = '';
+  buildMaps(); render(); step();
+});
+
+/* Add Link */
+els.addLink.addEventListener('click', ()=>{
+  const dep = els.linkDep.value;
+  const sub = els.linkSub.value;
+  const name = (els.linkName.value||'').trim();
+  const url  = (els.linkUrl.value||'').trim();
+  const img  = (els.linkImg.value||'').trim();
+  if(!dep || !sub || !name || !url){ alert('Fill all required fields'); return; }
+  const list = readJSON(LS.LOCAL_LINKS, []);
+  if(list.find(x=>x.dep===dep && x.sub===sub && x.name.toLowerCase()===name.toLowerCase())){ alert('Link already exists'); return; }
+  list.push({ dep, sub, name, url, image:img });
+  writeJSON(LS.LOCAL_LINKS, list);
+  els.linkName.value = ''; els.linkUrl.value = ''; els.linkImg.value='';
+  if(currentDep===dep && (currentSub===sub || currentSub==="__all__")) render();
+  step();
+});
+
+/* Delete local link */
+function deleteLocalLink(link){
+  const list = readJSON(LS.LOCAL_LINKS, []);
+  const next = list.filter(x=> !(x.dep===currentDep && (x.sub===currentSub || currentSub==="__all__") && x.name===link.name && x.url===link.url));
+  writeJSON(LS.LOCAL_LINKS, next);
+  render();
+}
+
+/* Hidden list */
+function refreshHiddenList(){
+  const deps = readJSON(LS.HIDDEN_DEPTS, []);
+  const subs = readJSON(LS.HIDDEN_SUBS, []);
+  const links = readJSON(LS.HIDDEN_LINKS, []);
+  const makeBadge = (text, type, key)=>{
+    const b = document.createElement('button');
+    b.className = 'btn'; b.textContent = text;
+    b.onclick = ()=> unhideByKey(type, key);
+    return b;
+  };
+  els.hiddenList.innerHTML = '';
+  if(deps.length===0 && subs.length===0 && links.length===0){
+    els.hiddenList.textContent = 'Nothing hidden.';
+    return;
+  }
+  if(deps.length){
+    const wrap = document.createElement('div'); wrap.className='row';
+    wrap.innerHTML = `<label>Departments</label>`;
+    deps.forEach(d=> wrap.appendChild(makeBadge(d, 'dep', d)));
+    els.hiddenList.appendChild(wrap);
+  }
+  if(subs.length){
+    const wrap = document.createElement('div'); wrap.className='row';
+    wrap.innerHTML = `<label>Sub-Departments</label>`;
+    subs.forEach(s=> wrap.appendChild(makeBadge(s, 'sub', s)));
+    els.hiddenList.appendChild(wrap);
+  }
+  if(links.length){
+    const wrap = document.createElement('div'); wrap.className='row';
+    wrap.innerHTML = `<label>Links</label>`;
+    links.forEach(l=> wrap.appendChild(makeBadge(l, 'link', l)));
+    els.hiddenList.appendChild(wrap);
+  }
+}
+
+/* Export / Reset */
+els.btnExportJSON.addEventListener('click', ()=>{
+  const payload = {
+    localDepartments: readJSON(LS.LOCAL_DEPTS, []),
+    localSubs: readJSON(LS.LOCAL_SUBS, []),
+    localLinks: readJSON(LS.LOCAL_LINKS, []),
+    hiddenDepartments: readJSON(LS.HIDDEN_DEPTS, []),
+    hiddenSubs: readJSON(LS.HIDDEN_SUBS, []),
+    hiddenLinks: readJSON(LS.HIDDEN_LINKS, []),
+    orders: {
+      departments: readJSON(LS.DEPT_ORDER, []),
+      // links orders are per dep/sub keys; dump all
+      links: Object.keys(localStorage)
+        .filter(k=>k.startsWith('rv_link_order_'))
+        .reduce((acc,k)=> (acc[k]=readJSON(k,[]), acc), {})
     }
+  };
+  const blob = new Blob([JSON.stringify(payload,null,2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `ranvexsi-local-overrides.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+});
+els.btnClearLocal.addEventListener('click', ()=>{
+  if(!confirm('Remove ALL local overrides and hidden flags?')) return;
+  [LS.LOCAL_DEPTS, LS.LOCAL_SUBS, LS.LOCAL_LINKS, LS.HIDDEN_DEPTS, LS.HIDDEN_SUBS, LS.HIDDEN_LINKS].forEach(k=> localStorage.removeItem(k));
+  buildMaps(); render(); refreshHiddenList();
+});
 
-    document.getElementById("addDepBtn").addEventListener("click", addOrUpdateDepartment);
-    document.getElementById("saveAllBtn").addEventListener("click", saveDepartments);
-    document.getElementById("addSubBtn").addEventListener("click", addSubDepartment);
-    document.getElementById("addLinkBtn").addEventListener("click", addLink);
-  </script>
+/* ===== Helpers ===== */
+function showOnly(which){
+  els.depGrid.classList.toggle('hidden', which!=='depGrid');
+  els.subGrid.classList.toggle('hidden', which!=='subGrid');
+  els.linkGrid.classList.toggle('hidden', which!=='linkGrid');
+}
+function updateCrumbs(){
+  const mode = els.viewMode?.value || "departments";
+  if(mode === "departments" || !currentDep){
+    els.crumbs.textContent = "Home";
+  }else if(mode === "subpage"){
+    els.crumbs.innerHTML = `<b>${currentDep}</b> / Sub-departments`;
+  }else{
+    const subTxt = currentSub==="__all__" ? "All" : currentSub;
+    els.crumbs.innerHTML = `<b>${currentDep}</b> / ${subTxt}`;
+  }
+}
+
+/* ===== Sorting/Refresh/Clear ===== */
+els.viewMode.addEventListener('change', ()=>{ render(); step(); });
+els.subFilter.addEventListener('change', ()=>{
+  currentSub = els.subFilter.value;
+  els.viewMode.value = "links";
+  render();                                        // route through render()
+  step();
+});
+els.btnSort.addEventListener('click', ()=>{
+  sorting = !sorting;
+  els.btnSort.textContent = sorting ? "Disable Sort" : "Enable Sort";
+  render();
+});
+els.btnRefresh.addEventListener('click', ()=>{ loadData(); step(); });
+els.btnClear.addEventListener('click', ()=>{
+  localStorage.removeItem(LS.DEPT_ORDER);
+  Object.keys(localStorage).forEach(k=>{ if(k.startsWith('rv_link_order_')) localStorage.removeItem(k); });
+  render();
+});
+
+/* search debounce */
+let t; els.search.addEventListener('input', ()=>{
+  clearTimeout(t); t = setTimeout(()=>{ render(); }, 220);
+});
+
+/* ===== Init ===== */
+loadData();
+
+/* ===== Drawer tab routing on open ===== */
+document.addEventListener('click', (e)=>{
+  // click outside drawer to close only if editMode false (we keep it explicit)
+}, true);
+</script>
 </body>
 </html>
