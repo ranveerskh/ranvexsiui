@@ -4,9 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="viewport-fit=cover,width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <title>ranvexsi barcode scanner</title>
-<link rel="manifest" href="data:application/manifest+json,{&quot;name&quot;:&quot;ranvexsi barcode scanner&quot;,&quot;short_name&quot;:&quot;RBS&quot;,&quot;start_url&quot;:&quot;.&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;#0f1220&quot;,&quot;theme_color&quot;:&quot;#5e7bff&quot;}">
+
+<!-- Minimal inline manifest so Add to Home Screen behaves -->
+<link rel="manifest" href='data:application/manifest+json,{"name":"ranvexsi barcode scanner","short_name":"RBS","start_url":".","display":"standalone","background_color":"#0f1220","theme_color":"#5e7bff"}'>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
 <style>
 :root{
   --bg:#0f1220; --card:#171b2e; --ink:#eaf0ff; --muted:#a8b2d1; --line:#262c46; --accent:#5e7bff;
@@ -16,7 +19,8 @@
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
-  margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
   -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
 }
 header{
@@ -57,9 +61,8 @@ td.qty input{width:70px;text-align:center}
 footer{height:calc(12px + var(--safe-bottom))}
 .kv{display:flex;gap:6px;align-items:center}
 .kv code{background:#0f1330;border:1px solid #2b3261;border-radius:6px;padding:3px 6px;color:#cbd3ff}
-.small{font-size:12px;color:var(--muted)}
-hr.split{border:0;border-top:1px solid var(--line);margin:12px 0}
-.notice{padding:10px;color:#e9edff;background:#262f5e;border-left:3px solid var(--accent)}
+.small{font-size:12px;color:#aeb7d9}
+.notice{padding:10px;color:#e9edff;background:#262f5e;border-left:3px solid var(--accent);margin-top:12px}
 </style>
 </head>
 <body>
@@ -105,96 +108,94 @@ hr.split{border:0;border-top:1px solid var(--line);margin:12px 0}
         <tbody id="tbody"></tbody>
       </table>
     </div>
-    <div class="status small">Tip: quantities auto-save. Copy uses tab-separated values that paste cleanly into Excel or Sheets.</div>
+    <div class="status small">Tip: “Copy for Excel” uses tab-separated values that paste cleanly into Excel or Sheets.</div>
   </div>
 
-  <p class="notice small" style="margin-top:12px">
-    Uses the built-in BarcodeDetector when available. If your browser is being fussy, it falls back to ZXing. All data is saved locally per day: nothing leaves the device.
+  <p class="notice small">
+    Works best over HTTPS. Add to Home Screen for a full-screen feel. All data stays local for the current date.
   </p>
   <footer></footer>
 </div>
 
-<!-- ZXing fallback (loaded but only used if BarcodeDetector is missing) -->
+<!-- ZXing fallback (used only if BarcodeDetector is missing) -->
 <script src="https://unpkg.com/@zxing/browser@0.1.5/umd/index.min.js"></script>
+
 <script>
+/* -------------------------
+   App state, storage, table
+--------------------------*/
 (function(){
-  const el = id => document.getElementById(id);
-  const $today = el('today');
-  const $video = el('video');
-  const $status = el('status');
-  const $tbody = el('tbody');
-  const $totals = el('totals');
-  const $start = el('startBtn'), $stop = el('stopBtn'), $flip = el('flipBtn'), $torch = el('torchBtn');
-  const $manual = el('manualInput'), $addManual = el('addManualBtn');
-  const $copy = el('copyBtn'), $csv = el('csvBtn'), $clear = el('clearBtn');
+  const $ = id => document.getElementById(id);
+  const $today = $('today');
+  const $tbody = $('tbody');
+  const $totals = $('totals');
+  const $status = $('status');
 
-  const todayKey = () => new Date().toISOString().slice(0,10);
-  const storeKey = () => 'rbscan:' + todayKey();
-
-  const state = {
-    counts: {}, // { code: qty }
-    totalScans: 0,
-    running: false,
-    usingZXing: false,
-    currentDeviceId: null,
-    stream: null,
-    detector: null,
-    zxingReader: null,
-    scanCooldowns: new Map(), // code -> timestamp
-    torchOn: false
+  // Shared state object so the camera module can reuse it
+  const S = window.__RBSCAN_STATE__ = window.__RBSCAN_STATE__ || {
+    counts:{}, totalScans:0, scanCooldowns:new Map()
   };
 
+  function todayKey(){ return new Date().toISOString().slice(0,10); }
+  function storeKey(){ return 'rbscan:' + todayKey(); }
   function fmtToday(){
     const d = new Date();
     return d.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'});
   }
+
   function load(){
     const raw = localStorage.getItem(storeKey());
     if(raw){
-      try {
+      try{
         const obj = JSON.parse(raw);
-        state.counts = obj.counts || {};
-        state.totalScans = obj.totalScans || 0;
-      } catch { /* sigh */ }
+        S.counts = obj.counts || {};
+        S.totalScans = obj.totalScans || 0;
+      }catch{}
     }
     $today.textContent = fmtToday();
     render();
   }
   function save(){
-    localStorage.setItem(storeKey(), JSON.stringify({counts:state.counts,totalScans:state.totalScans}));
+    localStorage.setItem(storeKey(), JSON.stringify({counts:S.counts, totalScans:S.totalScans}));
   }
+
   function bump(code, delta=1){
     if(!code) return;
-    state.counts[code] = (state.counts[code]||0) + delta;
-    if(state.counts[code] <= 0) delete state.counts[code];
-    if(delta>0) state.totalScans += delta;
-    save(); render();
+    S.counts[code] = (S.counts[code]||0) + delta;
+    if(S.counts[code] <= 0) delete S.counts[code];
+    if(delta>0) S.totalScans += delta;
+    save(); render(); setStatus(`Scanned: ${code}`);
   }
+
   function render(){
-    const entries = Object.entries(state.counts).sort((a,b)=>a[0].localeCompare(b[0]));
+    const entries = Object.entries(S.counts).sort((a,b)=>a[0].localeCompare(b[0]));
     $tbody.innerHTML = '';
     for(const [code,qty] of entries){
       const tr = document.createElement('tr');
+
       const tdCode = document.createElement('td');
       tdCode.textContent = code;
-      const tdQty = document.createElement('td'); tdQty.className='qty';
+
+      const tdQty = document.createElement('td'); tdQty.className = 'qty';
       const input = document.createElement('input');
-      input.type='number'; input.min='0'; input.value=qty;
+      input.type = 'number'; input.min = '0'; input.value = qty;
       input.addEventListener('change', ()=>{
         const v = Math.max(0, Number(input.value|0));
-        const prev = state.counts[code]||0;
-        state.counts[code] = v;
-        state.totalScans += Math.max(0, v - prev);
-        if(v===0) delete state.counts[code];
+        const prev = S.counts[code]||0;
+        S.counts[code] = v;
+        S.totalScans += Math.max(0, v - prev);
+        if(v===0) delete S.counts[code];
         save(); render();
       });
       tdQty.appendChild(input);
+
       const tdAct = document.createElement('td');
       const minus = document.createElement('button'); minus.className='ghost'; minus.textContent='−1';
       minus.addEventListener('click', ()=>bump(code,-1));
       const del = document.createElement('button'); del.className='warn'; del.style.marginLeft='6px'; del.textContent='Delete';
-      del.addEventListener('click', ()=>{ delete state.counts[code]; save(); render(); });
+      del.addEventListener('click', ()=>{ delete S.counts[code]; save(); render(); });
       tdAct.append(minus, del);
+
       tr.append(tdCode, tdQty, tdAct);
       $tbody.appendChild(tr);
     }
@@ -203,235 +204,252 @@ hr.split{border:0;border-top:1px solid var(--line);margin:12px 0}
     $totals.textContent = `${totalItems} items, ${totalQty} total`;
   }
 
-  // Copy in Excel-friendly tab-separated format: Code [TAB] Qty [NEWLINE]
-  function copyForExcel(){
-    const rows = Object.entries(state.counts)
+  function setStatus(msg){ try{ $status.textContent = msg; }catch{} }
+
+  // Excel copy and CSV
+  $('copyBtn').addEventListener('click', ()=>{
+    const rows = Object.entries(S.counts)
       .sort((a,b)=>a[0].localeCompare(b[0]))
-      .map(([c,q])=>`${c}\t${q}`)
-      .join('\n');
-    navigator.clipboard.writeText(rows || '').then(()=>{
-      setStatus('Copied list to clipboard.');
-    }).catch(()=>{
-      // Fallback: create a hidden textarea
-      const ta = document.createElement('textarea');
-      ta.value = rows; document.body.appendChild(ta);
-      ta.select(); document.execCommand('copy'); ta.remove();
-      setStatus('Copied list to clipboard.');
-    });
-  }
-  function downloadCSV(){
-    const lines = [['Date','Barcode','Qty']];
+      .map(([c,q])=>`${c}\t${q}`).join('\n');
+    const write = async () => {
+      try{ await navigator.clipboard.writeText(rows); setStatus('Copied list to clipboard.'); }
+      catch{
+        const ta = document.createElement('textarea'); ta.value = rows;
+        document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+        setStatus('Copied list to clipboard.');
+      }
+    };
+    write();
+  });
+
+  $('csvBtn').addEventListener('click', ()=>{
     const date = todayKey();
-    for(const [c,q] of Object.entries(state.counts).sort((a,b)=>a[0].localeCompare(b[0]))){
+    const lines = [['Date','Barcode','Qty']];
+    for(const [c,q] of Object.entries(S.counts).sort((a,b)=>a[0].localeCompare(b[0]))){
       lines.push([date,c,String(q)]);
     }
     const csv = lines.map(r=>r.map(v=>/([",\n])/.test(v)?`"${v.replace(/"/g,'""')}"`:v).join(',')).join('\n');
     const blob = new Blob([csv],{type:'text/csv'});
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = `rbscan_${date}.csv`; a.click();
+    const a = document.createElement('a'); a.href = url; a.download = `rbscan_${date}.csv`; a.click();
     setTimeout(()=>URL.revokeObjectURL(url), 1500);
-  }
-  function clearToday(){
+  });
+
+  $('clearBtn').addEventListener('click', ()=>{
     if(confirm('Clear all scans for today?')){
-      state.counts = {}; state.totalScans = 0; save(); render();
+      S.counts = {}; S.totalScans = 0; save(); render(); setStatus('Cleared today.');
     }
-  }
-  function setStatus(msg){
-    $status.textContent = msg;
+  });
+
+  // Manual add
+  const $manual = $('manualInput');
+  $('addManualBtn').addEventListener('click', ()=>{
+    const v = $manual.value.trim(); if(!v) return;
+    bump(v,1); $manual.value=''; $manual.focus();
+  });
+  $manual.addEventListener('keydown', e=>{
+    if(e.key==='Enter'){ e.preventDefault(); $('addManualBtn').click(); }
+  });
+
+  // Debounce duplicate rapid scans across modules
+  function acceptScanOnce(code){
+    const now = Date.now();
+    const last = S.scanCooldowns.get(code) || 0;
+    if(now - last < 800) return false;
+    S.scanCooldowns.set(code, now);
+    return true;
   }
 
-  // Camera helpers
+  // Expose hooks for the camera module
+  window.__RBSCAN_BUMP__ = (code)=>{
+    const v = String(code||'').trim();
+    if(!v) return;
+    if(!acceptScanOnce(v)) return;
+    bump(v,1);
+  };
+  window.__RBSCAN_SET_STATUS__ = setStatus;
+
+  // iOS quirk: keep video playing when tab returns (camera module also guards this)
+  document.addEventListener('visibilitychange', ()=>{
+    // no-op here; camera module handles video
+  });
+
+  load();
+})();
+</script>
+
+<script>
+/* -------------------------------------
+   Robust camera + detector module (iOS)
+--------------------------------------*/
+(function(){
+  const $ = id => document.getElementById(id);
+  const $video = $('video');
+  const $start = $('startBtn');
+  const $stop  = $('stopBtn');
+  const $flip  = $('flipBtn');
+  const $torch = $('torchBtn');
+  const setStatus = window.__RBSCAN_SET_STATUS__ || function(){};
+
+  const S = window.__RBSCAN_STATE__ = window.__RBSCAN_STATE__ || {};
+  Object.assign(S, {
+    stream:null, usingZXing:false, detector:null, currentDeviceId:null, running:false, _reader:null
+  });
+
+  function isSecureOrigin(){
+    return location.protocol === 'https:' || location.hostname === 'localhost';
+  }
+
   async function listCameras(){
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    return devices.filter(d=>d.kind==='videoinput');
+    const devs = await navigator.mediaDevices.enumerateDevices();
+    return devs.filter(d => d.kind === 'videoinput');
   }
-  async function startCamera(facingMode='environment', deviceId=null){
-    if(state.stream){
-      stopCamera();
+
+  async function tryGet(constraints, label){
+    try{
+      const s = await navigator.mediaDevices.getUserMedia(constraints);
+      setStatus(`Camera started (${label}).`);
+      return s;
+    }catch(e){
+      console.warn('getUserMedia failed:', label, e.name, e.message);
+      const err = new Error(label); err.cause = e; throw err;
     }
-    const constraints = deviceId ? {video:{deviceId:{exact:deviceId}}}
-      : {video:{facingMode}};
-    const stream = await navigator.mediaDevices.getUserMedia(constraints);
-    state.stream = stream;
-    $video.srcObject = stream;
-    await $video.play();
-    $stop.disabled = false;
-    $flip.disabled = (await listCameras()).length < 2;
-    // Torch availability check
-    const track = stream.getVideoTracks()[0];
-    const caps = track.getCapabilities?.() || {};
-    $torch.disabled = !('torch' in caps);
-    state.torchOn = false;
   }
+
+  async function startCamera(){
+    if(S.stream) stopCamera();
+
+    const attempts = [
+      [{video:{facingMode:{exact:'environment'}}, audio:false}, 'environment exact'],
+      [{video:{facingMode:'environment'}, audio:false}, 'environment'],
+      [{video:true, audio:false}, 'any camera']
+    ];
+    if(S.currentDeviceId){
+      attempts.unshift([{video:{deviceId:{exact:S.currentDeviceId}}, audio:false}, 'selected device']);
+    }
+
+    let lastError = null;
+    for(const [c,label] of attempts){
+      try{
+        const stream = await tryGet(c,label);
+        S.stream = stream;
+        $video.srcObject = stream;
+        await $video.play();
+
+        $stop.disabled = false;
+        const cams = await listCameras();
+        $flip.disabled = cams.length < 2;
+
+        const track = stream.getVideoTracks()[0];
+        const caps = track.getCapabilities?.() || {};
+        $torch.disabled = !('torch' in caps);
+
+        const settings = track.getSettings?.();
+        if(settings?.deviceId) S.currentDeviceId = settings.deviceId;
+
+        return;
+      }catch(err){ lastError = err; }
+    }
+
+    const name = lastError?.cause?.name;
+    if(!isSecureOrigin()){
+      setStatus('Camera blocked: page is not HTTPS. Host over HTTPS or use localhost.');
+    }else if(name === 'NotAllowedError'){
+      setStatus('Camera blocked by permission. Check Settings > Safari > Camera and in-page Website Settings.');
+    }else if(name === 'NotFoundError'){
+      setStatus('No camera found. Simulator or camera-disabled profile?');
+    }else if(name === 'OverconstrainedError'){
+      setStatus('Back camera unavailable with requested settings. Try Flip.');
+    }else{
+      setStatus(`Failed to start camera: ${name || 'Unknown error'}.`);
+    }
+    throw lastError || new Error('getUserMedia failed');
+  }
+
   function stopCamera(){
-    if(state.stream){
-      state.stream.getTracks().forEach(t=>t.stop());
-      state.stream = null;
+    if(S.stream){
+      S.stream.getTracks().forEach(t=>t.stop());
+      S.stream = null;
     }
     $video.srcObject = null;
     $stop.disabled = true; $flip.disabled = true; $torch.disabled = true;
   }
-  function toggleTorch(){
-    if(!state.stream) return;
-    const track = state.stream.getVideoTracks()[0];
+
+  async function toggleTorch(){
+    if(!S.stream) return;
+    const track = S.stream.getVideoTracks()[0];
     const caps = track.getCapabilities?.() || {};
     if(!('torch' in caps)) return;
-    state.torchOn = !state.torchOn;
-    track.applyConstraints({advanced:[{torch: state.torchOn}]});
-    setStatus(state.torchOn ? 'Torch on' : 'Torch off');
-  }
-
-  // Debounce duplicate rapid scans
-  function acceptScan(code){
-    const now = Date.now();
-    const last = state.scanCooldowns.get(code) || 0;
-    if(now - last < 800) return false; // ignore duplicates within 0.8s
-    state.scanCooldowns.set(code, now);
-    return true;
-  }
-
-  // Native BarcodeDetector path
-  let rafId = null;
-  async function startNativeLoop(){
-    if(!state.detector) return;
-    state.running = true;
-    $start.disabled = true;
-    setStatus('Scanning with BarcodeDetector…');
-    const loop = async ()=>{
-      if(!state.running) return;
-      try{
-        const codes = await state.detector.detect($video);
-        if(codes && codes.length){
-          for(const c of codes){
-            const code = String(c.rawValue || '').trim();
-            if(code && acceptScan(code)){
-              bump(code,1);
-              setStatus(`Scanned: ${code}`);
-            }
-          }
-        }
-      }catch(e){ /* ignored */ }
-      rafId = requestAnimationFrame(loop);
-    };
-    loop();
-  }
-  function stopNativeLoop(){
-    state.running = false;
-    if(rafId) cancelAnimationFrame(rafId), rafId=null;
-    $start.disabled = false;
-    setStatus('Stopped.');
-  }
-
-  // ZXing fallback path
-  async function startZXing(){
-    state.usingZXing = true;
-    $start.disabled = true;
-    const { BrowserMultiFormatReader } = window.ZXingBrowser || window.ZXing;
-    state.zxingReader = new BrowserMultiFormatReader();
-    await startCamera('environment', state.currentDeviceId);
-    setStatus('Scanning with ZXing…');
-    const videoElem = $video;
-    const onResult = (result, err, controls) =>{
-      if(result && result.getText){
-        const code = String(result.getText()).trim();
-        if(code && acceptScan(code)){
-          bump(code,1);
-          setStatus(`Scanned: ${code}`);
-        }
-      }
-      // errors are noisy; we ignore them to keep loop running
-    };
-    state.zxingReader.decodeFromVideoDevice(state.currentDeviceId, videoElem, onResult);
-    $stop.disabled = false;
-  }
-  function stopZXing(){
-    if(state.zxingReader){
-      try{ state.zxingReader.reset(); }catch{}
-      state.zxingReader = null;
-    }
-    stopCamera();
-    $start.disabled = false;
-    setStatus('Stopped.');
-  }
-
-  async function start(){
-    try{
-      // Try native detector first
-      const supported = ('BarcodeDetector' in window);
-      if(supported){
-        const formats = [
-          'code_128','code_39','ean_13','ean_8','upc_a','upc_e','itf','codabar','qr_code','pdf417','aztec','data_matrix'
-        ].filter(Boolean);
-        state.detector = new window.BarcodeDetector({formats});
-        await startCamera('environment', state.currentDeviceId);
-        await startNativeLoop();
-        setStatus('Scanning…');
-      }else{
-        await startZXing();
-      }
-    }catch(err){
-      console.error(err);
-      setStatus('Failed to start camera. Check permissions.');
-      $start.disabled = false;
-      stopCamera();
-    }
-  }
-  function stop(){
-    if(state.detector){
-      stopNativeLoop();
-      stopCamera();
-    }
-    if(state.usingZXing){
-      stopZXing();
-      state.usingZXing = false;
-    }
+    const cur = track.getConstraints()?.advanced?.[0]?.torch || false;
+    await track.applyConstraints({advanced:[{torch: !cur}]});
+    setStatus(!cur ? 'Torch on' : 'Torch off');
   }
 
   async function flipCamera(){
     const cams = await listCameras();
     if(!cams.length) return;
-    // rotate through devices
-    const idx = cams.findIndex(c=>c.deviceId===state.currentDeviceId);
-    const next = cams[(idx+1) % cams.length];
-    state.currentDeviceId = next.deviceId;
-    // restart scanning with selected device
-    const wasZX = state.usingZXing;
-    stop();
-    if(wasZX || !('BarcodeDetector' in window)){
-      await startZXing();
-    }else{
-      await startCamera('environment', state.currentDeviceId);
-      await startNativeLoop();
+    const idx = cams.findIndex(c => c.deviceId === S.currentDeviceId);
+    const next = cams[(idx + 1) % cams.length];
+    S.currentDeviceId = next.deviceId;
+    await start().catch(()=>{});
+  }
+
+  async function start(){
+    try{
+      await startCamera();
+
+      if('BarcodeDetector' in window){
+        const formats = ['code_128','code_39','ean_13','ean_8','upc_a','upc_e','itf','codabar','qr_code','pdf417','aztec','data_matrix'];
+        S.detector = new window.BarcodeDetector({formats});
+        S.running = true; $start.disabled = true;
+        setStatus('Scanning…');
+        const loop = async ()=>{
+          if(!S.running) return;
+          try{
+            const codes = await S.detector.detect($video);
+            if(codes?.length){
+              for(const c of codes){
+                const v = String(c.rawValue||'').trim();
+                if(v) window.__RBSCAN_BUMP__(v);
+              }
+            }
+          }catch{}
+          requestAnimationFrame(loop);
+        };
+        loop();
+      }else{
+        S.usingZXing = true; $start.disabled = true;
+        setStatus('Scanning with ZXing…');
+        const { BrowserMultiFormatReader } = window.ZXingBrowser || window.ZXing;
+        const reader = new BrowserMultiFormatReader();
+        S._reader = reader;
+        reader.decodeFromVideoDevice(S.currentDeviceId, $video, (res)=>{
+          const txt = res?.getText ? String(res.getText()).trim() : '';
+          if(txt) window.__RBSCAN_BUMP__(txt);
+        });
+      }
+    }catch(e){
+      // status already set; keep Start enabled for retry
     }
   }
 
-  // Events
+  function stop(){
+    S.running = false;
+    if(S._reader){ try{ S._reader.reset(); }catch{} S._reader = null; }
+    stopCamera();
+    $start.disabled = false;
+    setStatus('Stopped.');
+  }
+
+  // Wire buttons
   $start.addEventListener('click', start);
   $stop.addEventListener('click', stop);
   $flip.addEventListener('click', flipCamera);
   $torch.addEventListener('click', toggleTorch);
-  $addManual.addEventListener('click', ()=>{
-    const v = $manual.value.trim();
-    if(!v) return;
-    bump(v,1);
-    setStatus(`Added manually: ${v}`);
-    $manual.value='';
-    $manual.focus();
-  });
-  $manual.addEventListener('keydown', e=>{
-    if(e.key==='Enter'){ e.preventDefault(); $addManual.click(); }
-  });
-  $copy.addEventListener('click', copyForExcel);
-  $csv.addEventListener('click', downloadCSV);
-  $clear.addEventListener('click', clearToday);
 
-  // Init
-  load();
-
-  // iOS quirk: ensure video resumes after visibility changes
+  // Keep video alive on resume
   document.addEventListener('visibilitychange', ()=>{
-    if(document.visibilityState==='visible' && state.stream && $video.paused){
+    if(document.visibilityState==='visible' && S.stream && $video.paused){
       $video.play().catch(()=>{});
     }
   });
