@@ -1,45 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="viewport-fit=cover,width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>ranvexsi barcode scanner</title>
+<link rel="manifest" href='data:application/manifest+json,{"name":"ranvexsi barcode scanner","short_name":"RBS","start_url":".","display":"standalone","background_color":"#0f1220","theme_color":"#5e7bff"}'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+:root{
+  --bg:#0f1220; --card:#171b2e; --ink:#eaf0ff; --muted:#a8b2d1; --line:#262c46; --accent:#5e7bff;
+  --safe-top: env(safe-area-inset-top,0px);
+  --safe-bottom: env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family: system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+}
+header{
+  position:sticky;top:0;z-index:10;background:linear-gradient(180deg,#121633,rgba(18,22,51,.7));
+  padding: calc(8px + var(--safe-top)) 14px 10px; border-bottom:1px solid var(--line);
+  display:flex; align-items:center; gap:10px; justify-content:space-between;
+}
+h1{font-size:16px;margin:0;font-weight:700;letter-spacing:.2px}
+.badge{font-size:11px;color:#cfd7ff;opacity:.85}
+.wrap{padding:14px;display:flex;flex-direction:column;gap:12px}
+
+/* Horizontal camera on top */
+.camera-card{
+  background:var(--card); border:1px solid var(--line); border-radius:14px; overflow:hidden;
+}
+.video-wrap{position:relative;background:#000}
+video{
+  width:100%;
+  height:42vh;                 /* tall enough to be useful */
+  max-height:380px;            /* cap on huge phones */
+  object-fit:cover;            /* fill horizontally like landscape */
+  background:#000;
+}
+.scan-frame{
+  position:absolute;left:50%;top:50%;
+  width:min(80vw,520px); height:140px;          /* wide, short frame for 1D codes */
+  transform:translate(-50%,-50%);
+  border:2px solid rgba(94,123,255,.9); border-radius:12px;
+  box-shadow:0 0 0 9999px rgba(0,0,0,.35) inset; pointer-events:none;
+}
+
+/* Big thumb buttons directly under camera */
+.cam-toolbar{
+  display:flex; gap:10px; padding:12px; border-top:1px solid var(--line); background:#141836; flex-wrap:wrap; align-items:center;
+}
+.btn{
+  appearance:none;border:1px solid transparent;background:var(--accent);color:#fff;
+  padding:14px 16px;border-radius:12px;font-weight:700;font-size:16px;cursor:pointer;flex:1 1 auto;min-width:140px;text-align:center
+}
+.btn.ghost{background:transparent;border-color:#2f3761;color:#cbd3ff}
+.btn.warn{background:#b54747}
+.btn:disabled{opacity:.5;pointer-events:none}
+.range{display:flex;align-items:center;gap:8px;margin-left:auto}
+.range input[type="range"]{width:160px}
+
+/* Controls below */
+.card{background:var(--card); border:1px solid var(--line); border-radius:14px; overflow:hidden;}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;padding:10px;border-bottom:1px solid var(--line);background:#141836}
+.small{font-size:12px;color:#aeb7d9}
+.kv{display:flex;gap:6px;align-items:center}
+.kv code{background:#0f1330;border:1px solid #2b3261;border-radius:6px;padding:3px 6px;color:#cbd3ff}
+
+.table-wrap{max-height:36vh;overflow:auto;border-top:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:10px;border-bottom:1px solid var(--line)}
+th{text-align:left;color:#cfd6ff;background:#141836;position:sticky;top:0;z-index:1}
+td.qty input{width:70px;text-align:center}
+
+.input{
+  background:#0f1330;border:1px solid #2b3261;border-radius:10px;padding:10px 12px;color:var(--ink);
+}
+.status{padding:10px;font-size:12px;color:#c5ccef;border-top:1px dashed var(--line)}
+footer{height:calc(12px + var(--safe-bottom))}
+
+/* Copy fallback area */
+#copyArea{display:none;padding:10px;border-top:1px solid var(--line);background:#0f1330}
+#listText{width:100%;height:120px;background:#0b1030;color:#eaf0ff;border:1px solid #2b3261;border-radius:10px;padding:10px;font-family:ui-monospace,Menlo,Consolas,monospace}
+
+/* Bubble for last scan */
+#lastCodeBubble{
+  position:fixed; left:50%; top:8px; transform:translateX(-50%);
+  background:rgba(20,24,54,.95); color:#eaf0ff; padding:8px 12px;
+  border:1px solid #2b3261; border-radius:10px; font:600 14px/1 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+  z-index:9999; opacity:0; transition:opacity .15s ease;
+}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>ranvexsi barcode scanner</h1>
+    <div class="badge">Scan. Count. Copy. Today only.</div>
+  </div>
+  <div class="kv small"><span>Today:</span><code id="today"></code></div>
+</header>
+
+<div class="wrap">
+
+  <!-- Horizontal camera on top -->
+  <section class="camera-card">
+    <div class="video-wrap" id="videoWrap">
+      <video id="video" playsinline muted></video>
+      <div class="scan-frame"></div>
+      <canvas id="work" width="640" height="480" style="display:none"></canvas>
+    </div>
+    <div class="cam-toolbar">
+      <button id="startBtn" class="btn">Start</button>
+      <button id="stopBtn" class="btn ghost" disabled>Stop</button>
+      <button id="flipBtn" class="btn ghost" disabled>Flip</button>
+      <button id="torchBtn" class="btn ghost" disabled>Torch</button>
+      <div class="range small">
+        <span>Zoom</span><input type="range" id="zoom" min="1" max="6" value="1" step="0.1">
+      </div>
+    </div>
+    <div class="status" id="status">Idle. No camera yet.</div>
+  </section>
+
+  <!-- Controls & list -->
+  <section class="card">
+    <div class="toolbar">
+      <input id="manualInput" class="input" placeholder="Enter barcode manually" inputmode="numeric" autocomplete="off" style="flex:1 1 180px">
+      <button id="addManualBtn" class="btn ghost" style="flex:0 0 auto;padding:10px 12px;font-size:14px">Add</button>
+
+      <button id="copyLastBtn" class="btn" style="flex:0 0 auto">Copy last code</button>
+      <button id="copyBtn" class="btn ghost" style="flex:0 0 auto">Copy list</button>
+      <button id="toggleListBtn" class="btn ghost" style="flex:0 0 auto">Show list</button>
+      <button id="csvBtn" class="btn ghost" style="flex:0 0 auto">Download CSV</button>
+      <button id="clearBtn" class="btn warn" style="flex:0 0 auto">Clear today</button>
+      <span class="small" id="totals" style="margin-left:auto">0 items, 0 scans</span>
+    </div>
+
+    <div id="copyArea">
+      <div class="small" style="margin-bottom:6px">If copy is blocked, long-press and Copy manually:</div>
+      <textarea id="listText" readonly></textarea>
+    </div>
+
+    <div class="table-wrap">
+      <table id="table">
+        <thead><tr><th style="width:60%">Barcode</th><th style="width:20%">Qty</th><th style="width:20%">Actions</th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <div class="status small">Pastes cleanly into Excel or Sheets. Last scanned code also shows in the top bubble and status line.</div>
+  </section>
+
+  <footer></footer>
+</div>
+
+<!-- Last scan bubble -->
+<div id="lastCodeBubble">—</div>
+
+<!-- ZXing fallback -->
+<script src="https://unpkg.com/@zxing/browser@0.1.5/umd/index.min.js"></script>
+
 <script>
-/* ===== FIXED detection/scan module ===== */
+/* ===== storage & table ===== */
 (function(){
   const $ = id => document.getElementById(id);
-  const video = $('video');
+  const $today=$('today'), $tbody=$('tbody'), $totals=$('totals'), $status=$('status'), $listText=$('listText'), $bubble=$('lastCodeBubble');
+
+  const S = window.__RBSCAN_STATE__ = window.__RBSCAN_STATE__ || {
+    counts:{}, totalScans:0, scanCooldowns:new Map(), lastCode:''
+  };
+
+  function todayKey(){ return new Date().toISOString().slice(0,10); }
+  function storeKey(){ return 'rbscan:' + todayKey(); }
+  function fmtToday(){ return new Date().toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'}); }
+  function setStatus(t){ $status.textContent = t; }
+
+  function load(){
+    const raw = localStorage.getItem(storeKey());
+    if(raw){ try{ const o=JSON.parse(raw); S.counts=o.counts||{}; S.totalScans=o.totalScans||0; }catch{} }
+    $today.textContent = fmtToday();
+    render();
+  }
+  function save(){ localStorage.setItem(storeKey(), JSON.stringify({counts:S.counts,totalScans:S.totalScans})); }
+
+  function acceptOnce(code){
+    const now=Date.now(), last=S.scanCooldowns.get(code)||0;
+    if(now-last<650) return false; S.scanCooldowns.set(code,now); return true;
+  }
+
+  function flashBubble(txt){
+    $bubble.textContent = 'Scanned: ' + txt;
+    $bubble.style.opacity = '1';
+    clearTimeout(flashBubble._t);
+    flashBubble._t = setTimeout(()=>{ $bubble.style.opacity='0'; }, 1200);
+  }
+
+  function bump(code, delta=1){
+    if(!code) return;
+    S.counts[code]=(S.counts[code]||0)+delta;
+    if(S.counts[code]<=0) delete S.counts[code];
+    if(delta>0) S.totalScans+=delta;
+    S.lastCode = code;
+    save(); render(); setStatus('Scanned: '+code);
+    flashBubble(code);
+  }
+
+  function render(){
+    const entries = Object.entries(S.counts).sort((a,b)=>a[0].localeCompare(b[0]));
+    $tbody.innerHTML='';
+    for(const [code,qty] of entries){
+      const tr=document.createElement('tr');
+
+      const tdC=document.createElement('td'); tdC.textContent=code;
+
+      const tdQ=document.createElement('td'); tdQ.className='qty';
+      const inp=document.createElement('input'); inp.type='number'; inp.min='0'; inp.value=qty;
+      inp.addEventListener('change',()=>{
+        const v=Math.max(0, Number(inp.value|0));
+        const prev=S.counts[code]||0;
+        S.counts[code]=v; S.totalScans += Math.max(0, v-prev);
+        if(v===0) delete S.counts[code];
+        save(); render();
+      });
+      tdQ.appendChild(inp);
+
+      const tdA=document.createElement('td');
+      const minus=document.createElement('button'); minus.className='btn ghost'; minus.style.padding='6px 10px'; minus.style.fontSize='13px'; minus.textContent='−1';
+      minus.onclick=()=>bump(code,-1);
+      const del=document.createElement('button'); del.className='btn warn'; del.style.padding='6px 10px'; del.style.fontSize='13px'; del.textContent='Delete';
+      del.onclick=()=>{ delete S.counts[code]; save(); render(); };
+      tdA.append(minus,del);
+
+      tr.append(tdC,tdQ,tdA); $tbody.appendChild(tr);
+    }
+    const totalItems=entries.length, totalQty=entries.reduce((s,[,q])=>s+q,0);
+    $totals.textContent = `${totalItems} items, ${totalQty} total`;
+
+    // keep TSV in textarea ready
+    const rows = entries.map(([c,q])=>`${c}\t${q}`).join('\n');
+    $listText.value = rows;
+  }
+
+  // Copy helpers that actually… copy
+  async function copyText(str){
+    try{
+      await navigator.clipboard.writeText(str);
+      setStatus('Copied to clipboard.');
+      return true;
+    }catch{
+      // fallback: show textarea, select all so user can long-press → Copy
+      const area = document.getElementById('copyArea');
+      area.style.display = 'block';
+      $listText.value = str;
+      $listText.focus();
+      $listText.select();
+      setStatus('Select all and Copy (clipboard blocked).');
+      return false;
+    }
+  }
+
+  // Buttons
+  $('copyBtn').onclick=()=>copyText($listText.value);
+  $('copyLastBtn').onclick=()=>copyText(String(S.lastCode||''));
+  $('toggleListBtn').onclick=()=>{
+    const area=document.getElementById('copyArea');
+    area.style.display = area.style.display==='block' ? 'none' : 'block';
+  };
+  $('csvBtn').onclick=()=>{
+    const date=todayKey(), lines=[['Date','Barcode','Qty']];
+    for(const [c,q] of Object.entries(S.counts).sort((a,b)=>a[0].localeCompare(b[0]))){ lines.push([date,c,String(q)]); }
+    const csv=lines.map(r=>r.map(v=>/([",\n])/.test(v)?`"${v.replace(/"/g,'""')}"`:v).join(',')).join('\n');
+    const blob=new Blob([csv],{type:'text/csv'}), url=URL.createObjectURL(blob);
+    const a=document.createElement('a'); a.href=url; a.download=`rbscan_${date}.csv`; a.click(); setTimeout(()=>URL.revokeObjectURL(url),1500);
+  };
+  $('clearBtn').onclick=()=>{ if(confirm('Clear all scans for today?')){ S.counts={}; S.totalScans=0; S.lastCode=''; save(); render(); setStatus('Cleared today.'); } };
+
+  const $manual=$('manualInput');
+  $('addManualBtn').onclick=()=>{ const v=$manual.value.trim(); if(!v) return; bump(v,1); $manual.value=''; $manual.focus(); };
+  $manual.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); $('addManualBtn').click(); } });
+
+  // Expose the hook the detector uses
+  window.__RBSCAN_BUMP__ = (code)=>{ const v=String(code||'').trim(); if(!v) return; if(!acceptOnce(v)) return; bump(v,1); };
+  window.__RBSCAN_SET_STATUS__ = setStatus;
+
+  load();
+})();
+</script>
+
+<script>
+/* ===== camera + detection (horizontal-first, robust) ===== */
+(function(){
+  const $ = id => document.getElementById(id);
+  const video=$('video'), work=$('work'), ctx=work.getContext('2d');
   const startBtn=$('startBtn'), stopBtn=$('stopBtn'), flipBtn=$('flipBtn'), torchBtn=$('torchBtn'), zoomRange=$('zoom');
   const setStatus = window.__RBSCAN_SET_STATUS__ || function(){};
 
-  // add a visible bubble so you KNOW it fired
-  let bubble = document.getElementById('lastCodeBubble');
-  if(!bubble){
-    bubble = document.createElement('div');
-    bubble.id = 'lastCodeBubble';
-    Object.assign(bubble.style,{
-      position:'fixed', left:'50%', top:'8px', transform:'translateX(-50%)',
-      background:'rgba(20,24,54,.95)', color:'#eaf0ff', padding:'8px 12px',
-      border:'1px solid #2b3261', borderRadius:'10px', font:'600 14px/1 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif',
-      zIndex:9999, opacity:0, transition:'opacity .15s ease'
-    });
-    bubble.textContent = '—';
-    document.body.appendChild(bubble);
-  }
-  function flashBubble(txt){
-    bubble.textContent = 'Scanned: ' + txt;
-    bubble.style.opacity = '1';
-    clearTimeout(flashBubble._t);
-    flashBubble._t = setTimeout(()=>bubble.style.opacity = '0', 1200);
-  }
-  function beep(){
-    try{
-      const ctx = new (window.AudioContext||window.webkitAudioContext)();
-      const o = ctx.createOscillator(); const g = ctx.createGain();
-      o.type='square'; o.frequency.value=880; o.connect(g); g.connect(ctx.destination);
-      g.gain.setValueAtTime(0.0001, ctx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime+0.01);
-      g.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime+0.12);
-      o.start(); o.stop(ctx.currentTime+0.14);
-    }catch{}
-  }
-
   const S = window.__RBSCAN_STATE__ = window.__RBSCAN_STATE__ || {};
   Object.assign(S,{stream:null, currentDeviceId:null, running:false, detector:null, usingZX:false, _reader:null});
+
+  function beep(){
+    try{
+      const c = new (window.AudioContext||window.webkitAudioContext)();
+      const o = c.createOscillator(); const g = c.createGain();
+      o.type='square'; o.frequency.value=880; o.connect(g); g.connect(c.destination);
+      g.gain.setValueAtTime(0.0001, c.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.2, c.currentTime+0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, c.currentTime+0.12);
+      o.start(); o.stop(c.currentTime+0.14);
+    }catch{}
+  }
 
   async function listCameras(){
     const devs = await navigator.mediaDevices.enumerateDevices();
@@ -48,20 +319,19 @@
 
   async function startCamera(){
     if(S.stream) stopCamera();
-    const tries = [
-      [{video:{facingMode:{exact:'environment'}, width:{ideal:1920}, height:{ideal:1080}}, audio:false}, 'env1080'],
-      [{video:{facingMode:'environment', width:{ideal:1280}, height:{ideal:720}}, audio:false}, 'env720'],
-      [{video:{facingMode:'environment'}, audio:false}, 'envAny'],
+    const attempts = [
+      [{video:{facingMode:{exact:'environment'}, width:{ideal:1920}, height:{ideal:1080}}, audio:false}, 'env 1080p'],
+      [{video:{facingMode:'environment', width:{ideal:1280}, height:{ideal:720}}, audio:false}, 'env 720p'],
+      [{video:{facingMode:'environment'}, audio:false}, 'env any'],
       [{video:true, audio:false}, 'any']
     ];
-    if(S.currentDeviceId){
-      tries.unshift([{video:{deviceId:{exact:S.currentDeviceId}}, audio:false}, 'selected']);
-    }
+    if(S.currentDeviceId) attempts.unshift([{video:{deviceId:{exact:S.currentDeviceId}}, audio:false}, 'selected device']);
+
     let lastErr=null;
-    for(const [c] of tries){
+    for(const [c,label] of attempts){
       try{
-        const stream = await navigator.mediaDevices.getUserMedia(c);
-        S.stream = stream; video.srcObject = stream; await video.play();
+        const stream=await navigator.mediaDevices.getUserMedia(c);
+        S.stream=stream; video.srcObject=stream; await video.play();
         stopBtn.disabled=false;
         const cams=await listCameras(); flipBtn.disabled=cams.length<2;
 
@@ -82,8 +352,9 @@
         return;
       }catch(e){ lastErr=e; }
     }
-    setStatus('Failed to start camera. Use HTTPS and allow Camera.');
-    throw lastErr||new Error('getUserMedia failed');
+    const name = lastErr && (lastErr.name || lastErr.cause?.name);
+    setStatus(`Failed to start camera: ${name||'Unknown'}. Use HTTPS and allow Camera.`);
+    throw lastErr||new Error('gUM failed');
   }
 
   function stopCamera(){
@@ -92,9 +363,9 @@
   }
 
   async function flipCamera(){
-    const cams = await listCameras(); if(!cams.length) return;
-    const idx = cams.findIndex(c=>c.deviceId===S.currentDeviceId);
-    const next = cams[(idx+1)%cams.length]; S.currentDeviceId = next.deviceId;
+    const cams=await listCameras(); if(!cams.length) return;
+    const idx=cams.findIndex(c=>c.deviceId===S.currentDeviceId);
+    const next=cams[(idx+1)%cams.length]; S.currentDeviceId=next.deviceId;
     await start().catch(()=>{});
   }
 
@@ -107,53 +378,52 @@
     setStatus(!cur?'Torch on':'Torch off');
   }
 
-  // Minimal, reliable detection loop:
-  // 1) Try detect(video) directly
-  // 2) If empty for a bit, try a 720p canvas snapshot
-  let rafId=null, framesSinceHit=0;
+  // Grab a downscaled, center-cropped horizontal ROI to help 1D barcodes
+  function grabROI(){
+    if(video.videoWidth===0||video.videoHeight===0) return null;
+    const vw=video.videoWidth, vh=video.videoHeight;
+    const targetH = 480;
+    const scale = targetH / vh;
+    const cw = Math.floor(vw * scale), ch = Math.floor(vh * scale);
+    work.width = cw; work.height = ch;
+    ctx.drawImage(video, 0, 0, cw, ch);
+
+    const rh = Math.floor(ch * 0.28);
+    const rw = Math.floor(cw * 0.9);
+    const rx = Math.floor((cw - rw)/2), ry = Math.floor((ch - rh)/2);
+    const img = ctx.getImageData(rx, ry, rw, rh);
+
+    // grayscale + slight contrast
+    const d=img.data; for(let i=0;i<d.length;i+=4){
+      const y = (d[i]*0.2126 + d[i+1]*0.7152 + d[i+2]*0.0722);
+      const yy = Math.min(255, Math.max(0, (y-128)*1.25 + 128));
+      d[i]=d[i+1]=d[i+2]=yy;
+    }
+    ctx.putImageData(img, rx, ry);
+    return ctx.getImageData(rx, ry, rw, rh);
+  }
+
+  let rafId=null;
   async function nativeLoop(){
     if(!S.detector) return;
-    S.running = true; startBtn.disabled = true;
-    setStatus('Scanning…');
-    const work = document.getElementById('work'); const ctx = work.getContext('2d');
-    const loop = async ()=>{
+    S.running=true; startBtn.disabled=true; setStatus('Scanning…');
+    const loop=async()=>{
       if(!S.running) return;
       try{
+        // Try direct video first
         let codes = await S.detector.detect(video);
         if(!codes || codes.length===0){
-          framesSinceHit++;
-          // fallback: draw downscaled frame and detect that
-          if(video.videoWidth && video.videoHeight){
-            const targetH = 720, scale = targetH / video.videoHeight;
-            work.width = Math.floor(video.videoWidth * scale);
-            work.height = Math.floor(video.videoHeight * scale);
-            ctx.drawImage(video, 0, 0, work.width, work.height);
-            // thin horizontal ROI for 1D barcodes
-            const rh = Math.floor(work.height*0.28), rw = Math.floor(work.width*0.9);
-            const rx = Math.floor((work.width-rw)/2), ry = Math.floor((work.height-rh)/2);
-            const roi = ctx.getImageData(rx, ry, rw, rh);
-            // light contrast boost
-            const d=roi.data; for(let i=0;i<d.length;i+=4){
-              const y = (d[i]*0.2126 + d[i+1]*0.7152 + d[i+2]*0.0722);
-              const yy = Math.min(255, Math.max(0, (y-128)*1.2 + 128));
-              d[i]=d[i+1]=d[i+2]=yy;
-            }
-            ctx.putImageData(roi, rx, ry);
-            const bmp = await createImageBitmap(work);
+          const img = grabROI();
+          if(img){
+            const bmp = await createImageBitmap(img);
             codes = await S.detector.detect(bmp);
             bmp.close?.();
           }
-        }else{
-          framesSinceHit = 0;
         }
-
         if(codes && codes.length){
           for(const c of codes){
-            const txt = String(c.rawValue||'').trim();
-            if(!txt) continue;
-            window.__RBSCAN_BUMP__?.(txt);
-            flashBubble(txt);
-            beep();
+            const v=String(c.rawValue||'').trim();
+            if(v){ window.__RBSCAN_BUMP__(v); beep(); }
           }
         }
       }catch{}
@@ -161,26 +431,24 @@
     };
     loop();
   }
-
   function stopNativeLoop(){
     S.running=false; if(rafId) cancelAnimationFrame(rafId), rafId=null; startBtn.disabled=false; setStatus('Stopped.');
   }
 
   async function startZXing(){
-    S.usingZX = true; startBtn.disabled=true; setStatus('Scanning with ZXing…');
-    const { BrowserMultiFormatReader } = window.ZXingBrowser || window.ZXing;
+    S.usingZX=true; startBtn.disabled=true; setStatus('Scanning with ZXing…');
+    const { BrowserMultiFormatReader, DecodeHintType } = window.ZXingBrowser || window.ZXing;
     const reader = new BrowserMultiFormatReader();
-    S._reader = reader;
+    if(window.ZXing?.DecodeHintType){
+      const hints = new Map(); hints.set(window.ZXing.DecodeHintType.TRY_HARDER, true); reader.setHints(hints);
+    }
+    S._reader=reader;
     reader.decodeFromVideoDevice(S.currentDeviceId, video, (res)=>{
       const txt = res?.text ?? (res?.getText ? res.getText() : '');
       const value = String(txt||'').trim();
-      if(value){
-        window.__RBSCAN_BUMP__?.(value);
-        flashBubble(value);
-        beep();
-      }
+      if(value){ window.__RBSCAN_BUMP__(value); beep(); }
     });
-    stopBtn.disabled = false;
+    stopBtn.disabled=false;
   }
 
   async function start(){
@@ -200,7 +468,7 @@
   function stop(){
     if(S.usingZX){
       if(S._reader){ try{ S._reader.reset(); }catch{} S._reader=null; }
-      S.usingZX=false; startBtn.disabled=false;
+      S.usingZX=false; startBtn.disabled=false; setStatus('Stopped.');
     }
     stopNativeLoop(); stopCamera();
   }
@@ -211,9 +479,34 @@
   flipBtn.onclick=()=>flipCamera();
   torchBtn.onclick=()=>toggleTorch();
 
-  // keep video alive when resuming
+  // Keep video alive on resume
   document.addEventListener('visibilitychange', ()=>{
     if(document.visibilityState==='visible' && S.stream && video.paused){ video.play().catch(()=>{}); }
   });
+
+  // Pinch-to-zoom maps to slider when supported
+  const videoWrap = document.getElementById('videoWrap');
+  let pinchStartDist=null, pinchStartZoom=null;
+  videoWrap.addEventListener('touchstart', e=>{
+    if(e.touches.length===2 && !zoomRange.disabled){
+      const dx=e.touches[0].clientX - e.touches[1].clientX;
+      const dy=e.touches[0].clientY - e.touches[1].clientY;
+      pinchStartDist=Math.hypot(dx,dy);
+      pinchStartZoom=Number(zoomRange.value)||1;
+    }
+  }, {passive:true});
+  videoWrap.addEventListener('touchmove', e=>{
+    if(e.touches.length===2 && pinchStartDist && !zoomRange.disabled){
+      const dx=e.touches[0].clientX - e.touches[1].clientX;
+      const dy=e.touches[0].clientY - e.touches[1].clientY;
+      const dist=Math.hypot(dx,dy);
+      const factor = dist/pinchStartDist;
+      const target = Math.min(Number(zoomRange.max), Math.max(Number(zoomRange.min), pinchStartZoom*factor));
+      zoomRange.value = target;
+      try{ const track=S.stream?.getVideoTracks?.()[0]; track?.applyConstraints?.({advanced:[{zoom:Number(target)}]}); }catch{}
+    }
+  }, {passive:true});
 })();
 </script>
+</body>
+</html>
