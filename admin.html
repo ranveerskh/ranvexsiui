@@ -3,76 +3,105 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>RANVEXSI UI — Admin</title>
+<title>RANVEXSI UI — Supabase</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
   :root{
     --bg:#eef3fb;
-    --bg2:#e7edf8;
+    --bg-2:#e7edf8;
     --surface:#ffffff;
-    --surface2:#f7faff;
-    --surface3:#eef5ff;
+    --surface-2:#f7faff;
+    --surface-3:#eef5ff;
     --ink:#111827;
     --muted:#6b7280;
-    --muted2:#94a3b8;
+    --muted-2:#94a3b8;
     --line:rgba(15,23,42,.10);
-    --line2:rgba(15,23,42,.16);
+    --line-strong:rgba(15,23,42,.16);
     --accent:#2563eb;
-    --accent2:#7c3aed;
+    --accent-2:#7c3aed;
+    --accent-soft:rgba(37,99,235,.10);
     --green:#16a34a;
     --red:#dc2626;
-    --yellow:#d97706;
-    --blueSoft:rgba(37,99,235,.10);
-    --greenSoft:rgba(22,163,74,.10);
-    --redSoft:rgba(220,38,38,.10);
-    --yellowSoft:rgba(217,119,6,.12);
-    --shadow:0 12px 30px rgba(15,23,42,.08);
-    --shadow2:0 24px 70px rgba(15,23,42,.16);
-    --radius:22px;
-    --max:1440px;
+    --gold:#d97706;
+
+    --shadow-sm:0 6px 16px rgba(15,23,42,.06);
+    --shadow-md:0 14px 34px rgba(15,23,42,.10);
+    --shadow-lg:0 24px 60px rgba(15,23,42,.14);
+
+    --radius:18px;
+    --radius-sm:14px;
+    --max:1360px;
+  }
+
+  body.dark{
+    --bg:#080d19;
+    --bg-2:#0c1222;
+    --surface:#111827;
+    --surface-2:#151f33;
+    --surface-3:#1b2942;
+    --ink:#eef5ff;
+    --muted:#a9b7d0;
+    --muted-2:#7486a5;
+    --line:rgba(255,255,255,.10);
+    --line-strong:rgba(255,255,255,.16);
+    --accent:#60a5fa;
+    --accent-2:#a78bfa;
+    --accent-soft:rgba(96,165,250,.12);
+    --shadow-sm:0 8px 18px rgba(0,0,0,.22);
+    --shadow-md:0 18px 42px rgba(0,0,0,.32);
+    --shadow-lg:0 30px 70px rgba(0,0,0,.42);
   }
 
   *{box-sizing:border-box;margin:0;padding:0}
-  html{min-height:100%;scroll-behavior:smooth}
+  html{height:100%;scroll-behavior:smooth}
   body{
-    min-height:100vh;
+    min-height:100%;
     font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
     color:var(--ink);
     background:
-      radial-gradient(circle at top left, rgba(37,99,235,.14), transparent 35%),
-      radial-gradient(circle at top right, rgba(124,58,237,.12), transparent 32%),
-      linear-gradient(180deg,var(--bg),var(--bg2));
+      radial-gradient(circle at top left, rgba(37,99,235,.12), transparent 34%),
+      radial-gradient(circle at top right, rgba(124,58,237,.10), transparent 32%),
+      linear-gradient(180deg,var(--bg),var(--bg-2));
+    overflow-x:hidden;
   }
 
-  button,input,textarea,select{font:inherit}
-  button{cursor:pointer;-webkit-tap-highlight-color:transparent}
-  textarea{resize:vertical}
+  button,input,select,textarea{font:inherit}
+  button{-webkit-tap-highlight-color:transparent}
   a{color:inherit}
-  .hidden{display:none!important}
+  textarea{resize:vertical}
 
-  /* Header */
-  .topbar{
+  /* =========================
+     Header
+  ========================= */
+  .app-header{
     position:sticky;
     top:0;
     z-index:50;
-    background:rgba(255,255,255,.84);
-    backdrop-filter:blur(24px);
-    -webkit-backdrop-filter:blur(24px);
     border-bottom:1px solid var(--line);
-    box-shadow:0 8px 28px rgba(15,23,42,.06);
+    background:rgba(255,255,255,.82);
+    backdrop-filter:blur(22px);
+    -webkit-backdrop-filter:blur(22px);
+    box-shadow:0 8px 30px rgba(15,23,42,.06);
   }
 
-  .top-inner{
+  body.dark .app-header{
+    background:rgba(17,24,39,.82);
+    box-shadow:0 8px 34px rgba(0,0,0,.22);
+  }
+
+  .header-inner{
     width:min(var(--max),100%);
     margin:0 auto;
-    min-height:70px;
-    padding:12px 22px;
+    min-height:66px;
+    padding:10px 20px;
     display:grid;
-    grid-template-columns:auto 1fr auto;
+    grid-template-columns:auto minmax(280px,1fr) auto;
     align-items:center;
     gap:16px;
   }
@@ -81,87 +110,125 @@
     display:flex;
     align-items:center;
     gap:12px;
-    min-width:230px;
+    min-width:220px;
   }
 
+  .backbtn{
+    width:38px;
+    height:38px;
+    border:1px solid var(--line);
+    border-radius:13px;
+    background:var(--surface);
+    color:var(--ink);
+    cursor:pointer;
+    box-shadow:var(--shadow-sm);
+    display:grid;
+    place-items:center;
+    font-size:18px;
+    transition:.18s ease;
+  }
+
+  .backbtn:hover{
+    transform:translateY(-1px);
+    box-shadow:var(--shadow-md);
+    border-color:rgba(37,99,235,.28);
+  }
+
+  .backbtn.hidden{display:none}
+
   .logo{
-    width:46px;
-    height:46px;
-    border-radius:17px;
+    width:42px;
+    height:42px;
+    border-radius:15px;
     display:grid;
     place-items:center;
     color:white;
-    font-weight:950;
-    letter-spacing:-.06em;
-    background:linear-gradient(135deg,var(--accent),var(--accent2));
-    box-shadow:0 14px 30px rgba(37,99,235,.25);
+    font-weight:900;
+    letter-spacing:-.7px;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    box-shadow:0 14px 34px rgba(37,99,235,.28);
   }
 
-  .brand h1{
-    font-size:1.08rem;
-    line-height:1.04;
-    letter-spacing:-.045em;
-    font-weight:950;
+  .brand-text{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    line-height:1.05;
   }
 
-  .brand p{
-    margin-top:3px;
+  .brand-title{
+    font-size:1.03rem;
+    font-weight:900;
+    letter-spacing:-.04em;
+  }
+
+  .brand-sub{
+    font-size:.72rem;
     color:var(--muted);
-    font-size:.75rem;
-    font-weight:750;
+    font-weight:700;
   }
 
-  .admin-search{
+  .search-wrap{
     position:relative;
-    max-width:540px;
     width:100%;
+    max-width:660px;
     justify-self:center;
   }
 
-  .admin-search input{
-    width:100%;
-    min-height:42px;
-    border:1px solid var(--line);
-    border-radius:15px;
-    background:rgba(255,255,255,.86);
-    color:var(--ink);
-    outline:none;
-    padding:0 14px 0 42px;
-    box-shadow:0 6px 16px rgba(15,23,42,.05);
-    font-size:.9rem;
-    font-weight:750;
-  }
-
-  .admin-search span{
+  .search-wrap svg{
     position:absolute;
     left:14px;
     top:50%;
     transform:translateY(-50%);
     color:var(--muted);
-    font-weight:950;
+    pointer-events:none;
   }
 
-  .top-actions{
+  .search-wrap input{
+    width:100%;
+    height:42px;
+    border:1px solid var(--line);
+    background:rgba(255,255,255,.88);
+    color:var(--ink);
+    outline:none;
+    border-radius:15px;
+    padding:0 16px 0 44px;
+    font-size:.93rem;
+    font-weight:650;
+    box-shadow:var(--shadow-sm);
+    transition:.18s ease;
+  }
+
+  body.dark .search-wrap input{
+    background:rgba(15,23,42,.74);
+  }
+
+  .search-wrap input:focus{
+    border-color:rgba(37,99,235,.55);
+    box-shadow:0 0 0 4px var(--accent-soft), var(--shadow-sm);
+  }
+
+  .header-actions{
     display:flex;
     align-items:center;
     justify-content:flex-end;
-    gap:9px;
-    flex-wrap:wrap;
+    gap:8px;
+    min-width:290px;
   }
 
   .status-pill{
-    height:38px;
-    display:inline-flex;
+    height:36px;
+    display:flex;
     align-items:center;
     gap:8px;
     border:1px solid var(--line);
     border-radius:999px;
     background:var(--surface);
-    padding:0 12px;
+    padding:0 11px;
     color:var(--muted);
-    font-size:.78rem;
-    font-weight:900;
-    box-shadow:0 6px 16px rgba(15,23,42,.05);
+    font-weight:800;
+    font-size:.77rem;
+    box-shadow:var(--shadow-sm);
     white-space:nowrap;
   }
 
@@ -169,297 +236,615 @@
     width:8px;
     height:8px;
     border-radius:999px;
-    background:#94a3b8;
+    background:var(--muted-2);
   }
+
   .dot.ok{background:var(--green);box-shadow:0 0 0 4px rgba(22,163,74,.12)}
   .dot.bad{background:var(--red);box-shadow:0 0 0 4px rgba(220,38,38,.12)}
 
-  .btn{
-    min-height:38px;
+  .iconbtn{
+    width:36px;
+    height:36px;
     border:1px solid var(--line);
-    border-radius:14px;
+    border-radius:13px;
     background:var(--surface);
     color:var(--ink);
-    padding:0 13px;
-    font-size:.84rem;
-    font-weight:900;
-    box-shadow:0 6px 16px rgba(15,23,42,.05);
+    display:grid;
+    place-items:center;
+    cursor:pointer;
+    box-shadow:var(--shadow-sm);
     transition:.18s ease;
+    font-size:16px;
+  }
+
+  .iconbtn:hover{
+    transform:translateY(-1px);
+    box-shadow:var(--shadow-md);
+    border-color:rgba(37,99,235,.28);
+  }
+
+  .addtopbtn{
+    height:36px;
+    border:0;
+    border-radius:13px;
+    padding:0 13px;
     display:inline-flex;
     align-items:center;
-    justify-content:center;
-    gap:7px;
-    text-decoration:none;
-  }
-
-  .btn:hover{
-    transform:translateY(-1px);
-    box-shadow:var(--shadow);
-  }
-
-  .btn.primary{
-    border:0;
-    color:#fff;
-    background:linear-gradient(135deg,var(--accent),var(--accent2));
-    box-shadow:0 14px 28px rgba(37,99,235,.24);
-  }
-
-  .btn.green{
-    border:0;color:#fff;background:linear-gradient(135deg,#16a34a,#22c55e);
-  }
-
-  .btn.red{
-    border:0;color:#fff;background:linear-gradient(135deg,#dc2626,#f43f5e);
-  }
-
-  .btn.yellow{
-    border:0;color:#fff;background:linear-gradient(135deg,#d97706,#f59e0b);
-  }
-
-  .btn.small{
-    min-height:34px;
-    font-size:.78rem;
-    padding:0 10px;
-    border-radius:12px;
-  }
-
-  .btn:disabled{
-    opacity:.55;
-    cursor:not-allowed;
-    transform:none;
-  }
-
-  /* Login */
-  .login-wrap{
-    min-height:calc(100vh - 90px);
-    display:grid;
-    place-items:center;
-    padding:22px;
-  }
-
-  .login-card{
-    width:min(480px,100%);
-    border:1px solid var(--line);
-    border-radius:30px;
-    background:rgba(255,255,255,.84);
-    backdrop-filter:blur(22px);
-    box-shadow:var(--shadow2);
-    padding:26px;
-  }
-
-  .login-card .lock{
-    width:58px;
-    height:58px;
-    border-radius:21px;
-    display:grid;
-    place-items:center;
+    gap:6px;
+    cursor:pointer;
     color:white;
-    background:linear-gradient(135deg,var(--accent),var(--accent2));
-    box-shadow:0 16px 34px rgba(37,99,235,.24);
-    font-size:26px;
-    margin-bottom:14px;
-  }
-
-  .login-card h2{
-    font-size:1.62rem;
-    letter-spacing:-.06em;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    box-shadow:0 10px 22px rgba(37,99,235,.22);
+    font-size:.82rem;
     font-weight:950;
+    white-space:nowrap;
+    transition:.18s ease;
   }
 
-  .login-card p{
-    margin-top:8px;
+  .addtopbtn:hover{
+    transform:translateY(-1px);
+    box-shadow:0 14px 28px rgba(37,99,235,.28);
+  }
+
+  .steps-pill{
+    height:36px;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    border:1px solid var(--line);
+    border-radius:13px;
+    background:var(--surface);
+    padding:0 10px;
     color:var(--muted);
-    font-weight:700;
-    line-height:1.5;
-    font-size:.92rem;
+    font-weight:800;
+    font-size:.77rem;
+    box-shadow:var(--shadow-sm);
+    white-space:nowrap;
   }
 
-  /* Page */
+  /* =========================
+     Main
+  ========================= */
   .page{
     width:min(var(--max),100%);
     margin:0 auto;
-    padding:22px 22px 34px;
+    padding:20px;
   }
 
-  .hero{
+  .hero-row{
     display:grid;
     grid-template-columns:1fr auto;
-    gap:18px;
     align-items:end;
-    margin-bottom:16px;
-  }
-
-  .hero h2{
-    font-size:clamp(1.65rem,2.2vw,2.35rem);
-    font-weight:950;
-    letter-spacing:-.065em;
-    line-height:1.02;
-  }
-
-  .hero p{
-    margin-top:8px;
-    color:var(--muted);
-    font-weight:700;
-    line-height:1.45;
-    max-width:760px;
-  }
-
-  .stats{
-    display:grid;
-    grid-template-columns:repeat(5,minmax(120px,1fr));
-    gap:12px;
-    margin:12px 0 18px;
-  }
-
-  .stat{
-    border:1px solid var(--line);
-    border-radius:18px;
-    background:rgba(255,255,255,.76);
-    backdrop-filter:blur(16px);
-    box-shadow:0 8px 20px rgba(15,23,42,.06);
-    padding:14px;
-  }
-
-  .stat span{
-    display:block;
-    color:var(--muted);
-    font-size:.7rem;
-    font-weight:950;
-    text-transform:uppercase;
-    letter-spacing:.07em;
-  }
-
-  .stat b{
-    display:block;
-    margin-top:5px;
-    font-size:1.42rem;
-    letter-spacing:-.06em;
-    font-weight:950;
-  }
-
-  /* Tabs */
-  .tabs{
-    display:flex;
-    gap:9px;
-    flex-wrap:wrap;
-    margin:16px 0;
-  }
-
-  .tab{
-    min-height:40px;
-    border:1px solid var(--line);
-    border-radius:999px;
-    background:var(--surface);
-    color:var(--ink);
-    padding:0 14px;
-    font-size:.84rem;
-    font-weight:950;
-    box-shadow:0 6px 16px rgba(15,23,42,.05);
-    transition:.18s ease;
-  }
-
-  .tab:hover{transform:translateY(-1px)}
-  .tab.active{
-    border-color:transparent;
-    color:#fff;
-    background:linear-gradient(135deg,var(--accent),var(--accent2));
-    box-shadow:0 14px 28px rgba(37,99,235,.22);
-  }
-
-  .panel{display:none}
-  .panel.active{display:block}
-
-  /* Cards */
-  .card{
-    border:1px solid var(--line);
-    border-radius:22px;
-    background:rgba(255,255,255,.80);
-    backdrop-filter:blur(16px);
-    box-shadow:0 10px 28px rgba(15,23,42,.07);
-    padding:16px;
+    gap:18px;
     margin-bottom:14px;
   }
 
-  .card-title{
+  .crumbs{
+    color:var(--muted);
+    font-weight:800;
+    font-size:.86rem;
     display:flex;
-    justify-content:space-between;
-    gap:12px;
-    align-items:flex-start;
-    margin-bottom:12px;
+    align-items:center;
+    gap:7px;
+    flex-wrap:wrap;
   }
 
-  .card-title h3{
-    font-size:1.05rem;
+  .crumbs b{color:var(--ink)}
+
+  .page-title{
+    margin-top:5px;
+    font-size:clamp(1.55rem,2.1vw,2.2rem);
+    letter-spacing:-.06em;
+    line-height:1.02;
+    font-weight:950;
+  }
+
+  .page-note{
+    margin-top:7px;
+    color:var(--muted);
+    font-weight:650;
+    max-width:760px;
+    font-size:.92rem;
+    line-height:1.45;
+  }
+
+  .quick-stats{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    justify-content:flex-end;
+  }
+
+  .stat-card{
+    min-width:108px;
+    border:1px solid var(--line);
+    border-radius:16px;
+    background:rgba(255,255,255,.74);
+    backdrop-filter:blur(16px);
+    padding:10px 12px;
+    box-shadow:var(--shadow-sm);
+  }
+
+  body.dark .stat-card{background:rgba(17,24,39,.68)}
+
+  .stat-label{
+    font-size:.66rem;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--muted);
+    font-weight:900;
+  }
+
+  .stat-value{
+    margin-top:3px;
+    font-size:1.08rem;
     letter-spacing:-.04em;
     font-weight:950;
   }
 
-  .card-title p{
-    margin-top:5px;
-    color:var(--muted);
-    font-size:.84rem;
-    font-weight:700;
-    line-height:1.35;
-  }
-
-  .badge{
-    height:29px;
-    display:inline-flex;
-    align-items:center;
-    border-radius:999px;
-    padding:0 10px;
-    font-size:.73rem;
-    font-weight:950;
-    white-space:nowrap;
-  }
-
-  .badge.pending{background:var(--yellowSoft);color:var(--yellow)}
-  .badge.department{background:rgba(37,99,235,.12);color:var(--accent)}
-  .badge.sub_department{background:rgba(124,58,237,.12);color:var(--accent2)}
-  .badge.link{background:rgba(22,163,74,.12);color:var(--green)}
-  .badge.approved{background:rgba(22,163,74,.12);color:var(--green)}
-  .badge.rejected{background:rgba(220,38,38,.12);color:var(--red)}
-
-  .request-card{
-    overflow:hidden;
-  }
-
-  .request-grid{
-    display:grid;
-    grid-template-columns:160px 1fr;
-    gap:14px;
-  }
-
-  .thumb{
-    width:100%;
-    aspect-ratio:1.16;
-    border-radius:17px;
-    overflow:hidden;
-    background:var(--surface2);
+  /* =========================
+     Settings
+  ========================= */
+  .settings{
     border:1px solid var(--line);
+    border-radius:18px;
+    background:rgba(255,255,255,.74);
+    backdrop-filter:blur(18px);
+    padding:11px;
+    margin:14px 0 18px;
+    box-shadow:var(--shadow-sm);
   }
 
-  .thumb img{
+  body.dark .settings{background:rgba(17,24,39,.68)}
+  .settings.hidden{display:none}
+
+  .controls{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .chip,
+  .btn,
+  select{
+    height:36px;
+    border:1px solid var(--line);
+    border-radius:13px;
+    background:var(--surface);
+    color:var(--ink);
+    padding:0 11px;
+    font-size:.84rem;
+    font-weight:850;
+    box-shadow:var(--shadow-sm);
+  }
+
+  .chip{
+    display:flex;
+    align-items:center;
+    gap:7px;
+  }
+
+  select{
+    cursor:pointer;
+    outline:none;
+  }
+
+  .btn{
+    cursor:pointer;
+    transition:.18s ease;
+  }
+
+  .btn:hover{
+    transform:translateY(-1px);
+    box-shadow:var(--shadow-md);
+  }
+
+  /* =========================
+     Grid
+  ========================= */
+  .grid{
+    display:grid;
+    gap:18px;
+  }
+
+  #depGrid{grid-template-columns:repeat(4,1fr)}
+  #subGrid{grid-template-columns:repeat(5,1fr)}
+  #linkGrid{grid-template-columns:repeat(4,1fr)}
+
+  @media (max-width:1200px){
+    #depGrid{grid-template-columns:repeat(3,1fr)}
+    #subGrid{grid-template-columns:repeat(4,1fr)}
+    #linkGrid{grid-template-columns:repeat(3,1fr)}
+  }
+
+  @media (max-width:820px){
+    #depGrid,
+    #subGrid,
+    #linkGrid{
+      grid-template-columns:repeat(2,1fr);
+      gap:12px;
+    }
+  }
+
+  /* =========================
+     Cards
+  ========================= */
+  .card,
+  .link,
+  .add-card{
+    position:relative;
+    min-height:220px;
+    aspect-ratio:4/3;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    background:var(--surface);
+    overflow:hidden;
+    cursor:pointer;
+    text-decoration:none;
+    box-shadow:var(--shadow-sm);
+    transform:translateZ(0);
+    transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  }
+
+  .card:hover,
+  .link:hover,
+  .add-card:hover{
+    transform:translateY(-4px);
+    box-shadow:var(--shadow-lg);
+    border-color:rgba(37,99,235,.34);
+  }
+
+  .card:active,
+  .link:active,
+  .add-card:active{
+    transform:translateY(-1px) scale(.993);
+  }
+
+  .img{
+    position:absolute;
+    inset:0;
     width:100%;
     height:100%;
     object-fit:cover;
     display:block;
+    opacity:.92;
+    transform:scale(1.01);
+    transition:transform .28s ease, opacity .18s ease;
   }
 
-  .thumb-placeholder{
-    height:100%;
+  body.dark .img{opacity:.64}
+
+  .card:hover .img,
+  .link:hover .img{
+    transform:scale(1.045);
+  }
+
+  .veil{
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(circle at top left, rgba(37,99,235,.16), transparent 42%),
+      linear-gradient(180deg, rgba(0,0,0,.03), rgba(0,0,0,.10));
+    pointer-events:none;
+  }
+
+  body.dark .veil{
+    background:
+      radial-gradient(circle at top left, rgba(96,165,250,.18), transparent 42%),
+      linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.22));
+  }
+
+  .overlay{
+    position:absolute;
+    inset:0;
+    background:linear-gradient(180deg, rgba(0,0,0,.03) 10%, rgba(0,0,0,.20) 55%, rgba(0,0,0,.76) 100%);
+    pointer-events:none;
+  }
+
+  .label{
+    position:absolute;
+    z-index:2;
+    left:14px;
+    right:14px;
+    bottom:12px;
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:10px;
+    color:white;
+  }
+
+  .label-main{min-width:0}
+
+  .label-title{
+    display:block;
+    font-size:1rem;
+    line-height:1.1;
+    font-weight:950;
+    letter-spacing:-.035em;
+    text-shadow:0 2px 10px rgba(0,0,0,.42);
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+
+  .label-sub{
+    margin-top:4px;
+    display:block;
+    font-size:.76rem;
+    color:rgba(255,255,255,.82);
+    font-weight:800;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    text-shadow:0 2px 8px rgba(0,0,0,.38);
+  }
+
+  .pill{
+    flex:0 0 auto;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    height:26px;
+    padding:0 10px;
+    border-radius:999px;
+    background:rgba(255,255,255,.18);
+    border:1px solid rgba(255,255,255,.22);
+    color:white;
+    font-size:.72rem;
+    font-weight:950;
+    backdrop-filter:blur(10px);
+    box-shadow:0 6px 18px rgba(0,0,0,.15);
+  }
+
+  .subchip{
+    min-height:128px;
+    border:1px solid var(--line);
+    border-radius:18px;
+    background:
+      linear-gradient(135deg, rgba(37,99,235,.10), rgba(124,58,237,.08)),
+      var(--surface);
+    box-shadow:var(--shadow-sm);
+    padding:16px;
+    cursor:pointer;
+    transition:.18s ease;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    gap:14px;
+  }
+
+  .subchip:hover{
+    transform:translateY(-4px);
+    border-color:rgba(37,99,235,.35);
+    box-shadow:var(--shadow-md);
+  }
+
+  .sub-top{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    align-items:flex-start;
+  }
+
+  .sub-icon{
+    width:38px;
+    height:38px;
+    border-radius:14px;
     display:grid;
     place-items:center;
+    color:white;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    box-shadow:0 12px 24px rgba(37,99,235,.22);
+    font-size:18px;
+  }
+
+  .sub-count{
+    height:28px;
+    min-width:34px;
+    padding:0 9px;
+    border-radius:999px;
+    display:grid;
+    place-items:center;
+    background:var(--surface);
+    border:1px solid var(--line);
     color:var(--muted);
     font-weight:950;
+    font-size:.76rem;
+  }
+
+  .sub-title{
+    font-weight:950;
+    letter-spacing:-.04em;
+    line-height:1.12;
+    font-size:1.03rem;
+  }
+
+  .sub-desc{
+    color:var(--muted);
+    font-size:.78rem;
+    font-weight:700;
+    margin-top:5px;
+  }
+
+  .pending-card{
+    outline:2px solid rgba(217,119,6,.26);
+    outline-offset:-2px;
+  }
+
+  .pending-ribbon{
+    position:absolute;
+    top:10px;
+    right:10px;
+    z-index:4;
+    height:26px;
+    padding:0 10px;
+    border-radius:999px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(217,119,6,.92);
+    color:#fff;
+    font-size:.7rem;
+    font-weight:950;
+    box-shadow:0 8px 18px rgba(0,0,0,.20);
+    backdrop-filter:blur(10px);
+  }
+
+  .pending-note{
+    color:var(--yellow);
+    font-size:.76rem;
+    font-weight:900;
+    margin-top:5px;
+  }
+
+  .add-card{
+    border-style:dashed;
+    border-width:2px;
+    border-color:rgba(37,99,235,.30);
+    background:
+      radial-gradient(circle at top left, rgba(37,99,235,.14), transparent 45%),
+      linear-gradient(135deg, rgba(37,99,235,.06), rgba(124,58,237,.08)),
+      var(--surface);
+    display:flex;
+    align-items:center;
+    justify-content:center;
     text-align:center;
-    padding:10px;
+    padding:18px;
+  }
+
+  .add-content{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+  }
+
+  .add-plus{
+    width:54px;
+    height:54px;
+    border-radius:19px;
+    display:grid;
+    place-items:center;
+    color:white;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    box-shadow:0 16px 34px rgba(37,99,235,.26);
+    font-size:30px;
+    line-height:1;
+    font-weight:900;
+  }
+
+  .add-title{
+    font-weight:950;
+    letter-spacing:-.04em;
+    font-size:1.08rem;
+  }
+
+  .add-desc{
+    color:var(--muted);
+    font-weight:750;
+    font-size:.82rem;
+    line-height:1.35;
+    max-width:230px;
+  }
+
+  .empty{
+    grid-column:1/-1;
+    border:1px dashed var(--line-strong);
+    border-radius:20px;
+    background:rgba(255,255,255,.70);
+    padding:30px 18px;
+    text-align:center;
+    color:var(--muted);
+    box-shadow:var(--shadow-sm);
+    font-weight:800;
+    line-height:1.5;
+  }
+
+  body.dark .empty{background:rgba(17,24,39,.62)}
+  .empty strong{color:var(--ink);font-size:1.05rem}
+  .hidden{display:none!important}
+
+  .sortable-ghost{opacity:.45}
+  .sortable-chosen{transform:scale(.985)}
+
+  /* =========================
+     Modal
+  ========================= */
+  .modal-backdrop{
+    position:fixed;
+    inset:0;
+    background:rgba(2,6,23,.58);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    z-index:100;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+
+  .modal-backdrop.show{display:flex}
+
+  .modal{
+    width:min(820px,100%);
+    max-height:min(92vh,880px);
+    overflow:auto;
+    border:1px solid var(--line);
+    border-radius:24px;
+    background:var(--surface);
+    color:var(--ink);
+    box-shadow:0 30px 90px rgba(0,0,0,.34);
+  }
+
+  .modal-head{
+    position:sticky;
+    top:0;
+    z-index:2;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:16px;
+    padding:18px 18px 14px;
+    border-bottom:1px solid var(--line);
+    background:var(--surface);
+  }
+
+  .modal-title{
+    font-size:1.25rem;
+    font-weight:950;
+    letter-spacing:-.05em;
+  }
+
+  .modal-sub{
+    margin-top:5px;
+    color:var(--muted);
+    font-weight:700;
+    font-size:.88rem;
+    line-height:1.4;
+  }
+
+  .close-btn{
+    width:38px;
+    height:38px;
+    border-radius:14px;
+    border:1px solid var(--line);
+    background:var(--surface-2);
+    color:var(--ink);
+    cursor:pointer;
+    font-weight:950;
+    font-size:18px;
+  }
+
+  .modal-body{
+    padding:18px;
   }
 
   .form-grid{
     display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:12px;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
   }
 
   .field{
@@ -471,604 +856,672 @@
   .field.full{grid-column:1/-1}
 
   .field label{
+    font-size:.78rem;
+    font-weight:900;
     color:var(--muted);
-    font-size:.74rem;
-    font-weight:950;
     text-transform:uppercase;
-    letter-spacing:.07em;
+    letter-spacing:.06em;
   }
 
   .field input,
-  .field textarea,
-  .field select{
+  .field select,
+  .field textarea{
     width:100%;
     min-height:42px;
     border:1px solid var(--line);
     border-radius:14px;
-    background:var(--surface2);
+    background:var(--surface-2);
     color:var(--ink);
     outline:none;
     padding:10px 12px;
-    font-weight:750;
+    font-weight:700;
+    box-shadow:none;
   }
 
-  .field textarea{min-height:96px}
+  .field textarea{min-height:84px}
 
   .field input:focus,
-  .field textarea:focus,
-  .field select:focus{
+  .field select:focus,
+  .field textarea:focus{
     border-color:rgba(37,99,235,.55);
-    box-shadow:0 0 0 4px rgba(37,99,235,.10);
+    box-shadow:0 0 0 4px var(--accent-soft);
   }
 
-  .row-actions{
+  .photo-options{
     display:flex;
-    justify-content:flex-end;
-    gap:9px;
+    gap:8px;
     flex-wrap:wrap;
-    margin-top:12px;
+    margin-bottom:12px;
   }
 
-  .mini{
+  .photo-mode{
+    border:1px solid var(--line);
+    border-radius:999px;
+    background:var(--surface-2);
+    color:var(--ink);
+    padding:9px 12px;
+    font-weight:900;
+    cursor:pointer;
+    font-size:.82rem;
+  }
+
+  .photo-mode.active{
+    color:white;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    border-color:transparent;
+  }
+
+  .gallery-grid{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:10px;
+    max-height:270px;
+    overflow:auto;
+    padding:4px;
+  }
+
+  .gallery-item{
+    position:relative;
+    aspect-ratio:1.25;
+    border:2px solid transparent;
+    border-radius:14px;
+    overflow:hidden;
+    background:var(--surface-2);
+    cursor:pointer;
+    box-shadow:var(--shadow-sm);
+  }
+
+  .gallery-item.selected{
+    border-color:var(--accent);
+    box-shadow:0 0 0 4px var(--accent-soft), var(--shadow-sm);
+  }
+
+  .gallery-item img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+  .gallery-check{
+    position:absolute;
+    right:7px;
+    top:7px;
+    width:24px;
+    height:24px;
+    border-radius:999px;
+    background:rgba(0,0,0,.62);
+    color:#fff;
+    display:none;
+    place-items:center;
+    font-size:13px;
+    font-weight:950;
+  }
+
+  .gallery-item.selected .gallery-check{display:grid}
+
+  .mini-note{
     color:var(--muted);
     font-size:.82rem;
-    font-weight:720;
+    font-weight:750;
     line-height:1.45;
     margin-top:8px;
   }
 
-  .msg{
-    margin-top:12px;
-    padding:12px;
-    border-radius:15px;
-    font-size:.86rem;
+  .modal-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    padding:14px 18px 18px;
+    border-top:1px solid var(--line);
+  }
+
+  .primary-btn,
+  .secondary-btn{
+    min-height:42px;
+    border-radius:14px;
+    padding:0 16px;
+    font-weight:950;
+    cursor:pointer;
+    border:1px solid var(--line);
+  }
+
+  .secondary-btn{
+    background:var(--surface-2);
+    color:var(--ink);
+  }
+
+  .primary-btn{
+    border:0;
+    color:white;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    box-shadow:0 12px 24px rgba(37,99,235,.22);
+  }
+
+  .primary-btn:disabled{
+    opacity:.55;
+    cursor:not-allowed;
+  }
+
+  .request-msg{
+    margin-top:14px;
+    border-radius:16px;
+    padding:13px;
     font-weight:850;
-    line-height:1.45;
+    font-size:.9rem;
+    line-height:1.4;
     display:none;
   }
 
-  .msg.ok{
+  .request-msg.ok{
     display:block;
-    border:1px solid rgba(22,163,74,.24);
     background:rgba(22,163,74,.10);
     color:var(--green);
+    border:1px solid rgba(22,163,74,.24);
   }
 
-  .msg.bad{
+  .request-msg.bad{
     display:block;
-    border:1px solid rgba(220,38,38,.24);
     background:rgba(220,38,38,.10);
     color:var(--red);
+    border:1px solid rgba(220,38,38,.24);
   }
 
-  .msg.info{
-    display:block;
-    border:1px solid rgba(37,99,235,.24);
-    background:rgba(37,99,235,.10);
-    color:var(--accent);
-  }
-
-  .listbar{
-    display:grid;
-    grid-template-columns:1fr auto auto;
-    gap:12px;
-    align-items:center;
-    border:1px solid var(--line);
-    background:var(--surface);
-    border-radius:16px;
-    padding:12px;
-    margin-bottom:10px;
-  }
-
-  .listbar h4{
-    font-size:.93rem;
-    font-weight:950;
-  }
-
-  .listbar p{
-    margin-top:4px;
-    color:var(--muted);
-    font-size:.8rem;
-    font-weight:700;
-    word-break:break-all;
-  }
-
-  .search-row{
-    display:flex;
-    gap:10px;
-    flex-wrap:wrap;
-    margin-bottom:14px;
-  }
-
-  .search-row input,
-  .search-row select{
-    flex:1;
-    min-width:220px;
-    min-height:42px;
-    border:1px solid var(--line);
-    border-radius:14px;
-    background:var(--surface);
-    color:var(--ink);
-    padding:0 12px;
-    outline:none;
-    font-weight:800;
-  }
-
-  .bulk-preview{
-    overflow:auto;
-    border:1px solid var(--line);
-    border-radius:16px;
-    background:var(--surface);
-    margin-top:12px;
-    max-height:300px;
-  }
-
-  table{
-    width:100%;
-    border-collapse:collapse;
-    font-size:.82rem;
-  }
-
-  th,td{
-    text-align:left;
-    padding:10px;
-    border-bottom:1px solid var(--line);
-    vertical-align:top;
-  }
-
-  th{
-    color:var(--muted);
-    font-weight:950;
-    text-transform:uppercase;
-    letter-spacing:.06em;
-    font-size:.72rem;
-  }
-
-  td{
-    font-weight:700;
-    color:var(--ink);
-  }
-
-  .two-col{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:14px;
-  }
-
-  .empty{
-    border:1px dashed var(--line2);
-    border-radius:20px;
-    background:rgba(255,255,255,.66);
-    padding:24px 18px;
-    text-align:center;
-    color:var(--muted);
-    font-weight:800;
-    line-height:1.5;
-  }
-
-  .empty strong{
-    display:block;
-    color:var(--ink);
-    font-size:1.05rem;
-    margin-bottom:4px;
-  }
-
-  @media(max-width:1080px){
-    .top-inner{
+  /* =========================
+     Responsive
+  ========================= */
+  @media (max-width:980px){
+    .header-inner{
       grid-template-columns:1fr auto;
+      gap:10px;
+      padding:10px 14px;
     }
-    .admin-search{
-      grid-column:1/-1;
+
+    .brand{min-width:0}
+    .brand-sub{display:none}
+
+    .search-wrap{
+      grid-column:1 / -1;
       grid-row:2;
       max-width:none;
     }
-    .stats{
-      grid-template-columns:repeat(3,1fr);
-    }
-  }
 
-  @media(max-width:860px){
-    .top-inner{
-      display:flex;
-      flex-direction:column;
+    .header-actions{
+      min-width:0;
+      gap:7px;
+    }
+
+    .status-pill,
+    .steps-pill{display:none}
+
+    .addtopbtn{
+      height:36px;
+      padding:0 11px;
+      font-size:.78rem;
+    }
+
+    .page{padding:16px 14px 26px}
+
+    .hero-row{
+      grid-template-columns:1fr;
+      align-items:start;
+    }
+
+    .quick-stats{justify-content:flex-start}
+
+    .stat-card{
+      min-width:calc(33.333% - 7px);
+      flex:1;
+    }
+
+    .card,
+    .link,
+    .add-card{
+      min-height:156px;
+      border-radius:17px;
+      aspect-ratio:1.05;
+    }
+
+    .label{
+      left:11px;
+      right:11px;
+      bottom:10px;
       align-items:flex-start;
+      flex-direction:column;
+      gap:7px;
     }
-    .top-actions{justify-content:flex-start}
-    .page{padding:16px 14px 30px}
-    .hero{grid-template-columns:1fr}
-    .stats{grid-template-columns:repeat(2,1fr)}
-    .request-grid{grid-template-columns:1fr}
-    .thumb{max-width:220px}
+
+    .label-title{
+      font-size:.88rem;
+      white-space:normal;
+      display:-webkit-box;
+      -webkit-line-clamp:2;
+      -webkit-box-orient:vertical;
+    }
+
+    .label-sub{display:none}
+
+    .pill{
+      height:24px;
+      font-size:.68rem;
+      padding:0 8px;
+    }
+
+    .subchip{
+      min-height:116px;
+      border-radius:17px;
+      padding:14px;
+    }
+
     .form-grid{grid-template-columns:1fr}
-    .two-col{grid-template-columns:1fr}
-    .listbar{grid-template-columns:1fr}
+    .gallery-grid{grid-template-columns:repeat(3,1fr)}
   }
 
-  @media(max-width:520px){
-    .login-wrap{padding:12px}
-    .login-card{padding:18px;border-radius:24px}
-    .stats{grid-template-columns:1fr}
-    .card{padding:13px;border-radius:18px}
-    .top-actions{width:100%}
-    .top-actions .btn,.top-actions .status-pill{flex:1}
+  @media (max-width:520px){
+    .logo{width:38px;height:38px;border-radius:14px}
+    .brand-title{font-size:.95rem}
+    .iconbtn{width:36px;height:36px;border-radius:13px}
+    .page-title{font-size:1.45rem}
+    .page-note{font-size:.88rem}
+
+    #depGrid,
+    #subGrid,
+    #linkGrid{
+      grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+
+    .stat-card{
+      min-width:calc(33.333% - 6px);
+      padding:9px 10px;
+    }
+
+    .stat-label{font-size:.58rem}
+    .stat-value{font-size:.95rem}
+
+    .modal-backdrop{padding:10px}
+    .modal{border-radius:20px}
+    .modal-head{padding:15px}
+    .modal-body{padding:15px}
+    .modal-actions{padding:12px 15px 15px;flex-direction:column}
+    .primary-btn,.secondary-btn{width:100%}
+    .gallery-grid{grid-template-columns:repeat(2,1fr)}
   }
 </style>
 </head>
 
 <body>
-  <header class="topbar">
-    <div class="top-inner">
+  <header class="app-header">
+    <div class="header-inner">
       <div class="brand">
+        <button id="btnBack" class="backbtn hidden" title="Back">←</button>
         <div class="logo">RV</div>
-        <div>
-          <h1>RANVEXSI UI Admin</h1>
-          <p>Approve requests, manage departments, sub-departments, links and gallery</p>
+        <div class="brand-text">
+          <div class="brand-title">RANVEXSI UI</div>
+          <div class="brand-sub">Supabase workplace links</div>
         </div>
       </div>
 
-      <div class="admin-search">
-        <span>⌕</span>
-        <input id="globalSearch" placeholder="Search requests, departments, sub-departments, links..." />
+      <div class="search-wrap" title="Search departments, sub-departments, or links">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M21 21l-4.3-4.3M10.8 18.2a7.4 7.4 0 1 1 0-14.8 7.4 7.4 0 0 1 0 14.8Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        <input id="search" placeholder="Search departments, sub-departments, or links..." autocomplete="off" />
       </div>
 
-      <div class="top-actions">
-        <div class="status-pill"><span class="dot" id="dbDot"></span><span id="dbText">Locked</span></div>
-        <button class="btn" id="btnRefresh" type="button">Refresh</button>
-        <button class="btn" id="btnLogout" type="button">Lock</button>
-        <a class="btn primary" href="index.html">Open Site</a>
+      <div class="header-actions">
+        <div class="status-pill" id="dbStatus" title="Supabase status">
+          <span class="dot" id="dbDot"></span>
+          <span id="dbText">Connecting</span>
+        </div>
+        <button class="addtopbtn" id="btnAddLinkTop" title="Add New Link">+ Link</button>
+        <button class="iconbtn" id="btnSettings" title="Settings">⚙️</button>
+        <button class="iconbtn" id="btnRefresh" title="Reload">↻</button>
+        <button class="iconbtn" id="btnClear" title="Clear saved order">🧹</button>
+        <button class="iconbtn" id="btnTheme" title="Light/Dark">🌗</button>
+        <div class="steps-pill" title="Daily steps | Total views">
+          👣 <span id="steps">0</span> | 📊 <span id="stepsTotal">0</span>
+        </div>
       </div>
     </div>
   </header>
 
-  <section class="login-wrap" id="loginWrap">
-    <div class="login-card">
-      <div class="lock">🔐</div>
-      <h2>Admin Unlock</h2>
-      <p>Enter your admin password to review pending changes and approve them permanently.</p>
-
-      <form id="loginForm">
-        <div class="field">
-          <label>Admin Password</label>
-          <input id="adminPassword" type="password" placeholder="Enter password" autocomplete="current-password" required />
-        </div>
-
-        <button class="btn primary" type="submit" style="width:100%;margin-top:14px;">Unlock Admin Panel</button>
-        <div class="msg" id="loginMsg"></div>
-
-        <p class="mini">
-          Public users can submit requests only. Admin approval is required before permanent save.
-        </p>
-      </form>
-    </div>
-  </section>
-
-  <main class="page hidden" id="adminPage">
-    <section class="hero">
+  <main class="page" id="wrap">
+    <section class="hero-row">
       <div>
-        <h2>Admin Dashboard</h2>
-        <p>Review pending Department, Sub-Department, and Link requests. Add items manually, bulk import links, and manage gallery images.</p>
-      </div>
-      <div class="top-actions">
-        <button class="btn primary" id="btnQuickRequest" type="button">Pending Requests</button>
-        <button class="btn" id="btnQuickAdd" type="button">Manual Add</button>
-        <button class="btn" id="btnQuickBulk" type="button">Bulk Import</button>
-      </div>
-    </section>
-
-    <section class="stats">
-      <div class="stat"><span>Pending</span><b id="statPending">0</b></div>
-      <div class="stat"><span>Departments</span><b id="statDepartments">0</b></div>
-      <div class="stat"><span>Sub-Depts</span><b id="statSubs">0</b></div>
-      <div class="stat"><span>Links</span><b id="statLinks">0</b></div>
-      <div class="stat"><span>Gallery</span><b id="statGallery">0</b></div>
-    </section>
-
-    <section class="tabs">
-      <button class="tab active" data-tab="requests" type="button">Pending Requests</button>
-      <button class="tab" data-tab="manual" type="button">Manual Add</button>
-      <button class="tab" data-tab="bulk" type="button">Bulk Links</button>
-      <button class="tab" data-tab="manage" type="button">Manage</button>
-      <button class="tab" data-tab="gallery" type="button">Gallery</button>
-      <button class="tab" data-tab="history" type="button">History</button>
-    </section>
-
-    <section class="panel active" id="panel-requests">
-      <div id="requestsList"></div>
-    </section>
-
-    <section class="panel" id="panel-manual">
-      <div class="two-col">
-        <div class="card">
-          <div class="card-title">
-            <div>
-              <h3>Add Department</h3>
-              <p>Add a department directly to the public site.</p>
-            </div>
-          </div>
-
-          <form id="departmentForm">
-            <div class="form-grid">
-              <div class="field full">
-                <label>Department Name</label>
-                <input name="department" required placeholder="Ship Dock" />
-              </div>
-              <div class="field full">
-                <label>Department Image URL Optional</label>
-                <input name="image_url" placeholder="https://image-link.com/photo.jpg" />
-              </div>
-              <div class="field">
-                <label>Color Optional</label>
-                <input name="color" placeholder="#2563eb or blue" />
-              </div>
-              <div class="field">
-                <label>Sort Order</label>
-                <input name="sort_order" type="number" value="0" />
-              </div>
-            </div>
-            <div class="row-actions"><button class="btn primary" type="submit">Save Department</button></div>
-            <div class="msg" id="departmentMsg"></div>
-          </form>
-        </div>
-
-        <div class="card">
-          <div class="card-title">
-            <div>
-              <h3>Add Sub-Department</h3>
-              <p>Add a sub-department under an existing or new department.</p>
-            </div>
-          </div>
-
-          <form id="subDepartmentForm">
-            <div class="form-grid">
-              <div class="field">
-                <label>Department</label>
-                <input name="department" required placeholder="Ship Dock" list="departmentOptionsList" />
-              </div>
-              <div class="field">
-                <label>Sub-Department</label>
-                <input name="sub_department" required placeholder="Ship Clerk" />
-              </div>
-              <div class="field">
-                <label>Color Optional</label>
-                <input name="color" placeholder="#7c3aed or purple" />
-              </div>
-              <div class="field">
-                <label>Sort Order</label>
-                <input name="sort_order" type="number" value="0" />
-              </div>
-            </div>
-            <div class="row-actions"><button class="btn primary" type="submit">Save Sub-Department</button></div>
-            <div class="msg" id="subDepartmentMsg"></div>
-          </form>
-        </div>
+        <div class="crumbs" id="crumbs">Home</div>
+        <h1 class="page-title" id="pageTitle">Departments</h1>
+        <p class="page-note" id="pageNote">
+          Browse your departments, open sub-departments, and launch important tools quickly.
+        </p>
       </div>
 
-      <div class="card">
-        <div class="card-title">
-          <div>
-            <h3>Add Link Manually</h3>
-            <p>Add one approved link directly to the public site.</p>
+      <div class="quick-stats">
+        <div class="stat-card">
+          <div class="stat-label">Departments</div>
+          <div class="stat-value" id="statDepartments">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Sub-Depts</div>
+          <div class="stat-value" id="statSubs">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Links</div>
+          <div class="stat-value" id="statLinks">0</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="settings" class="settings hidden">
+      <div class="controls">
+        <label class="chip">View
+          <select id="viewMode">
+            <option value="departments">Departments</option>
+            <option value="subpage">Sub-Departments</option>
+            <option value="links">Links</option>
+          </select>
+        </label>
+
+        <label class="chip">Sub
+          <select id="subFilter" disabled>
+            <option value="__all__">All</option>
+          </select>
+        </label>
+
+        <button class="btn" id="btnSort">Enable Sort</button>
+
+        <label class="chip">Density
+          <select id="density">
+            <option value="comfort">Comfort</option>
+            <option value="compact">Compact</option>
+            <option value="large">Large</option>
+          </select>
+        </label>
+
+        <label class="chip">Images
+          <select id="media">
+            <option value="on">On</option>
+            <option value="off">Off</option>
+          </select>
+        </label>
+      </div>
+    </section>
+
+    <section id="depGrid" class="grid" aria-label="Departments grid"></section>
+    <section id="subGrid" class="grid hidden" aria-label="Sub-departments grid"></section>
+    <section id="linkGrid" class="grid hidden" aria-label="Links grid"></section>
+  </main>
+
+  <!-- Add New Link Request Modal -->
+  <div class="modal-backdrop" id="requestModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="requestTitle">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title" id="requestTitle">Add New Link Request</div>
+          <div class="modal-sub">
+            Submit a new link request. It will show as pending until admin approval.
           </div>
         </div>
+        <button class="close-btn" id="closeRequestModal" type="button">×</button>
+      </div>
 
-        <form id="manualLinkForm">
+      <form id="requestForm">
+        <div class="modal-body">
           <div class="form-grid">
             <div class="field">
               <label>Department</label>
-              <input name="department" required placeholder="Ship Dock" list="departmentOptionsList" />
+              <input id="reqDepartment" name="department" readonly />
             </div>
+
             <div class="field">
               <label>Sub-Department</label>
-              <input name="sub_department" required placeholder="Ship Clerk" list="subDepartmentOptionsList" />
+              <select id="reqSubDepartment" name="sub_department"></select>
             </div>
+
             <div class="field">
               <label>Link Name</label>
-              <input name="link_name" required placeholder="SSP" />
+              <input id="reqLinkName" name="link_name" placeholder="Example: Shift Metrics" required />
             </div>
+
             <div class="field">
-              <label>URL</label>
-              <input name="url" required placeholder="https://example.com" />
+              <label>Link URL</label>
+              <input id="reqUrl" name="url" placeholder="https://example.com" required />
             </div>
+
             <div class="field">
-              <label>Image URL Optional</label>
-              <input name="image_url" placeholder="https://image-link.com/photo.jpg" />
+              <label>Your Name Optional</label>
+              <input id="reqName" name="requested_by_name" placeholder="Your name" />
             </div>
+
             <div class="field">
-              <label>Department Image URL Optional</label>
-              <input name="department_image_url" placeholder="https://image-link.com/department.jpg" />
+              <label>Your Email Optional</label>
+              <input id="reqEmail" name="requested_by_email" placeholder="name@example.com" type="email" />
             </div>
-            <div class="field">
-              <label>Color Optional</label>
-              <input name="color" placeholder="#2563eb or blue" />
+
+            <div class="field full">
+              <label>Photo Option</label>
+
+              <div class="photo-options">
+                <button class="photo-mode active" data-mode="gallery" type="button">Choose Existing Photo</button>
+                <button class="photo-mode" data-mode="url" type="button">Paste Image URL</button>
+                <button class="photo-mode" data-mode="none" type="button">No Photo</button>
+              </div>
+
+              <div id="galleryPanel">
+                <div class="gallery-grid" id="galleryGrid"></div>
+                <div class="mini-note">
+                  Existing photos are reused from the gallery, so Supabase storage will not fill up.
+                </div>
+              </div>
+
+              <div id="urlPhotoPanel" class="hidden">
+                <input id="reqImageUrl" name="image_url" placeholder="https://image-link.com/photo.jpg" />
+                <div class="mini-note">
+                  Paste an external image URL only. Public upload is disabled for now.
+                </div>
+              </div>
             </div>
-            <div class="field">
-              <label>Sort Order</label>
-              <input name="sort_order" type="number" value="0" />
+
+            <div class="field full">
+              <label>Note Optional</label>
+              <textarea id="reqNote" name="note" placeholder="Any note for admin?"></textarea>
             </div>
           </div>
-          <div class="row-actions"><button class="btn primary" type="submit">Save Link</button></div>
-          <div class="msg" id="manualLinkMsg"></div>
-        </form>
+
+          <div id="requestMsg" class="request-msg"></div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="secondary-btn" id="cancelRequest" type="button">Cancel</button>
+          <button class="primary-btn" id="submitRequest" type="submit">Submit for Approval</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add New Department Request Modal -->
+  <div class="modal-backdrop" id="departmentModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="departmentRequestTitle">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title" id="departmentRequestTitle">Add New Department</div>
+          <div class="modal-sub">
+            Choose an existing gallery image or paste an image URL. The department will work locally right away and wait for admin approval.
+          </div>
+        </div>
+        <button class="close-btn" id="closeDepartmentModal" type="button">×</button>
       </div>
 
-      <datalist id="departmentOptionsList"></datalist>
-      <datalist id="subDepartmentOptionsList"></datalist>
-    </section>
-
-    <section class="panel" id="panel-bulk">
-      <div class="card">
-        <div class="card-title">
-          <div>
-            <h3>Bulk Add Links</h3>
-            <p>Paste CSV rows and import many approved links at once.</p>
-          </div>
-        </div>
-
-        <div class="field">
-          <label>CSV Paste</label>
-          <textarea id="bulkText" placeholder="department,sub_department,link_name,url,image_url,department_image_url,color,sort_order
-Ship Dock,Ship Clerk,New Tool,https://example.com,https://image.com/pic.jpg,,blue,0"></textarea>
-        </div>
-
-        <p class="mini">
-          Headers accepted: department, sub_department, link_name, url, image_url, department_image_url, color, sort_order.
-          Old headers like Department, SubDepartment, LinkName, URL, ImageURL, DIURL also work.
-        </p>
-
-        <div class="row-actions">
-          <button class="btn" id="btnPreviewBulk" type="button">Preview</button>
-          <button class="btn primary" id="btnImportBulk" type="button">Import Approved Links</button>
-        </div>
-
-        <div class="msg" id="bulkMsg"></div>
-        <div class="bulk-preview hidden" id="bulkPreview"></div>
-      </div>
-    </section>
-
-    <section class="panel" id="panel-manage">
-      <div class="card">
-        <div class="card-title">
-          <div>
-            <h3>Manage Public Items</h3>
-            <p>Search and hide departments, sub-departments, or links. Hidden items disappear from the public site.</p>
-          </div>
-        </div>
-
-        <div class="search-row">
-          <input id="manageSearch" placeholder="Search items..." />
-          <select id="manageType">
-            <option value="links">Links</option>
-            <option value="departments">Departments</option>
-            <option value="sub_departments">Sub-Departments</option>
-          </select>
-          <button class="btn" id="btnManageSearch" type="button">Search</button>
-        </div>
-
-        <div id="manageList"></div>
-      </div>
-    </section>
-
-    <section class="panel" id="panel-gallery">
-      <div class="card">
-        <div class="card-title">
-          <div>
-            <h3>Add Gallery Image</h3>
-            <p>Gallery images are reusable. Users can choose them when submitting links/departments.</p>
-          </div>
-        </div>
-
-        <form id="galleryForm">
+      <form id="departmentForm">
+        <div class="modal-body">
           <div class="form-grid">
-            <div class="field">
-              <label>Title</label>
-              <input name="title" placeholder="Office / Ship Dock / Tool image" />
-            </div>
-            <div class="field">
-              <label>Category Optional</label>
-              <input name="category" placeholder="Ship Dock" />
-            </div>
             <div class="field full">
-              <label>Image URL</label>
-              <input name="image_url" required placeholder="https://image-link.com/photo.jpg" />
+              <label>Department Name</label>
+              <input id="depReqDepartmentName" name="department" placeholder="Example: Ship Dock" required />
             </div>
+
+            <div class="field">
+              <label>Your Name Optional</label>
+              <input id="depReqName" name="requested_by_name" placeholder="Your name" />
+            </div>
+
+            <div class="field">
+              <label>Your Email Optional</label>
+              <input id="depReqEmail" name="requested_by_email" placeholder="name@example.com" type="email" />
+            </div>
+
             <div class="field full">
-              <label>Tags Optional</label>
-              <input name="tags" placeholder="office, tool, department" />
+              <label>Photo Option</label>
+
+              <div class="photo-options">
+                <button class="dept-photo-mode active" data-mode="gallery" type="button">Choose Existing Photo</button>
+                <button class="dept-photo-mode" data-mode="url" type="button">Paste Image URL</button>
+                <button class="dept-photo-mode" data-mode="none" type="button">No Photo</button>
+              </div>
+
+              <div id="depGalleryPanel">
+                <div class="gallery-grid" id="depGalleryGrid"></div>
+                <div class="mini-note">
+                  Existing gallery images are shown below. Select one to use for the new department.
+                </div>
+              </div>
+
+              <div id="depUrlPhotoPanel" class="hidden">
+                <input id="depReqImageUrl" name="image_url" placeholder="https://image-link.com/photo.jpg" />
+                <div class="mini-note">
+                  Paste an external image URL only. Public upload is disabled for now.
+                </div>
+              </div>
+            </div>
+
+            <div class="field full">
+              <label>Note Optional</label>
+              <textarea id="departmentMsgNote" name="note" placeholder="Any note for admin?"></textarea>
             </div>
           </div>
-          <div class="row-actions"><button class="btn primary" type="submit">Save Gallery Image</button></div>
-          <div class="msg" id="galleryMsg"></div>
-        </form>
-      </div>
 
-      <div class="card">
-        <div class="card-title">
-          <div>
-            <h3>Gallery Images</h3>
-            <p>Existing gallery images available for public request forms.</p>
-          </div>
+          <div id="departmentMsg" class="request-msg"></div>
         </div>
-        <div id="galleryList"></div>
-      </div>
-    </section>
 
-    <section class="panel" id="panel-history">
-      <div class="card">
-        <div class="card-title">
-          <div>
-            <h3>Request History</h3>
-            <p>Recently approved and rejected requests.</p>
-          </div>
+        <div class="modal-actions">
+          <button class="secondary-btn" id="cancelDepartmentRequest" type="button">Cancel</button>
+          <button class="primary-btn" id="submitDepartmentRequest" type="submit">Submit Department</button>
         </div>
-        <div id="historyList"></div>
-      </div>
-    </section>
-  </main>
+      </form>
+    </div>
+  </div>
 
 <script>
 /* =========================================================
-   Config
+   Supabase Config
 ========================================================= */
 const SUPABASE_URL = "https://qpplbqodulenhccfzrjv.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_ph2JpBSdGl-dIqvx9F6__g_Oo4r96Y_";
+
+const SUPABASE_TABLE = "ranvexsi_links";
+const DEPT_TABLE = "ranvexsi_departments";
+const SUB_TABLE = "ranvexsi_sub_departments";
+const REQUEST_TABLE = "ranvexsi_requests";
+const GALLERY_TABLE = "ranvexsi_media_gallery";
+const STORAGE_BUCKET = "media";
+
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
+/* =========================================================
+   Refs / State
+========================================================= */
 const els = {
+  search: document.getElementById("search"),
+  depGrid: document.getElementById("depGrid"),
+  subGrid: document.getElementById("subGrid"),
+  linkGrid: document.getElementById("linkGrid"),
+  crumbs: document.getElementById("crumbs"),
+  pageTitle: document.getElementById("pageTitle"),
+  pageNote: document.getElementById("pageNote"),
+  viewMode: document.getElementById("viewMode"),
+  subFilter: document.getElementById("subFilter"),
+  btnSort: document.getElementById("btnSort"),
+  btnRefresh: document.getElementById("btnRefresh"),
+  btnClear: document.getElementById("btnClear"),
+  btnTheme: document.getElementById("btnTheme"),
+  btnSettings: document.getElementById("btnSettings"),
+  btnAddLinkTop: document.getElementById("btnAddLinkTop"),
+  btnBack: document.getElementById("btnBack"),
+  density: document.getElementById("density"),
+  media: document.getElementById("media"),
+  settings: document.getElementById("settings"),
+  steps: document.getElementById("steps"),
+  stepsTotal: document.getElementById("stepsTotal"),
   dbDot: document.getElementById("dbDot"),
   dbText: document.getElementById("dbText"),
-  loginWrap: document.getElementById("loginWrap"),
-  adminPage: document.getElementById("adminPage"),
-  loginForm: document.getElementById("loginForm"),
-  adminPassword: document.getElementById("adminPassword"),
-  loginMsg: document.getElementById("loginMsg"),
-  btnLogout: document.getElementById("btnLogout"),
-  btnRefresh: document.getElementById("btnRefresh"),
-  globalSearch: document.getElementById("globalSearch"),
-
-  statPending: document.getElementById("statPending"),
   statDepartments: document.getElementById("statDepartments"),
   statSubs: document.getElementById("statSubs"),
   statLinks: document.getElementById("statLinks"),
-  statGallery: document.getElementById("statGallery"),
 
-  requestsList: document.getElementById("requestsList"),
+  requestModal: document.getElementById("requestModal"),
+  closeRequestModal: document.getElementById("closeRequestModal"),
+  requestForm: document.getElementById("requestForm"),
+  cancelRequest: document.getElementById("cancelRequest"),
+  submitRequest: document.getElementById("submitRequest"),
+  requestMsg: document.getElementById("requestMsg"),
 
+  reqDepartment: document.getElementById("reqDepartment"),
+  reqSubDepartment: document.getElementById("reqSubDepartment"),
+  reqLinkName: document.getElementById("reqLinkName"),
+  reqUrl: document.getElementById("reqUrl"),
+  reqName: document.getElementById("reqName"),
+  reqEmail: document.getElementById("reqEmail"),
+  reqImageUrl: document.getElementById("reqImageUrl"),
+  reqNote: document.getElementById("reqNote"),
+  galleryGrid: document.getElementById("galleryGrid"),
+  galleryPanel: document.getElementById("galleryPanel"),
+  urlPhotoPanel: document.getElementById("urlPhotoPanel"),
+
+  departmentModal: document.getElementById("departmentModal"),
+  closeDepartmentModal: document.getElementById("closeDepartmentModal"),
   departmentForm: document.getElementById("departmentForm"),
+  cancelDepartmentRequest: document.getElementById("cancelDepartmentRequest"),
+  submitDepartmentRequest: document.getElementById("submitDepartmentRequest"),
   departmentMsg: document.getElementById("departmentMsg"),
-  subDepartmentForm: document.getElementById("subDepartmentForm"),
-  subDepartmentMsg: document.getElementById("subDepartmentMsg"),
-  manualLinkForm: document.getElementById("manualLinkForm"),
-  manualLinkMsg: document.getElementById("manualLinkMsg"),
-
-  departmentOptionsList: document.getElementById("departmentOptionsList"),
-  subDepartmentOptionsList: document.getElementById("subDepartmentOptionsList"),
-
-  bulkText: document.getElementById("bulkText"),
-  btnPreviewBulk: document.getElementById("btnPreviewBulk"),
-  btnImportBulk: document.getElementById("btnImportBulk"),
-  bulkMsg: document.getElementById("bulkMsg"),
-  bulkPreview: document.getElementById("bulkPreview"),
-
-  manageSearch: document.getElementById("manageSearch"),
-  manageType: document.getElementById("manageType"),
-  btnManageSearch: document.getElementById("btnManageSearch"),
-  manageList: document.getElementById("manageList"),
-
-  galleryForm: document.getElementById("galleryForm"),
-  galleryMsg: document.getElementById("galleryMsg"),
-  galleryList: document.getElementById("galleryList"),
-
-  historyList: document.getElementById("historyList"),
-
-  btnQuickRequest: document.getElementById("btnQuickRequest"),
-  btnQuickAdd: document.getElementById("btnQuickAdd"),
-  btnQuickBulk: document.getElementById("btnQuickBulk")
+  depReqDepartmentName: document.getElementById("depReqDepartmentName"),
+  depReqName: document.getElementById("depReqName"),
+  depReqEmail: document.getElementById("depReqEmail"),
+  depReqImageUrl: document.getElementById("depReqImageUrl"),
+  depReqNote: document.getElementById("departmentMsgNote"),
+  depGalleryGrid: document.getElementById("depGalleryGrid"),
+  depGalleryPanel: document.getElementById("depGalleryPanel"),
+  depUrlPhotoPanel: document.getElementById("depUrlPhotoPanel")
 };
 
-let ADMIN_PASSWORD = sessionStorage.getItem("rv_admin_password") || "";
-let bulkRows = [];
-let cachedDepartments = [];
-let cachedSubDepartments = [];
+let rawRows = [];
+let departmentRows = [];
+let subDepartmentRows = [];
+let localRequests = [];
+let departmentsData = [];
+let galleryImages = [];
+let currentDep = null;
+let currentSub = "__all__";
+let sorting = false;
+let depSortable = null;
+let linkSortable = null;
+let realtimeChannel = null;
+let requestPhotoMode = "gallery";
+let selectedGalleryImage = null;
+let departmentPhotoMode = "gallery";
+let selectedDepartmentGalleryImage = null;
+let dailyStepCount = 0;
+let totalViewCount = 0;
+let analyticsReady = false;
+
+const LS = {
+  THEME: "rv_theme",
+  STEPS: "rv_steps_total",
+  SETTINGS_OPEN: "rv_settings_open_index",
+  DEPT_ORDER: "rv_dept_order_index",
+  LINK_ORDER: (dep, sub) => `rv_link_order_index_${dep}__${sub}`,
+  DENSITY: "rv_density_index",
+  MEDIA: "rv_media_index",
+  LOCAL_REQUESTS: "rv_local_pending_requests_v1"
+};
 
 /* =========================================================
    Helpers
@@ -1084,847 +1537,1448 @@ function esc(v){
 
 function safeUrl(url){
   const u = String(url || "").trim();
-  if(!u) return "";
+  if(!u || u === "#") return "#";
   if(u.startsWith("http://") || u.startsWith("https://") || u.startsWith("mailto:") || u.startsWith("tel:")) return u;
   return "https://" + u;
 }
 
-function setStatus(type, text){
+function getPublicImage(path){
+  const p = String(path || "").trim();
+  if(!p || p === "null" || p === "undefined") return "";
+  const { data } = db.storage.from(STORAGE_BUCKET).getPublicUrl(p);
+  return data?.publicUrl || "";
+}
+
+function firstGood(...values){
+  for(const v of values){
+    const s = String(v || "").trim();
+    if(s && s !== "null" && s !== "undefined") return s;
+  }
+  return "";
+}
+
+function imageFromRow(row){
+  return firstGood(row.ImageURL, row.image_url, getPublicImage(row.ImagePath || row.image_path));
+}
+
+function departmentImageFromRow(row){
+  return firstGood(
+    row.DIURL,
+    row.department_image_url,
+    getPublicImage(row.DepartmentImagePath || row.department_image_path),
+    row.ImageURL,
+    row.image_url,
+    getPublicImage(row.ImagePath || row.image_path)
+  );
+}
+
+function fallbackImage(text){
+  return `https://source.unsplash.com/1200x800/?workspace,office,${encodeURIComponent(text || "tools")}`;
+}
+
+function setDbStatus(type, text){
   els.dbText.textContent = text;
   els.dbDot.classList.remove("ok","bad");
   if(type === "ok") els.dbDot.classList.add("ok");
   if(type === "bad") els.dbDot.classList.add("bad");
 }
 
-function setMsg(el, type, text){
-  el.className = `msg ${type}`;
-  el.innerHTML = text;
+function countLinksInSub(dep, sub){
+  return rawRows.filter(r => r.Department === dep && r.SubDepartment === sub).length;
 }
 
-function clearMsg(el){
-  el.className = "msg";
-  el.innerHTML = "";
+function allSubsCount(){
+  return departmentsData.reduce((sum, d) => sum + (d.subs?.length || 0), 0);
 }
 
-async function rpc(name, args={}){
-  const { data, error } = await db.rpc(name, args);
-  if(error) throw error;
-  return data;
+function showMessage(type, message){
+  els.requestMsg.className = `request-msg ${type}`;
+  els.requestMsg.innerHTML = message;
 }
 
-function getFormData(form){
-  const data = {};
-  new FormData(form).forEach((value, key) => {
-    data[key] = String(value || "").trim();
-  });
-  return data;
+function makeTempId(type){
+  return `${type}_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
 }
 
-function timeAgo(dateString){
-  if(!dateString) return "";
-  const d = new Date(dateString);
-  const diff = Date.now() - d.getTime();
-  const mins = Math.floor(diff / 60000);
-  if(mins < 1) return "just now";
-  if(mins < 60) return `${mins} min ago`;
-  const hrs = Math.floor(mins / 60);
-  if(hrs < 24) return `${hrs} hr ago`;
-  const days = Math.floor(hrs / 24);
-  return `${days} day${days > 1 ? "s" : ""} ago`;
-}
-
-function prettyType(type){
-  if(type === "department") return "Department";
-  if(type === "sub_department") return "Sub-Department";
-  return "Link";
-}
-
-function activeTab(){
-  return document.querySelector(".tab.active")?.dataset.tab || "requests";
-}
-
-function switchTab(tabName){
-  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.tab === tabName));
-  document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
-  document.getElementById(`panel-${tabName}`).classList.add("active");
-
-  if(tabName === "requests") loadRequests();
-  if(tabName === "manage") loadManage();
-  if(tabName === "gallery") loadGallery();
-  if(tabName === "history") loadHistory();
-}
-
-/* =========================================================
-   Login / Refresh
-========================================================= */
-async function unlock(password){
-  setStatus("", "Checking");
-  clearMsg(els.loginMsg);
-
+function getLocalRequests(){
   try{
-    const stats = await rpc("rv_admin_stats_v2", { p_password: password });
-    ADMIN_PASSWORD = password;
-    sessionStorage.setItem("rv_admin_password", password);
-
-    els.loginWrap.classList.add("hidden");
-    els.adminPage.classList.remove("hidden");
-    setStatus("ok", "Admin");
-
-    renderStats(stats);
-    await Promise.all([loadDepartmentOptions(), loadRequests()]);
-  }catch(err){
-    console.error(err);
-    setStatus("bad", "Locked");
-    setMsg(els.loginMsg, "bad", "Wrong password or admin SQL functions are not installed.");
+    const rows = JSON.parse(localStorage.getItem(LS.LOCAL_REQUESTS) || "[]");
+    return Array.isArray(rows) ? rows : [];
+  }catch{
+    return [];
   }
 }
 
-async function refreshAll(){
-  if(!ADMIN_PASSWORD) return;
-  try{
-    setStatus("", "Loading");
-    const stats = await rpc("rv_admin_stats_v2", { p_password: ADMIN_PASSWORD });
-    renderStats(stats);
-    await loadDepartmentOptions();
-
-    const tab = activeTab();
-    if(tab === "requests") await loadRequests();
-    if(tab === "manage") await loadManage();
-    if(tab === "gallery") await loadGallery();
-    if(tab === "history") await loadHistory();
-
-    setStatus("ok", "Admin");
-  }catch(err){
-    console.error(err);
-    setStatus("bad", "Error");
-    alert(err.message || err);
-  }
+function setLocalRequests(rows){
+  localStorage.setItem(LS.LOCAL_REQUESTS, JSON.stringify(rows));
 }
 
-function renderStats(stats){
-  const s = stats || {};
-  els.statPending.textContent = s.pending_requests ?? 0;
-  els.statDepartments.textContent = s.departments ?? 0;
-  els.statSubs.textContent = s.sub_departments ?? 0;
-  els.statLinks.textContent = s.active_links ?? 0;
-  els.statGallery.textContent = s.gallery_images ?? 0;
+function saveLocalRequest(req){
+  const rows = getLocalRequests();
+  rows.unshift(req);
+  setLocalRequests(rows);
+  localRequests = rows;
 }
 
-/* =========================================================
-   Options
-========================================================= */
-async function loadDepartmentOptions(){
-  try{
-    cachedDepartments = await rpc("rv_admin_list_departments_v2", { p_password: ADMIN_PASSWORD, p_search:"" });
-    cachedSubDepartments = await rpc("rv_admin_list_sub_departments_v2", { p_password: ADMIN_PASSWORD, p_search:"" });
-
-    els.departmentOptionsList.innerHTML = (cachedDepartments || [])
-      .map(d => `<option value="${esc(d.department)}"></option>`)
-      .join("");
-
-    els.subDepartmentOptionsList.innerHTML = (cachedSubDepartments || [])
-      .map(s => `<option value="${esc(s.sub_department)}"></option>`)
-      .join("");
-  }catch(err){
-    console.warn("Could not load options:", err.message || err);
-  }
+function updateLocalRequest(tempId, patch){
+  const rows = getLocalRequests().map(r => r.client_temp_id === tempId ? {...r, ...patch} : r);
+  setLocalRequests(rows);
+  localRequests = rows;
 }
 
-/* =========================================================
-   Requests
-========================================================= */
-async function loadRequests(){
-  els.requestsList.innerHTML = `<div class="card">Loading pending requests...</div>`;
-
-  try{
-    const rows = await rpc("rv_admin_pending_requests_v2", {
-      p_password: ADMIN_PASSWORD,
-      p_search: els.globalSearch.value.trim()
-    });
-
-    if(!rows || rows.length === 0){
-      els.requestsList.innerHTML = `<div class="empty"><strong>No pending requests</strong>New Department/Sub/Link requests will appear here.</div>`;
-      return;
-    }
-
-    els.requestsList.innerHTML = rows.map(requestCard).join("");
-  }catch(err){
-    console.error(err);
-    els.requestsList.innerHTML = `<div class="card"><div class="msg bad" style="display:block">${esc(err.message || err)}</div></div>`;
-  }
+function localRequestsFor(type){
+  return localRequests.filter(r => r.request_type === type && r.status !== "rejected");
 }
 
-function requestCard(r){
-  const type = r.request_type || "link";
-  const image = r.image_url || r.department_image_url || "";
-  const showSub = type !== "department";
-  const showLink = type === "link";
-
-  return `
-    <div class="card request-card" data-id="${esc(r.id)}" data-type="${esc(type)}">
-      <div class="card-title">
-        <div>
-          <h3>${esc(type === "department" ? (r.department || "New Department") : type === "sub_department" ? (r.sub_department || "New Sub-Department") : (r.link_name || "New Link"))}</h3>
-          <p>${esc(r.department || "")}${r.sub_department ? " / " + esc(r.sub_department) : ""} • ${timeAgo(r.created_at)}</p>
-        </div>
-        <div style="display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end;">
-          <span class="badge ${esc(type)}">${prettyType(type)}</span>
-          <span class="badge pending">Pending</span>
-        </div>
-      </div>
-
-      <div class="request-grid">
-        <div class="thumb">
-          ${image ? `<img src="${esc(image)}" alt="">` : `<div class="thumb-placeholder">No Image</div>`}
-        </div>
-
-        <div>
-          <div class="form-grid">
-            <div class="field">
-              <label>Department</label>
-              <input class="rq-department" value="${esc(r.department || "")}">
-            </div>
-
-            <div class="field ${showSub ? "" : "hidden"}">
-              <label>Sub-Department</label>
-              <input class="rq-sub" value="${esc(r.sub_department || "")}">
-            </div>
-
-            <div class="field ${showLink ? "" : "hidden"}">
-              <label>Link Name</label>
-              <input class="rq-name" value="${esc(r.link_name || "")}">
-            </div>
-
-            <div class="field ${showLink ? "" : "hidden"}">
-              <label>URL</label>
-              <input class="rq-url" value="${esc(r.url || "")}">
-            </div>
-
-            <div class="field full">
-              <label>${type === "department" ? "Department Image URL Optional" : "Image URL Optional"}</label>
-              <input class="rq-image" value="${esc(image || "")}">
-            </div>
-
-            <div class="field">
-              <label>Color Optional</label>
-              <input class="rq-color" value="${esc(r.color || "")}">
-            </div>
-
-            <div class="field">
-              <label>Sort Order</label>
-              <input class="rq-sort" type="number" value="0">
-            </div>
-
-            <div class="field full">
-              <label>Admin Note Optional</label>
-              <input class="rq-admin-note" placeholder="Reason if rejecting, or note for yourself">
-            </div>
-          </div>
-
-          <p class="mini">
-            Requested by: ${esc(r.requested_by_name || "Unknown")} ${r.requested_by_email ? "• " + esc(r.requested_by_email) : ""}<br>
-            User note: ${esc(r.note || "No note")}
-          </p>
-
-          <div class="row-actions">
-            <button class="btn red small btn-reject" type="button">Reject</button>
-            <button class="btn green small btn-approve" type="button">Approve</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
+function alreadyHasDepartment(name){
+  const n = String(name || "").trim().toLowerCase();
+  return departmentsData.some(d => d.dep.toLowerCase() === n);
 }
 
-async function approveRequest(card){
-  const id = card.dataset.id;
-  const type = card.dataset.type;
+function alreadyHasSubDepartment(dep, sub){
+  const d = departmentsData.find(x => x.dep.toLowerCase() === String(dep || "").toLowerCase());
+  if(!d) return false;
+  return d.subs.some(s => s.toLowerCase() === String(sub || "").toLowerCase());
+}
 
+async function submitGenericRequest(req){
   const payload = {
-    p_password: ADMIN_PASSWORD,
-    p_request_id: id,
-    p_request_type: type,
-    p_department: card.querySelector(".rq-department").value.trim(),
-    p_sub_department: card.querySelector(".rq-sub")?.value.trim() || null,
-    p_link_name: card.querySelector(".rq-name")?.value.trim() || null,
-    p_url: safeUrl(card.querySelector(".rq-url")?.value.trim() || ""),
-    p_image_url: card.querySelector(".rq-image").value.trim() || null,
-    p_department_image_url: type === "department" ? (card.querySelector(".rq-image").value.trim() || null) : null,
-    p_color: card.querySelector(".rq-color").value.trim() || null,
-    p_admin_note: card.querySelector(".rq-admin-note").value.trim() || null,
-    p_sort_order: Number(card.querySelector(".rq-sort").value || 0)
+    request_type: req.request_type,
+    client_temp_id: req.client_temp_id || null,
+    department: req.department || null,
+    sub_department: req.sub_department || null,
+    link_name: req.link_name || null,
+    url: req.url || null,
+    image_url: req.image_url || null,
+    department_image_url: req.department_image_url || null,
+    color: req.color || null,
+    note: req.note || null,
+    requested_by_name: req.requested_by_name || null,
+    requested_by_email: req.requested_by_email || null,
+    status: "pending"
   };
 
-  if(!payload.p_department){
-    alert("Department is required.");
-    return;
-  }
-  if(type !== "department" && !payload.p_sub_department){
-    alert("Sub-department is required.");
-    return;
-  }
-  if(type === "link" && (!payload.p_link_name || !payload.p_url)){
-    alert("Link name and URL are required.");
-    return;
-  }
+  const { error } = await db.from(REQUEST_TABLE).insert(payload);
+  if(error) throw error;
+  updateLocalRequest(req.client_temp_id, { submitted:true });
+}
 
-  if(!confirm(`Approve this ${prettyType(type)} request?`)) return;
+async function syncLocalRequestsWithAdmin(){
+  const rows = getLocalRequests();
+  const pendingIds = rows
+    .filter(r => r.client_temp_id && r.submitted !== false)
+    .map(r => r.client_temp_id);
+
+  if(!pendingIds.length){
+    localRequests = rows;
+    return;
+  }
 
   try{
-    await rpc("rv_admin_approve_request_v2", payload);
-    await refreshAll();
+    const { data, error } = await db.rpc("rv_public_request_statuses", {
+      p_client_ids: pendingIds
+    });
+
+    if(error) throw error;
+
+    const statusMap = new Map((data || []).map(x => [x.client_temp_id, x.status]));
+
+    // If admin approved/rejected, remove local temporary item.
+    // Approved item will now load permanently from Supabase tables.
+    // Rejected item should disappear from this browser too.
+    const cleaned = rows.filter(r => {
+      const status = statusMap.get(r.client_temp_id);
+      return !(status === "approved" || status === "rejected");
+    });
+
+    if(cleaned.length !== rows.length){
+      setLocalRequests(cleaned);
+    }
+
+    localRequests = cleaned;
   }catch(err){
-    console.error(err);
-    alert(err.message || err);
+    console.warn("Could not sync local pending requests:", err.message || err);
+    localRequests = rows;
   }
 }
 
-async function rejectRequest(card){
-  const id = card.dataset.id;
-  const note = card.querySelector(".rq-admin-note").value.trim() || prompt("Reason/note for rejection?") || "";
-
-  if(!confirm("Reject this request?")) return;
-
-  try{
-    await rpc("rv_admin_reject_request_v2", {
-      p_password: ADMIN_PASSWORD,
-      p_request_id: id,
-      p_admin_note: note
-    });
-    await refreshAll();
-  }catch(err){
-    console.error(err);
-    alert(err.message || err);
-  }
+function refreshLocalAndRender(){
+  localRequests = getLocalRequests();
+  buildMaps();
+  render();
 }
 
 /* =========================================================
-   Manual Add
+   Steps / Theme / Prefs
 ========================================================= */
-async function addDepartment(e){
-  e.preventDefault();
-  clearMsg(els.departmentMsg);
+let sessionSteps = 0;
 
-  const f = getFormData(els.departmentForm);
+function updateCounterUI(){
+  els.steps.textContent = dailyStepCount;
+  els.stepsTotal.textContent = totalViewCount;
+}
 
+async function trackVisit(){
   try{
-    await rpc("rv_admin_add_department_v2", {
-      p_password: ADMIN_PASSWORD,
-      p_department: f.department,
-      p_image_url: f.image_url || null,
-      p_color: f.color || null,
-      p_sort_order: Number(f.sort_order || 0)
-    });
-    setMsg(els.departmentMsg, "ok", "Department saved successfully.");
-    els.departmentForm.reset();
-    els.departmentForm.querySelector('[name="sort_order"]').value = "0";
-    await refreshAll();
+    const { data, error } = await db.rpc("rv_track_visit");
+    if(error) throw error;
+
+    dailyStepCount = Number(data?.daily_steps || 0);
+    totalViewCount = Number(data?.total_views || 0);
+    analyticsReady = true;
+    updateCounterUI();
   }catch(err){
-    console.error(err);
-    setMsg(els.departmentMsg, "bad", esc(err.message || err));
+    console.warn("Supabase analytics not ready, using local fallback:", err.message || err);
+    dailyStepCount = Number(localStorage.getItem("rv_daily_steps_fallback") || 0);
+    totalViewCount = Number(localStorage.getItem(LS.STEPS) || 0) + 1;
+    localStorage.setItem(LS.STEPS, String(totalViewCount));
+    updateCounterUI();
   }
 }
 
-async function addSubDepartment(e){
-  e.preventDefault();
-  clearMsg(els.subDepartmentMsg);
-
-  const f = getFormData(els.subDepartmentForm);
-
+async function saveStepToSupabase(n=1){
   try{
-    await rpc("rv_admin_add_sub_department_v2", {
-      p_password: ADMIN_PASSWORD,
-      p_department: f.department,
-      p_sub_department: f.sub_department,
-      p_color: f.color || null,
-      p_sort_order: Number(f.sort_order || 0)
-    });
-    setMsg(els.subDepartmentMsg, "ok", "Sub-department saved successfully.");
-    els.subDepartmentForm.reset();
-    els.subDepartmentForm.querySelector('[name="sort_order"]').value = "0";
-    await refreshAll();
+    const { data, error } = await db.rpc("rv_track_step", { p_amount: n });
+    if(error) throw error;
+
+    dailyStepCount = Number(data?.daily_steps || dailyStepCount);
+    totalViewCount = Number(data?.total_views || totalViewCount);
+    updateCounterUI();
   }catch(err){
-    console.error(err);
-    setMsg(els.subDepartmentMsg, "bad", esc(err.message || err));
+    console.warn("Could not save step to Supabase:", err.message || err);
   }
 }
 
-async function addManualLink(e){
-  e.preventDefault();
-  clearMsg(els.manualLinkMsg);
+function step(n=1){
+  sessionSteps += n;
+  dailyStepCount += n;
+  localStorage.setItem("rv_daily_steps_fallback", String(dailyStepCount));
+  updateCounterUI();
 
-  const f = getFormData(els.manualLinkForm);
-
-  try{
-    await rpc("rv_admin_add_link_v2", {
-      p_password: ADMIN_PASSWORD,
-      p_department: f.department,
-      p_sub_department: f.sub_department,
-      p_link_name: f.link_name,
-      p_url: safeUrl(f.url),
-      p_image_url: f.image_url || null,
-      p_department_image_url: f.department_image_url || null,
-      p_color: f.color || null,
-      p_sort_order: Number(f.sort_order || 0)
-    });
-    setMsg(els.manualLinkMsg, "ok", "Link saved successfully.");
-    els.manualLinkForm.reset();
-    els.manualLinkForm.querySelector('[name="sort_order"]').value = "0";
-    await refreshAll();
-  }catch(err){
-    console.error(err);
-    setMsg(els.manualLinkMsg, "bad", esc(err.message || err));
+  if(analyticsReady){
+    saveStepToSupabase(n);
   }
+}
+
+function initSteps(){
+  els.steps.textContent = "0";
+  els.stepsTotal.textContent = "0";
+  trackVisit();
+}
+
+function initTheme(){
+  let saved = localStorage.getItem(LS.THEME);
+  if(!saved){
+    saved = "light";
+    localStorage.setItem(LS.THEME, saved);
+  }
+  document.body.classList.toggle("dark", saved === "dark");
+}
+
+function toggleTheme(){
+  const dark = !document.body.classList.contains("dark");
+  document.body.classList.toggle("dark", dark);
+  localStorage.setItem(LS.THEME, dark ? "dark" : "light");
+}
+
+function initPrefs(){
+  const density = localStorage.getItem(LS.DENSITY) || "comfort";
+  const media = localStorage.getItem(LS.MEDIA) || "on";
+  els.density.value = density;
+  els.media.value = media;
+  applyDensity(density);
+  applyMedia(media);
+}
+
+function applyDensity(value){
+  const root = document.documentElement;
+  if(value === "compact"){
+    root.style.setProperty("--radius", "16px");
+  }else if(value === "large"){
+    root.style.setProperty("--radius", "22px");
+  }else{
+    root.style.setProperty("--radius", "18px");
+  }
+}
+
+function applyMedia(value){
+  document.querySelectorAll(".img").forEach(img => {
+    img.style.display = value === "off" ? "none" : "block";
+  });
 }
 
 /* =========================================================
-   Bulk Add
+   Load Data
 ========================================================= */
-function parseCSV(text){
-  const rows = [];
-  let row = [];
-  let cell = "";
-  let inQuotes = false;
-
-  for(let i=0;i<text.length;i++){
-    const ch = text[i];
-    const next = text[i+1];
-
-    if(ch === '"' && inQuotes && next === '"'){
-      cell += '"';
-      i++;
-    }else if(ch === '"'){
-      inQuotes = !inQuotes;
-    }else if(ch === "," && !inQuotes){
-      row.push(cell.trim());
-      cell = "";
-    }else if((ch === "\n" || ch === "\r") && !inQuotes){
-      if(ch === "\r" && next === "\n") i++;
-      row.push(cell.trim());
-      if(row.some(v => v !== "")) rows.push(row);
-      row = [];
-      cell = "";
-    }else{
-      cell += ch;
-    }
-  }
-
-  row.push(cell.trim());
-  if(row.some(v => v !== "")) rows.push(row);
-  return rows;
-}
-
-function cleanHeader(h){
-  return String(h || "").trim().replace(/\s+/g,"").replace(/_/g,"").toLowerCase();
-}
-
-function mapBulkRows(){
-  const text = els.bulkText.value.trim();
-  if(!text) return [];
-
-  const rows = parseCSV(text);
-  if(rows.length < 2) throw new Error("Please paste headers and at least one data row.");
-
-  const headers = rows[0].map(cleanHeader);
-
-  function idx(...names){
-    const clean = names.map(cleanHeader);
-    return headers.findIndex(h => clean.includes(h));
-  }
-
-  const map = {
-    department: idx("department"),
-    sub_department: idx("sub_department","subdepartment"),
-    link_name: idx("link_name","linkname","name"),
-    url: idx("url","link"),
-    image_url: idx("image_url","imageurl","image"),
-    department_image_url: idx("department_image_url","diurl","departmentimageurl"),
-    color: idx("color"),
-    sort_order: idx("sort_order","sortorder")
+function normalizeDepartment(row){
+  return {
+    ID: row.id || "",
+    Department: String(row.department ?? row.Department ?? "").trim(),
+    ImageURL: String(row.image_url ?? row.ImageURL ?? "").trim(),
+    ImagePath: String(row.image_path ?? row.ImagePath ?? "").trim(),
+    Color: String(row.color ?? row.Color ?? "").trim(),
+    SortOrder: Number(row.sort_order ?? row.SortOrder ?? 0),
+    IsActive: row.is_active ?? row.IsActive ?? true
   };
+}
 
-  const out = [];
+function normalizeSubDepartment(row){
+  return {
+    ID: row.id || "",
+    Department: String(row.department ?? row.Department ?? "").trim(),
+    SubDepartment: String(row.sub_department ?? row.SubDepartment ?? "").trim(),
+    SortOrder: Number(row.sort_order ?? row.SortOrder ?? 0),
+    IsActive: row.is_active ?? row.IsActive ?? true
+  };
+}
 
-  rows.slice(1).forEach((r) => {
-    const obj = {
-      department: map.department >= 0 ? r[map.department] : "",
-      sub_department: map.sub_department >= 0 ? r[map.sub_department] : "",
-      link_name: map.link_name >= 0 ? r[map.link_name] : "",
-      url: map.url >= 0 ? safeUrl(r[map.url]) : "",
-      image_url: map.image_url >= 0 ? r[map.image_url] : "",
-      department_image_url: map.department_image_url >= 0 ? r[map.department_image_url] : "",
-      color: map.color >= 0 ? r[map.color] : "",
-      sort_order: map.sort_order >= 0 ? Number(r[map.sort_order] || 0) : 0
-    };
+function normalizeRow(row){
+  return {
+    Department: String(row.department ?? row.Department ?? "").trim(),
+    SubDepartment: String(row.sub_department ?? row.SubDepartment ?? "").trim(),
+    DIURL: String(row.department_image_url ?? row.DIURL ?? "").trim(),
+    LinkName: String(row.link_name ?? row.LinkName ?? "Unnamed").trim(),
+    URL: String(row.url ?? row.URL ?? "#").trim(),
+    Color: String(row.color ?? row.Color ?? "").trim(),
+    ImageURL: String(row.image_url ?? row.ImageURL ?? "").trim(),
+    ImagePath: String(row.image_path ?? row.ImagePath ?? "").trim(),
+    DepartmentImagePath: String(row.department_image_path ?? row.DepartmentImagePath ?? "").trim(),
+    SortOrder: Number(row.sort_order ?? row.SortOrder ?? 0),
+    IsActive: row.is_active ?? row.IsActive ?? true
+  };
+}
 
-    if(obj.department && obj.sub_department && obj.link_name && obj.url){
-      out.push(obj);
+async function loadData(){
+  setDbStatus("", "Loading");
+
+  try{
+    const { data, error } = await db
+      .from(SUPABASE_TABLE)
+      .select("*")
+      .eq("is_active", true)
+      .order("department", { ascending:true })
+      .order("sub_department", { ascending:true })
+      .order("sort_order", { ascending:true })
+      .order("link_name", { ascending:true });
+
+    if(error) throw error;
+
+    rawRows = (data || [])
+      .map(normalizeRow)
+      .filter(row => row.Department && row.LinkName);
+
+    try{
+      const { data: depData, error: depError } = await db
+        .from(DEPT_TABLE)
+        .select("*")
+        .eq("is_active", true)
+        .order("sort_order", { ascending:true })
+        .order("department", { ascending:true });
+
+      if(depError) throw depError;
+      departmentRows = (depData || []).map(normalizeDepartment).filter(d => d.Department);
+    }catch(depErr){
+      console.warn("Department table not available yet. Using link departments only:", depErr.message || depErr);
+      departmentRows = [];
     }
+
+    try{
+      const { data: subData, error: subError } = await db
+        .from(SUB_TABLE)
+        .select("*")
+        .eq("is_active", true)
+        .order("sort_order", { ascending:true })
+        .order("sub_department", { ascending:true });
+
+      if(subError) throw subError;
+      subDepartmentRows = (subData || []).map(normalizeSubDepartment).filter(s => s.Department && s.SubDepartment);
+    }catch(subErr){
+      console.warn("Sub-department table not available yet. Using link sub-departments only:", subErr.message || subErr);
+      subDepartmentRows = [];
+    }
+
+    localRequests = getLocalRequests();
+    await syncLocalRequestsWithAdmin();
+
+    buildMaps();
+    await loadGallery();
+    render();
+    setDbStatus("ok", `${rawRows.length} links`);
+  }catch(e){
+    console.error(e);
+    setDbStatus("bad", "DB error");
+    showOnly("depGrid");
+    els.depGrid.innerHTML = `
+      <div class="empty">
+        <strong>Failed to load Supabase data.</strong><br>
+        ${esc(e.message || e)}<br><br>
+        Check table name, columns, and RLS SELECT policy.
+      </div>
+    `;
+  }
+}
+
+function buildMaps(){
+  const map = {};
+
+  function ensureDep(dep, imageUrl="", sortOrder=999999, pending=false){
+    if(!dep) return null;
+    if(!map[dep]){
+      map[dep] = {
+        dep,
+        subs:[],
+        imageUrl:imageUrl || "",
+        totalLinks:0,
+        sortOrder:Number(sortOrder || 999999),
+        pending:!!pending,
+        pendingSubs:new Set()
+      };
+    }
+    if(imageUrl && !map[dep].imageUrl) map[dep].imageUrl = imageUrl;
+    if(pending) map[dep].pending = true;
+    return map[dep];
+  }
+
+  function addSub(dep, sub, pending=false){
+    const d = ensureDep(dep, "", 999999, false);
+    if(!d || !sub) return;
+    if(!d.subs.includes(sub)) d.subs.push(sub);
+    if(pending) d.pendingSubs.add(sub);
+  }
+
+  // Permanent departments created from admin panel.
+  departmentRows.forEach(row => {
+    const depImg = firstGood(row.ImageURL, getPublicImage(row.ImagePath));
+    ensureDep(row.Department, depImg, row.SortOrder || 0, false);
   });
 
-  return out;
+  // Permanent empty sub-departments created from admin panel if table exists.
+  subDepartmentRows.forEach(row => {
+    ensureDep(row.Department, "", row.SortOrder || 0, false);
+    addSub(row.Department, row.SubDepartment, false);
+  });
+
+  // Permanent links still create departments/sub-departments automatically.
+  rawRows.forEach(row => {
+    const dep = row.Department;
+    const sub = row.SubDepartment;
+    const depImg = departmentImageFromRow(row);
+    const d = ensureDep(dep, depImg, 999999, false);
+
+    if(d && depImg && !d.imageUrl) d.imageUrl = depImg;
+    if(sub) addSub(dep, sub, false);
+
+    if(d) d.totalLinks++;
+  });
+
+  // Local pending Department/Sub/Link requests appear immediately on this browser.
+  localRequestsFor("department").forEach(req => {
+    ensureDep(
+      req.department,
+      firstGood(req.department_image_url, req.image_url),
+      999998,
+      true
+    );
+  });
+
+  localRequestsFor("sub_department").forEach(req => {
+    ensureDep(req.department, "", 999998, false);
+    addSub(req.department, req.sub_department, true);
+  });
+
+  localRequestsFor("link").forEach(req => {
+    const d = ensureDep(req.department, "", 999998, false);
+    addSub(req.department, req.sub_department || "General", true);
+    if(d) d.totalLinks++;
+  });
+
+  departmentsData = Object.values(map).map(d => ({
+    ...d,
+    subs: d.subs.sort((a,b) => a.localeCompare(b)),
+    pendingSubs:[...d.pendingSubs],
+    imageUrl: d.imageUrl || fallbackImage(d.dep)
+  })).sort((a,b) => (a.sortOrder - b.sortOrder) || a.dep.localeCompare(b.dep));
+
+  updateStats();
 }
 
-function previewBulk(){
-  clearMsg(els.bulkMsg);
-
-  try{
-    bulkRows = mapBulkRows();
-
-    if(!bulkRows.length){
-      throw new Error("No valid rows found. Required: department, sub_department, link_name, url.");
-    }
-
-    const previewRows = bulkRows.slice(0, 30);
-    els.bulkPreview.classList.remove("hidden");
-    els.bulkPreview.innerHTML = `
-      <table>
-        <thead>
-          <tr><th>Department</th><th>Sub</th><th>Name</th><th>URL</th></tr>
-        </thead>
-        <tbody>
-          ${previewRows.map(r => `
-            <tr>
-              <td>${esc(r.department)}</td>
-              <td>${esc(r.sub_department)}</td>
-              <td>${esc(r.link_name)}</td>
-              <td>${esc(r.url)}</td>
-            </tr>
-          `).join("")}
-        </tbody>
-      </table>
-    `;
-
-    setMsg(els.bulkMsg, "ok", `${bulkRows.length} valid rows ready to import.`);
-  }catch(err){
-    bulkRows = [];
-    els.bulkPreview.classList.add("hidden");
-    setMsg(els.bulkMsg, "bad", esc(err.message || err));
-  }
-}
-
-async function importBulk(){
-  clearMsg(els.bulkMsg);
-
-  try{
-    if(!bulkRows.length) previewBulk();
-    if(!bulkRows.length) return;
-
-    if(!confirm(`Import ${bulkRows.length} approved links?`)) return;
-
-    const result = await rpc("rv_admin_bulk_add_links_v2", {
-      p_password: ADMIN_PASSWORD,
-      p_rows: bulkRows
-    });
-
-    setMsg(els.bulkMsg, "ok", `Imported ${result || bulkRows.length} links successfully.`);
-    els.bulkText.value = "";
-    bulkRows = [];
-    els.bulkPreview.classList.add("hidden");
-    await refreshAll();
-  }catch(err){
-    console.error(err);
-    setMsg(els.bulkMsg, "bad", esc(err.message || err));
-  }
-}
-
-/* =========================================================
-   Manage
-========================================================= */
-async function loadManage(){
-  els.manageList.innerHTML = `<div class="card">Loading...</div>`;
-
-  try{
-    const type = els.manageType.value;
-    const search = els.manageSearch.value.trim() || els.globalSearch.value.trim();
-
-    let rows = [];
-
-    if(type === "departments"){
-      rows = await rpc("rv_admin_list_departments_v2", { p_password: ADMIN_PASSWORD, p_search: search });
-    }else if(type === "sub_departments"){
-      rows = await rpc("rv_admin_list_sub_departments_v2", { p_password: ADMIN_PASSWORD, p_search: search });
-    }else{
-      rows = await rpc("rv_admin_list_links_v2", { p_password: ADMIN_PASSWORD, p_search: search });
-    }
-
-    if(!rows || rows.length === 0){
-      els.manageList.innerHTML = `<div class="empty"><strong>No items found</strong>Try a different search.</div>`;
-      return;
-    }
-
-    els.manageList.innerHTML = rows.map(r => manageRow(type, r)).join("");
-  }catch(err){
-    console.error(err);
-    els.manageList.innerHTML = `<div class="card"><div class="msg bad" style="display:block">${esc(err.message || err)}</div></div>`;
-  }
-}
-
-function manageRow(type, r){
-  if(type === "departments"){
-    return `
-      <div class="listbar" data-type="departments" data-id="${esc(r.id)}">
-        <div>
-          <h4>${esc(r.department)}</h4>
-          <p>${Number(r.total_links || 0)} links • ${Number(r.sub_count || 0)} sub-departments</p>
-        </div>
-        <span class="badge approved">Active</span>
-        <button class="btn red small btn-hide-item" type="button">Hide</button>
-      </div>
-    `;
-  }
-
-  if(type === "sub_departments"){
-    return `
-      <div class="listbar" data-type="sub_departments" data-id="${esc(r.id)}">
-        <div>
-          <h4>${esc(r.sub_department)}</h4>
-          <p>${esc(r.department)} • ${Number(r.total_links || 0)} links</p>
-        </div>
-        <span class="badge approved">Active</span>
-        <button class="btn red small btn-hide-item" type="button">Hide</button>
-      </div>
-    `;
-  }
-
-  return `
-    <div class="listbar" data-type="links" data-id="${esc(r.id)}">
-      <div>
-        <h4>${esc(r.link_name)}</h4>
-        <p>${esc(r.department)} / ${esc(r.sub_department)}<br>${esc(r.url)}</p>
-      </div>
-      <a class="btn small" href="${esc(r.url)}" target="_blank" rel="noopener">Open</a>
-      <button class="btn red small btn-hide-item" type="button">Hide</button>
-    </div>
-  `;
-}
-
-async function hideItem(type, id){
-  const label = type === "departments" ? "department and its links" : type === "sub_departments" ? "sub-department and its links" : "link";
-  if(!confirm(`Hide this ${label}?`)) return;
-
-  try{
-    const fn = type === "departments"
-      ? "rv_admin_deactivate_department_v2"
-      : type === "sub_departments"
-        ? "rv_admin_deactivate_sub_department_v2"
-        : "rv_admin_deactivate_link_v2";
-
-    const argName = type === "departments"
-      ? "p_department_id"
-      : type === "sub_departments"
-        ? "p_sub_department_id"
-        : "p_link_id";
-
-    await rpc(fn, {
-      p_password: ADMIN_PASSWORD,
-      [argName]: id
-    });
-
-    await refreshAll();
-    await loadManage();
-  }catch(err){
-    console.error(err);
-    alert(err.message || err);
-  }
+function updateStats(){
+  els.statDepartments.textContent = departmentsData.length;
+  els.statSubs.textContent = allSubsCount();
+  els.statLinks.textContent = rawRows.length;
 }
 
 /* =========================================================
    Gallery
 ========================================================= */
-async function addGalleryImage(e){
-  e.preventDefault();
-  clearMsg(els.galleryMsg);
+function fallbackGalleryFromLinks(){
+  const seen = new Set();
+  const items = [];
 
-  const f = getFormData(els.galleryForm);
+  rawRows.forEach(row => {
+    const url = firstGood(imageFromRow(row), departmentImageFromRow(row));
+    if(!url || seen.has(url)) return;
+    seen.add(url);
 
-  try{
-    await rpc("rv_admin_add_gallery_image_v2", {
-      p_password: ADMIN_PASSWORD,
-      p_title: f.title || null,
-      p_category: f.category || null,
-      p_image_url: safeUrl(f.image_url),
-      p_tags: f.tags || null
+    items.push({
+      id:"",
+      title: row.LinkName || row.Department || "Existing image",
+      category: row.Department || "",
+      url
     });
+  });
 
-    setMsg(els.galleryMsg, "ok", "Gallery image saved.");
-    els.galleryForm.reset();
-    await refreshAll();
-    await loadGallery();
-  }catch(err){
-    console.error(err);
-    setMsg(els.galleryMsg, "bad", esc(err.message || err));
-  }
+  return items.slice(0, 100);
 }
 
 async function loadGallery(){
-  els.galleryList.innerHTML = `<div class="card">Loading gallery...</div>`;
+  const fallback = fallbackGalleryFromLinks();
 
   try{
-    const rows = await rpc("rv_admin_list_gallery_v2", {
-      p_password: ADMIN_PASSWORD,
-      p_search: els.globalSearch.value.trim()
+    const { data, error } = await db
+      .from(GALLERY_TABLE)
+      .select("id,title,category,image_url,image_path,is_active")
+      .eq("is_active", true)
+      .order("created_at", { ascending:false })
+      .limit(120);
+
+    if(error) throw error;
+
+    const fromTable = (data || []).map(item => {
+      const url = firstGood(item.image_url, getPublicImage(item.image_path));
+      return {
+        id:item.id || "",
+        title:item.title || "Gallery image",
+        category:item.category || "",
+        url
+      };
+    }).filter(x => x.url);
+
+    const merged = [];
+    const seen = new Set();
+
+    [...fromTable, ...fallback].forEach(item => {
+      if(!item.url || seen.has(item.url)) return;
+      seen.add(item.url);
+      merged.push(item);
     });
 
-    if(!rows || rows.length === 0){
-      els.galleryList.innerHTML = `<div class="empty"><strong>No gallery images</strong>Add image URLs above.</div>`;
-      return;
-    }
-
-    els.galleryList.innerHTML = `
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;">
-        ${rows.map(r => `
-          <div class="card" style="padding:10px;margin:0;" data-id="${esc(r.id)}">
-            <div class="thumb" style="aspect-ratio:1.25;max-width:none;">
-              ${r.image_url ? `<img src="${esc(r.image_url)}" alt="">` : `<div class="thumb-placeholder">No Image</div>`}
-            </div>
-            <h4 style="font-weight:950;margin-top:10px;font-size:.9rem;">${esc(r.title || "Gallery Image")}</h4>
-            <p class="mini">${esc(r.category || "No category")}</p>
-            <button class="btn red small btn-hide-gallery" type="button" style="margin-top:10px;width:100%;">Hide</button>
-          </div>
-        `).join("")}
-      </div>
-    `;
-  }catch(err){
-    console.error(err);
-    els.galleryList.innerHTML = `<div class="card"><div class="msg bad" style="display:block">${esc(err.message || err)}</div></div>`;
+    galleryImages = merged;
+  }catch(e){
+    console.warn("Gallery table not available, using existing link images:", e.message || e);
+    galleryImages = fallback;
   }
+
+  selectedGalleryImage = galleryImages[0] || null;
 }
 
-async function hideGalleryImage(id){
-  if(!confirm("Hide this gallery image?")) return;
+function renderGallery(){
+  els.galleryGrid.innerHTML = "";
+
+  if(!galleryImages.length){
+    els.galleryGrid.innerHTML = `
+      <div class="empty" style="grid-column:1/-1;padding:18px">
+        <strong>No gallery images yet.</strong><br>
+        You can paste an image URL or admin can add gallery images later.
+      </div>
+    `;
+    return;
+  }
+
+  galleryImages.forEach((item, index) => {
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "gallery-item" + ((selectedGalleryImage && selectedGalleryImage.url === item.url) ? " selected" : "");
+    card.title = item.title || "Gallery image";
+    card.innerHTML = `
+      <img src="${esc(item.url)}" alt="${esc(item.title || "Gallery image")}" loading="lazy">
+      <span class="gallery-check">✓</span>
+    `;
+
+    card.addEventListener("click", () => {
+      selectedGalleryImage = item;
+      renderGallery();
+    });
+
+    els.galleryGrid.appendChild(card);
+  });
+}
+
+function setPhotoMode(mode){
+  requestPhotoMode = mode;
+
+  document.querySelectorAll(".photo-mode").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.mode === mode);
+  });
+
+  els.galleryPanel.classList.toggle("hidden", mode !== "gallery");
+  els.urlPhotoPanel.classList.toggle("hidden", mode !== "url");
+}
+
+function renderDepartmentGallery(){
+  els.depGalleryGrid.innerHTML = "";
+
+  if(!galleryImages.length){
+    els.depGalleryGrid.innerHTML = `
+      <div class="empty" style="grid-column:1/-1;padding:18px">
+        <strong>No gallery images yet.</strong><br>
+        You can paste an image URL or admin can add gallery images later.
+      </div>
+    `;
+    return;
+  }
+
+  galleryImages.forEach((item) => {
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "gallery-item" + ((selectedDepartmentGalleryImage && selectedDepartmentGalleryImage.url === item.url) ? " selected" : "");
+    card.title = item.title || "Gallery image";
+    card.innerHTML = `
+      <img src="${esc(item.url)}" alt="${esc(item.title || "Gallery image")}" loading="lazy">
+      <span class="gallery-check">✓</span>
+    `;
+
+    card.addEventListener("click", () => {
+      selectedDepartmentGalleryImage = item;
+      renderDepartmentGallery();
+    });
+
+    els.depGalleryGrid.appendChild(card);
+  });
+}
+
+function setDepartmentPhotoMode(mode){
+  departmentPhotoMode = mode;
+
+  document.querySelectorAll(".dept-photo-mode").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.mode === mode);
+  });
+
+  els.depGalleryPanel.classList.toggle("hidden", mode !== "gallery");
+  els.depUrlPhotoPanel.classList.toggle("hidden", mode !== "url");
+}
+
+function openDepartmentModal(){
+  els.departmentForm.reset();
+  els.departmentMsg.className = "request-msg";
+  els.departmentMsg.innerHTML = "";
+
+  departmentPhotoMode = "gallery";
+  selectedDepartmentGalleryImage = selectedDepartmentGalleryImage || galleryImages[0] || null;
+  setDepartmentPhotoMode("gallery");
+  renderDepartmentGallery();
+
+  els.departmentModal.classList.add("show");
+  setTimeout(() => els.depReqDepartmentName.focus(), 60);
+}
+
+function closeDepartmentModal(){
+  els.departmentModal.classList.remove("show");
+}
+
+async function submitDepartmentRequestHandler(e){
+  e.preventDefault();
+
+  const department = els.depReqDepartmentName.value.trim();
+  const requested_by_name = els.depReqName.value.trim();
+  const requested_by_email = els.depReqEmail.value.trim();
+  const note = els.depReqNote.value.trim();
+
+  if(!department){
+    els.departmentMsg.className = "request-msg bad";
+    els.departmentMsg.innerHTML = "Please enter a department name.";
+    return;
+  }
+
+  if(alreadyHasDepartment(department)){
+    els.departmentMsg.className = "request-msg bad";
+    els.departmentMsg.innerHTML = "This department already exists on this page/device.";
+    return;
+  }
+
+  let image_url = "";
+  if(departmentPhotoMode === "gallery"){
+    image_url = selectedDepartmentGalleryImage?.url || "";
+  }else if(departmentPhotoMode === "url"){
+    image_url = els.depReqImageUrl.value.trim();
+  }
+
+  els.submitDepartmentRequest.disabled = true;
+  els.submitDepartmentRequest.textContent = "Submitting...";
+  els.departmentMsg.className = "request-msg";
+  els.departmentMsg.innerHTML = "";
+
+  const req = {
+    client_temp_id:makeTempId("department"),
+    request_type:"department",
+    department,
+    department_image_url:image_url || "",
+    image_url:image_url || "",
+    color:"",
+    note:note || "Department request from public page",
+    requested_by_name:requested_by_name || "",
+    requested_by_email:requested_by_email || "",
+    status:"pending",
+    submitted:false,
+    created_at:new Date().toISOString()
+  };
+
+  saveLocalRequest(req);
+  currentDep = department;
+  currentSub = "__all__";
+  els.viewMode.value = "subpage";
+  refreshLocalAndRender();
 
   try{
-    await rpc("rv_admin_deactivate_gallery_image_v2", {
-      p_password: ADMIN_PASSWORD,
-      p_gallery_id: id
-    });
-    await refreshAll();
-    await loadGallery();
+    await submitGenericRequest(req);
+    els.departmentMsg.className = "request-msg ok";
+    els.departmentMsg.innerHTML = "Saved locally and sent for admin approval.";
+    setTimeout(() => closeDepartmentModal(), 700);
   }catch(err){
     console.error(err);
-    alert(err.message || err);
+    els.departmentMsg.className = "request-msg bad";
+    els.departmentMsg.innerHTML = `Saved locally, but could not send to admin.<br>${esc(err.message || err)}`;
+  }finally{
+    els.submitDepartmentRequest.disabled = false;
+    els.submitDepartmentRequest.textContent = "Submit Department";
   }
 }
 
 /* =========================================================
-   History
+   Local Sort Orders
 ========================================================= */
-async function loadHistory(){
-  els.historyList.innerHTML = `<div class="card">Loading history...</div>`;
+function getDeptOrder(){
+  try{return JSON.parse(localStorage.getItem(LS.DEPT_ORDER) || "[]")}catch{return []}
+}
 
-  try{
-    const rows = await rpc("rv_admin_request_history_v2", {
-      p_password: ADMIN_PASSWORD,
-      p_search: els.globalSearch.value.trim()
+function setDeptOrder(ids){
+  localStorage.setItem(LS.DEPT_ORDER, JSON.stringify(ids));
+}
+
+function getLinkOrder(dep, sub){
+  try{return JSON.parse(localStorage.getItem(LS.LINK_ORDER(dep, sub)) || "[]")}catch{return []}
+}
+
+function setLinkOrder(dep, sub, ids){
+  localStorage.setItem(LS.LINK_ORDER(dep, sub), JSON.stringify(ids));
+}
+
+/* =========================================================
+   Routing / Views
+========================================================= */
+function showOnly(which){
+  els.depGrid.classList.toggle("hidden", which !== "depGrid");
+  els.subGrid.classList.toggle("hidden", which !== "subGrid");
+  els.linkGrid.classList.toggle("hidden", which !== "linkGrid");
+}
+
+function updateBackVisibility(){
+  const mode = els.viewMode.value;
+  els.btnBack.classList.toggle("hidden", mode === "departments");
+}
+
+function goBack(){
+  const mode = els.viewMode.value;
+
+  if(mode === "links"){
+    els.viewMode.value = "subpage";
+  }else if(mode === "subpage"){
+    els.viewMode.value = "departments";
+    currentDep = null;
+    currentSub = "__all__";
+  }
+
+  render();
+  step();
+}
+
+function updateTitleAndCrumbs(){
+  const mode = els.viewMode.value;
+
+  if(mode === "departments" || !currentDep){
+    els.crumbs.innerHTML = "Home";
+    els.pageTitle.textContent = "Departments";
+    els.pageNote.textContent = "Browse your departments, open sub-departments, and launch important tools quickly.";
+    return;
+  }
+
+  if(mode === "subpage"){
+    els.crumbs.innerHTML = `<b>${esc(currentDep)}</b> / Sub-departments`;
+    els.pageTitle.textContent = currentDep;
+    els.pageNote.textContent = "Choose a sub-department to see the tools and links inside.";
+    return;
+  }
+
+  const subTxt = currentSub === "__all__" ? "All Links" : currentSub;
+  els.crumbs.innerHTML = `<b>${esc(currentDep)}</b> / ${esc(subTxt)}`;
+  els.pageTitle.textContent = subTxt;
+  els.pageNote.textContent = "Open tools in a new tab. Use Add New Link to send a request for admin approval.";
+}
+
+function render(){
+  const mode = els.viewMode.value;
+
+  const settingsSaved = localStorage.getItem(LS.SETTINGS_OPEN);
+  els.settings.classList.toggle("hidden", settingsSaved !== "1");
+
+  if(mode === "departments") renderDepartments();
+  else if(mode === "subpage") renderSubPage();
+  else renderLinks();
+
+  updateTitleAndCrumbs();
+  updateBackVisibility();
+  updateTopAddButton();
+  applyMedia(els.media.value);
+}
+
+function updateTopAddButton(){
+  const mode = els.viewMode.value;
+  if(mode === "departments"){
+    els.btnAddLinkTop.textContent = "+ Dept";
+    els.btnAddLinkTop.title = "Add New Department";
+  }else if(mode === "subpage"){
+    els.btnAddLinkTop.textContent = "+ Sub";
+    els.btnAddLinkTop.title = "Add New Sub-Department";
+  }else{
+    els.btnAddLinkTop.textContent = "+ Link";
+    els.btnAddLinkTop.title = "Add New Link";
+  }
+}
+
+/* =========================================================
+   Render Departments
+========================================================= */
+function renderDepartments(){
+  showOnly("depGrid");
+
+  const q = els.search.value.trim().toLowerCase();
+  const order = getDeptOrder();
+
+  let data = departmentsData;
+
+  if(q){
+    data = data.filter(d =>
+      d.dep.toLowerCase().includes(q) ||
+      d.subs.some(s => s.toLowerCase().includes(q))
+    );
+  }else{
+    data = [
+      ...order.map(name => departmentsData.find(d => d.dep === name)).filter(Boolean),
+      ...departmentsData.filter(d => !order.includes(d.dep))
+    ];
+  }
+
+  els.depGrid.innerHTML = "";
+
+  if(data.length === 0){
+    els.depGrid.innerHTML = `<div class="empty"><strong>No departments found.</strong><br>You can add a new department request below.</div>`;
+    els.depGrid.appendChild(addDepartmentCard());
+    return;
+  }
+
+  data.forEach(d => {
+    const card = document.createElement("div");
+    card.className = "card" + (d.pending ? " pending-card" : "");
+    card.dataset.id = d.dep;
+    card.innerHTML = `
+      <img class="img" loading="lazy" decoding="async" src="${esc(d.imageUrl)}" alt="${esc(d.dep)}">
+      <div class="veil"></div>
+      <div class="overlay"></div>
+      ${d.pending ? `<div class="pending-ribbon">Pending</div>` : ``}
+      <div class="label">
+        <div class="label-main">
+          <span class="label-title">${esc(d.dep)}</span>
+          <span class="label-sub">${d.pending ? "Waiting for admin approval" : `${d.totalLinks} links inside`}</span>
+        </div>
+        <span class="pill">${d.pending ? "Pending" : `${d.subs.length} subs`}</span>
+      </div>
+    `;
+
+    card.addEventListener("click", () => {
+      currentDep = d.dep;
+      currentSub = "__all__";
+      els.viewMode.value = "subpage";
+      render();
+      step();
     });
 
-    if(!rows || rows.length === 0){
-      els.historyList.innerHTML = `<div class="empty"><strong>No history yet</strong>Approved and rejected requests will appear here.</div>`;
-      return;
-    }
+    els.depGrid.appendChild(card);
+  });
 
-    els.historyList.innerHTML = rows.map(r => `
-      <div class="listbar">
-        <div>
-          <h4>${esc(r.request_type === "department" ? r.department : r.request_type === "sub_department" ? r.sub_department : r.link_name)}</h4>
-          <p>${prettyType(r.request_type)} • ${esc(r.department || "")}${r.sub_department ? " / " + esc(r.sub_department) : ""}<br>${esc(r.admin_note || "No admin note")}</p>
-        </div>
-        <span class="badge ${esc(r.status)}">${esc(r.status)}</span>
-        <span class="mini">${timeAgo(r.reviewed_at || r.created_at)}</span>
+  // Add New Department request card stays at the end of home page
+  els.depGrid.appendChild(addDepartmentCard());
+
+  if(depSortable){
+    depSortable.destroy();
+    depSortable = null;
+  }
+
+  if(sorting){
+    depSortable = Sortable.create(els.depGrid, {
+      animation:140,
+      onEnd:() => {
+        const ids = [...els.depGrid.children].map(el => el.dataset.id).filter(Boolean);
+        setDeptOrder(ids);
+        step();
+      }
+    });
+  }
+}
+
+/* =========================================================
+   Render Sub Departments
+========================================================= */
+function renderSubPage(){
+  showOnly("subGrid");
+
+  if(!currentDep){
+    els.viewMode.value = "departments";
+    render();
+    return;
+  }
+
+  const depObj = departmentsData.find(d => d.dep === currentDep);
+  const subs = depObj?.subs || [];
+
+  els.subFilter.disabled = false;
+  els.subFilter.innerHTML = `<option value="__all__">All</option>` + subs.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join("");
+  els.subFilter.value = "__all__";
+
+  const q = els.search.value.trim().toLowerCase();
+  const filtered = q ? subs.filter(s => s.toLowerCase().includes(q)) : subs;
+
+  els.subGrid.innerHTML = "";
+
+  if(filtered.length === 0){
+    els.subGrid.innerHTML = `<div class="empty"><strong>No sub-departments yet.</strong><br>Add a sub-department request below. It will work locally right away.</div>`;
+    els.subGrid.appendChild(addSubDepartmentCard());
+    return;
+  }
+
+  filtered.forEach(sub => {
+    const isPendingSub = depObj?.pendingSubs?.includes(sub);
+    const chip = document.createElement("div");
+    chip.className = "subchip" + (isPendingSub ? " pending-card" : "");
+    chip.innerHTML = `
+      <div class="sub-top">
+        <div class="sub-icon">↗</div>
+        <div class="sub-count">${countLinksInSub(currentDep, sub)}</div>
       </div>
-    `).join("");
+      ${isPendingSub ? `<div class="pending-ribbon">Pending</div>` : ``}
+      <div>
+        <div class="sub-title">${esc(sub)}</div>
+        <div class="sub-desc">${isPendingSub ? "Waiting for admin approval" : "Open links and tools"}</div>
+      </div>
+    `;
+
+    chip.addEventListener("click", () => {
+      currentSub = sub;
+      els.subFilter.value = sub;
+      els.viewMode.value = "links";
+      render();
+      step();
+    });
+
+    els.subGrid.appendChild(chip);
+  });
+
+  // Add New Sub-Department request card stays at the end of sub-department view
+  els.subGrid.appendChild(addSubDepartmentCard());
+}
+
+/* =========================================================
+   Render Links
+========================================================= */
+function linksFor(dep, sub){
+  const lowerDep = String(dep || "").toLowerCase();
+  const lowerSub = String(sub || "").toLowerCase();
+
+  const permanent = rawRows
+    .filter(row => {
+      const rowDep = row.Department.toLowerCase();
+      const rowSub = row.SubDepartment.toLowerCase();
+      if(rowDep !== lowerDep) return false;
+      if(sub === "__all__") return true;
+      return rowSub === lowerSub;
+    })
+    .map(row => ({
+      name: row.LinkName || "Unnamed",
+      url: safeUrl(row.URL),
+      image: imageFromRow(row) || fallbackImage(row.LinkName),
+      sub: row.SubDepartment || "",
+      sort: Number(row.SortOrder || 0),
+      pending:false
+    }));
+
+  const pending = localRequestsFor("link")
+    .filter(req => {
+      const rowDep = String(req.department || "").toLowerCase();
+      const rowSub = String(req.sub_department || "General").toLowerCase();
+      if(rowDep !== lowerDep) return false;
+      if(sub === "__all__") return true;
+      return rowSub === lowerSub;
+    })
+    .map(req => ({
+      name: req.link_name || "Pending Link",
+      url: safeUrl(req.url),
+      image: req.image_url || fallbackImage(req.link_name || "Pending Link"),
+      sub: req.sub_department || "General",
+      sort: -1,
+      pending:true,
+      client_temp_id:req.client_temp_id
+    }));
+
+  return [...pending, ...permanent]
+    .sort((a,b) => (a.sort - b.sort) || a.name.localeCompare(b.name));
+}
+
+function addDepartmentCard(){
+  const card = document.createElement("button");
+  card.type = "button";
+  card.className = "add-card";
+  card.innerHTML = `
+    <div class="add-content">
+      <div class="add-plus">+</div>
+      <div class="add-title">Add Department</div>
+      <div class="add-desc">Create it locally now. Admin approval makes it permanent.</div>
+    </div>
+  `;
+
+  card.addEventListener("click", () => requestNewDepartment());
+  return card;
+}
+
+function addSubDepartmentCard(){
+  const card = document.createElement("button");
+  card.type = "button";
+  card.className = "add-card";
+  card.innerHTML = `
+    <div class="add-content">
+      <div class="add-plus">+</div>
+      <div class="add-title">Add Sub-Department</div>
+      <div class="add-desc">Use it immediately here. Admin approval makes it permanent.</div>
+    </div>
+  `;
+
+  card.addEventListener("click", () => requestNewSubDepartment());
+  return card;
+}
+
+async function requestNewDepartment(){
+  openDepartmentModal();
+}
+
+async function requestNewSubDepartment(){
+  if(!currentDep){
+    alert("Open a department first.");
+    return;
+  }
+
+  const name = prompt(`New sub-department under "${currentDep}"?`);
+  if(!name || !name.trim()) return;
+
+  const sub_department = name.trim();
+
+  if(alreadyHasSubDepartment(currentDep, sub_department)){
+    alert("This sub-department already exists on this device/page.");
+    return;
+  }
+
+  const req = {
+    client_temp_id:makeTempId("sub_department"),
+    request_type:"sub_department",
+    department:currentDep,
+    sub_department,
+    note:"Sub-department request from public page",
+    status:"pending",
+    submitted:false,
+    created_at:new Date().toISOString()
+  };
+
+  saveLocalRequest(req);
+  currentSub = sub_department;
+  els.viewMode.value = "links";
+  refreshLocalAndRender();
+
+  try{
+    await submitGenericRequest(req);
+    alert("Sub-department added locally and sent for admin approval.");
   }catch(err){
     console.error(err);
-    els.historyList.innerHTML = `<div class="card"><div class="msg bad" style="display:block">${esc(err.message || err)}</div></div>`;
+    alert("Sub-department added locally, but admin request failed. Check Supabase request policy.");
+  }
+}
+
+function addNewLinkCard(){
+  const card = document.createElement("button");
+  card.type = "button";
+  card.className = "add-card";
+  card.innerHTML = `
+    <div class="add-content">
+      <div class="add-plus">+</div>
+      <div class="add-title">Add New Link</div>
+      <div class="add-desc">Send a request. Admin will approve it before it appears here.</div>
+    </div>
+  `;
+
+  card.addEventListener("click", () => openRequestModal());
+  return card;
+}
+
+function renderLinks(){
+  showOnly("linkGrid");
+
+  if(!currentDep){
+    els.viewMode.value = "departments";
+    render();
+    return;
+  }
+
+  if(els.subFilter.disabled){
+    const depObj = departmentsData.find(d => d.dep === currentDep);
+    const subs = depObj?.subs || [];
+    els.subFilter.disabled = false;
+    els.subFilter.innerHTML = `<option value="__all__">All</option>` + subs.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join("");
+  }
+
+  els.subFilter.value = currentSub;
+
+  let data = linksFor(currentDep, currentSub);
+  const q = els.search.value.trim().toLowerCase();
+
+  if(q){
+    data = data.filter(l =>
+      l.name.toLowerCase().includes(q) ||
+      l.url.toLowerCase().includes(q) ||
+      l.sub.toLowerCase().includes(q)
+    );
+  }
+
+  const order = getLinkOrder(currentDep, currentSub);
+  const sorted = [
+    ...order.map(name => data.find(l => l.name === name)).filter(Boolean),
+    ...data.filter(l => !order.includes(l.name))
+  ];
+
+  els.linkGrid.innerHTML = "";
+
+  if(sorted.length === 0){
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.innerHTML = `<strong>No links found.</strong><br>You can submit a new link request using the Add New Link card below.`;
+    els.linkGrid.appendChild(empty);
+  }else{
+    sorted.forEach(l => {
+      const item = document.createElement("a");
+      item.className = "link" + (l.pending ? " pending-card" : "");
+      item.dataset.name = l.name;
+      item.href = l.url;
+      item.target = "_blank";
+      item.rel = "noopener noreferrer";
+
+      item.innerHTML = `
+        <img class="img" loading="lazy" decoding="async" src="${esc(l.image)}" alt="${esc(l.name)}">
+        <div class="veil"></div>
+        <div class="overlay"></div>
+        ${l.pending ? `<div class="pending-ribbon">Pending</div>` : ``}
+        <div class="label">
+          <div class="label-main">
+            <span class="label-title">${esc(l.name)}</span>
+            <span class="label-sub">${l.pending ? "Local now • waiting for admin" : esc(l.sub || currentDep)}</span>
+          </div>
+          <span class="pill">${l.pending ? "Pending" : "Open"}</span>
+        </div>
+      `;
+
+      item.addEventListener("click", () => step());
+      els.linkGrid.appendChild(item);
+    });
+  }
+
+  // Add New Link card stays at the end of the links grid
+  els.linkGrid.appendChild(addNewLinkCard());
+
+  if(linkSortable){
+    linkSortable.destroy();
+    linkSortable = null;
+  }
+
+  if(sorting){
+    linkSortable = Sortable.create(els.linkGrid, {
+      animation:140,
+      filter: ".add-card,.empty",
+      onEnd:() => {
+        const names = [...els.linkGrid.children].map(el => el.dataset.name).filter(Boolean);
+        setLinkOrder(currentDep, currentSub, names);
+        step();
+      }
+    });
+  }
+}
+
+/* =========================================================
+   Request Modal
+========================================================= */
+function openRequestModal(){
+  if(!currentDep){
+    const firstDep = departmentsData[0];
+    if(!firstDep){
+      alert("No departments available yet.");
+      return;
+    }
+    currentDep = firstDep.dep;
+    currentSub = firstDep.subs[0] || "__all__";
+    els.viewMode.value = currentSub === "__all__" ? "subpage" : "links";
+    render();
+  }
+
+  const depObj = departmentsData.find(d => d.dep === currentDep);
+  const subs = depObj?.subs || [];
+
+  els.requestForm.reset();
+  els.requestMsg.className = "request-msg";
+  els.requestMsg.innerHTML = "";
+
+  els.reqDepartment.value = currentDep;
+
+  const subOptions = subs.length ? subs : ["General"];
+  els.reqSubDepartment.innerHTML = subOptions.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join("");
+
+  if(currentSub && currentSub !== "__all__" && subOptions.includes(currentSub)){
+    els.reqSubDepartment.value = currentSub;
+  }else if(subOptions[0]){
+    els.reqSubDepartment.value = subOptions[0];
+  }
+
+  requestPhotoMode = "gallery";
+  selectedGalleryImage = selectedGalleryImage || galleryImages[0] || null;
+  setPhotoMode("gallery");
+  renderGallery();
+
+  els.requestModal.classList.add("show");
+  setTimeout(() => els.reqLinkName.focus(), 50);
+}
+
+function closeRequestModal(){
+  els.requestModal.classList.remove("show");
+}
+
+async function submitLinkRequest(e){
+  e.preventDefault();
+
+  const department = els.reqDepartment.value.trim();
+  const sub_department = els.reqSubDepartment.value.trim();
+  const link_name = els.reqLinkName.value.trim();
+  const url = safeUrl(els.reqUrl.value.trim());
+  const requested_by_name = els.reqName.value.trim();
+  const requested_by_email = els.reqEmail.value.trim();
+  const note = els.reqNote.value.trim();
+
+  let image_url = "";
+
+  if(requestPhotoMode === "gallery"){
+    image_url = selectedGalleryImage?.url || "";
+  }else if(requestPhotoMode === "url"){
+    image_url = els.reqImageUrl.value.trim();
+  }
+
+  if(!department || !sub_department || !link_name || !url || url === "#"){
+    showMessage("bad", "Please fill department, sub-department, link name, and valid URL.");
+    return;
+  }
+
+  els.submitRequest.disabled = true;
+  els.submitRequest.textContent = "Submitting...";
+  showMessage("", "");
+
+  const req = {
+    client_temp_id:makeTempId("link"),
+    request_type:"link",
+    department,
+    sub_department,
+    link_name,
+    url,
+    image_url:image_url || "",
+    note:note || "",
+    requested_by_name:requested_by_name || "",
+    requested_by_email:requested_by_email || "",
+    status:"pending",
+    submitted:false,
+    created_at:new Date().toISOString()
+  };
+
+  // Save locally first so user can use it right away on this browser.
+  saveLocalRequest(req);
+  currentDep = department;
+  currentSub = sub_department;
+  els.viewMode.value = "links";
+  refreshLocalAndRender();
+
+  try{
+    await submitGenericRequest(req);
+
+    showMessage(
+      "ok",
+      "Saved locally and sent for admin approval. You can use it now on this browser. It becomes permanent after admin approval."
+    );
+
+    els.reqLinkName.value = "";
+    els.reqUrl.value = "";
+    els.reqImageUrl.value = "";
+    els.reqNote.value = "";
+
+    step();
+  }catch(err){
+    console.error(err);
+    showMessage(
+      "bad",
+      `Saved locally, but could not send to admin.<br>${esc(err.message || err)}<br><br>Check ranvexsi_requests insert policy.`
+    );
+  }finally{
+    els.submitRequest.disabled = false;
+    els.submitRequest.textContent = "Submit for Approval";
+  }
+}
+
+/* =========================================================
+   Realtime
+========================================================= */
+function setupRealtime(){
+  try{
+    if(realtimeChannel){
+      db.removeChannel(realtimeChannel);
+      realtimeChannel = null;
+    }
+
+    realtimeChannel = db
+      .channel("ranvexsi-links-live")
+      .on(
+        "postgres_changes",
+        { event:"*", schema:"public", table:SUPABASE_TABLE },
+        () => loadData()
+      )
+      .subscribe();
+  }catch(e){
+    console.warn("Realtime not started:", e);
   }
 }
 
 /* =========================================================
    Events
 ========================================================= */
-els.loginForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  await unlock(els.adminPassword.value.trim());
+els.btnTheme.addEventListener("click", toggleTheme);
+
+els.btnAddLinkTop.addEventListener("click", () => {
+  const mode = els.viewMode.value;
+  if(mode === "departments") requestNewDepartment();
+  else if(mode === "subpage") requestNewSubDepartment();
+  else openRequestModal();
+  step();
 });
 
-els.btnLogout.addEventListener("click", () => {
-  ADMIN_PASSWORD = "";
-  sessionStorage.removeItem("rv_admin_password");
-  els.adminPage.classList.add("hidden");
-  els.loginWrap.classList.remove("hidden");
-  els.adminPassword.value = "";
-  setStatus("", "Locked");
+els.btnSettings.addEventListener("click", () => {
+  const open = els.settings.classList.contains("hidden");
+  els.settings.classList.toggle("hidden", !open);
+  localStorage.setItem(LS.SETTINGS_OPEN, open ? "1" : "0");
 });
 
-els.btnRefresh.addEventListener("click", refreshAll);
+els.btnBack.addEventListener("click", goBack);
 
-document.querySelectorAll(".tab").forEach(btn => {
-  btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+els.btnRefresh.addEventListener("click", () => {
+  loadData();
+  step();
 });
 
-els.btnQuickRequest.addEventListener("click", () => switchTab("requests"));
-els.btnQuickAdd.addEventListener("click", () => switchTab("manual"));
-els.btnQuickBulk.addEventListener("click", () => switchTab("bulk"));
-
-els.departmentForm.addEventListener("submit", addDepartment);
-els.subDepartmentForm.addEventListener("submit", addSubDepartment);
-els.manualLinkForm.addEventListener("submit", addManualLink);
-
-els.btnPreviewBulk.addEventListener("click", previewBulk);
-els.btnImportBulk.addEventListener("click", importBulk);
-
-els.btnManageSearch.addEventListener("click", loadManage);
-els.manageType.addEventListener("change", loadManage);
-els.manageSearch.addEventListener("keydown", (e) => {
-  if(e.key === "Enter") loadManage();
+els.btnClear.addEventListener("click", () => {
+  localStorage.removeItem(LS.DEPT_ORDER);
+  Object.keys(localStorage).forEach(k => {
+    if(k.startsWith("rv_link_order_index_")) localStorage.removeItem(k);
+  });
+  render();
+  step();
 });
 
-els.galleryForm.addEventListener("submit", addGalleryImage);
+els.btnSort.addEventListener("click", () => {
+  sorting = !sorting;
+  els.btnSort.textContent = sorting ? "Disable Sort" : "Enable Sort";
+  render();
+  step();
+});
 
-els.requestsList.addEventListener("click", async (e) => {
-  const approve = e.target.closest(".btn-approve");
-  const reject = e.target.closest(".btn-reject");
-
-  if(approve){
-    await approveRequest(approve.closest(".request-card"));
+els.viewMode.addEventListener("change", () => {
+  if(els.viewMode.value === "departments"){
+    currentDep = null;
+    currentSub = "__all__";
   }
+  render();
+  step();
+});
 
-  if(reject){
-    await rejectRequest(reject.closest(".request-card"));
+els.subFilter.addEventListener("change", () => {
+  currentSub = els.subFilter.value;
+  els.viewMode.value = "links";
+  render();
+  step();
+});
+
+els.density.addEventListener("change", () => {
+  localStorage.setItem(LS.DENSITY, els.density.value);
+  applyDensity(els.density.value);
+  render();
+});
+
+els.media.addEventListener("change", () => {
+  localStorage.setItem(LS.MEDIA, els.media.value);
+  applyMedia(els.media.value);
+});
+
+document.querySelectorAll(".photo-mode").forEach(btn => {
+  btn.addEventListener("click", () => setPhotoMode(btn.dataset.mode));
+});
+
+document.querySelectorAll(".dept-photo-mode").forEach(btn => {
+  btn.addEventListener("click", () => setDepartmentPhotoMode(btn.dataset.mode));
+});
+
+els.closeRequestModal.addEventListener("click", closeRequestModal);
+els.cancelRequest.addEventListener("click", closeRequestModal);
+els.requestForm.addEventListener("submit", submitLinkRequest);
+
+els.closeDepartmentModal.addEventListener("click", closeDepartmentModal);
+els.cancelDepartmentRequest.addEventListener("click", closeDepartmentModal);
+els.departmentForm.addEventListener("submit", submitDepartmentRequestHandler);
+
+els.requestModal.addEventListener("click", (e) => {
+  if(e.target === els.requestModal) closeRequestModal();
+});
+
+els.departmentModal.addEventListener("click", (e) => {
+  if(e.target === els.departmentModal) closeDepartmentModal();
+});
+
+document.addEventListener("keydown", (e) => {
+  if(e.key === "Escape" && els.requestModal.classList.contains("show")){
+    closeRequestModal();
   }
-});
-
-els.manageList.addEventListener("click", async (e) => {
-  const btn = e.target.closest(".btn-hide-item");
-  if(!btn) return;
-  const bar = btn.closest(".listbar");
-  await hideItem(bar.dataset.type, bar.dataset.id);
-});
-
-els.galleryList.addEventListener("click", async (e) => {
-  const btn = e.target.closest(".btn-hide-gallery");
-  if(!btn) return;
-  const card = btn.closest(".card");
-  await hideGalleryImage(card.dataset.id);
+  if(e.key === "Escape" && els.departmentModal.classList.contains("show")){
+    closeDepartmentModal();
+  }
 });
 
 let searchTimer = null;
-els.globalSearch.addEventListener("input", () => {
+els.search.addEventListener("input", () => {
   clearTimeout(searchTimer);
-  searchTimer = setTimeout(() => {
-    const tab = activeTab();
-    if(tab === "requests") loadRequests();
-    if(tab === "manage") loadManage();
-    if(tab === "gallery") loadGallery();
-    if(tab === "history") loadHistory();
-  }, 250);
+  searchTimer = setTimeout(() => render(), 160);
 });
 
-/* Auto unlock for same browser tab session */
-if(ADMIN_PASSWORD){
-  unlock(ADMIN_PASSWORD);
-}
+/* =========================================================
+   Init
+========================================================= */
+initSteps();
+initTheme();
+initPrefs();
+loadData();
+setupRealtime();
 </script>
 </body>
 </html>
