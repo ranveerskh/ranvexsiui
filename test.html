@@ -668,6 +668,37 @@
     margin-top:5px;
   }
 
+  .pending-card{
+    outline:2px solid rgba(217,119,6,.26);
+    outline-offset:-2px;
+  }
+
+  .pending-ribbon{
+    position:absolute;
+    top:10px;
+    right:10px;
+    z-index:4;
+    height:26px;
+    padding:0 10px;
+    border-radius:999px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(217,119,6,.92);
+    color:#fff;
+    font-size:.7rem;
+    font-weight:950;
+    box-shadow:0 8px 18px rgba(0,0,0,.20);
+    backdrop-filter:blur(10px);
+  }
+
+  .pending-note{
+    color:var(--yellow);
+    font-size:.76rem;
+    font-weight:900;
+    margin-top:5px;
+  }
+
   .add-card{
     border-style:dashed;
     border-width:2px;
@@ -1315,7 +1346,9 @@ const SUPABASE_URL = "https://qpplbqodulenhccfzrjv.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_ph2JpBSdGl-dIqvx9F6__g_Oo4r96Y_";
 
 const SUPABASE_TABLE = "ranvexsi_links";
-const REQUEST_TABLE = "ranvexsi_link_requests";
+const DEPT_TABLE = "ranvexsi_departments";
+const SUB_TABLE = "ranvexsi_sub_departments";
+const REQUEST_TABLE = "ranvexsi_requests";
 const GALLERY_TABLE = "ranvexsi_media_gallery";
 const STORAGE_BUCKET = "media";
 
@@ -1373,6 +1406,9 @@ const els = {
 };
 
 let rawRows = [];
+let departmentRows = [];
+let subDepartmentRows = [];
+let localRequests = [];
 let departmentsData = [];
 let galleryImages = [];
 let currentDep = null;
@@ -1391,7 +1427,8 @@ const LS = {
   DEPT_ORDER: "rv_dept_order_index",
   LINK_ORDER: (dep, sub) => `rv_link_order_index_${dep}__${sub}`,
   DENSITY: "rv_density_index",
-  MEDIA: "rv_media_index"
+  MEDIA: "rv_media_index",
+  LOCAL_REQUESTS: "rv_local_pending_requests_v1"
 };
 
 /* =========================================================
@@ -1459,16 +1496,85 @@ function countLinksInSub(dep, sub){
 }
 
 function allSubsCount(){
-  const set = new Set();
-  rawRows.forEach(r => {
-    if(r.Department && r.SubDepartment) set.add(`${r.Department}::${r.SubDepartment}`);
-  });
-  return set.size;
+  return departmentsData.reduce((sum, d) => sum + (d.subs?.length || 0), 0);
 }
 
 function showMessage(type, message){
   els.requestMsg.className = `request-msg ${type}`;
   els.requestMsg.innerHTML = message;
+}
+
+function makeTempId(type){
+  return `${type}_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+}
+
+function getLocalRequests(){
+  try{
+    const rows = JSON.parse(localStorage.getItem(LS.LOCAL_REQUESTS) || "[]");
+    return Array.isArray(rows) ? rows : [];
+  }catch{
+    return [];
+  }
+}
+
+function setLocalRequests(rows){
+  localStorage.setItem(LS.LOCAL_REQUESTS, JSON.stringify(rows));
+}
+
+function saveLocalRequest(req){
+  const rows = getLocalRequests();
+  rows.unshift(req);
+  setLocalRequests(rows);
+  localRequests = rows;
+}
+
+function updateLocalRequest(tempId, patch){
+  const rows = getLocalRequests().map(r => r.client_temp_id === tempId ? {...r, ...patch} : r);
+  setLocalRequests(rows);
+  localRequests = rows;
+}
+
+function localRequestsFor(type){
+  return localRequests.filter(r => r.request_type === type && r.status !== "rejected");
+}
+
+function alreadyHasDepartment(name){
+  const n = String(name || "").trim().toLowerCase();
+  return departmentsData.some(d => d.dep.toLowerCase() === n);
+}
+
+function alreadyHasSubDepartment(dep, sub){
+  const d = departmentsData.find(x => x.dep.toLowerCase() === String(dep || "").toLowerCase());
+  if(!d) return false;
+  return d.subs.some(s => s.toLowerCase() === String(sub || "").toLowerCase());
+}
+
+async function submitGenericRequest(req){
+  const payload = {
+    request_type: req.request_type,
+    client_temp_id: req.client_temp_id || null,
+    department: req.department || null,
+    sub_department: req.sub_department || null,
+    link_name: req.link_name || null,
+    url: req.url || null,
+    image_url: req.image_url || null,
+    department_image_url: req.department_image_url || null,
+    color: req.color || null,
+    note: req.note || null,
+    requested_by_name: req.requested_by_name || null,
+    requested_by_email: req.requested_by_email || null,
+    status: "pending"
+  };
+
+  const { error } = await db.from(REQUEST_TABLE).insert(payload);
+  if(error) throw error;
+  updateLocalRequest(req.client_temp_id, { submitted:true });
+}
+
+function refreshLocalAndRender(){
+  localRequests = getLocalRequests();
+  buildMaps();
+  render();
 }
 
 /* =========================================================
@@ -1534,6 +1640,28 @@ function applyMedia(value){
 /* =========================================================
    Load Data
 ========================================================= */
+function normalizeDepartment(row){
+  return {
+    ID: row.id || "",
+    Department: String(row.department ?? row.Department ?? "").trim(),
+    ImageURL: String(row.image_url ?? row.ImageURL ?? "").trim(),
+    ImagePath: String(row.image_path ?? row.ImagePath ?? "").trim(),
+    Color: String(row.color ?? row.Color ?? "").trim(),
+    SortOrder: Number(row.sort_order ?? row.SortOrder ?? 0),
+    IsActive: row.is_active ?? row.IsActive ?? true
+  };
+}
+
+function normalizeSubDepartment(row){
+  return {
+    ID: row.id || "",
+    Department: String(row.department ?? row.Department ?? "").trim(),
+    SubDepartment: String(row.sub_department ?? row.SubDepartment ?? "").trim(),
+    SortOrder: Number(row.sort_order ?? row.SortOrder ?? 0),
+    IsActive: row.is_active ?? row.IsActive ?? true
+  };
+}
+
 function normalizeRow(row){
   return {
     Department: String(row.department ?? row.Department ?? "").trim(),
@@ -1569,6 +1697,38 @@ async function loadData(){
       .map(normalizeRow)
       .filter(row => row.Department && row.LinkName);
 
+    try{
+      const { data: depData, error: depError } = await db
+        .from(DEPT_TABLE)
+        .select("*")
+        .eq("is_active", true)
+        .order("sort_order", { ascending:true })
+        .order("department", { ascending:true });
+
+      if(depError) throw depError;
+      departmentRows = (depData || []).map(normalizeDepartment).filter(d => d.Department);
+    }catch(depErr){
+      console.warn("Department table not available yet. Using link departments only:", depErr.message || depErr);
+      departmentRows = [];
+    }
+
+    try{
+      const { data: subData, error: subError } = await db
+        .from(SUB_TABLE)
+        .select("*")
+        .eq("is_active", true)
+        .order("sort_order", { ascending:true })
+        .order("sub_department", { ascending:true });
+
+      if(subError) throw subError;
+      subDepartmentRows = (subData || []).map(normalizeSubDepartment).filter(s => s.Department && s.SubDepartment);
+    }catch(subErr){
+      console.warn("Sub-department table not available yet. Using link sub-departments only:", subErr.message || subErr);
+      subDepartmentRows = [];
+    }
+
+    localRequests = getLocalRequests();
+
     buildMaps();
     await loadGallery();
     render();
@@ -1590,31 +1750,83 @@ async function loadData(){
 function buildMaps(){
   const map = {};
 
-  rawRows.forEach(row => {
-    const dep = row.Department;
-    const sub = row.SubDepartment;
-    const depImg = departmentImageFromRow(row);
-
+  function ensureDep(dep, imageUrl="", sortOrder=999999, pending=false){
+    if(!dep) return null;
     if(!map[dep]){
       map[dep] = {
         dep,
         subs:[],
-        imageUrl: depImg || "",
-        totalLinks:0
+        imageUrl:imageUrl || "",
+        totalLinks:0,
+        sortOrder:Number(sortOrder || 999999),
+        pending:!!pending,
+        pendingSubs:new Set()
       };
     }
+    if(imageUrl && !map[dep].imageUrl) map[dep].imageUrl = imageUrl;
+    if(pending) map[dep].pending = true;
+    return map[dep];
+  }
 
-    if(!map[dep].imageUrl && depImg) map[dep].imageUrl = depImg;
-    if(sub && !map[dep].subs.includes(sub)) map[dep].subs.push(sub);
+  function addSub(dep, sub, pending=false){
+    const d = ensureDep(dep, "", 999999, false);
+    if(!d || !sub) return;
+    if(!d.subs.includes(sub)) d.subs.push(sub);
+    if(pending) d.pendingSubs.add(sub);
+  }
 
-    map[dep].totalLinks++;
+  // Permanent departments created from admin panel.
+  departmentRows.forEach(row => {
+    const depImg = firstGood(row.ImageURL, getPublicImage(row.ImagePath));
+    ensureDep(row.Department, depImg, row.SortOrder || 0, false);
+  });
+
+  // Permanent empty sub-departments created from admin panel if table exists.
+  subDepartmentRows.forEach(row => {
+    ensureDep(row.Department, "", row.SortOrder || 0, false);
+    addSub(row.Department, row.SubDepartment, false);
+  });
+
+  // Permanent links still create departments/sub-departments automatically.
+  rawRows.forEach(row => {
+    const dep = row.Department;
+    const sub = row.SubDepartment;
+    const depImg = departmentImageFromRow(row);
+    const d = ensureDep(dep, depImg, 999999, false);
+
+    if(d && depImg && !d.imageUrl) d.imageUrl = depImg;
+    if(sub) addSub(dep, sub, false);
+
+    if(d) d.totalLinks++;
+  });
+
+  // Local pending Department/Sub/Link requests appear immediately on this browser.
+  localRequestsFor("department").forEach(req => {
+    ensureDep(
+      req.department,
+      firstGood(req.department_image_url, req.image_url),
+      999998,
+      true
+    );
+  });
+
+  localRequestsFor("sub_department").forEach(req => {
+    ensureDep(req.department, "", 999998, false);
+    addSub(req.department, req.sub_department, true);
+  });
+
+  localRequestsFor("link").forEach(req => {
+    const d = ensureDep(req.department, "", 999998, false);
+    addSub(req.department, req.sub_department || "General", true);
+    if(d) d.totalLinks++;
   });
 
   departmentsData = Object.values(map).map(d => ({
     ...d,
     subs: d.subs.sort((a,b) => a.localeCompare(b)),
+    pendingSubs:[...d.pendingSubs],
     imageUrl: d.imageUrl || fallbackImage(d.dep)
-  })).sort((a,b) => a.dep.localeCompare(b.dep));
+  })).sort((a,b) => (a.sortOrder - b.sortOrder) || a.dep.localeCompare(b.dep));
 
   updateStats();
 }
@@ -1815,7 +2027,22 @@ function render(){
 
   updateTitleAndCrumbs();
   updateBackVisibility();
+  updateTopAddButton();
   applyMedia(els.media.value);
+}
+
+function updateTopAddButton(){
+  const mode = els.viewMode.value;
+  if(mode === "departments"){
+    els.btnAddLinkTop.textContent = "+ Dept";
+    els.btnAddLinkTop.title = "Add New Department";
+  }else if(mode === "subpage"){
+    els.btnAddLinkTop.textContent = "+ Sub";
+    els.btnAddLinkTop.title = "Add New Sub-Department";
+  }else{
+    els.btnAddLinkTop.textContent = "+ Link";
+    els.btnAddLinkTop.title = "Add New Link";
+  }
 }
 
 /* =========================================================
@@ -1844,24 +2071,26 @@ function renderDepartments(){
   els.depGrid.innerHTML = "";
 
   if(data.length === 0){
-    els.depGrid.innerHTML = `<div class="empty"><strong>No departments found.</strong><br>Try another search keyword.</div>`;
+    els.depGrid.innerHTML = `<div class="empty"><strong>No departments found.</strong><br>You can add a new department request below.</div>`;
+    els.depGrid.appendChild(addDepartmentCard());
     return;
   }
 
   data.forEach(d => {
     const card = document.createElement("div");
-    card.className = "card";
+    card.className = "card" + (d.pending ? " pending-card" : "");
     card.dataset.id = d.dep;
     card.innerHTML = `
       <img class="img" loading="lazy" decoding="async" src="${esc(d.imageUrl)}" alt="${esc(d.dep)}">
       <div class="veil"></div>
       <div class="overlay"></div>
+      ${d.pending ? `<div class="pending-ribbon">Pending</div>` : ``}
       <div class="label">
         <div class="label-main">
           <span class="label-title">${esc(d.dep)}</span>
-          <span class="label-sub">${d.totalLinks} links inside</span>
+          <span class="label-sub">${d.pending ? "Waiting for admin approval" : `${d.totalLinks} links inside`}</span>
         </div>
-        <span class="pill">${d.subs.length} subs</span>
+        <span class="pill">${d.pending ? "Pending" : `${d.subs.length} subs`}</span>
       </div>
     `;
 
@@ -1875,6 +2104,9 @@ function renderDepartments(){
 
     els.depGrid.appendChild(card);
   });
+
+  // Add New Department request card stays at the end of home page
+  els.depGrid.appendChild(addDepartmentCard());
 
   if(depSortable){
     depSortable.destroy();
@@ -1918,21 +2150,24 @@ function renderSubPage(){
   els.subGrid.innerHTML = "";
 
   if(filtered.length === 0){
-    els.subGrid.innerHTML = `<div class="empty"><strong>No sub-departments found.</strong><br>Try another search keyword.</div>`;
+    els.subGrid.innerHTML = `<div class="empty"><strong>No sub-departments yet.</strong><br>Add a sub-department request below. It will work locally right away.</div>`;
+    els.subGrid.appendChild(addSubDepartmentCard());
     return;
   }
 
   filtered.forEach(sub => {
+    const isPendingSub = depObj?.pendingSubs?.includes(sub);
     const chip = document.createElement("div");
-    chip.className = "subchip";
+    chip.className = "subchip" + (isPendingSub ? " pending-card" : "");
     chip.innerHTML = `
       <div class="sub-top">
         <div class="sub-icon">↗</div>
         <div class="sub-count">${countLinksInSub(currentDep, sub)}</div>
       </div>
+      ${isPendingSub ? `<div class="pending-ribbon">Pending</div>` : ``}
       <div>
         <div class="sub-title">${esc(sub)}</div>
-        <div class="sub-desc">Open links and tools</div>
+        <div class="sub-desc">${isPendingSub ? "Waiting for admin approval" : "Open links and tools"}</div>
       </div>
     `;
 
@@ -1946,6 +2181,9 @@ function renderSubPage(){
 
     els.subGrid.appendChild(chip);
   });
+
+  // Add New Sub-Department request card stays at the end of sub-department view
+  els.subGrid.appendChild(addSubDepartmentCard());
 }
 
 /* =========================================================
@@ -1955,7 +2193,7 @@ function linksFor(dep, sub){
   const lowerDep = String(dep || "").toLowerCase();
   const lowerSub = String(sub || "").toLowerCase();
 
-  return rawRows
+  const permanent = rawRows
     .filter(row => {
       const rowDep = row.Department.toLowerCase();
       const rowSub = row.SubDepartment.toLowerCase();
@@ -1968,9 +2206,143 @@ function linksFor(dep, sub){
       url: safeUrl(row.URL),
       image: imageFromRow(row) || fallbackImage(row.LinkName),
       sub: row.SubDepartment || "",
-      sort: Number(row.SortOrder || 0)
-    }))
+      sort: Number(row.SortOrder || 0),
+      pending:false
+    }));
+
+  const pending = localRequestsFor("link")
+    .filter(req => {
+      const rowDep = String(req.department || "").toLowerCase();
+      const rowSub = String(req.sub_department || "General").toLowerCase();
+      if(rowDep !== lowerDep) return false;
+      if(sub === "__all__") return true;
+      return rowSub === lowerSub;
+    })
+    .map(req => ({
+      name: req.link_name || "Pending Link",
+      url: safeUrl(req.url),
+      image: req.image_url || fallbackImage(req.link_name || "Pending Link"),
+      sub: req.sub_department || "General",
+      sort: -1,
+      pending:true,
+      client_temp_id:req.client_temp_id
+    }));
+
+  return [...pending, ...permanent]
     .sort((a,b) => (a.sort - b.sort) || a.name.localeCompare(b.name));
+}
+
+function addDepartmentCard(){
+  const card = document.createElement("button");
+  card.type = "button";
+  card.className = "add-card";
+  card.innerHTML = `
+    <div class="add-content">
+      <div class="add-plus">+</div>
+      <div class="add-title">Add Department</div>
+      <div class="add-desc">Create it locally now. Admin approval makes it permanent.</div>
+    </div>
+  `;
+
+  card.addEventListener("click", () => requestNewDepartment());
+  return card;
+}
+
+function addSubDepartmentCard(){
+  const card = document.createElement("button");
+  card.type = "button";
+  card.className = "add-card";
+  card.innerHTML = `
+    <div class="add-content">
+      <div class="add-plus">+</div>
+      <div class="add-title">Add Sub-Department</div>
+      <div class="add-desc">Use it immediately here. Admin approval makes it permanent.</div>
+    </div>
+  `;
+
+  card.addEventListener("click", () => requestNewSubDepartment());
+  return card;
+}
+
+async function requestNewDepartment(){
+  const name = prompt("New department name?");
+  if(!name || !name.trim()) return;
+
+  const department = name.trim();
+
+  if(alreadyHasDepartment(department)){
+    alert("This department already exists on this device/page.");
+    return;
+  }
+
+  const image = prompt("Optional department image URL? Leave blank if not needed.") || "";
+  const req = {
+    client_temp_id:makeTempId("department"),
+    request_type:"department",
+    department,
+    department_image_url:image.trim() || "",
+    image_url:image.trim() || "",
+    color:"",
+    note:"Department request from public page",
+    status:"pending",
+    submitted:false,
+    created_at:new Date().toISOString()
+  };
+
+  saveLocalRequest(req);
+  currentDep = department;
+  currentSub = "__all__";
+  els.viewMode.value = "subpage";
+  refreshLocalAndRender();
+
+  try{
+    await submitGenericRequest(req);
+    alert("Department added locally and sent for admin approval.");
+  }catch(err){
+    console.error(err);
+    alert("Department added locally, but admin request failed. Check Supabase request policy.");
+  }
+}
+
+async function requestNewSubDepartment(){
+  if(!currentDep){
+    alert("Open a department first.");
+    return;
+  }
+
+  const name = prompt(`New sub-department under "${currentDep}"?`);
+  if(!name || !name.trim()) return;
+
+  const sub_department = name.trim();
+
+  if(alreadyHasSubDepartment(currentDep, sub_department)){
+    alert("This sub-department already exists on this device/page.");
+    return;
+  }
+
+  const req = {
+    client_temp_id:makeTempId("sub_department"),
+    request_type:"sub_department",
+    department:currentDep,
+    sub_department,
+    note:"Sub-department request from public page",
+    status:"pending",
+    submitted:false,
+    created_at:new Date().toISOString()
+  };
+
+  saveLocalRequest(req);
+  currentSub = sub_department;
+  els.viewMode.value = "links";
+  refreshLocalAndRender();
+
+  try{
+    await submitGenericRequest(req);
+    alert("Sub-department added locally and sent for admin approval.");
+  }catch(err){
+    console.error(err);
+    alert("Sub-department added locally, but admin request failed. Check Supabase request policy.");
+  }
 }
 
 function addNewLinkCard(){
@@ -2034,7 +2406,7 @@ function renderLinks(){
   }else{
     sorted.forEach(l => {
       const item = document.createElement("a");
-      item.className = "link";
+      item.className = "link" + (l.pending ? " pending-card" : "");
       item.dataset.name = l.name;
       item.href = l.url;
       item.target = "_blank";
@@ -2044,12 +2416,13 @@ function renderLinks(){
         <img class="img" loading="lazy" decoding="async" src="${esc(l.image)}" alt="${esc(l.name)}">
         <div class="veil"></div>
         <div class="overlay"></div>
+        ${l.pending ? `<div class="pending-ribbon">Pending</div>` : ``}
         <div class="label">
           <div class="label-main">
             <span class="label-title">${esc(l.name)}</span>
-            <span class="label-sub">${esc(l.sub || currentDep)}</span>
+            <span class="label-sub">${l.pending ? "Local now • waiting for admin" : esc(l.sub || currentDep)}</span>
           </div>
-          <span class="pill">Open</span>
+          <span class="pill">${l.pending ? "Pending" : "Open"}</span>
         </div>
       `;
 
@@ -2104,12 +2477,13 @@ function openRequestModal(){
 
   els.reqDepartment.value = currentDep;
 
-  els.reqSubDepartment.innerHTML = subs.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join("");
+  const subOptions = subs.length ? subs : ["General"];
+  els.reqSubDepartment.innerHTML = subOptions.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join("");
 
-  if(currentSub && currentSub !== "__all__" && subs.includes(currentSub)){
+  if(currentSub && currentSub !== "__all__" && subOptions.includes(currentSub)){
     els.reqSubDepartment.value = currentSub;
-  }else if(subs[0]){
-    els.reqSubDepartment.value = subs[0];
+  }else if(subOptions[0]){
+    els.reqSubDepartment.value = subOptions[0];
   }
 
   requestPhotoMode = "gallery";
@@ -2153,28 +2527,35 @@ async function submitLinkRequest(e){
   els.submitRequest.textContent = "Submitting...";
   showMessage("", "");
 
+  const req = {
+    client_temp_id:makeTempId("link"),
+    request_type:"link",
+    department,
+    sub_department,
+    link_name,
+    url,
+    image_url:image_url || "",
+    note:note || "",
+    requested_by_name:requested_by_name || "",
+    requested_by_email:requested_by_email || "",
+    status:"pending",
+    submitted:false,
+    created_at:new Date().toISOString()
+  };
+
+  // Save locally first so user can use it right away on this browser.
+  saveLocalRequest(req);
+  currentDep = department;
+  currentSub = sub_department;
+  els.viewMode.value = "links";
+  refreshLocalAndRender();
+
   try{
-    const payload = {
-      department,
-      sub_department,
-      link_name,
-      url,
-      image_url: image_url || null,
-      note: note || null,
-      requested_by_name: requested_by_name || null,
-      requested_by_email: requested_by_email || null,
-      status:"pending"
-    };
-
-    const { error } = await db
-      .from(REQUEST_TABLE)
-      .insert(payload);
-
-    if(error) throw error;
+    await submitGenericRequest(req);
 
     showMessage(
       "ok",
-      "Request sent successfully. Waiting for admin approval. It will appear on this page after admin approves it."
+      "Saved locally and sent for admin approval. You can use it now on this browser. It becomes permanent after admin approval."
     );
 
     els.reqLinkName.value = "";
@@ -2187,7 +2568,7 @@ async function submitLinkRequest(e){
     console.error(err);
     showMessage(
       "bad",
-      `Could not submit request.<br>${esc(err.message || err)}<br><br>Check request table and insert policy.`
+      `Saved locally, but could not send to admin.<br>${esc(err.message || err)}<br><br>Check ranvexsi_requests insert policy.`
     );
   }finally{
     els.submitRequest.disabled = false;
@@ -2224,7 +2605,10 @@ function setupRealtime(){
 els.btnTheme.addEventListener("click", toggleTheme);
 
 els.btnAddLinkTop.addEventListener("click", () => {
-  openRequestModal();
+  const mode = els.viewMode.value;
+  if(mode === "departments") requestNewDepartment();
+  else if(mode === "subpage") requestNewSubDepartment();
+  else openRequestModal();
   step();
 });
 
