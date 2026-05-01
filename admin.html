@@ -2,1126 +2,1373 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=1280, initial-scale=1.0"/>
-<title>RANVEXSI UI — Admin Overlay (No Sheet Changes)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RANVEXSI UI — Admin Panel</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
   :root{
-    /* Light Theme */
-    --bg: #e9edf5;
-    --ink: #101423;
-    --muted:#6d7387;
-    --card:#f8faff;
-    --line:#cfd7e7;
-    --accent:#3a6cf4;
-    --accent-ink:#ffffff;
-
-    /* Layout */
-    --round:12px;
-    --shadow:0 6px 18px rgba(16,19,36,0.06);
-    --grid-gap:16px;
-    --card-min:300px;
-    --ratio:1.777;
-    --density:1;
-    --media-display:block;
-
-    /* Images */
-    --img-opacity:.88;
-    --img-veil:rgba(0,0,0,.06);
-    --overlay-end:.70;
-  }
-  .dark{
-    --bg:#0f1220;
-    --ink:#eaf1ff;
-    --muted:#9aa6c8;
-    --card:#141a2c;
-    --line:#2a3452;
-    --accent:#5b83ff;
-    --accent-ink:#0b1020;
-    --shadow:0 8px 24px rgba(0,0,0,.22);
-
-    --img-opacity:.55;
-    --img-veil:rgba(0,0,0,0);
-    --overlay-end:.72;
+    --bg:#eef3fb;
+    --bg2:#e7edf8;
+    --surface:#ffffff;
+    --surface2:#f7faff;
+    --ink:#111827;
+    --muted:#6b7280;
+    --line:rgba(15,23,42,.10);
+    --line2:rgba(15,23,42,.16);
+    --accent:#2563eb;
+    --accent2:#7c3aed;
+    --green:#16a34a;
+    --red:#dc2626;
+    --yellow:#d97706;
+    --shadow:0 14px 34px rgba(15,23,42,.10);
+    --shadow2:0 24px 70px rgba(15,23,42,.16);
+    --radius:20px;
+    --max:1380px;
   }
 
-  *{box-sizing:border-box}
-  html,body{height:100%}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{min-height:100%}
   body{
-    margin:0;
-    font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    min-height:100vh;
+    font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
     color:var(--ink);
-    background:var(--bg);
-    overflow-x:hidden;
+    background:
+      radial-gradient(circle at top left, rgba(37,99,235,.14), transparent 35%),
+      radial-gradient(circle at top right, rgba(124,58,237,.12), transparent 32%),
+      linear-gradient(180deg,var(--bg),var(--bg2));
   }
 
-  /* ================= Header (compact) ================= */
-  .header{
-    position:sticky; top:0; z-index:40;
-    display:flex; align-items:center; gap:8px;
-    padding:6px 10px; height:48px;
-    background:var(--card); border-bottom:1px solid var(--line); box-shadow:var(--shadow);
+  button,input,textarea,select{font:inherit}
+  button{cursor:pointer}
+  textarea{resize:vertical}
+
+  .hidden{display:none!important}
+
+  .topbar{
+    position:sticky;
+    top:0;
+    z-index:20;
+    background:rgba(255,255,255,.84);
+    backdrop-filter:blur(22px);
+    border-bottom:1px solid var(--line);
+    box-shadow:0 8px 28px rgba(15,23,42,.06);
   }
-  .brand{display:flex; align-items:center; gap:8px}
+
+  .top-inner{
+    width:min(var(--max),100%);
+    margin:0 auto;
+    min-height:68px;
+    padding:12px 20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+
   .logo{
-    width:28px; height:28px; border-radius:8px;
-    background:var(--accent); color:var(--accent-ink);
-    display:grid; place-items:center; font-weight:800; font-size:0.9rem; letter-spacing:-.2px;
-  }
-  .title{font-weight:800; font-size:.92rem; line-height:1}
-  .grow{flex:1}
-
-  /* Back button (tiny) */
-  .backbtn{
-    width:28px; height:28px; display:grid; place-items:center;
-    border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--ink);
-    cursor:pointer; position:relative; padding:0;
-  }
-  .backbtn:hover{ filter:brightness(0.98) }
-  .backbtn[data-tip]:hover::after{
-    content:attr(data-tip); position:absolute; bottom:-30px; left:50%; transform:translateX(-50%);
-    background:#111; color:#fff; font-size:.75rem; padding:4px 6px; border-radius:6px; white-space:nowrap;
-  }
-  .backbtn.hidden{ display:none; }
-
-  /* search compact */
-  .search{
-    position:relative; width:520px; max-width:45vw; transform:scale(var(--density));
-  }
-  .search input{
-    height:32px; width:100%;
-    padding:0 10px 0 32px; border-radius:8px;
-    border:1px solid var(--line); background:#ffffff; outline:none; color:#111; font-size:.92rem;
-  }
-  .dark .search input{ background:#0f1426; color:var(--ink); }
-  .search svg{position:absolute; left:8px; top:50%; transform:translateY(-50%); opacity:.65}
-  ::placeholder{ color:#6b7280 } .dark ::placeholder{ color:#b6c2e0 }
-
-  /* icon buttons */
-  .actions{display:flex; align-items:center; gap:6px}
-  .iconbtn{
-    width:32px; height:32px; display:grid; place-items:center;
-    border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--ink);
-    cursor:pointer; position:relative;
-  }
-  .iconbtn:hover{ filter:brightness(0.98) }
-  .badge{
-    height:28px; padding:0 8px; border-radius:999px;
-    border:1px solid var(--line); background:var(--card); display:flex; align-items:center; gap:6px; font-size:.86rem;
-  }
-  .iconbtn[data-tip]:hover::after{
-    content:attr(data-tip); position:absolute; bottom:-30px; left:50%; transform:translateX(-50%);
-    background:#111; color:#fff; font-size:.75rem; padding:4px 6px; border-radius:6px; white-space:nowrap;
+    width:44px;
+    height:44px;
+    border-radius:16px;
+    display:grid;
+    place-items:center;
+    color:white;
+    font-weight:950;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    box-shadow:0 14px 30px rgba(37,99,235,.25);
   }
 
-  /* ================= Main ================= */
-  .wrap{ max-width:1280px; margin:12px auto 18px; padding:0 12px }
-
-  /* crumbs */
-  .toolbar{ display:flex; align-items:center; gap:10px; margin:8px 0 }
-  .crumbs{ font-size:.92rem; color:var(--muted) }
-  .crumbs b{ color:var(--ink) }
-
-  /* settings */
-  .settings{
-    border:1px solid var(--line); border-radius:10px; background:var(--card);
-    box-shadow:var(--shadow); padding:8px; margin-bottom:12px;
-  }
-  .settings.hidden{ display:none }
-  .controls{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
-  .chip, .btn, select, .range{
-    height:32px; padding:0 8px; border-radius:8px; border:1px solid var(--line);
-    background:var(--card); color:var(--ink); font-weight:600; cursor:pointer; font-size:.9rem;
-  }
-  .btn.primary{ background:var(--accent); color:#fff; border-color:transparent }
-  .range{ width:140px; padding:0 }
-
-  /* ================= Grid ================= */
-  .grid{
-    display:grid; gap:var(--grid-gap);
-    grid-template-columns: repeat( auto-fit, minmax(var(--card-min), 1fr) );
+  .brand h1{
+    font-size:1.08rem;
+    line-height:1.05;
+    letter-spacing:-.04em;
+    font-weight:950;
   }
 
-  /* Cards */
-  .card, .link{
-    position:relative; border:1px solid var(--line); border-radius:var(--round);
-    background:var(--card); box-shadow:var(--shadow);
-    aspect-ratio: var(--ratio);
-    overflow:hidden; cursor:pointer;
+  .brand p{
+    margin-top:3px;
+    color:var(--muted);
+    font-size:.76rem;
+    font-weight:750;
   }
-  .card .img, .link .img{
-    position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
-    display:var(--media-display); opacity:var(--img-opacity);
-    filter:none;
-  }
-  .card .veil, .link .veil{
-    position:absolute; inset:0; background:var(--img-veil); pointer-events:none;
-  }
-  .card .overlay, .link .overlay{
-    position:absolute; inset:0; pointer-events:none;
-    background: linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,var(--overlay-end)) 100%);
-  }
-  .card .label, .link .label{
-    position:absolute; left:12px; right:12px; bottom:10px; z-index:1;
-    display:flex; justify-content:space-between; align-items:center;
-    font-weight:800; font-size:calc(.98rem * var(--density));
-    text-shadow:0 1px 6px rgba(0,0,0,.35);
-    color:#fff;
-  }
-  .pill{ font-size:.78rem; padding:4px 8px; border-radius:999px; background:rgba(255,255,255,.16); color:#fff }
 
-  .subchip{
-    display:flex; align-items:center; justify-content:center; text-align:center;
-    border:1px solid var(--line); border-radius:10px; background:var(--card);
-    min-height:120px; font-weight:700; cursor:pointer; aspect-ratio:1.1; padding:10px;
+  .top-actions{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    flex-wrap:wrap;
+    justify-content:flex-end;
+  }
+
+  .pill{
+    height:36px;
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    border:1px solid var(--line);
+    border-radius:999px;
+    background:var(--surface);
+    padding:0 12px;
+    color:var(--muted);
+    font-size:.78rem;
+    font-weight:900;
+    box-shadow:0 6px 16px rgba(15,23,42,.05);
+  }
+
+  .dot{
+    width:8px;
+    height:8px;
+    border-radius:999px;
+    background:#94a3b8;
+  }
+  .dot.ok{background:var(--green);box-shadow:0 0 0 4px rgba(22,163,74,.12)}
+  .dot.bad{background:var(--red);box-shadow:0 0 0 4px rgba(220,38,38,.12)}
+
+  .btn{
+    min-height:38px;
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:var(--surface);
+    color:var(--ink);
+    padding:0 13px;
+    font-size:.84rem;
+    font-weight:900;
+    box-shadow:0 6px 16px rgba(15,23,42,.05);
+    transition:.18s ease;
+  }
+
+  .btn:hover{
+    transform:translateY(-1px);
     box-shadow:var(--shadow);
   }
 
-  a.link{ color:inherit; text-decoration:none }
-  .hidden{ display:none !important }
-
-  /* ===== Edit badges on items ===== */
-  .editBadge{
-    position:absolute; top:8px; right:8px; z-index:2;
-    display:flex; gap:6px;
+  .btn.primary{
+    border:0;
+    color:#fff;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    box-shadow:0 14px 28px rgba(37,99,235,.24);
   }
-  .editBadge .mini{
-    width:28px; height:28px; border-radius:8px; border:1px solid var(--line);
-    background:rgba(20,24,44,.8); color:#fff; display:grid; place-items:center; cursor:pointer;
-    backdrop-filter: blur(4px);
-  }
-  .dark .editBadge .mini{ background:rgba(20,24,44,.6) }
-  .editBadge .mini:hover{ filter:brightness(1.1) }
 
-  /* ===== Admin Drawer ===== */
-  .drawer{
-    position:fixed; right:12px; bottom:12px; z-index:50;
-    width:320px; max-width:92vw;
-    background:var(--card); border:1px solid var(--line); border-radius:14px; box-shadow:var(--shadow);
+  .btn.green{
+    border:0;
+    color:#fff;
+    background:linear-gradient(135deg,#16a34a,#22c55e);
+  }
+
+  .btn.red{
+    border:0;
+    color:#fff;
+    background:linear-gradient(135deg,#dc2626,#f43f5e);
+  }
+
+  .btn.small{
+    min-height:34px;
+    font-size:.78rem;
+    padding:0 10px;
+    border-radius:12px;
+  }
+
+  .page{
+    width:min(var(--max),100%);
+    margin:0 auto;
+    padding:22px 20px 34px;
+  }
+
+  .login-wrap{
+    min-height:calc(100vh - 90px);
+    display:grid;
+    place-items:center;
+    padding:20px;
+  }
+
+  .login-card{
+    width:min(460px,100%);
+    border:1px solid var(--line);
+    border-radius:28px;
+    background:rgba(255,255,255,.82);
+    backdrop-filter:blur(20px);
+    box-shadow:var(--shadow2);
+    padding:24px;
+  }
+
+  .login-card h2{
+    font-size:1.55rem;
+    letter-spacing:-.06em;
+    font-weight:950;
+  }
+
+  .login-card p{
+    margin-top:8px;
+    color:var(--muted);
+    font-weight:700;
+    line-height:1.5;
+    font-size:.92rem;
+  }
+
+  .field{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+    margin-top:14px;
+  }
+
+  .field label{
+    color:var(--muted);
+    font-size:.76rem;
+    font-weight:950;
+    text-transform:uppercase;
+    letter-spacing:.07em;
+  }
+
+  .field input,
+  .field textarea,
+  .field select{
+    width:100%;
+    min-height:42px;
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:var(--surface2);
+    color:var(--ink);
+    outline:none;
+    padding:10px 12px;
+    font-weight:750;
+  }
+
+  .field textarea{min-height:100px}
+
+  .field input:focus,
+  .field textarea:focus,
+  .field select:focus{
+    border-color:rgba(37,99,235,.55);
+    box-shadow:0 0 0 4px rgba(37,99,235,.10);
+  }
+
+  .msg{
+    margin-top:12px;
+    padding:12px;
+    border-radius:15px;
+    font-size:.86rem;
+    font-weight:850;
+    line-height:1.45;
+    display:none;
+  }
+
+  .msg.ok{
+    display:block;
+    border:1px solid rgba(22,163,74,.24);
+    background:rgba(22,163,74,.10);
+    color:var(--green);
+  }
+
+  .msg.bad{
+    display:block;
+    border:1px solid rgba(220,38,38,.24);
+    background:rgba(220,38,38,.10);
+    color:var(--red);
+  }
+
+  .dashboard-head{
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:18px;
+    align-items:end;
+    margin-bottom:16px;
+  }
+
+  .dashboard-head h2{
+    font-size:clamp(1.65rem,2.2vw,2.35rem);
+    font-weight:950;
+    letter-spacing:-.06em;
+  }
+
+  .dashboard-head p{
+    margin-top:7px;
+    color:var(--muted);
+    font-weight:700;
+    line-height:1.45;
+  }
+
+  .stats{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(120px,1fr));
+    gap:12px;
+    margin:12px 0 18px;
+  }
+
+  .stat{
+    border:1px solid var(--line);
+    border-radius:18px;
+    background:rgba(255,255,255,.76);
+    backdrop-filter:blur(16px);
+    box-shadow:0 8px 20px rgba(15,23,42,.06);
+    padding:14px;
+  }
+
+  .stat span{
+    display:block;
+    color:var(--muted);
+    font-size:.72rem;
+    font-weight:950;
+    text-transform:uppercase;
+    letter-spacing:.07em;
+  }
+
+  .stat b{
+    display:block;
+    margin-top:5px;
+    font-size:1.45rem;
+    letter-spacing:-.06em;
+    font-weight:950;
+  }
+
+  .tabs{
+    display:flex;
+    gap:9px;
+    flex-wrap:wrap;
+    margin:16px 0;
+  }
+
+  .tab{
+    min-height:40px;
+    border:1px solid var(--line);
+    border-radius:999px;
+    background:var(--surface);
+    color:var(--ink);
+    padding:0 14px;
+    font-size:.86rem;
+    font-weight:950;
+    box-shadow:0 6px 16px rgba(15,23,42,.05);
+  }
+
+  .tab.active{
+    border-color:transparent;
+    color:#fff;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    box-shadow:0 14px 28px rgba(37,99,235,.22);
+  }
+
+  .panel{
+    display:none;
+  }
+
+  .panel.active{
+    display:block;
+  }
+
+  .card{
+    border:1px solid var(--line);
+    border-radius:22px;
+    background:rgba(255,255,255,.78);
+    backdrop-filter:blur(16px);
+    box-shadow:0 10px 28px rgba(15,23,42,.07);
+    padding:16px;
+    margin-bottom:14px;
+  }
+
+  .card-title{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    align-items:flex-start;
+    margin-bottom:12px;
+  }
+
+  .card-title h3{
+    font-size:1.05rem;
+    letter-spacing:-.04em;
+    font-weight:950;
+  }
+
+  .card-title p{
+    margin-top:5px;
+    color:var(--muted);
+    font-size:.84rem;
+    font-weight:700;
+    line-height:1.35;
+  }
+
+  .request-grid{
+    display:grid;
+    grid-template-columns:150px 1fr;
+    gap:14px;
+  }
+
+  .thumb{
+    width:100%;
+    aspect-ratio:1.2;
+    border-radius:16px;
     overflow:hidden;
+    background:var(--surface2);
+    border:1px solid var(--line);
   }
-  .drawer .head{
-    display:flex; align-items:center; justify-content:space-between; gap:8px;
-    padding:10px 12px; border-bottom:1px solid var(--line); font-weight:800;
+
+  .thumb img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
   }
-  .drawer .body{ padding:10px 12px; display:grid; gap:10px; max-height:60vh; overflow:auto }
-  .row{ display:grid; gap:6px }
-  .row label{ font-size:.82rem; color:var(--muted) }
-  .row input, .row select, .row textarea{
-    height:34px; padding:6px 8px; border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--ink);
+
+  .form-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
   }
-  .row textarea{ min-height:72px; resize:vertical }
-  .drawer .bar{ display:flex; gap:8px; align-items:center; justify-content:flex-end; padding:10px 12px; border-top:1px solid var(--line) }
-  .drawer .tabs{ display:flex; gap:6px; padding:8px 12px; border-bottom:1px solid var(--line) }
-  .tab{ padding:6px 10px; border:1px solid var(--line); border-radius:8px; cursor:pointer; font-weight:600; }
-  .tab.active{ background:var(--accent); color:#fff; border-color:transparent }
+
+  .full{grid-column:1/-1}
+
+  .row-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:9px;
+    flex-wrap:wrap;
+    margin-top:12px;
+  }
+
+  .badge{
+    height:28px;
+    display:inline-flex;
+    align-items:center;
+    border-radius:999px;
+    padding:0 10px;
+    background:rgba(217,119,6,.12);
+    color:var(--yellow);
+    font-size:.75rem;
+    font-weight:950;
+  }
+
+  .listbar{
+    display:grid;
+    grid-template-columns:1fr auto auto;
+    gap:12px;
+    align-items:center;
+    border:1px solid var(--line);
+    background:var(--surface);
+    border-radius:16px;
+    padding:12px;
+    margin-bottom:10px;
+  }
+
+  .listbar h4{
+    font-size:.93rem;
+    font-weight:950;
+  }
+
+  .listbar p{
+    margin-top:4px;
+    color:var(--muted);
+    font-size:.8rem;
+    font-weight:700;
+    word-break:break-all;
+  }
+
+  .search-row{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    margin-bottom:14px;
+  }
+
+  .search-row input{
+    flex:1;
+    min-width:220px;
+    min-height:42px;
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:var(--surface);
+    color:var(--ink);
+    padding:0 12px;
+    outline:none;
+    font-weight:800;
+  }
+
+  .bulk-preview{
+    overflow:auto;
+    border:1px solid var(--line);
+    border-radius:16px;
+    background:var(--surface);
+    margin-top:12px;
+    max-height:280px;
+  }
+
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:.82rem;
+  }
+
+  th,td{
+    text-align:left;
+    padding:10px;
+    border-bottom:1px solid var(--line);
+    vertical-align:top;
+  }
+
+  th{
+    color:var(--muted);
+    font-weight:950;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    font-size:.72rem;
+  }
+
+  td{
+    font-weight:700;
+    color:var(--ink);
+  }
+
+  .mini{
+    color:var(--muted);
+    font-size:.82rem;
+    font-weight:700;
+    line-height:1.45;
+    margin-top:8px;
+  }
+
+  @media(max-width:900px){
+    .top-inner{
+      align-items:flex-start;
+      flex-direction:column;
+    }
+
+    .top-actions{
+      justify-content:flex-start;
+    }
+
+    .dashboard-head{
+      grid-template-columns:1fr;
+    }
+
+    .stats{
+      grid-template-columns:repeat(2,1fr);
+    }
+
+    .request-grid{
+      grid-template-columns:1fr;
+    }
+
+    .thumb{
+      max-width:220px;
+    }
+
+    .form-grid{
+      grid-template-columns:1fr;
+    }
+
+    .listbar{
+      grid-template-columns:1fr;
+    }
+  }
+
+  @media(max-width:520px){
+    .page{padding:16px 12px 28px}
+    .login-wrap{padding:12px}
+    .login-card{padding:18px;border-radius:22px}
+    .stats{grid-template-columns:1fr}
+    .card{padding:13px;border-radius:18px}
+  }
 </style>
 </head>
+
 <body>
-  <div class="header">
-    <div class="brand">
-      <!-- Back button next to logo; hidden on Home -->
-      <button id="btnBack" class="backbtn hidden" data-tip="Back">←</button>
-      <div class="logo">RV</div>
-      <div class="title">RANVEXSI UI</div>
-    </div>
+  <header class="topbar">
+    <div class="top-inner">
+      <div class="brand">
+        <div class="logo">RV</div>
+        <div>
+          <h1>RANVEXSI UI Admin</h1>
+          <p>Approve requests, add links, and bulk import tools</p>
+        </div>
+      </div>
 
-    <div class="grow"></div>
-
-    <div class="search" title="Search departments, subs or links">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.3-4.3M10.8 18.2a7.4 7.4 0 1 1 0-14.8 7.4 7.4 0 0 1 0 14.8Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-      <input id="search" placeholder="Search departments, sub-departments, or links..." autocomplete="off" />
-    </div>
-
-    <div class="actions">
-      <button class="iconbtn" id="btnSettings" data-tip="Settings">⚙️</button>
-      <button class="iconbtn" id="btnRefresh" data-tip="Reload">↻</button>
-      <button class="iconbtn" id="btnClear" data-tip="Clear Order">🧹</button>
-      <button class="iconbtn" id="btnTheme" data-tip="Light/Dark">🌗</button>
-      <button class="iconbtn" id="btnEdit" data-tip="Edit Mode">✏️</button>
-      <div class="badge" title="Steps | Total">👣 <span id="steps">0</span> | 📊 <span id="stepsTotal">0</span></div>
-    </div>
-  </div>
-
-  <div class="wrap" id="wrap">
-    <div class="toolbar">
-      <div class="crumbs" id="crumbs">Home</div>
-      <div class="grow"></div>
-    </div>
-
-    <div id="settings" class="settings">
-      <div class="controls">
-        <label class="chip">View
-          <select id="viewMode" style="margin-left:6px">
-            <option value="departments">Departments</option>
-            <option value="subpage">Sub-Departments (Full)</option>
-            <option value="links">Links</option>
-          </select>
-        </label>
-
-        <label class="chip">Sub
-          <select id="subFilter" style="margin-left:6px" disabled>
-            <option value="__all__">All</option>
-          </select>
-        </label>
-
-        <button class="btn" id="btnSort">Enable Sort</button>
-
-        <label class="chip">Cols
-          <input id="cols" type="range" class="range" min="0" max="6" step="1" value="0" />
-        </label>
-
-        <label class="chip">Density
-          <select id="density" style="margin-left:6px">
-            <option value="1">Comfort</option>
-            <option value="0.9">Compact</option>
-            <option value="1.1">Cozy</option>
-          </select>
-        </label>
-
-        <label class="chip">Ratio
-          <select id="ratio" style="margin-left:6px">
-            <option value="1.777">16:9</option>
-            <option value="1.333">4:3</option>
-            <option value="1">1:1</option>
-          </select>
-        </label>
-
-        <label class="chip">Images
-          <select id="media" style="margin-left:6px">
-            <option value="on">On</option>
-            <option value="off">Off</option>
-          </select>
-        </label>
+      <div class="top-actions">
+        <div class="pill"><span class="dot" id="dbDot"></span><span id="dbText">Locked</span></div>
+        <button class="btn" id="btnRefresh" type="button">Refresh</button>
+        <button class="btn" id="btnLogout" type="button">Lock</button>
+        <a class="btn" href="index.html" style="text-decoration:none;display:inline-flex;align-items:center;">Open Site</a>
       </div>
     </div>
+  </header>
 
-    <div id="depGrid" class="grid" aria-label="Departments grid"></div>
-    <div id="subGrid" class="grid hidden" aria-label="Sub-departments grid"></div>
-    <div id="linkGrid" class="grid hidden" aria-label="Links grid"></div>
-  </div>
+  <section class="login-wrap" id="loginWrap">
+    <div class="login-card">
+      <h2>Admin Unlock</h2>
+      <p>Enter the admin password to view pending link requests and manage RANVEXSI links.</p>
 
-  <!-- ===== Admin Drawer (Local overrides) ===== -->
-  <div class="drawer hidden" id="drawer">
-    <div class="head">
-      <span>Local Admin</span>
+      <form id="loginForm">
+        <div class="field">
+          <label>Admin Password</label>
+          <input id="adminPassword" type="password" placeholder="Enter password" autocomplete="current-password" required />
+        </div>
+
+        <button class="btn primary" type="submit" style="width:100%;margin-top:14px;">Unlock Admin Panel</button>
+        <div class="msg" id="loginMsg"></div>
+
+        <p class="mini">
+          This panel uses protected Supabase RPC functions. Do not open write policies directly for public users.
+        </p>
+      </form>
+    </div>
+  </section>
+
+  <main class="page hidden" id="adminPage">
+    <div class="dashboard-head">
       <div>
-        <button class="btn" id="btnExportJSON" title="Export local overrides JSON">Export</button>
-        <button class="btn" id="btnClearLocal" title="Remove all local overrides">Reset</button>
-        <button class="btn primary" id="btnCloseDrawer">Close</button>
+        <h2>Admin Dashboard</h2>
+        <p>Review pending requests, approve links, add links manually, or bulk import many links at once.</p>
+      </div>
+      <div class="top-actions">
+        <button class="btn primary" id="btnQuickAdd" type="button">+ Add Link</button>
+        <button class="btn" id="btnQuickBulk" type="button">Bulk Import</button>
       </div>
     </div>
-    <div class="tabs">
-      <button class="tab active" data-tab="tabDept">Department</button>
-      <button class="tab" data-tab="tabSub">Sub-Department</button>
-      <button class="tab" data-tab="tabLink">Link</button>
-      <button class="tab" data-tab="tabHidden">Hidden Items</button>
-    </div>
-    <div class="body">
-      <!-- Department -->
-      <div id="tabDept" class="row">
-        <label>Add local Department</label>
-        <input id="depName" placeholder="Department name">
-        <input id="depImg" placeholder="Optional image URL (1200x675 preferred)">
-        <button class="btn primary" id="addDept">Add Department</button>
-      </div>
 
-      <!-- Sub -->
-      <div id="tabSub" class="row hidden">
-        <label>Add local Sub-Department</label>
-        <select id="subDep"></select>
-        <input id="subName" placeholder="Sub-department name">
-        <button class="btn primary" id="addSub">Add Sub-Department</button>
-      </div>
+    <section class="stats">
+      <div class="stat"><span>Pending</span><b id="statPending">0</b></div>
+      <div class="stat"><span>Active Links</span><b id="statLinks">0</b></div>
+      <div class="stat"><span>Departments</span><b id="statDepartments">0</b></div>
+      <div class="stat"><span>Sub-Depts</span><b id="statSubs">0</b></div>
+    </section>
 
-      <!-- Link -->
-      <div id="tabLink" class="row hidden">
-        <label>Add local Link</label>
-        <select id="linkDep"></select>
-        <select id="linkSub"><option value="__all__">Choose sub after Dep</option></select>
-        <input id="linkName" placeholder="Link name">
-        <input id="linkUrl" placeholder="https://example.com">
-        <input id="linkImg" placeholder="Optional image URL">
-        <button class="btn primary" id="addLink">Add Link</button>
-      </div>
+    <section class="tabs">
+      <button class="tab active" data-tab="requests" type="button">Pending Requests</button>
+      <button class="tab" data-tab="manual" type="button">Manual Add</button>
+      <button class="tab" data-tab="bulk" type="button">Bulk Add</button>
+      <button class="tab" data-tab="links" type="button">Active Links</button>
+    </section>
 
-      <!-- Hidden management -->
-      <div id="tabHidden" class="row hidden">
-        <label>Hidden items (click to unhide)</label>
-        <div id="hiddenList" class="row" style="gap:8px"></div>
+    <section class="panel active" id="panel-requests">
+      <div id="requestsList"></div>
+    </section>
+
+    <section class="panel" id="panel-manual">
+      <div class="card">
+        <div class="card-title">
+          <div>
+            <h3>Add Link Manually</h3>
+            <p>Add one link directly to the approved public links table.</p>
+          </div>
+        </div>
+
+        <form id="manualForm">
+          <div class="form-grid">
+            <div class="field">
+              <label>Department</label>
+              <input name="department" required placeholder="Ship Dock" />
+            </div>
+
+            <div class="field">
+              <label>Sub-Department</label>
+              <input name="sub_department" required placeholder="Ship Clerk" />
+            </div>
+
+            <div class="field">
+              <label>Link Name</label>
+              <input name="link_name" required placeholder="SSP" />
+            </div>
+
+            <div class="field">
+              <label>URL</label>
+              <input name="url" required placeholder="https://example.com" />
+            </div>
+
+            <div class="field">
+              <label>Image URL Optional</label>
+              <input name="image_url" placeholder="https://image-link.com/photo.jpg" />
+            </div>
+
+            <div class="field">
+              <label>Department Image URL Optional</label>
+              <input name="department_image_url" placeholder="https://image-link.com/department.jpg" />
+            </div>
+
+            <div class="field">
+              <label>Color Optional</label>
+              <input name="color" placeholder="#2563eb or blue" />
+            </div>
+
+            <div class="field">
+              <label>Sort Order</label>
+              <input name="sort_order" type="number" value="0" />
+            </div>
+          </div>
+
+          <div class="row-actions">
+            <button class="btn primary" type="submit">Save Link</button>
+          </div>
+
+          <div class="msg" id="manualMsg"></div>
+        </form>
       </div>
-    </div>
-    <div class="bar">
-      <small style="color:var(--muted)">Local only. Sheet stays untouched.</small>
-    </div>
-  </div>
+    </section>
+
+    <section class="panel" id="panel-bulk">
+      <div class="card">
+        <div class="card-title">
+          <div>
+            <h3>Bulk Add Links</h3>
+            <p>Paste CSV rows and import many approved links at once.</p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>CSV Paste</label>
+          <textarea id="bulkText" placeholder="department,sub_department,link_name,url,image_url,department_image_url,color,sort_order
+Ship Dock,Ship Clerk,New Tool,https://example.com,https://image.com/pic.jpg,,blue,0"></textarea>
+        </div>
+
+        <p class="mini">
+          Headers accepted: department, sub_department, link_name, url, image_url, department_image_url, color, sort_order.
+          Old headers like Department, SubDepartment, LinkName, URL, ImageURL, DIURL also work.
+        </p>
+
+        <div class="row-actions">
+          <button class="btn" id="btnPreviewBulk" type="button">Preview</button>
+          <button class="btn primary" id="btnImportBulk" type="button">Import Approved Links</button>
+        </div>
+
+        <div class="msg" id="bulkMsg"></div>
+        <div class="bulk-preview hidden" id="bulkPreview"></div>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-links">
+      <div class="card">
+        <div class="card-title">
+          <div>
+            <h3>Active Links</h3>
+            <p>Search active approved links. Deactivate removes them from the public website.</p>
+          </div>
+        </div>
+
+        <div class="search-row">
+          <input id="linkSearch" placeholder="Search by department, sub-department, link name, URL..." />
+          <button class="btn" id="btnSearchLinks" type="button">Search</button>
+        </div>
+
+        <div id="linksList"></div>
+      </div>
+    </section>
+  </main>
 
 <script>
-/* ===== Config ===== */
-const sheetURL = "https://script.google.com/macros/s/AKfycbwnjvDjGQNtpVkxySJj6GaObo6l1ecfUg3NXzvF7G5MX7H4S5Qo92jhUM8_eOTO2MeXUQ/exec";
+/* =========================================================
+   Supabase Config
+========================================================= */
+const SUPABASE_URL = "https://qpplbqodulenhccfzrjv.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_ph2JpBSdGl-dIqvx9F6__g_Oo4r96Y_";
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-/* ===== State/Refs ===== */
 const els = {
-  search: document.getElementById('search'),
-  depGrid: document.getElementById('depGrid'),
-  subGrid: document.getElementById('subGrid'),
-  linkGrid: document.getElementById('linkGrid'),
-  crumbs: document.getElementById('crumbs'),
-  viewMode: document.getElementById('viewMode'),
-  subFilter: document.getElementById('subFilter'),
-  btnSort: document.getElementById('btnSort'),
-  btnRefresh: document.getElementById('btnRefresh'),
-  btnClear: document.getElementById('btnClear'),
-  btnTheme: document.getElementById('btnTheme'),
-  btnSettings: document.getElementById('btnSettings'),
-  btnBack: document.getElementById('btnBack'),
-  btnEdit: document.getElementById('btnEdit'),
-  cols: document.getElementById('cols'),
-  density: document.getElementById('density'),
-  ratio: document.getElementById('ratio'),
-  media: document.getElementById('media'),
-  steps: document.getElementById('steps'),
-  stepsTotal: document.getElementById('stepsTotal'),
-  settings: document.getElementById('settings'),
-  wrap: document.getElementById('wrap'),
-  drawer: document.getElementById('drawer'),
-  // drawer fields
-  depName: document.getElementById('depName'),
-  depImg: document.getElementById('depImg'),
-  addDept: document.getElementById('addDept'),
-  subDep: document.getElementById('subDep'),
-  subName: document.getElementById('subName'),
-  addSub: document.getElementById('addSub'),
-  linkDep: document.getElementById('linkDep'),
-  linkSub: document.getElementById('linkSub'),
-  linkName: document.getElementById('linkName'),
-  linkUrl: document.getElementById('linkUrl'),
-  linkImg: document.getElementById('linkImg'),
-  addLink: document.getElementById('addLink'),
-  btnExportJSON: document.getElementById('btnExportJSON'),
-  btnClearLocal: document.getElementById('btnClearLocal'),
-  btnCloseDrawer: document.getElementById('btnCloseDrawer'),
-  hiddenList: document.getElementById('hiddenList')
+  dbDot: document.getElementById("dbDot"),
+  dbText: document.getElementById("dbText"),
+  loginWrap: document.getElementById("loginWrap"),
+  adminPage: document.getElementById("adminPage"),
+  loginForm: document.getElementById("loginForm"),
+  adminPassword: document.getElementById("adminPassword"),
+  loginMsg: document.getElementById("loginMsg"),
+  btnLogout: document.getElementById("btnLogout"),
+  btnRefresh: document.getElementById("btnRefresh"),
+
+  statPending: document.getElementById("statPending"),
+  statLinks: document.getElementById("statLinks"),
+  statDepartments: document.getElementById("statDepartments"),
+  statSubs: document.getElementById("statSubs"),
+
+  requestsList: document.getElementById("requestsList"),
+  manualForm: document.getElementById("manualForm"),
+  manualMsg: document.getElementById("manualMsg"),
+
+  bulkText: document.getElementById("bulkText"),
+  btnPreviewBulk: document.getElementById("btnPreviewBulk"),
+  btnImportBulk: document.getElementById("btnImportBulk"),
+  bulkMsg: document.getElementById("bulkMsg"),
+  bulkPreview: document.getElementById("bulkPreview"),
+
+  linkSearch: document.getElementById("linkSearch"),
+  btnSearchLinks: document.getElementById("btnSearchLinks"),
+  linksList: document.getElementById("linksList"),
+
+  btnQuickAdd: document.getElementById("btnQuickAdd"),
+  btnQuickBulk: document.getElementById("btnQuickBulk")
 };
 
-let rawRows = [];
-let departmentsData = [];   // [{dep, subs:[], imageUrl}]
-let currentDep = null;
-let currentSub = "__all__";
-let sorting = false;
-let editMode = false;
-let depSortable = null;
-let linkSortable = null;
+let ADMIN_PASSWORD = sessionStorage.getItem("rv_admin_password") || "";
+let bulkRows = [];
 
-/* ===== Local Storage Keys ===== */
-const LS = {
-  DEPT_ORDER: "rv_dept_order",
-  LINK_ORDER: (dep, sub) => `rv_link_order_${dep}__${sub}`,
-  STEPS: "rv_steps_total",
-  GRID: "rv_grid_prefs_backfix",
-  THEME: "rv_theme",
-  SETTINGS_OPEN: "rv_settings_open",
-  SETTINGS_OPEN_NONDEP: "rv_settings_open_nd",
-  // Admin overlays
-  LOCAL_DEPTS: "rv_local_depts",                 // [{dep,imageUrl}]
-  LOCAL_SUBS: "rv_local_subs",                   // [{dep, sub}]
-  LOCAL_LINKS: "rv_local_links",                 // [{dep, sub, name, url, image}]
-  HIDDEN_DEPTS: "rv_hidden_depts",               // [dep]
-  HIDDEN_SUBS: "rv_hidden_subs",                 // ["dep::sub"]
-  HIDDEN_LINKS: "rv_hidden_links"                // ["dep::sub::name"]
-};
+/* =========================================================
+   Helpers
+========================================================= */
+function esc(v){
+  return String(v ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
 
-/* ===== Steps ===== */
-let sessionSteps = 0;
-function step(n=1){
-  sessionSteps += n;
-  els.steps.textContent = sessionSteps;
-  const t = Number(localStorage.getItem(LS.STEPS) || 0) + n;
-  localStorage.setItem(LS.STEPS, String(t));
-  els.stepsTotal.textContent = t;
+function setStatus(type, text){
+  els.dbText.textContent = text;
+  els.dbDot.classList.remove("ok","bad");
+  if(type === "ok") els.dbDot.classList.add("ok");
+  if(type === "bad") els.dbDot.classList.add("bad");
 }
-(function initSteps(){
-  els.steps.textContent = "0";
-  els.stepsTotal.textContent = Number(localStorage.getItem(LS.STEPS) || 0);
-  step(1); // load
-})();
 
-/* ===== Theme ===== */
-/* Default to DARK unless user saved choice */
-(function initTheme(){
-  let saved = localStorage.getItem(LS.THEME);
-  if(!saved){ saved = "dark"; localStorage.setItem(LS.THEME, saved); }
-  document.body.classList.toggle('dark', saved === "dark");
-})();
-els.btnTheme.addEventListener('click', ()=>{
-  const dark = !document.body.classList.contains('dark');
-  document.body.classList.toggle('dark', dark);
-  localStorage.setItem(LS.THEME, dark ? "dark" : "light");
-});
+function setMsg(el, type, text){
+  el.className = `msg ${type}`;
+  el.innerHTML = text;
+}
 
-/* ===== Settings Panel Toggle ===== */
-function setSettingsOpen(open){
-  els.settings.classList.toggle('hidden', !open);
+function clearMsg(el){
+  el.className = "msg";
+  el.innerHTML = "";
 }
-document.getElementById('btnSettings').addEventListener('click', ()=>{
-  const open = els.settings.classList.contains('hidden');
-  const mode = els.viewMode.value || "departments";
-  setSettingsOpen(open);
-  if(mode === "departments") localStorage.setItem(LS.SETTINGS_OPEN, open ? "1" : "0");
-  else localStorage.setItem(LS.SETTINGS_OPEN_NONDEP, open ? "1" : "0");
-});
 
-/* ===== Grid prefs ===== */
-function cssVar(name){
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+function safeUrl(url){
+  const u = String(url || "").trim();
+  if(!u) return "";
+  if(u.startsWith("http://") || u.startsWith("https://") || u.startsWith("mailto:") || u.startsWith("tel:")) return u;
+  return "https://" + u;
 }
-function setCardMin(px){
-  document.documentElement.style.setProperty('--card-min', px + 'px');
-}
-function computeCardMinForCols(n){
-  const wrap = els.wrap.clientWidth;
-  const gap = parseInt(cssVar('--grid-gap') || '16', 10);
-  if(n <= 1) return Math.max(240, Math.floor(wrap));
-  const totalGap = (n - 1) * gap;
-  return Math.max(240, Math.floor((wrap - totalGap) / n));
-}
-function applyPrefs(p){
-  document.documentElement.style.setProperty('--density', p.density || "1");
-  els.density.value = p.density || "1";
-  document.documentElement.style.setProperty('--ratio', p.ratio || "1.777");
-  els.ratio.value = p.ratio || "1.777";
-  if((p.media || "on") === "off"){
-    document.documentElement.style.setProperty('--media-display', 'none');
-    document.documentElement.style.setProperty('--img-opacity', '0');
-    els.media.value = "off";
-  }else{
-    document.documentElement.style.setProperty('--media-display', 'block');
-    els.media.value = "on";
-  }
-  const cols = Number(p.cols || 0);
-  els.cols.value = cols;
-  if(cols === 0) setCardMin(300);
-  else setCardMin(computeCardMinForCols(cols));
-}
-function readPrefs(){
-  try{ return JSON.parse(localStorage.getItem(LS.GRID) || "{}"); }catch{ return {} }
-}
-function savePrefs(p){ localStorage.setItem(LS.GRID, JSON.stringify(p)); }
-applyPrefs(readPrefs());
 
-/* Controls */
-els.cols.addEventListener('input', ()=>{
-  const prefs = readPrefs(); prefs.cols = Number(els.cols.value);
-  savePrefs(prefs); applyPrefs(prefs);
-});
-els.density.addEventListener('change', ()=>{
-  const prefs = readPrefs(); prefs.density = els.density.value; savePrefs(prefs); applyPrefs(prefs);
-});
-els.ratio.addEventListener('change', ()=>{
-  const prefs = readPrefs(); prefs.ratio = els.ratio.value; savePrefs(prefs); applyPrefs(prefs);
-});
-els.media.addEventListener('change', ()=>{
-  const prefs = readPrefs(); prefs.media = els.media.value; savePrefs(prefs); applyPrefs(prefs);
-});
-window.addEventListener('resize', ()=>{
-  const prefs = readPrefs();
-  if(Number(prefs.cols || 0) > 0){
-    setCardMin(computeCardMinForCols(Number(prefs.cols)));
-  }
-});
-
-/* ===== Local Admin helpers ===== */
-function readJSON(key, fallback){
-  try{ return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); }catch{ return fallback }
+async function rpc(name, args={}){
+  const { data, error } = await db.rpc(name, args);
+  if(error) throw error;
+  return data;
 }
-function writeJSON(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
-function hiddenKeySub(dep, sub){ return `${dep}::${sub}`; }
-function hiddenKeyLink(dep, sub, name){ return `${dep}::${sub}::${name}`; }
 
-/* ===== Data load ===== */
-async function loadData(){
+function getFormData(form){
+  const data = {};
+  new FormData(form).forEach((value, key) => {
+    data[key] = String(value || "").trim();
+  });
+  return data;
+}
+
+function switchTab(tabName){
+  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.tab === tabName));
+  document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
+  document.getElementById(`panel-${tabName}`).classList.add("active");
+  if(tabName === "links") loadLinks();
+}
+
+function timeAgo(dateString){
+  if(!dateString) return "";
+  const d = new Date(dateString);
+  const diff = Date.now() - d.getTime();
+  const mins = Math.floor(diff / 60000);
+  if(mins < 1) return "just now";
+  if(mins < 60) return `${mins} min ago`;
+  const hrs = Math.floor(mins / 60);
+  if(hrs < 24) return `${hrs} hr ago`;
+  const days = Math.floor(hrs / 24);
+  return `${days} day${days > 1 ? "s" : ""} ago`;
+}
+
+/* =========================================================
+   Auth / Load
+========================================================= */
+async function unlock(password){
+  setStatus("", "Checking");
+  clearMsg(els.loginMsg);
+
   try{
-    const res = await fetch(sheetURL, { cache:"no-store" });
-    rawRows = await res.json();
-    buildMaps();
-    render();                 // render once
-  }catch(e){
-    console.error(e);
-    els.depGrid.innerHTML = `<div class="chip">Failed to load data.</div>`;
+    const stats = await rpc("rv_admin_stats", { p_password: password });
+    ADMIN_PASSWORD = password;
+    sessionStorage.setItem("rv_admin_password", password);
+
+    els.loginWrap.classList.add("hidden");
+    els.adminPage.classList.remove("hidden");
+    setStatus("ok", "Admin");
+
+    renderStats(stats);
+    await loadRequests();
+  }catch(err){
+    console.error(err);
+    setStatus("bad", "Locked");
+    setMsg(els.loginMsg, "bad", "Wrong password or admin SQL functions are not installed.");
   }
 }
 
-function baseMapFromSheet(){
-  const map = {};
-  const hiddenDeps = new Set(readJSON(LS.HIDDEN_DEPTS, []));
-  const hiddenSubs = new Set(readJSON(LS.HIDDEN_SUBS, []));
-  rawRows.forEach(row=>{
-    const dep = (row.Department || '').trim();
-    if(!dep || hiddenDeps.has(dep)) return;
-    const sub = (row.SubDepartment || '').trim();
-    const di = (row.DIURL || '').trim();
+async function refreshAll(){
+  if(!ADMIN_PASSWORD) return;
+  try{
+    setStatus("", "Loading");
+    const stats = await rpc("rv_admin_stats", { p_password: ADMIN_PASSWORD });
+    renderStats(stats);
+    await loadRequests();
+    if(document.getElementById("panel-links").classList.contains("active")) await loadLinks();
+    setStatus("ok", "Admin");
+  }catch(err){
+    console.error(err);
+    setStatus("bad", "Error");
+    alert(err.message || err);
+  }
+}
 
-    if(!map[dep]) map[dep] = { dep, subs:new Set(), imageUrl: di || "" };
-    else if(!map[dep].imageUrl && di) map[dep].imageUrl = di;
+function renderStats(stats){
+  const s = stats || {};
+  els.statPending.textContent = s.pending_requests ?? 0;
+  els.statLinks.textContent = s.active_links ?? 0;
+  els.statDepartments.textContent = s.departments ?? 0;
+  els.statSubs.textContent = s.sub_departments ?? 0;
+}
 
-    if(sub){
-      const hs = hiddenKeySub(dep, sub);
-      if(!hiddenSubs.has(hs)) map[dep].subs.add(sub);
+/* =========================================================
+   Pending Requests
+========================================================= */
+async function loadRequests(){
+  els.requestsList.innerHTML = `<div class="card">Loading pending requests...</div>`;
+
+  try{
+    const rows = await rpc("rv_admin_pending_requests", { p_password: ADMIN_PASSWORD });
+
+    if(!rows || rows.length === 0){
+      els.requestsList.innerHTML = `
+        <div class="card">
+          <div class="card-title">
+            <div>
+              <h3>No pending requests</h3>
+              <p>New user link requests will appear here.</p>
+            </div>
+          </div>
+        </div>
+      `;
+      return;
     }
-  });
-  return map;
-}
 
-function injectLocalOverlays(map){
-  const localDepts = readJSON(LS.LOCAL_DEPTS, []);
-  const localSubs = readJSON(LS.LOCAL_SUBS, []);
-  // Departments
-  localDepts.forEach(d=>{
-    if(!map[d.dep]) map[d.dep] = { dep:d.dep, subs:new Set(), imageUrl:(d.imageUrl || "") };
-    if(d.imageUrl) map[d.dep].imageUrl = d.imageUrl;
-  });
-  // Subs
-  localSubs.forEach(s=>{
-    if(!map[s.dep]) map[s.dep] = { dep:s.dep, subs:new Set(), imageUrl:"" };
-    map[s.dep].subs.add(s.sub);
-  });
-}
-
-function buildMaps(){
-  const map = baseMapFromSheet();
-  injectLocalOverlays(map);
-  departmentsData = Object.values(map).map(x=>({
-    dep: x.dep,
-    subs: Array.from(x.subs),
-    imageUrl: x.imageUrl || `https://source.unsplash.com/1200x800/?workspace,${encodeURIComponent(x.dep)}`
-  })).sort((a,b)=>a.dep.localeCompare(b.dep));
-}
-
-/* ===== Orders ===== */
-function getDeptOrder(){
-  try{ return JSON.parse(localStorage.getItem(LS.DEPT_ORDER) || "[]"); }catch{ return [] }
-}
-function setDeptOrder(ids){
-  localStorage.setItem(LS.DEPT_ORDER, JSON.stringify(ids));
-}
-function getLinkOrder(dep, sub){
-  try{ return JSON.parse(localStorage.getItem(LS.LINK_ORDER(dep, sub)) || "[]"); }catch{ return [] }
-}
-function setLinkOrder(dep, sub, arr){
-  localStorage.setItem(LS.LINK_ORDER(dep, sub), JSON.stringify(arr));
-}
-
-/* ===== Back button logic ===== */
-function updateBackVisibility(){
-  const mode = els.viewMode.value || "departments";
-  const show = (mode === "subpage" || mode === "links");
-  els.btnBack.classList.toggle('hidden', !show);
-}
-function goBack(){
-  const mode = els.viewMode.value || "departments";
-  if(mode === "links"){
-    els.viewMode.value = "subpage";               // Links → Sub-Departments
-  }else if(mode === "subpage"){
-    els.viewMode.value = "departments";           // Sub-Departments → Home
-    currentDep = null;
-    currentSub = "__all__";
+    els.requestsList.innerHTML = rows.map(r => requestCard(r)).join("");
+  }catch(err){
+    console.error(err);
+    els.requestsList.innerHTML = `<div class="card"><div class="msg bad" style="display:block">${esc(err.message || err)}</div></div>`;
   }
-  render();                                       // always route through render()
-  step();
-}
-els.btnBack.addEventListener('click', goBack);
-
-/* ===== Views ===== */
-function render(){
-  const mode = els.viewMode.value || "departments";
-
-  // settings visibility
-  if(mode === "departments"){
-    setSettingsOpen(false);
-    localStorage.setItem(LS.SETTINGS_OPEN, "0");
-  }else{
-    const saved = localStorage.getItem(LS.SETTINGS_OPEN_NONDEP);
-    setSettingsOpen(saved !== "0");
-  }
-
-  if(mode === "departments") renderDepartments();
-  else if(mode === "subpage") renderSubPage();
-  else renderLinks();
-
-  updateCrumbs();
-  updateBackVisibility();                          // ensure button visibility after every render
 }
 
-/* Departments */
-function renderDepartments(){
-  showOnly('depGrid');
-
-  const q = els.search.value.trim().toLowerCase();
-  const order = getDeptOrder();
-  const hiddenDeps = new Set(readJSON(LS.HIDDEN_DEPTS, []));
-  let base = q
-    ? departmentsData.filter(({dep, subs})=> (dep.toLowerCase().includes(q) || subs.some(s=>s.toLowerCase().includes(q))) && !hiddenDeps.has(dep))
-    : [
-        ...order.map(id => departmentsData.find(d=>d.dep===id)).filter(Boolean),
-        ...departmentsData.filter(d=>!order.includes(d.dep) && !hiddenDeps.has(d.dep))
-      ];
-
-  els.depGrid.innerHTML = "";
-  base.forEach(({dep, subs, imageUrl})=>{
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.setAttribute('data-id', dep);
-    card.innerHTML = `
-      <img class="img" loading="lazy" decoding="async" src="${imageUrl}" alt="${dep}" width="1200" height="675">
-      <div class="veil"></div>
-      <div class="overlay"></div>
-      <div class="label">
-        <span>${dep}</span>
-        <span class="pill">Subs: ${subs.length}</span>
+function requestCard(r){
+  const image = r.image_url || "";
+  return `
+    <div class="card request-card" data-id="${esc(r.id)}">
+      <div class="card-title">
+        <div>
+          <h3>${esc(r.link_name || "Untitled Request")}</h3>
+          <p>${esc(r.department || "")} / ${esc(r.sub_department || "")} • ${timeAgo(r.created_at)}</p>
+        </div>
+        <span class="badge">Pending</span>
       </div>
-    `;
-    if(editMode){
-      const badge = document.createElement('div');
-      badge.className = 'editBadge';
-      const hideBtn = document.createElement('div');
-      hideBtn.className = 'mini'; hideBtn.title = 'Hide department';
-      hideBtn.textContent = '🙈';
-      hideBtn.onclick = (e)=>{ e.stopPropagation(); hideDepartment(dep); };
-      badge.appendChild(hideBtn);
-      card.appendChild(badge);
-    }
-    card.addEventListener('click', ()=>{
-      currentDep = dep;
-      currentSub = "__all__";
-      els.viewMode.value = "subpage";
-      render();                                    // go through render()
-      step();
-    });
-    els.depGrid.appendChild(card);
-  });
 
-  if(depSortable){ depSortable.destroy(); depSortable=null; }
-  if(sorting){
-    depSortable = Sortable.create(els.depGrid, {
-      animation:120,
-      onEnd: ()=>{
-        const ids = [...els.depGrid.children].map(el=>el.getAttribute('data-id'));
-        setDeptOrder(ids); step();
-      }
-    });
-  }
+      <div class="request-grid">
+        <div class="thumb">
+          ${image ? `<img src="${esc(image)}" alt="">` : `<div style="height:100%;display:grid;place-items:center;color:#6b7280;font-weight:900;">No Image</div>`}
+        </div>
+
+        <div>
+          <div class="form-grid">
+            <div class="field">
+              <label>Department</label>
+              <input class="rq-department" value="${esc(r.department)}">
+            </div>
+
+            <div class="field">
+              <label>Sub-Department</label>
+              <input class="rq-sub" value="${esc(r.sub_department)}">
+            </div>
+
+            <div class="field">
+              <label>Link Name</label>
+              <input class="rq-name" value="${esc(r.link_name)}">
+            </div>
+
+            <div class="field">
+              <label>URL</label>
+              <input class="rq-url" value="${esc(r.url)}">
+            </div>
+
+            <div class="field full">
+              <label>Image URL Optional</label>
+              <input class="rq-image" value="${esc(r.image_url || "")}">
+            </div>
+
+            <div class="field full">
+              <label>Admin Note Optional</label>
+              <input class="rq-admin-note" placeholder="Reason if rejecting, or note for yourself">
+            </div>
+          </div>
+
+          <p class="mini">
+            Requested by: ${esc(r.requested_by_name || "Unknown")} ${r.requested_by_email ? "• " + esc(r.requested_by_email) : ""}<br>
+            User note: ${esc(r.note || "No note")}
+          </p>
+
+          <div class="row-actions">
+            <button class="btn red small btn-reject" type="button">Reject</button>
+            <button class="btn green small btn-approve" type="button">Approve</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
-/* Sub-departments */
-function renderSubPage(){
-  showOnly('subGrid');
-
-  if(!currentDep){
-    els.viewMode.value = "departments";
-    render();
-    return;
-  }
-
-  const depObj = departmentsData.find(d=>d.dep===currentDep);
-  const subs = depObj?.subs || [];
-  const hiddenSubs = new Set(readJSON(LS.HIDDEN_SUBS, []));
-  const visibleSubs = subs.filter(s => !hiddenSubs.has(hiddenKeySub(currentDep, s)));
-
-  els.subFilter.disabled = false;
-  els.subFilter.innerHTML = `<option value="__all__">All</option>` + visibleSubs.map(s=>`<option value="${s}">${s}</option>`).join('');
-  els.subFilter.value = "__all__";
-
-  const q = els.search.value.trim().toLowerCase();
-  const filtered = q ? visibleSubs.filter(s=>s.toLowerCase().includes(q)) : visibleSubs;
-
-  els.subGrid.innerHTML = "";
-  if(filtered.length === 0){
-    els.subGrid.innerHTML = `<div class="chip" style="grid-column:1/-1">No sub-departments match.</div>`;
-    return;
-  }
-
-  filtered.forEach(s=>{
-    const chip = document.createElement('div');
-    chip.className = 'subchip';
-    chip.textContent = s;
-
-    if(editMode){
-      const badge = document.createElement('div');
-      badge.className = 'editBadge';
-      const hideBtn = document.createElement('div');
-      hideBtn.className = 'mini'; hideBtn.title = 'Hide sub-dept';
-      hideBtn.textContent = '🙈';
-      hideBtn.onclick = (e)=>{ e.stopPropagation(); hideSub(currentDep, s); };
-      badge.appendChild(hideBtn);
-      chip.style.position = 'relative';
-      chip.appendChild(badge);
-    }
-
-    chip.addEventListener('click', ()=>{
-      currentSub = s;
-      els.subFilter.value = s;
-      els.viewMode.value = "links";
-      render();                                    // go through render()
-      step();
-    });
-    els.subGrid.appendChild(chip);
-  });
-}
-
-/* Links */
-function linksFor(dep, sub){
-  const hiddenLinks = new Set(readJSON(LS.HIDDEN_LINKS, []));
-  const lowerDep = dep?.toLowerCase();
-  const lowerSub = sub?.toLowerCase();
-
-  // From Sheet
-  let rows = rawRows.filter(r=>{
-    const rDep = (r.Department || '').toLowerCase().trim();
-    if(rDep !== lowerDep) return false;
-    if(sub==="__all__") return true;
-    const rSub = (r.SubDepartment || '').toLowerCase().trim();
-    return rSub === lowerSub;
-  }).map(r=>({
-    name: r.LinkName?.trim() || "Unnamed",
-    url : r.URL?.trim() || "#",
-    image: r.ImageURL?.trim() || "",
-    _origin: 'sheet',
-    _key: hiddenKeyLink(dep, (sub==="__all__" ? (r.SubDepartment||'').trim() : currentSub), (r.LinkName||'').trim() || 'Unnamed')
-  })).filter(item=> !hiddenLinks.has(item._key));
-
-  // Local overlays
-  const locals = readJSON(LS.LOCAL_LINKS, []).filter(x=>{
-    if(x.dep !== dep) return false;
-    if(sub==="__all__") return true;
-    return (x.sub || "").trim().toLowerCase() === lowerSub;
-  }).map(x=>({
-    name: x.name, url: x.url, image: x.image||"", _origin:'local', _key: hiddenKeyLink(dep, (x.sub||'').trim(), x.name)
-  })).filter(item=> !hiddenLinks.has(item._key));
-
-  return [...rows, ...locals];
-}
-
-function renderLinks(){
-  showOnly('linkGrid');
-
-  if(!currentDep){
-    els.viewMode.value = "departments";
-    render();
-    return;
-  }
-
-  if(els.subFilter.disabled){
-    const depObj = departmentsData.find(d=>d.dep===currentDep);
-    const subs = depObj?.subs || [];
-    els.subFilter.disabled = false;
-    els.subFilter.innerHTML = `<option value="__all__">All</option>` + subs.map(s=>`<option value="${s}">${s}</option>`).join('');
-  }
-  els.subFilter.value = currentSub;
-
-  let data = linksFor(currentDep, currentSub);
-  const q = els.search.value.trim().toLowerCase();
-  if(q){
-    data = data.filter(l => l.name.toLowerCase().includes(q) || l.url.toLowerCase().includes(q));
-  }
-
-  const order = getLinkOrder(currentDep, currentSub);
-  const sorted = [
-    ...order.map(n => data.find(l=>l.name===n)).filter(Boolean),
-    ...data.filter(l => !order.includes(l.name))
-  ];
-
-  els.linkGrid.innerHTML = "";
-  if(sorted.length === 0){
-    els.linkGrid.innerHTML = `<div class="chip" style="grid-column:1/-1">No links found.</div>`;
-  }else{
-    sorted.forEach(l=>{
-      const item = document.createElement('a');
-      item.className = 'link';
-      item.setAttribute('data-name', l.name);
-      item.href = l.url;
-      item.target = "_blank";
-      item.rel="noopener";
-      const img = l.image ? `<img class="img" loading="lazy" decoding="async" src="${l.image}" alt="" width="1200" height="675">` : '';
-      item.innerHTML = `${img}<div class="veil"></div><div class="overlay"></div><div class="label">${l.name}</div>`;
-
-      if(editMode){
-        const badge = document.createElement('div');
-        badge.className = 'editBadge';
-        // hide
-        const hideBtn = document.createElement('div');
-        hideBtn.className = 'mini'; hideBtn.title = 'Hide link'; hideBtn.textContent = '🙈';
-        hideBtn.onclick = (e)=>{ e.preventDefault(); e.stopPropagation(); hideLink(l); };
-        badge.appendChild(hideBtn);
-        // delete local (only if local)
-        if(l._origin === 'local'){
-          const delBtn = document.createElement('div');
-          delBtn.className = 'mini'; delBtn.title = 'Delete local link'; delBtn.textContent = '🗑️';
-          delBtn.onclick = (e)=>{ e.preventDefault(); e.stopPropagation(); deleteLocalLink(l); };
-          badge.appendChild(delBtn);
-        }
-        item.appendChild(badge);
-      }
-
-      item.addEventListener('click', ()=> step());
-      els.linkGrid.appendChild(item);
-    });
-  }
-
-  if(linkSortable){ linkSortable.destroy(); linkSortable=null; }
-  if(sorting){
-    linkSortable = Sortable.create(els.linkGrid, {
-      animation:120,
-      onEnd: ()=>{
-        const names = [...els.linkGrid.children].map(el=>el.getAttribute('data-name'));
-        setLinkOrder(currentDep, currentSub, names); step();
-      }
-    });
-  }
-}
-
-/* ===== Hide/unhide helpers ===== */
-function hideDepartment(dep){
-  const hidden = new Set(readJSON(LS.HIDDEN_DEPTS, []));
-  hidden.add(dep);
-  writeJSON(LS.HIDDEN_DEPTS, Array.from(hidden));
-  buildMaps(); render();
-}
-function hideSub(dep, sub){
-  const hidden = new Set(readJSON(LS.HIDDEN_SUBS, []));
-  hidden.add(hiddenKeySub(dep, sub));
-  writeJSON(LS.HIDDEN_SUBS, Array.from(hidden));
-  buildMaps(); render();
-}
-function hideLink(link){
-  const key = link._key;
-  const hidden = new Set(readJSON(LS.HIDDEN_LINKS, []));
-  hidden.add(key);
-  writeJSON(LS.HIDDEN_LINKS, Array.from(hidden));
-  render();
-}
-function unhideByKey(type, key){
-  if(type==='dep'){
-    const arr = readJSON(LS.HIDDEN_DEPTS, []).filter(x=>x!==key);
-    writeJSON(LS.HIDDEN_DEPTS, arr);
-    buildMaps(); render();
-  }else if(type==='sub'){
-    const arr = readJSON(LS.HIDDEN_SUBS, []).filter(x=>x!==key);
-    writeJSON(LS.HIDDEN_SUBS, arr);
-    buildMaps(); render();
-  }else if(type==='link'){
-    const arr = readJSON(LS.HIDDEN_LINKS, []).filter(x=>x!==key);
-    writeJSON(LS.HIDDEN_LINKS, arr);
-    render();
-  }
-}
-
-/* ===== Admin Drawer logic ===== */
-function setDrawer(open){
-  els.drawer.classList.toggle('hidden', !open);
-  if(open){ refreshAdminSelectors(); refreshHiddenList(); }
-}
-function setActiveTab(id){
-  document.querySelectorAll('.tab').forEach(t=>{
-    t.classList.toggle('active', t.getAttribute('data-tab') === id);
-  });
-  document.querySelectorAll('.body > .row').forEach(r=>{
-    r.classList.toggle('hidden', r.id !== id);
-  });
-}
-document.querySelectorAll('.tab').forEach(t=>{
-  t.addEventListener('click', ()=> setActiveTab(t.getAttribute('data-tab')));
-});
-els.btnEdit.addEventListener('click', ()=>{
-  editMode = !editMode;
-  setDrawer(editMode);
-  render();
-});
-els.btnCloseDrawer.addEventListener('click', ()=>{ editMode=false; setDrawer(false); render(); });
-
-function refreshAdminSelectors(){
-  // Department selects
-  const deps = departmentsData.map(d=>d.dep).sort((a,b)=>a.localeCompare(b));
-  els.subDep.innerHTML = deps.map(d=>`<option value="${d}">${d}</option>`).join('');
-  els.linkDep.innerHTML = `<option value="">Select department</option>` + deps.map(d=>`<option value="${d}">${d}</option>`).join('');
-  els.linkSub.innerHTML = `<option value="">Select department first</option>`;
-}
-
-els.linkDep.addEventListener('change', ()=>{
-  const dep = els.linkDep.value;
-  const depObj = departmentsData.find(d=>d.dep===dep);
-  const subs = depObj ? depObj.subs : [];
-  els.linkSub.innerHTML = subs.map(s=>`<option value="${s}">${s}</option>`).join('');
-});
-
-/* Add Department */
-els.addDept.addEventListener('click', ()=>{
-  const name = (els.depName.value || '').trim();
-  if(!name){ alert('Department name required'); return; }
-  const img = (els.depImg.value || '').trim();
-  const list = readJSON(LS.LOCAL_DEPTS, []);
-  if(list.find(x=>x.dep.toLowerCase() === name.toLowerCase())){ alert('Already exists'); return; }
-  list.push({ dep:name, imageUrl:img });
-  writeJSON(LS.LOCAL_DEPTS, list);
-  els.depName.value = ''; els.depImg.value = '';
-  buildMaps(); render(); step();
-});
-
-/* Add Sub */
-els.addSub.addEventListener('click', ()=>{
-  const dep = els.subDep.value;
-  const sub = (els.subName.value || '').trim();
-  if(!dep || !sub){ alert('Select department and enter sub name'); return; }
-  const list = readJSON(LS.LOCAL_SUBS, []);
-  if(list.find(x=>x.dep===dep && x.sub.toLowerCase()===sub.toLowerCase())){ alert('Already exists'); return; }
-  list.push({ dep, sub });
-  writeJSON(LS.LOCAL_SUBS, list);
-  els.subName.value = '';
-  buildMaps(); render(); step();
-});
-
-/* Add Link */
-els.addLink.addEventListener('click', ()=>{
-  const dep = els.linkDep.value;
-  const sub = els.linkSub.value;
-  const name = (els.linkName.value||'').trim();
-  const url  = (els.linkUrl.value||'').trim();
-  const img  = (els.linkImg.value||'').trim();
-  if(!dep || !sub || !name || !url){ alert('Fill all required fields'); return; }
-  const list = readJSON(LS.LOCAL_LINKS, []);
-  if(list.find(x=>x.dep===dep && x.sub===sub && x.name.toLowerCase()===name.toLowerCase())){ alert('Link already exists'); return; }
-  list.push({ dep, sub, name, url, image:img });
-  writeJSON(LS.LOCAL_LINKS, list);
-  els.linkName.value = ''; els.linkUrl.value = ''; els.linkImg.value='';
-  if(currentDep===dep && (currentSub===sub || currentSub==="__all__")) render();
-  step();
-});
-
-/* Delete local link */
-function deleteLocalLink(link){
-  const list = readJSON(LS.LOCAL_LINKS, []);
-  const next = list.filter(x=> !(x.dep===currentDep && (x.sub===currentSub || currentSub==="__all__") && x.name===link.name && x.url===link.url));
-  writeJSON(LS.LOCAL_LINKS, next);
-  render();
-}
-
-/* Hidden list */
-function refreshHiddenList(){
-  const deps = readJSON(LS.HIDDEN_DEPTS, []);
-  const subs = readJSON(LS.HIDDEN_SUBS, []);
-  const links = readJSON(LS.HIDDEN_LINKS, []);
-  const makeBadge = (text, type, key)=>{
-    const b = document.createElement('button');
-    b.className = 'btn'; b.textContent = text;
-    b.onclick = ()=> unhideByKey(type, key);
-    return b;
-  };
-  els.hiddenList.innerHTML = '';
-  if(deps.length===0 && subs.length===0 && links.length===0){
-    els.hiddenList.textContent = 'Nothing hidden.';
-    return;
-  }
-  if(deps.length){
-    const wrap = document.createElement('div'); wrap.className='row';
-    wrap.innerHTML = `<label>Departments</label>`;
-    deps.forEach(d=> wrap.appendChild(makeBadge(d, 'dep', d)));
-    els.hiddenList.appendChild(wrap);
-  }
-  if(subs.length){
-    const wrap = document.createElement('div'); wrap.className='row';
-    wrap.innerHTML = `<label>Sub-Departments</label>`;
-    subs.forEach(s=> wrap.appendChild(makeBadge(s, 'sub', s)));
-    els.hiddenList.appendChild(wrap);
-  }
-  if(links.length){
-    const wrap = document.createElement('div'); wrap.className='row';
-    wrap.innerHTML = `<label>Links</label>`;
-    links.forEach(l=> wrap.appendChild(makeBadge(l, 'link', l)));
-    els.hiddenList.appendChild(wrap);
-  }
-}
-
-/* Export / Reset */
-els.btnExportJSON.addEventListener('click', ()=>{
+async function approveRequest(card){
+  const id = card.dataset.id;
   const payload = {
-    localDepartments: readJSON(LS.LOCAL_DEPTS, []),
-    localSubs: readJSON(LS.LOCAL_SUBS, []),
-    localLinks: readJSON(LS.LOCAL_LINKS, []),
-    hiddenDepartments: readJSON(LS.HIDDEN_DEPTS, []),
-    hiddenSubs: readJSON(LS.HIDDEN_SUBS, []),
-    hiddenLinks: readJSON(LS.HIDDEN_LINKS, []),
-    orders: {
-      departments: readJSON(LS.DEPT_ORDER, []),
-      // links orders are per dep/sub keys; dump all
-      links: Object.keys(localStorage)
-        .filter(k=>k.startsWith('rv_link_order_'))
-        .reduce((acc,k)=> (acc[k]=readJSON(k,[]), acc), {})
-    }
+    p_password: ADMIN_PASSWORD,
+    p_request_id: id,
+    p_department: card.querySelector(".rq-department").value.trim(),
+    p_sub_department: card.querySelector(".rq-sub").value.trim(),
+    p_link_name: card.querySelector(".rq-name").value.trim(),
+    p_url: safeUrl(card.querySelector(".rq-url").value.trim()),
+    p_image_url: card.querySelector(".rq-image").value.trim() || null,
+    p_admin_note: card.querySelector(".rq-admin-note").value.trim() || null,
+    p_sort_order: 0
   };
-  const blob = new Blob([JSON.stringify(payload,null,2)], {type:"application/json"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = `ranvexsi-local-overrides.json`;
-  document.body.appendChild(a); a.click(); a.remove();
-  URL.revokeObjectURL(url);
-});
-els.btnClearLocal.addEventListener('click', ()=>{
-  if(!confirm('Remove ALL local overrides and hidden flags?')) return;
-  [LS.LOCAL_DEPTS, LS.LOCAL_SUBS, LS.LOCAL_LINKS, LS.HIDDEN_DEPTS, LS.HIDDEN_SUBS, LS.HIDDEN_LINKS].forEach(k=> localStorage.removeItem(k));
-  buildMaps(); render(); refreshHiddenList();
-});
 
-/* ===== Helpers ===== */
-function showOnly(which){
-  els.depGrid.classList.toggle('hidden', which!=='depGrid');
-  els.subGrid.classList.toggle('hidden', which!=='subGrid');
-  els.linkGrid.classList.toggle('hidden', which!=='linkGrid');
-}
-function updateCrumbs(){
-  const mode = els.viewMode?.value || "departments";
-  if(mode === "departments" || !currentDep){
-    els.crumbs.textContent = "Home";
-  }else if(mode === "subpage"){
-    els.crumbs.innerHTML = `<b>${currentDep}</b> / Sub-departments`;
-  }else{
-    const subTxt = currentSub==="__all__" ? "All" : currentSub;
-    els.crumbs.innerHTML = `<b>${currentDep}</b> / ${subTxt}`;
+  if(!payload.p_department || !payload.p_sub_department || !payload.p_link_name || !payload.p_url){
+    alert("Please fill department, sub-department, link name, and URL.");
+    return;
+  }
+
+  if(!confirm("Approve this link request?")) return;
+
+  try{
+    await rpc("rv_admin_approve_request", payload);
+    await refreshAll();
+  }catch(err){
+    console.error(err);
+    alert(err.message || err);
   }
 }
 
-/* ===== Sorting/Refresh/Clear ===== */
-els.viewMode.addEventListener('change', ()=>{ render(); step(); });
-els.subFilter.addEventListener('change', ()=>{
-  currentSub = els.subFilter.value;
-  els.viewMode.value = "links";
-  render();                                        // route through render()
-  step();
-});
-els.btnSort.addEventListener('click', ()=>{
-  sorting = !sorting;
-  els.btnSort.textContent = sorting ? "Disable Sort" : "Enable Sort";
-  render();
-});
-els.btnRefresh.addEventListener('click', ()=>{ loadData(); step(); });
-els.btnClear.addEventListener('click', ()=>{
-  localStorage.removeItem(LS.DEPT_ORDER);
-  Object.keys(localStorage).forEach(k=>{ if(k.startsWith('rv_link_order_')) localStorage.removeItem(k); });
-  render();
+async function rejectRequest(card){
+  const id = card.dataset.id;
+  const note = card.querySelector(".rq-admin-note").value.trim() || prompt("Reason/note for rejection?") || "";
+
+  if(!confirm("Reject this request?")) return;
+
+  try{
+    await rpc("rv_admin_reject_request", {
+      p_password: ADMIN_PASSWORD,
+      p_request_id: id,
+      p_admin_note: note
+    });
+    await refreshAll();
+  }catch(err){
+    console.error(err);
+    alert(err.message || err);
+  }
+}
+
+/* =========================================================
+   Manual Add
+========================================================= */
+async function manualAdd(e){
+  e.preventDefault();
+  clearMsg(els.manualMsg);
+
+  const f = getFormData(els.manualForm);
+
+  const payload = {
+    p_password: ADMIN_PASSWORD,
+    p_department: f.department,
+    p_sub_department: f.sub_department,
+    p_link_name: f.link_name,
+    p_url: safeUrl(f.url),
+    p_image_url: f.image_url || null,
+    p_department_image_url: f.department_image_url || null,
+    p_color: f.color || null,
+    p_sort_order: Number(f.sort_order || 0)
+  };
+
+  try{
+    await rpc("rv_admin_add_link", payload);
+    setMsg(els.manualMsg, "ok", "Link saved successfully.");
+    els.manualForm.reset();
+    els.manualForm.querySelector('[name="sort_order"]').value = "0";
+    await refreshAll();
+  }catch(err){
+    console.error(err);
+    setMsg(els.manualMsg, "bad", esc(err.message || err));
+  }
+}
+
+/* =========================================================
+   Bulk Add
+========================================================= */
+function parseCSV(text){
+  const rows = [];
+  let row = [];
+  let cell = "";
+  let inQuotes = false;
+
+  for(let i=0;i<text.length;i++){
+    const ch = text[i];
+    const next = text[i+1];
+
+    if(ch === '"' && inQuotes && next === '"'){
+      cell += '"';
+      i++;
+    }else if(ch === '"'){
+      inQuotes = !inQuotes;
+    }else if(ch === "," && !inQuotes){
+      row.push(cell.trim());
+      cell = "";
+    }else if((ch === "\n" || ch === "\r") && !inQuotes){
+      if(ch === "\r" && next === "\n") i++;
+      row.push(cell.trim());
+      if(row.some(v => v !== "")) rows.push(row);
+      row = [];
+      cell = "";
+    }else{
+      cell += ch;
+    }
+  }
+
+  row.push(cell.trim());
+  if(row.some(v => v !== "")) rows.push(row);
+  return rows;
+}
+
+function cleanHeader(h){
+  return String(h || "")
+    .trim()
+    .replace(/\s+/g,"")
+    .replace(/_/g,"")
+    .toLowerCase();
+}
+
+function mapBulkRows(){
+  const text = els.bulkText.value.trim();
+  if(!text) return [];
+
+  const rows = parseCSV(text);
+  if(rows.length < 2) throw new Error("Please paste headers and at least one data row.");
+
+  const headers = rows[0].map(cleanHeader);
+
+  function idx(...names){
+    const clean = names.map(cleanHeader);
+    return headers.findIndex(h => clean.includes(h));
+  }
+
+  const map = {
+    department: idx("department"),
+    sub_department: idx("sub_department","subdepartment"),
+    link_name: idx("link_name","linkname","name"),
+    url: idx("url","link"),
+    image_url: idx("image_url","imageurl","image"),
+    department_image_url: idx("department_image_url","diurl","departmentimageurl"),
+    color: idx("color"),
+    sort_order: idx("sort_order","sortorder")
+  };
+
+  const out = [];
+
+  rows.slice(1).forEach((r, i) => {
+    const obj = {
+      department: map.department >= 0 ? r[map.department] : "",
+      sub_department: map.sub_department >= 0 ? r[map.sub_department] : "",
+      link_name: map.link_name >= 0 ? r[map.link_name] : "",
+      url: map.url >= 0 ? safeUrl(r[map.url]) : "",
+      image_url: map.image_url >= 0 ? r[map.image_url] : "",
+      department_image_url: map.department_image_url >= 0 ? r[map.department_image_url] : "",
+      color: map.color >= 0 ? r[map.color] : "",
+      sort_order: map.sort_order >= 0 ? Number(r[map.sort_order] || 0) : 0
+    };
+
+    if(obj.department && obj.sub_department && obj.link_name && obj.url){
+      out.push(obj);
+    }
+  });
+
+  return out;
+}
+
+function previewBulk(){
+  clearMsg(els.bulkMsg);
+
+  try{
+    bulkRows = mapBulkRows();
+
+    if(!bulkRows.length){
+      throw new Error("No valid rows found. Required: department, sub_department, link_name, url.");
+    }
+
+    const previewRows = bulkRows.slice(0, 20);
+    els.bulkPreview.classList.remove("hidden");
+    els.bulkPreview.innerHTML = `
+      <table>
+        <thead>
+          <tr>
+            <th>Department</th>
+            <th>Sub</th>
+            <th>Name</th>
+            <th>URL</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${previewRows.map(r => `
+            <tr>
+              <td>${esc(r.department)}</td>
+              <td>${esc(r.sub_department)}</td>
+              <td>${esc(r.link_name)}</td>
+              <td>${esc(r.url)}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    `;
+
+    setMsg(els.bulkMsg, "ok", `${bulkRows.length} valid rows ready to import.`);
+  }catch(err){
+    bulkRows = [];
+    els.bulkPreview.classList.add("hidden");
+    setMsg(els.bulkMsg, "bad", esc(err.message || err));
+  }
+}
+
+async function importBulk(){
+  clearMsg(els.bulkMsg);
+
+  try{
+    if(!bulkRows.length) previewBulk();
+    if(!bulkRows.length) return;
+
+    if(!confirm(`Import ${bulkRows.length} approved links?`)) return;
+
+    const result = await rpc("rv_admin_bulk_add_links", {
+      p_password: ADMIN_PASSWORD,
+      p_rows: bulkRows
+    });
+
+    setMsg(els.bulkMsg, "ok", `Imported ${result || bulkRows.length} links successfully.`);
+    els.bulkText.value = "";
+    bulkRows = [];
+    els.bulkPreview.classList.add("hidden");
+    await refreshAll();
+  }catch(err){
+    console.error(err);
+    setMsg(els.bulkMsg, "bad", esc(err.message || err));
+  }
+}
+
+/* =========================================================
+   Active Links
+========================================================= */
+async function loadLinks(){
+  els.linksList.innerHTML = `<div class="card">Loading links...</div>`;
+
+  try{
+    const rows = await rpc("rv_admin_list_links", {
+      p_password: ADMIN_PASSWORD,
+      p_search: els.linkSearch.value.trim()
+    });
+
+    if(!rows || rows.length === 0){
+      els.linksList.innerHTML = `<div class="card"><h3>No active links found</h3><p class="mini">Try another search.</p></div>`;
+      return;
+    }
+
+    els.linksList.innerHTML = rows.map(r => `
+      <div class="listbar" data-id="${esc(r.id)}">
+        <div>
+          <h4>${esc(r.link_name)}</h4>
+          <p>${esc(r.department)} / ${esc(r.sub_department)}<br>${esc(r.url)}</p>
+        </div>
+        <a class="btn small" href="${esc(r.url)}" target="_blank" rel="noopener" style="text-decoration:none;display:inline-flex;align-items:center;justify-content:center;">Open</a>
+        <button class="btn red small btn-deactivate" type="button">Deactivate</button>
+      </div>
+    `).join("");
+  }catch(err){
+    console.error(err);
+    els.linksList.innerHTML = `<div class="card"><div class="msg bad" style="display:block">${esc(err.message || err)}</div></div>`;
+  }
+}
+
+async function deactivateLink(id){
+  if(!confirm("Deactivate this link? It will disappear from the public website.")) return;
+
+  try{
+    await rpc("rv_admin_deactivate_link", {
+      p_password: ADMIN_PASSWORD,
+      p_link_id: id
+    });
+    await refreshAll();
+    await loadLinks();
+  }catch(err){
+    console.error(err);
+    alert(err.message || err);
+  }
+}
+
+/* =========================================================
+   Events
+========================================================= */
+els.loginForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  await unlock(els.adminPassword.value.trim());
 });
 
-/* search debounce */
-let t; els.search.addEventListener('input', ()=>{
-  clearTimeout(t); t = setTimeout(()=>{ render(); }, 220);
+els.btnLogout.addEventListener("click", () => {
+  ADMIN_PASSWORD = "";
+  sessionStorage.removeItem("rv_admin_password");
+  els.adminPage.classList.add("hidden");
+  els.loginWrap.classList.remove("hidden");
+  els.adminPassword.value = "";
+  setStatus("", "Locked");
 });
 
-/* ===== Init ===== */
-loadData();
+els.btnRefresh.addEventListener("click", refreshAll);
 
-/* ===== Drawer tab routing on open ===== */
-document.addEventListener('click', (e)=>{
-  // click outside drawer to close only if editMode false (we keep it explicit)
-}, true);
+document.querySelectorAll(".tab").forEach(btn => {
+  btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+});
+
+els.btnQuickAdd.addEventListener("click", () => switchTab("manual"));
+els.btnQuickBulk.addEventListener("click", () => switchTab("bulk"));
+els.manualForm.addEventListener("submit", manualAdd);
+els.btnPreviewBulk.addEventListener("click", previewBulk);
+els.btnImportBulk.addEventListener("click", importBulk);
+els.btnSearchLinks.addEventListener("click", loadLinks);
+els.linkSearch.addEventListener("keydown", (e) => {
+  if(e.key === "Enter") loadLinks();
+});
+
+els.requestsList.addEventListener("click", async (e) => {
+  const approve = e.target.closest(".btn-approve");
+  const reject = e.target.closest(".btn-reject");
+
+  if(approve){
+    const card = approve.closest(".request-card");
+    await approveRequest(card);
+  }
+
+  if(reject){
+    const card = reject.closest(".request-card");
+    await rejectRequest(card);
+  }
+});
+
+els.linksList.addEventListener("click", async (e) => {
+  const btn = e.target.closest(".btn-deactivate");
+  if(!btn) return;
+  const bar = btn.closest(".listbar");
+  await deactivateLink(bar.dataset.id);
+});
+
+/* Auto unlock for same browser tab session */
+if(ADMIN_PASSWORD){
+  unlock(ADMIN_PASSWORD);
+}
 </script>
 </body>
 </html>
