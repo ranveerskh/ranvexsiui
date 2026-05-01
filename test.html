@@ -1178,7 +1178,7 @@
         <button class="iconbtn" id="btnRefresh" title="Reload">↻</button>
         <button class="iconbtn" id="btnClear" title="Clear saved order">🧹</button>
         <button class="iconbtn" id="btnTheme" title="Light/Dark">🌗</button>
-        <div class="steps-pill" title="Session steps | Total visits">
+        <div class="steps-pill" title="Daily steps | Total views">
           👣 <span id="steps">0</span> | 📊 <span id="stepsTotal">0</span>
         </div>
       </div>
@@ -1508,6 +1508,9 @@ let requestPhotoMode = "gallery";
 let selectedGalleryImage = null;
 let departmentPhotoMode = "gallery";
 let selectedDepartmentGalleryImage = null;
+let dailyStepCount = 0;
+let totalViewCount = 0;
+let analyticsReady = false;
 
 const LS = {
   THEME: "rv_theme",
@@ -1660,6 +1663,45 @@ async function submitGenericRequest(req){
   updateLocalRequest(req.client_temp_id, { submitted:true });
 }
 
+async function syncLocalRequestsWithAdmin(){
+  const rows = getLocalRequests();
+  const pendingIds = rows
+    .filter(r => r.client_temp_id && r.submitted !== false)
+    .map(r => r.client_temp_id);
+
+  if(!pendingIds.length){
+    localRequests = rows;
+    return;
+  }
+
+  try{
+    const { data, error } = await db.rpc("rv_public_request_statuses", {
+      p_client_ids: pendingIds
+    });
+
+    if(error) throw error;
+
+    const statusMap = new Map((data || []).map(x => [x.client_temp_id, x.status]));
+
+    // If admin approved/rejected, remove local temporary item.
+    // Approved item will now load permanently from Supabase tables.
+    // Rejected item should disappear from this browser too.
+    const cleaned = rows.filter(r => {
+      const status = statusMap.get(r.client_temp_id);
+      return !(status === "approved" || status === "rejected");
+    });
+
+    if(cleaned.length !== rows.length){
+      setLocalRequests(cleaned);
+    }
+
+    localRequests = cleaned;
+  }catch(err){
+    console.warn("Could not sync local pending requests:", err.message || err);
+    localRequests = rows;
+  }
+}
+
 function refreshLocalAndRender(){
   localRequests = getLocalRequests();
   buildMaps();
@@ -1671,18 +1713,57 @@ function refreshLocalAndRender(){
 ========================================================= */
 let sessionSteps = 0;
 
+function updateCounterUI(){
+  els.steps.textContent = dailyStepCount;
+  els.stepsTotal.textContent = totalViewCount;
+}
+
+async function trackVisit(){
+  try{
+    const { data, error } = await db.rpc("rv_track_visit");
+    if(error) throw error;
+
+    dailyStepCount = Number(data?.daily_steps || 0);
+    totalViewCount = Number(data?.total_views || 0);
+    analyticsReady = true;
+    updateCounterUI();
+  }catch(err){
+    console.warn("Supabase analytics not ready, using local fallback:", err.message || err);
+    dailyStepCount = Number(localStorage.getItem("rv_daily_steps_fallback") || 0);
+    totalViewCount = Number(localStorage.getItem(LS.STEPS) || 0) + 1;
+    localStorage.setItem(LS.STEPS, String(totalViewCount));
+    updateCounterUI();
+  }
+}
+
+async function saveStepToSupabase(n=1){
+  try{
+    const { data, error } = await db.rpc("rv_track_step", { p_amount: n });
+    if(error) throw error;
+
+    dailyStepCount = Number(data?.daily_steps || dailyStepCount);
+    totalViewCount = Number(data?.total_views || totalViewCount);
+    updateCounterUI();
+  }catch(err){
+    console.warn("Could not save step to Supabase:", err.message || err);
+  }
+}
+
 function step(n=1){
   sessionSteps += n;
-  els.steps.textContent = sessionSteps;
-  const total = Number(localStorage.getItem(LS.STEPS) || 0) + n;
-  localStorage.setItem(LS.STEPS, String(total));
-  els.stepsTotal.textContent = total;
+  dailyStepCount += n;
+  localStorage.setItem("rv_daily_steps_fallback", String(dailyStepCount));
+  updateCounterUI();
+
+  if(analyticsReady){
+    saveStepToSupabase(n);
+  }
 }
 
 function initSteps(){
   els.steps.textContent = "0";
-  els.stepsTotal.textContent = Number(localStorage.getItem(LS.STEPS) || 0);
-  step(1);
+  els.stepsTotal.textContent = "0";
+  trackVisit();
 }
 
 function initTheme(){
@@ -1817,6 +1898,7 @@ async function loadData(){
     }
 
     localRequests = getLocalRequests();
+    await syncLocalRequestsWithAdmin();
 
     buildMaps();
     await loadGallery();
