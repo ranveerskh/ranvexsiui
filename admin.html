@@ -653,6 +653,106 @@
     margin-bottom:4px;
   }
 
+  /* Edit modals */
+  .modal-backdrop{
+    position:fixed;
+    inset:0;
+    z-index:100;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    background:rgba(2,6,23,.58);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+  }
+
+  .modal-backdrop.show{
+    display:flex;
+  }
+
+  .edit-modal{
+    width:min(840px,100%);
+    max-height:min(92vh,900px);
+    overflow:auto;
+    border:1px solid var(--line);
+    border-radius:26px;
+    background:var(--surface);
+    box-shadow:0 30px 90px rgba(0,0,0,.34);
+  }
+
+  .modal-headline{
+    position:sticky;
+    top:0;
+    z-index:2;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:16px;
+    padding:18px 18px 14px;
+    border-bottom:1px solid var(--line);
+    background:var(--surface);
+  }
+
+  .modal-headline h3{
+    font-size:1.24rem;
+    letter-spacing:-.05em;
+    font-weight:950;
+  }
+
+  .modal-headline p{
+    margin-top:5px;
+    color:var(--muted);
+    font-weight:700;
+    line-height:1.38;
+    font-size:.87rem;
+  }
+
+  .close-x{
+    width:38px;
+    height:38px;
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:var(--surface2);
+    color:var(--ink);
+    font-weight:950;
+    font-size:18px;
+  }
+
+  .modal-body-grid{
+    padding:18px;
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+  }
+
+  .modal-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    padding:14px 18px 18px;
+    border-top:1px solid var(--line);
+  }
+
+  .image-preview{
+    width:100%;
+    max-width:260px;
+    aspect-ratio:1.45;
+    border:1px solid var(--line);
+    border-radius:16px;
+    background:var(--surface2);
+    overflow:hidden;
+    margin-top:8px;
+  }
+
+  .image-preview img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+
   @media(max-width:1080px){
     .top-inner{
       grid-template-columns:1fr auto;
@@ -682,6 +782,7 @@
     .form-grid{grid-template-columns:1fr}
     .two-col{grid-template-columns:1fr}
     .listbar{grid-template-columns:1fr}
+    .modal-body-grid{grid-template-columns:1fr}
   }
 
   @media(max-width:520px){
@@ -691,6 +792,10 @@
     .card{padding:13px;border-radius:18px}
     .top-actions{width:100%}
     .top-actions .btn,.top-actions .status-pill{flex:1}
+    .modal-backdrop{padding:10px}
+    .edit-modal{border-radius:20px}
+    .modal-actions{flex-direction:column}
+    .modal-actions .btn{width:100%}
   }
 </style>
 </head>
@@ -1005,6 +1110,120 @@ Ship Dock,Ship Clerk,New Tool,https://example.com,https://image.com/pic.jpg,,blu
     </section>
   </main>
 
+  <!-- Edit Department Modal -->
+  <div class="modal-backdrop" id="editDepartmentModal">
+    <div class="edit-modal" role="dialog" aria-modal="true" aria-labelledby="editDepartmentTitle">
+      <div class="modal-headline">
+        <div>
+          <h3 id="editDepartmentTitle">Edit Department</h3>
+          <p>Update department name, photo/image URL, color, or sort order. If you rename it, related links and sub-departments will be moved too.</p>
+        </div>
+        <button class="close-x" id="closeEditDepartmentModal" type="button">×</button>
+      </div>
+
+      <form id="editDepartmentForm">
+        <input type="hidden" id="editDepartmentId" name="id" />
+
+        <div class="modal-body-grid">
+          <div class="field full">
+            <label>Department Name</label>
+            <input id="editDepartmentName" name="department" required />
+          </div>
+
+          <div class="field full">
+            <label>Department Photo / Image URL</label>
+            <input id="editDepartmentImageUrl" name="image_url" placeholder="https://image-link.com/department.jpg" />
+            <div class="image-preview hidden" id="editDepartmentPreview"></div>
+          </div>
+
+          <div class="field">
+            <label>Color Optional</label>
+            <input id="editDepartmentColor" name="color" placeholder="#2563eb or blue" />
+          </div>
+
+          <div class="field">
+            <label>Sort Order</label>
+            <input id="editDepartmentSortOrder" name="sort_order" type="number" value="0" />
+          </div>
+        </div>
+
+        <div class="msg" id="editDepartmentMsg"></div>
+
+        <div class="modal-actions">
+          <button class="btn" id="cancelEditDepartment" type="button">Cancel</button>
+          <button class="btn primary" id="saveEditDepartment" type="submit">Save Department</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Link Modal -->
+  <div class="modal-backdrop" id="editLinkModal">
+    <div class="edit-modal" role="dialog" aria-modal="true" aria-labelledby="editLinkTitle">
+      <div class="modal-headline">
+        <div>
+          <h3 id="editLinkTitle">Edit Link</h3>
+          <p>Update department, sub-department, name, URL, image, color, or sort order.</p>
+        </div>
+        <button class="close-x" id="closeEditLinkModal" type="button">×</button>
+      </div>
+
+      <form id="editLinkForm">
+        <input type="hidden" id="editLinkId" name="id" />
+
+        <div class="modal-body-grid">
+          <div class="field">
+            <label>Department</label>
+            <input id="editLinkDepartment" name="department" list="departmentOptionsList" required />
+          </div>
+
+          <div class="field">
+            <label>Sub-Department</label>
+            <input id="editLinkSubDepartment" name="sub_department" list="subDepartmentOptionsList" required />
+          </div>
+
+          <div class="field">
+            <label>Link Name</label>
+            <input id="editLinkName" name="link_name" required />
+          </div>
+
+          <div class="field">
+            <label>URL</label>
+            <input id="editLinkUrl" name="url" required />
+          </div>
+
+          <div class="field full">
+            <label>Image URL Optional</label>
+            <input id="editLinkImageUrl" name="image_url" />
+            <div class="image-preview hidden" id="editLinkPreview"></div>
+          </div>
+
+          <div class="field full">
+            <label>Department Image URL Optional</label>
+            <input id="editLinkDepartmentImageUrl" name="department_image_url" />
+          </div>
+
+          <div class="field">
+            <label>Color Optional</label>
+            <input id="editLinkColor" name="color" />
+          </div>
+
+          <div class="field">
+            <label>Sort Order</label>
+            <input id="editLinkSortOrder" name="sort_order" type="number" value="0" />
+          </div>
+        </div>
+
+        <div class="msg" id="editLinkMsg"></div>
+
+        <div class="modal-actions">
+          <button class="btn" id="cancelEditLink" type="button">Cancel</button>
+          <button class="btn primary" id="saveEditLink" type="submit">Save Link</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
 <script>
 /* =========================================================
    Config
@@ -1059,6 +1278,34 @@ const els = {
   galleryList: document.getElementById("galleryList"),
 
   historyList: document.getElementById("historyList"),
+
+  editDepartmentModal: document.getElementById("editDepartmentModal"),
+  closeEditDepartmentModal: document.getElementById("closeEditDepartmentModal"),
+  cancelEditDepartment: document.getElementById("cancelEditDepartment"),
+  editDepartmentForm: document.getElementById("editDepartmentForm"),
+  editDepartmentMsg: document.getElementById("editDepartmentMsg"),
+  editDepartmentId: document.getElementById("editDepartmentId"),
+  editDepartmentName: document.getElementById("editDepartmentName"),
+  editDepartmentImageUrl: document.getElementById("editDepartmentImageUrl"),
+  editDepartmentColor: document.getElementById("editDepartmentColor"),
+  editDepartmentSortOrder: document.getElementById("editDepartmentSortOrder"),
+  editDepartmentPreview: document.getElementById("editDepartmentPreview"),
+
+  editLinkModal: document.getElementById("editLinkModal"),
+  closeEditLinkModal: document.getElementById("closeEditLinkModal"),
+  cancelEditLink: document.getElementById("cancelEditLink"),
+  editLinkForm: document.getElementById("editLinkForm"),
+  editLinkMsg: document.getElementById("editLinkMsg"),
+  editLinkId: document.getElementById("editLinkId"),
+  editLinkDepartment: document.getElementById("editLinkDepartment"),
+  editLinkSubDepartment: document.getElementById("editLinkSubDepartment"),
+  editLinkName: document.getElementById("editLinkName"),
+  editLinkUrl: document.getElementById("editLinkUrl"),
+  editLinkImageUrl: document.getElementById("editLinkImageUrl"),
+  editLinkDepartmentImageUrl: document.getElementById("editLinkDepartmentImageUrl"),
+  editLinkColor: document.getElementById("editLinkColor"),
+  editLinkSortOrder: document.getElementById("editLinkSortOrder"),
+  editLinkPreview: document.getElementById("editLinkPreview"),
 
   btnQuickRequest: document.getElementById("btnQuickRequest"),
   btnQuickAdd: document.getElementById("btnQuickAdd"),
@@ -1663,12 +1910,18 @@ async function loadManage(){
 function manageRow(type, r){
   if(type === "departments"){
     return `
-      <div class="listbar" data-type="departments" data-id="${esc(r.id)}">
+      <div class="listbar"
+        data-type="departments"
+        data-id="${esc(r.id)}"
+        data-department="${esc(r.department || "")}"
+        data-image-url="${esc(r.image_url || "")}"
+        data-color="${esc(r.color || "")}"
+        data-sort-order="${esc(r.sort_order ?? 0)}">
         <div>
           <h4>${esc(r.department)}</h4>
           <p>${Number(r.total_links || 0)} links • ${Number(r.sub_count || 0)} sub-departments</p>
         </div>
-        <span class="badge approved">Active</span>
+        <button class="btn small btn-edit-department" type="button">Edit</button>
         <button class="btn red small btn-hide-item" type="button">Hide</button>
       </div>
     `;
@@ -1688,13 +1941,26 @@ function manageRow(type, r){
   }
 
   return `
-    <div class="listbar" data-type="links" data-id="${esc(r.id)}">
+    <div class="listbar"
+      data-type="links"
+      data-id="${esc(r.id)}"
+      data-department="${esc(r.department || "")}"
+      data-sub-department="${esc(r.sub_department || "")}"
+      data-link-name="${esc(r.link_name || "")}"
+      data-url="${esc(r.url || "")}"
+      data-image-url="${esc(r.image_url || "")}"
+      data-department-image-url="${esc(r.department_image_url || "")}"
+      data-color="${esc(r.color || "")}"
+      data-sort-order="${esc(r.sort_order ?? 0)}">
       <div>
         <h4>${esc(r.link_name)}</h4>
         <p>${esc(r.department)} / ${esc(r.sub_department)}<br>${esc(r.url)}</p>
       </div>
       <a class="btn small" href="${esc(r.url)}" target="_blank" rel="noopener">Open</a>
-      <button class="btn red small btn-hide-item" type="button">Hide</button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
+        <button class="btn small btn-edit-link" type="button">Edit</button>
+        <button class="btn red small btn-hide-item" type="button">Hide</button>
+      </div>
     </div>
   `;
 }
@@ -1726,6 +1992,113 @@ async function hideItem(type, id){
   }catch(err){
     console.error(err);
     alert(err.message || err);
+  }
+}
+
+/* =========================================================
+   Edit Department / Link
+========================================================= */
+function updatePreview(container, url){
+  const clean = String(url || "").trim();
+  if(!clean){
+    container.classList.add("hidden");
+    container.innerHTML = "";
+    return;
+  }
+
+  container.classList.remove("hidden");
+  container.innerHTML = `<img src="${esc(clean)}" alt="">`;
+}
+
+function openEditDepartment(bar){
+  clearMsg(els.editDepartmentMsg);
+
+  els.editDepartmentId.value = bar.dataset.id || "";
+  els.editDepartmentName.value = bar.dataset.department || "";
+  els.editDepartmentImageUrl.value = bar.dataset.imageUrl || "";
+  els.editDepartmentColor.value = bar.dataset.color || "";
+  els.editDepartmentSortOrder.value = bar.dataset.sortOrder || "0";
+
+  updatePreview(els.editDepartmentPreview, els.editDepartmentImageUrl.value);
+  els.editDepartmentModal.classList.add("show");
+  setTimeout(() => els.editDepartmentName.focus(), 60);
+}
+
+function closeEditDepartment(){
+  els.editDepartmentModal.classList.remove("show");
+}
+
+async function saveEditDepartment(e){
+  e.preventDefault();
+  clearMsg(els.editDepartmentMsg);
+
+  try{
+    await rpc("rv_admin_update_department_v3", {
+      p_password: ADMIN_PASSWORD,
+      p_department_id: els.editDepartmentId.value,
+      p_department: els.editDepartmentName.value.trim(),
+      p_image_url: els.editDepartmentImageUrl.value.trim() || null,
+      p_color: els.editDepartmentColor.value.trim() || null,
+      p_sort_order: Number(els.editDepartmentSortOrder.value || 0)
+    });
+
+    setMsg(els.editDepartmentMsg, "ok", "Department updated successfully.");
+    await refreshAll();
+    if(activeTab() === "manage") await loadManage();
+    setTimeout(() => closeEditDepartment(), 650);
+  }catch(err){
+    console.error(err);
+    setMsg(els.editDepartmentMsg, "bad", esc(err.message || err));
+  }
+}
+
+function openEditLink(bar){
+  clearMsg(els.editLinkMsg);
+
+  els.editLinkId.value = bar.dataset.id || "";
+  els.editLinkDepartment.value = bar.dataset.department || "";
+  els.editLinkSubDepartment.value = bar.dataset.subDepartment || "";
+  els.editLinkName.value = bar.dataset.linkName || "";
+  els.editLinkUrl.value = bar.dataset.url || "";
+  els.editLinkImageUrl.value = bar.dataset.imageUrl || "";
+  els.editLinkDepartmentImageUrl.value = bar.dataset.departmentImageUrl || "";
+  els.editLinkColor.value = bar.dataset.color || "";
+  els.editLinkSortOrder.value = bar.dataset.sortOrder || "0";
+
+  updatePreview(els.editLinkPreview, els.editLinkImageUrl.value);
+  els.editLinkModal.classList.add("show");
+  setTimeout(() => els.editLinkName.focus(), 60);
+}
+
+function closeEditLink(){
+  els.editLinkModal.classList.remove("show");
+}
+
+async function saveEditLink(e){
+  e.preventDefault();
+  clearMsg(els.editLinkMsg);
+
+  try{
+    await rpc("rv_admin_update_link_v3", {
+      p_password: ADMIN_PASSWORD,
+      p_link_id: els.editLinkId.value,
+      p_department: els.editLinkDepartment.value.trim(),
+      p_sub_department: els.editLinkSubDepartment.value.trim(),
+      p_link_name: els.editLinkName.value.trim(),
+      p_url: safeUrl(els.editLinkUrl.value.trim()),
+      p_image_url: els.editLinkImageUrl.value.trim() || null,
+      p_department_image_url: els.editLinkDepartmentImageUrl.value.trim() || null,
+      p_color: els.editLinkColor.value.trim() || null,
+      p_sort_order: Number(els.editLinkSortOrder.value || 0)
+    });
+
+    setMsg(els.editLinkMsg, "ok", "Link updated successfully.");
+    await refreshAll();
+    if(activeTab() === "manage") await loadManage();
+    setTimeout(() => closeEditLink(), 650);
+  }catch(err){
+    console.error(err);
+    setMsg(els.editLinkMsg, "bad", esc(err.message || err));
   }
 }
 
@@ -1896,10 +2269,24 @@ els.requestsList.addEventListener("click", async (e) => {
 });
 
 els.manageList.addEventListener("click", async (e) => {
-  const btn = e.target.closest(".btn-hide-item");
-  if(!btn) return;
-  const bar = btn.closest(".listbar");
-  await hideItem(bar.dataset.type, bar.dataset.id);
+  const editDept = e.target.closest(".btn-edit-department");
+  const editLink = e.target.closest(".btn-edit-link");
+  const hideBtn = e.target.closest(".btn-hide-item");
+
+  if(editDept){
+    openEditDepartment(editDept.closest(".listbar"));
+    return;
+  }
+
+  if(editLink){
+    openEditLink(editLink.closest(".listbar"));
+    return;
+  }
+
+  if(hideBtn){
+    const bar = hideBtn.closest(".listbar");
+    await hideItem(bar.dataset.type, bar.dataset.id);
+  }
 });
 
 els.galleryList.addEventListener("click", async (e) => {
@@ -1919,6 +2306,29 @@ els.globalSearch.addEventListener("input", () => {
     if(tab === "gallery") loadGallery();
     if(tab === "history") loadHistory();
   }, 250);
+});
+
+els.closeEditDepartmentModal.addEventListener("click", closeEditDepartment);
+els.cancelEditDepartment.addEventListener("click", closeEditDepartment);
+els.editDepartmentForm.addEventListener("submit", saveEditDepartment);
+els.editDepartmentImageUrl.addEventListener("input", () => updatePreview(els.editDepartmentPreview, els.editDepartmentImageUrl.value));
+
+els.closeEditLinkModal.addEventListener("click", closeEditLink);
+els.cancelEditLink.addEventListener("click", closeEditLink);
+els.editLinkForm.addEventListener("submit", saveEditLink);
+els.editLinkImageUrl.addEventListener("input", () => updatePreview(els.editLinkPreview, els.editLinkImageUrl.value));
+
+els.editDepartmentModal.addEventListener("click", (e) => {
+  if(e.target === els.editDepartmentModal) closeEditDepartment();
+});
+
+els.editLinkModal.addEventListener("click", (e) => {
+  if(e.target === els.editLinkModal) closeEditLink();
+});
+
+document.addEventListener("keydown", (e) => {
+  if(e.key === "Escape" && els.editDepartmentModal.classList.contains("show")) closeEditDepartment();
+  if(e.key === "Escape" && els.editLinkModal.classList.contains("show")) closeEditLink();
 });
 
 /* Auto unlock for same browser tab session */
