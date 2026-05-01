@@ -1338,6 +1338,78 @@
     </div>
   </div>
 
+  <!-- Add New Department Request Modal -->
+  <div class="modal-backdrop" id="departmentModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="departmentRequestTitle">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title" id="departmentRequestTitle">Add New Department</div>
+          <div class="modal-sub">
+            Choose an existing gallery image or paste an image URL. The department will work locally right away and wait for admin approval.
+          </div>
+        </div>
+        <button class="close-btn" id="closeDepartmentModal" type="button">×</button>
+      </div>
+
+      <form id="departmentForm">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="field full">
+              <label>Department Name</label>
+              <input id="depReqDepartmentName" name="department" placeholder="Example: Ship Dock" required />
+            </div>
+
+            <div class="field">
+              <label>Your Name Optional</label>
+              <input id="depReqName" name="requested_by_name" placeholder="Your name" />
+            </div>
+
+            <div class="field">
+              <label>Your Email Optional</label>
+              <input id="depReqEmail" name="requested_by_email" placeholder="name@example.com" type="email" />
+            </div>
+
+            <div class="field full">
+              <label>Photo Option</label>
+
+              <div class="photo-options">
+                <button class="dept-photo-mode active" data-mode="gallery" type="button">Choose Existing Photo</button>
+                <button class="dept-photo-mode" data-mode="url" type="button">Paste Image URL</button>
+                <button class="dept-photo-mode" data-mode="none" type="button">No Photo</button>
+              </div>
+
+              <div id="depGalleryPanel">
+                <div class="gallery-grid" id="depGalleryGrid"></div>
+                <div class="mini-note">
+                  Existing gallery images are shown below. Select one to use for the new department.
+                </div>
+              </div>
+
+              <div id="depUrlPhotoPanel" class="hidden">
+                <input id="depReqImageUrl" name="image_url" placeholder="https://image-link.com/photo.jpg" />
+                <div class="mini-note">
+                  Paste an external image URL only. Public upload is disabled for now.
+                </div>
+              </div>
+            </div>
+
+            <div class="field full">
+              <label>Note Optional</label>
+              <textarea id="departmentMsgNote" name="note" placeholder="Any note for admin?"></textarea>
+            </div>
+          </div>
+
+          <div id="departmentMsg" class="request-msg"></div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="secondary-btn" id="cancelDepartmentRequest" type="button">Cancel</button>
+          <button class="primary-btn" id="submitDepartmentRequest" type="submit">Submit Department</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
 <script>
 /* =========================================================
    Supabase Config
@@ -1402,7 +1474,22 @@ const els = {
   reqNote: document.getElementById("reqNote"),
   galleryGrid: document.getElementById("galleryGrid"),
   galleryPanel: document.getElementById("galleryPanel"),
-  urlPhotoPanel: document.getElementById("urlPhotoPanel")
+  urlPhotoPanel: document.getElementById("urlPhotoPanel"),
+
+  departmentModal: document.getElementById("departmentModal"),
+  closeDepartmentModal: document.getElementById("closeDepartmentModal"),
+  departmentForm: document.getElementById("departmentForm"),
+  cancelDepartmentRequest: document.getElementById("cancelDepartmentRequest"),
+  submitDepartmentRequest: document.getElementById("submitDepartmentRequest"),
+  departmentMsg: document.getElementById("departmentMsg"),
+  depReqDepartmentName: document.getElementById("depReqDepartmentName"),
+  depReqName: document.getElementById("depReqName"),
+  depReqEmail: document.getElementById("depReqEmail"),
+  depReqImageUrl: document.getElementById("depReqImageUrl"),
+  depReqNote: document.getElementById("departmentMsgNote"),
+  depGalleryGrid: document.getElementById("depGalleryGrid"),
+  depGalleryPanel: document.getElementById("depGalleryPanel"),
+  depUrlPhotoPanel: document.getElementById("depUrlPhotoPanel")
 };
 
 let rawRows = [];
@@ -1419,6 +1506,8 @@ let linkSortable = null;
 let realtimeChannel = null;
 let requestPhotoMode = "gallery";
 let selectedGalleryImage = null;
+let departmentPhotoMode = "gallery";
+let selectedDepartmentGalleryImage = null;
 
 const LS = {
   THEME: "rv_theme",
@@ -1944,6 +2033,135 @@ function setPhotoMode(mode){
   els.urlPhotoPanel.classList.toggle("hidden", mode !== "url");
 }
 
+function renderDepartmentGallery(){
+  els.depGalleryGrid.innerHTML = "";
+
+  if(!galleryImages.length){
+    els.depGalleryGrid.innerHTML = `
+      <div class="empty" style="grid-column:1/-1;padding:18px">
+        <strong>No gallery images yet.</strong><br>
+        You can paste an image URL or admin can add gallery images later.
+      </div>
+    `;
+    return;
+  }
+
+  galleryImages.forEach((item) => {
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "gallery-item" + ((selectedDepartmentGalleryImage && selectedDepartmentGalleryImage.url === item.url) ? " selected" : "");
+    card.title = item.title || "Gallery image";
+    card.innerHTML = `
+      <img src="${esc(item.url)}" alt="${esc(item.title || "Gallery image")}" loading="lazy">
+      <span class="gallery-check">✓</span>
+    `;
+
+    card.addEventListener("click", () => {
+      selectedDepartmentGalleryImage = item;
+      renderDepartmentGallery();
+    });
+
+    els.depGalleryGrid.appendChild(card);
+  });
+}
+
+function setDepartmentPhotoMode(mode){
+  departmentPhotoMode = mode;
+
+  document.querySelectorAll(".dept-photo-mode").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.mode === mode);
+  });
+
+  els.depGalleryPanel.classList.toggle("hidden", mode !== "gallery");
+  els.depUrlPhotoPanel.classList.toggle("hidden", mode !== "url");
+}
+
+function openDepartmentModal(){
+  els.departmentForm.reset();
+  els.departmentMsg.className = "request-msg";
+  els.departmentMsg.innerHTML = "";
+
+  departmentPhotoMode = "gallery";
+  selectedDepartmentGalleryImage = selectedDepartmentGalleryImage || galleryImages[0] || null;
+  setDepartmentPhotoMode("gallery");
+  renderDepartmentGallery();
+
+  els.departmentModal.classList.add("show");
+  setTimeout(() => els.depReqDepartmentName.focus(), 60);
+}
+
+function closeDepartmentModal(){
+  els.departmentModal.classList.remove("show");
+}
+
+async function submitDepartmentRequestHandler(e){
+  e.preventDefault();
+
+  const department = els.depReqDepartmentName.value.trim();
+  const requested_by_name = els.depReqName.value.trim();
+  const requested_by_email = els.depReqEmail.value.trim();
+  const note = els.depReqNote.value.trim();
+
+  if(!department){
+    els.departmentMsg.className = "request-msg bad";
+    els.departmentMsg.innerHTML = "Please enter a department name.";
+    return;
+  }
+
+  if(alreadyHasDepartment(department)){
+    els.departmentMsg.className = "request-msg bad";
+    els.departmentMsg.innerHTML = "This department already exists on this page/device.";
+    return;
+  }
+
+  let image_url = "";
+  if(departmentPhotoMode === "gallery"){
+    image_url = selectedDepartmentGalleryImage?.url || "";
+  }else if(departmentPhotoMode === "url"){
+    image_url = els.depReqImageUrl.value.trim();
+  }
+
+  els.submitDepartmentRequest.disabled = true;
+  els.submitDepartmentRequest.textContent = "Submitting...";
+  els.departmentMsg.className = "request-msg";
+  els.departmentMsg.innerHTML = "";
+
+  const req = {
+    client_temp_id:makeTempId("department"),
+    request_type:"department",
+    department,
+    department_image_url:image_url || "",
+    image_url:image_url || "",
+    color:"",
+    note:note || "Department request from public page",
+    requested_by_name:requested_by_name || "",
+    requested_by_email:requested_by_email || "",
+    status:"pending",
+    submitted:false,
+    created_at:new Date().toISOString()
+  };
+
+  saveLocalRequest(req);
+  currentDep = department;
+  currentSub = "__all__";
+  els.viewMode.value = "subpage";
+  refreshLocalAndRender();
+
+  try{
+    await submitGenericRequest(req);
+    els.departmentMsg.className = "request-msg ok";
+    els.departmentMsg.innerHTML = "Saved locally and sent for admin approval.";
+    setTimeout(() => closeDepartmentModal(), 700);
+  }catch(err){
+    console.error(err);
+    els.departmentMsg.className = "request-msg bad";
+    els.departmentMsg.innerHTML = `Saved locally, but could not send to admin.<br>${esc(err.message || err)}`;
+  }finally{
+    els.submitDepartmentRequest.disabled = false;
+    els.submitDepartmentRequest.textContent = "Submit Department";
+  }
+}
+
 /* =========================================================
    Local Sort Orders
 ========================================================= */
@@ -2265,43 +2483,7 @@ function addSubDepartmentCard(){
 }
 
 async function requestNewDepartment(){
-  const name = prompt("New department name?");
-  if(!name || !name.trim()) return;
-
-  const department = name.trim();
-
-  if(alreadyHasDepartment(department)){
-    alert("This department already exists on this device/page.");
-    return;
-  }
-
-  const image = prompt("Optional department image URL? Leave blank if not needed.") || "";
-  const req = {
-    client_temp_id:makeTempId("department"),
-    request_type:"department",
-    department,
-    department_image_url:image.trim() || "",
-    image_url:image.trim() || "",
-    color:"",
-    note:"Department request from public page",
-    status:"pending",
-    submitted:false,
-    created_at:new Date().toISOString()
-  };
-
-  saveLocalRequest(req);
-  currentDep = department;
-  currentSub = "__all__";
-  els.viewMode.value = "subpage";
-  refreshLocalAndRender();
-
-  try{
-    await submitGenericRequest(req);
-    alert("Department added locally and sent for admin approval.");
-  }catch(err){
-    console.error(err);
-    alert("Department added locally, but admin request failed. Check Supabase request policy.");
-  }
+  openDepartmentModal();
 }
 
 async function requestNewSubDepartment(){
@@ -2672,17 +2854,32 @@ document.querySelectorAll(".photo-mode").forEach(btn => {
   btn.addEventListener("click", () => setPhotoMode(btn.dataset.mode));
 });
 
+document.querySelectorAll(".dept-photo-mode").forEach(btn => {
+  btn.addEventListener("click", () => setDepartmentPhotoMode(btn.dataset.mode));
+});
+
 els.closeRequestModal.addEventListener("click", closeRequestModal);
 els.cancelRequest.addEventListener("click", closeRequestModal);
 els.requestForm.addEventListener("submit", submitLinkRequest);
+
+els.closeDepartmentModal.addEventListener("click", closeDepartmentModal);
+els.cancelDepartmentRequest.addEventListener("click", closeDepartmentModal);
+els.departmentForm.addEventListener("submit", submitDepartmentRequestHandler);
 
 els.requestModal.addEventListener("click", (e) => {
   if(e.target === els.requestModal) closeRequestModal();
 });
 
+els.departmentModal.addEventListener("click", (e) => {
+  if(e.target === els.departmentModal) closeDepartmentModal();
+});
+
 document.addEventListener("keydown", (e) => {
   if(e.key === "Escape" && els.requestModal.classList.contains("show")){
     closeRequestModal();
+  }
+  if(e.key === "Escape" && els.departmentModal.classList.contains("show")){
+    closeDepartmentModal();
   }
 });
 
