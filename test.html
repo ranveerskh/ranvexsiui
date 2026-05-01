@@ -263,6 +263,29 @@
     border-color:rgba(37,99,235,.28);
   }
 
+  .addtopbtn{
+    height:36px;
+    border:0;
+    border-radius:13px;
+    padding:0 13px;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    cursor:pointer;
+    color:white;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    box-shadow:0 10px 22px rgba(37,99,235,.22);
+    font-size:.82rem;
+    font-weight:950;
+    white-space:nowrap;
+    transition:.18s ease;
+  }
+
+  .addtopbtn:hover{
+    transform:translateY(-1px);
+    box-shadow:0 14px 28px rgba(37,99,235,.28);
+  }
+
   .steps-pill{
     height:36px;
     display:flex;
@@ -1000,6 +1023,12 @@
     .status-pill,
     .steps-pill{display:none}
 
+    .addtopbtn{
+      height:36px;
+      padding:0 11px;
+      font-size:.78rem;
+    }
+
     .page{padding:16px 14px 26px}
 
     .hero-row{
@@ -1113,6 +1142,7 @@
           <span class="dot" id="dbDot"></span>
           <span id="dbText">Connecting</span>
         </div>
+        <button class="addtopbtn" id="btnAddLinkTop" title="Add New Link">+ Link</button>
         <button class="iconbtn" id="btnSettings" title="Settings">⚙️</button>
         <button class="iconbtn" id="btnRefresh" title="Reload">↻</button>
         <button class="iconbtn" id="btnClear" title="Clear saved order">🧹</button>
@@ -1309,6 +1339,7 @@ const els = {
   btnClear: document.getElementById("btnClear"),
   btnTheme: document.getElementById("btnTheme"),
   btnSettings: document.getElementById("btnSettings"),
+  btnAddLinkTop: document.getElementById("btnAddLinkTop"),
   btnBack: document.getElementById("btnBack"),
   density: document.getElementById("density"),
   media: document.getElementById("media"),
@@ -1995,12 +2026,10 @@ function renderLinks(){
 
   els.linkGrid.innerHTML = "";
 
-  els.linkGrid.appendChild(addNewLinkCard());
-
   if(sorted.length === 0){
     const empty = document.createElement("div");
     empty.className = "empty";
-    empty.innerHTML = `<strong>No links found.</strong><br>You can submit a new link request using the Add New Link card.`;
+    empty.innerHTML = `<strong>No links found.</strong><br>You can submit a new link request using the Add New Link card below.`;
     els.linkGrid.appendChild(empty);
   }else{
     sorted.forEach(l => {
@@ -2029,6 +2058,9 @@ function renderLinks(){
     });
   }
 
+  // Add New Link card stays at the end of the links grid
+  els.linkGrid.appendChild(addNewLinkCard());
+
   if(linkSortable){
     linkSortable.destroy();
     linkSortable = null;
@@ -2052,8 +2084,15 @@ function renderLinks(){
 ========================================================= */
 function openRequestModal(){
   if(!currentDep){
-    alert("Please open a department/sub-department first.");
-    return;
+    const firstDep = departmentsData[0];
+    if(!firstDep){
+      alert("No departments available yet.");
+      return;
+    }
+    currentDep = firstDep.dep;
+    currentSub = firstDep.subs[0] || "__all__";
+    els.viewMode.value = currentSub === "__all__" ? "subpage" : "links";
+    render();
   }
 
   const depObj = departmentsData.find(d => d.dep === currentDep);
@@ -2183,6 +2222,11 @@ function setupRealtime(){
    Events
 ========================================================= */
 els.btnTheme.addEventListener("click", toggleTheme);
+
+els.btnAddLinkTop.addEventListener("click", () => {
+  openRequestModal();
+  step();
+});
 
 els.btnSettings.addEventListener("click", () => {
   const open = els.settings.classList.contains("hidden");
