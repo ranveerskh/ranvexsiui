@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>RANVEXSI UI — Supabase Laptop Grid</title>
+<title>RANVEXSI UI — Supabase</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -34,9 +34,9 @@
     --shadow-md:0 14px 34px rgba(15,23,42,.10);
     --shadow-lg:0 24px 60px rgba(15,23,42,.14);
 
-    --radius:20px;
+    --radius:18px;
     --radius-sm:14px;
-    --max:1480px;
+    --max:1360px;
   }
 
   body.dark{
@@ -65,51 +65,52 @@
     font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
     color:var(--ink);
     background:
-      radial-gradient(circle at top left, rgba(37,99,235,.14), transparent 34%),
-      radial-gradient(circle at top right, rgba(124,58,237,.12), transparent 32%),
+      radial-gradient(circle at top left, rgba(37,99,235,.12), transparent 34%),
+      radial-gradient(circle at top right, rgba(124,58,237,.10), transparent 32%),
       linear-gradient(180deg,var(--bg),var(--bg-2));
     overflow-x:hidden;
   }
 
-  button,input,select{font:inherit}
+  button,input,select,textarea{font:inherit}
   button{-webkit-tap-highlight-color:transparent}
   a{color:inherit}
+  textarea{resize:vertical}
 
   /* =========================
-     Top Header
+     Header
   ========================= */
   .app-header{
     position:sticky;
     top:0;
     z-index:50;
     border-bottom:1px solid var(--line);
-    background:rgba(255,255,255,.78);
+    background:rgba(255,255,255,.82);
     backdrop-filter:blur(22px);
     -webkit-backdrop-filter:blur(22px);
     box-shadow:0 8px 30px rgba(15,23,42,.06);
   }
 
   body.dark .app-header{
-    background:rgba(17,24,39,.78);
+    background:rgba(17,24,39,.82);
     box-shadow:0 8px 34px rgba(0,0,0,.22);
   }
 
   .header-inner{
     width:min(var(--max),100%);
     margin:0 auto;
-    min-height:68px;
-    padding:10px 22px;
+    min-height:66px;
+    padding:10px 20px;
     display:grid;
     grid-template-columns:auto minmax(280px,1fr) auto;
     align-items:center;
-    gap:18px;
+    gap:16px;
   }
 
   .brand{
     display:flex;
     align-items:center;
     gap:12px;
-    min-width:230px;
+    min-width:220px;
   }
 
   .backbtn{
@@ -144,8 +145,7 @@
     color:white;
     font-weight:900;
     letter-spacing:-.7px;
-    background:
-      linear-gradient(135deg,var(--accent),var(--accent-2));
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
     box-shadow:0 14px 34px rgba(37,99,235,.28);
   }
 
@@ -157,13 +157,13 @@
   }
 
   .brand-title{
-    font-size:1.04rem;
+    font-size:1.03rem;
     font-weight:900;
     letter-spacing:-.04em;
   }
 
   .brand-sub{
-    font-size:.74rem;
+    font-size:.72rem;
     color:var(--muted);
     font-weight:700;
   }
@@ -171,7 +171,7 @@
   .search-wrap{
     position:relative;
     width:100%;
-    max-width:720px;
+    max-width:660px;
     justify-self:center;
   }
 
@@ -186,21 +186,21 @@
 
   .search-wrap input{
     width:100%;
-    height:44px;
+    height:42px;
     border:1px solid var(--line);
-    background:rgba(255,255,255,.86);
+    background:rgba(255,255,255,.88);
     color:var(--ink);
     outline:none;
-    border-radius:16px;
+    border-radius:15px;
     padding:0 16px 0 44px;
-    font-size:.94rem;
+    font-size:.93rem;
     font-weight:650;
     box-shadow:var(--shadow-sm);
     transition:.18s ease;
   }
 
   body.dark .search-wrap input{
-    background:rgba(15,23,42,.72);
+    background:rgba(15,23,42,.74);
   }
 
   .search-wrap input:focus{
@@ -212,22 +212,22 @@
     display:flex;
     align-items:center;
     justify-content:flex-end;
-    gap:9px;
-    min-width:300px;
+    gap:8px;
+    min-width:290px;
   }
 
   .status-pill{
-    height:38px;
+    height:36px;
     display:flex;
     align-items:center;
     gap:8px;
     border:1px solid var(--line);
     border-radius:999px;
     background:var(--surface);
-    padding:0 12px;
+    padding:0 11px;
     color:var(--muted);
     font-weight:800;
-    font-size:.78rem;
+    font-size:.77rem;
     box-shadow:var(--shadow-sm);
     white-space:nowrap;
   }
@@ -243,10 +243,10 @@
   .dot.bad{background:var(--red);box-shadow:0 0 0 4px rgba(220,38,38,.12)}
 
   .iconbtn{
-    width:38px;
-    height:38px;
+    width:36px;
+    height:36px;
     border:1px solid var(--line);
-    border-radius:14px;
+    border-radius:13px;
     background:var(--surface);
     color:var(--ink);
     display:grid;
@@ -254,7 +254,6 @@
     cursor:pointer;
     box-shadow:var(--shadow-sm);
     transition:.18s ease;
-    position:relative;
     font-size:16px;
   }
 
@@ -265,17 +264,17 @@
   }
 
   .steps-pill{
-    height:38px;
+    height:36px;
     display:flex;
     align-items:center;
     gap:7px;
     border:1px solid var(--line);
-    border-radius:14px;
+    border-radius:13px;
     background:var(--surface);
     padding:0 10px;
     color:var(--muted);
     font-weight:800;
-    font-size:.78rem;
+    font-size:.77rem;
     box-shadow:var(--shadow-sm);
     white-space:nowrap;
   }
@@ -286,7 +285,7 @@
   .page{
     width:min(var(--max),100%);
     margin:0 auto;
-    padding:22px;
+    padding:20px;
   }
 
   .hero-row{
@@ -294,63 +293,59 @@
     grid-template-columns:1fr auto;
     align-items:end;
     gap:18px;
-    margin-bottom:16px;
+    margin-bottom:14px;
   }
 
   .crumbs{
     color:var(--muted);
     font-weight:800;
-    font-size:.88rem;
+    font-size:.86rem;
     display:flex;
     align-items:center;
     gap:7px;
     flex-wrap:wrap;
   }
 
-  .crumbs b{
-    color:var(--ink);
-  }
+  .crumbs b{color:var(--ink)}
 
   .page-title{
-    margin-top:6px;
-    font-size:clamp(1.6rem,2.3vw,2.45rem);
+    margin-top:5px;
+    font-size:clamp(1.55rem,2.1vw,2.2rem);
     letter-spacing:-.06em;
     line-height:1.02;
     font-weight:950;
   }
 
   .page-note{
-    margin-top:8px;
+    margin-top:7px;
     color:var(--muted);
     font-weight:650;
     max-width:760px;
-    font-size:.95rem;
+    font-size:.92rem;
     line-height:1.45;
   }
 
   .quick-stats{
     display:flex;
-    gap:10px;
+    gap:8px;
     flex-wrap:wrap;
     justify-content:flex-end;
   }
 
   .stat-card{
-    min-width:128px;
+    min-width:108px;
     border:1px solid var(--line);
-    border-radius:18px;
-    background:rgba(255,255,255,.72);
+    border-radius:16px;
+    background:rgba(255,255,255,.74);
     backdrop-filter:blur(16px);
-    padding:12px 14px;
+    padding:10px 12px;
     box-shadow:var(--shadow-sm);
   }
 
-  body.dark .stat-card{
-    background:rgba(17,24,39,.68);
-  }
+  body.dark .stat-card{background:rgba(17,24,39,.68)}
 
   .stat-label{
-    font-size:.72rem;
+    font-size:.66rem;
     text-transform:uppercase;
     letter-spacing:.08em;
     color:var(--muted);
@@ -358,29 +353,26 @@
   }
 
   .stat-value{
-    margin-top:4px;
-    font-size:1.25rem;
+    margin-top:3px;
+    font-size:1.08rem;
     letter-spacing:-.04em;
     font-weight:950;
   }
 
   /* =========================
-     Settings Panel
+     Settings
   ========================= */
   .settings{
     border:1px solid var(--line);
-    border-radius:20px;
-    background:rgba(255,255,255,.72);
+    border-radius:18px;
+    background:rgba(255,255,255,.74);
     backdrop-filter:blur(18px);
-    padding:12px;
-    margin:16px 0 18px;
+    padding:11px;
+    margin:14px 0 18px;
     box-shadow:var(--shadow-sm);
   }
 
-  body.dark .settings{
-    background:rgba(17,24,39,.68);
-  }
-
+  body.dark .settings{background:rgba(17,24,39,.68)}
   .settings.hidden{display:none}
 
   .controls{
@@ -393,13 +385,13 @@
   .chip,
   .btn,
   select{
-    height:38px;
+    height:36px;
     border:1px solid var(--line);
-    border-radius:14px;
+    border-radius:13px;
     background:var(--surface);
     color:var(--ink);
-    padding:0 12px;
-    font-size:.86rem;
+    padding:0 11px;
+    font-size:.84rem;
     font-weight:850;
     box-shadow:var(--shadow-sm);
   }
@@ -425,11 +417,6 @@
     box-shadow:var(--shadow-md);
   }
 
-  .range{
-    width:145px;
-    accent-color:var(--accent);
-  }
-
   /* =========================
      Grid
   ========================= */
@@ -438,44 +425,34 @@
     gap:18px;
   }
 
-  #depGrid{
-    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  }
+  #depGrid{grid-template-columns:repeat(4,1fr)}
+  #subGrid{grid-template-columns:repeat(5,1fr)}
+  #linkGrid{grid-template-columns:repeat(4,1fr)}
 
-  #subGrid{
-    grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
-  }
-
-  #linkGrid{
-    grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
-  }
-
-  @media (min-width:1500px){
-    #depGrid{grid-template-columns:repeat(5,1fr)}
-    #subGrid{grid-template-columns:repeat(6,1fr)}
-    #linkGrid{grid-template-columns:repeat(6,1fr)}
-  }
-
-  @media (min-width:1200px) and (max-width:1499px){
-    #depGrid{grid-template-columns:repeat(4,1fr)}
-    #subGrid{grid-template-columns:repeat(5,1fr)}
-    #linkGrid{grid-template-columns:repeat(5,1fr)}
-  }
-
-  @media (min-width:900px) and (max-width:1199px){
+  @media (max-width:1200px){
     #depGrid{grid-template-columns:repeat(3,1fr)}
     #subGrid{grid-template-columns:repeat(4,1fr)}
-    #linkGrid{grid-template-columns:repeat(4,1fr)}
+    #linkGrid{grid-template-columns:repeat(3,1fr)}
+  }
+
+  @media (max-width:820px){
+    #depGrid,
+    #subGrid,
+    #linkGrid{
+      grid-template-columns:repeat(2,1fr);
+      gap:12px;
+    }
   }
 
   /* =========================
      Cards
   ========================= */
   .card,
-  .link{
+  .link,
+  .add-card{
     position:relative;
-    min-height:180px;
-    aspect-ratio:16/10;
+    min-height:220px;
+    aspect-ratio:4/3;
     border:1px solid var(--line);
     border-radius:var(--radius);
     background:var(--surface);
@@ -484,23 +461,21 @@
     text-decoration:none;
     box-shadow:var(--shadow-sm);
     transform:translateZ(0);
-    transition:
-      transform .18s ease,
-      box-shadow .18s ease,
-      border-color .18s ease,
-      filter .18s ease;
+    transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
   }
 
   .card:hover,
-  .link:hover{
-    transform:translateY(-5px);
+  .link:hover,
+  .add-card:hover{
+    transform:translateY(-4px);
     box-shadow:var(--shadow-lg);
-    border-color:rgba(37,99,235,.35);
+    border-color:rgba(37,99,235,.34);
   }
 
   .card:active,
-  .link:active{
-    transform:translateY(-1px) scale(.992);
+  .link:active,
+  .add-card:active{
+    transform:translateY(-1px) scale(.993);
   }
 
   .img{
@@ -515,19 +490,19 @@
     transition:transform .28s ease, opacity .18s ease;
   }
 
-  body.dark .img{opacity:.62}
+  body.dark .img{opacity:.64}
 
   .card:hover .img,
   .link:hover .img{
-    transform:scale(1.055);
+    transform:scale(1.045);
   }
 
   .veil{
     position:absolute;
     inset:0;
     background:
-      radial-gradient(circle at top left, rgba(37,99,235,.18), transparent 42%),
-      linear-gradient(180deg, rgba(0,0,0,.04), rgba(0,0,0,.10));
+      radial-gradient(circle at top left, rgba(37,99,235,.16), transparent 42%),
+      linear-gradient(180deg, rgba(0,0,0,.03), rgba(0,0,0,.10));
     pointer-events:none;
   }
 
@@ -540,8 +515,7 @@
   .overlay{
     position:absolute;
     inset:0;
-    background:
-      linear-gradient(180deg, rgba(0,0,0,.04) 10%, rgba(0,0,0,.20) 55%, rgba(0,0,0,.76) 100%);
+    background:linear-gradient(180deg, rgba(0,0,0,.03) 10%, rgba(0,0,0,.20) 55%, rgba(0,0,0,.76) 100%);
     pointer-events:none;
   }
 
@@ -550,21 +524,19 @@
     z-index:2;
     left:14px;
     right:14px;
-    bottom:13px;
+    bottom:12px;
     display:flex;
     align-items:flex-end;
     justify-content:space-between;
-    gap:12px;
+    gap:10px;
     color:white;
   }
 
-  .label-main{
-    min-width:0;
-  }
+  .label-main{min-width:0}
 
   .label-title{
     display:block;
-    font-size:1.02rem;
+    font-size:1rem;
     line-height:1.1;
     font-weight:950;
     letter-spacing:-.035em;
@@ -575,7 +547,7 @@
   }
 
   .label-sub{
-    margin-top:5px;
+    margin-top:4px;
     display:block;
     font-size:.76rem;
     color:rgba(255,255,255,.82);
@@ -591,13 +563,13 @@
     display:inline-flex;
     align-items:center;
     gap:6px;
-    height:28px;
+    height:26px;
     padding:0 10px;
     border-radius:999px;
     background:rgba(255,255,255,.18);
     border:1px solid rgba(255,255,255,.22);
     color:white;
-    font-size:.74rem;
+    font-size:.72rem;
     font-weight:950;
     backdrop-filter:blur(10px);
     box-shadow:0 6px 18px rgba(0,0,0,.15);
@@ -606,12 +578,12 @@
   .subchip{
     min-height:128px;
     border:1px solid var(--line);
-    border-radius:20px;
+    border-radius:18px;
     background:
       linear-gradient(135deg, rgba(37,99,235,.10), rgba(124,58,237,.08)),
       var(--surface);
     box-shadow:var(--shadow-sm);
-    padding:18px;
+    padding:16px;
     cursor:pointer;
     transition:.18s ease;
     display:flex;
@@ -663,22 +635,72 @@
     font-weight:950;
     letter-spacing:-.04em;
     line-height:1.12;
-    font-size:1.05rem;
+    font-size:1.03rem;
   }
 
   .sub-desc{
     color:var(--muted);
-    font-size:.8rem;
+    font-size:.78rem;
     font-weight:700;
     margin-top:5px;
+  }
+
+  .add-card{
+    border-style:dashed;
+    border-width:2px;
+    border-color:rgba(37,99,235,.30);
+    background:
+      radial-gradient(circle at top left, rgba(37,99,235,.14), transparent 45%),
+      linear-gradient(135deg, rgba(37,99,235,.06), rgba(124,58,237,.08)),
+      var(--surface);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:18px;
+  }
+
+  .add-content{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+  }
+
+  .add-plus{
+    width:54px;
+    height:54px;
+    border-radius:19px;
+    display:grid;
+    place-items:center;
+    color:white;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    box-shadow:0 16px 34px rgba(37,99,235,.26);
+    font-size:30px;
+    line-height:1;
+    font-weight:900;
+  }
+
+  .add-title{
+    font-weight:950;
+    letter-spacing:-.04em;
+    font-size:1.08rem;
+  }
+
+  .add-desc{
+    color:var(--muted);
+    font-weight:750;
+    font-size:.82rem;
+    line-height:1.35;
+    max-width:230px;
   }
 
   .empty{
     grid-column:1/-1;
     border:1px dashed var(--line-strong);
-    border-radius:22px;
-    background:rgba(255,255,255,.68);
-    padding:34px 18px;
+    border-radius:20px;
+    background:rgba(255,255,255,.70);
+    padding:30px 18px;
     text-align:center;
     color:var(--muted);
     box-shadow:var(--shadow-sm);
@@ -686,27 +708,273 @@
     line-height:1.5;
   }
 
-  body.dark .empty{
-    background:rgba(17,24,39,.62);
-  }
-
-  .empty strong{
-    color:var(--ink);
-    font-size:1.1rem;
-  }
-
+  body.dark .empty{background:rgba(17,24,39,.62)}
+  .empty strong{color:var(--ink);font-size:1.05rem}
   .hidden{display:none!important}
 
-  .sortable-ghost{
-    opacity:.45;
+  .sortable-ghost{opacity:.45}
+  .sortable-chosen{transform:scale(.985)}
+
+  /* =========================
+     Modal
+  ========================= */
+  .modal-backdrop{
+    position:fixed;
+    inset:0;
+    background:rgba(2,6,23,.58);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    z-index:100;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
   }
 
-  .sortable-chosen{
-    transform:scale(.985);
+  .modal-backdrop.show{display:flex}
+
+  .modal{
+    width:min(820px,100%);
+    max-height:min(92vh,880px);
+    overflow:auto;
+    border:1px solid var(--line);
+    border-radius:24px;
+    background:var(--surface);
+    color:var(--ink);
+    box-shadow:0 30px 90px rgba(0,0,0,.34);
+  }
+
+  .modal-head{
+    position:sticky;
+    top:0;
+    z-index:2;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:16px;
+    padding:18px 18px 14px;
+    border-bottom:1px solid var(--line);
+    background:var(--surface);
+  }
+
+  .modal-title{
+    font-size:1.25rem;
+    font-weight:950;
+    letter-spacing:-.05em;
+  }
+
+  .modal-sub{
+    margin-top:5px;
+    color:var(--muted);
+    font-weight:700;
+    font-size:.88rem;
+    line-height:1.4;
+  }
+
+  .close-btn{
+    width:38px;
+    height:38px;
+    border-radius:14px;
+    border:1px solid var(--line);
+    background:var(--surface-2);
+    color:var(--ink);
+    cursor:pointer;
+    font-weight:950;
+    font-size:18px;
+  }
+
+  .modal-body{
+    padding:18px;
+  }
+
+  .form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+
+  .field{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+  }
+
+  .field.full{grid-column:1/-1}
+
+  .field label{
+    font-size:.78rem;
+    font-weight:900;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:.06em;
+  }
+
+  .field input,
+  .field select,
+  .field textarea{
+    width:100%;
+    min-height:42px;
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:var(--surface-2);
+    color:var(--ink);
+    outline:none;
+    padding:10px 12px;
+    font-weight:700;
+    box-shadow:none;
+  }
+
+  .field textarea{min-height:84px}
+
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus{
+    border-color:rgba(37,99,235,.55);
+    box-shadow:0 0 0 4px var(--accent-soft);
+  }
+
+  .photo-options{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:12px;
+  }
+
+  .photo-mode{
+    border:1px solid var(--line);
+    border-radius:999px;
+    background:var(--surface-2);
+    color:var(--ink);
+    padding:9px 12px;
+    font-weight:900;
+    cursor:pointer;
+    font-size:.82rem;
+  }
+
+  .photo-mode.active{
+    color:white;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    border-color:transparent;
+  }
+
+  .gallery-grid{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:10px;
+    max-height:270px;
+    overflow:auto;
+    padding:4px;
+  }
+
+  .gallery-item{
+    position:relative;
+    aspect-ratio:1.25;
+    border:2px solid transparent;
+    border-radius:14px;
+    overflow:hidden;
+    background:var(--surface-2);
+    cursor:pointer;
+    box-shadow:var(--shadow-sm);
+  }
+
+  .gallery-item.selected{
+    border-color:var(--accent);
+    box-shadow:0 0 0 4px var(--accent-soft), var(--shadow-sm);
+  }
+
+  .gallery-item img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+  .gallery-check{
+    position:absolute;
+    right:7px;
+    top:7px;
+    width:24px;
+    height:24px;
+    border-radius:999px;
+    background:rgba(0,0,0,.62);
+    color:#fff;
+    display:none;
+    place-items:center;
+    font-size:13px;
+    font-weight:950;
+  }
+
+  .gallery-item.selected .gallery-check{display:grid}
+
+  .mini-note{
+    color:var(--muted);
+    font-size:.82rem;
+    font-weight:750;
+    line-height:1.45;
+    margin-top:8px;
+  }
+
+  .modal-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    padding:14px 18px 18px;
+    border-top:1px solid var(--line);
+  }
+
+  .primary-btn,
+  .secondary-btn{
+    min-height:42px;
+    border-radius:14px;
+    padding:0 16px;
+    font-weight:950;
+    cursor:pointer;
+    border:1px solid var(--line);
+  }
+
+  .secondary-btn{
+    background:var(--surface-2);
+    color:var(--ink);
+  }
+
+  .primary-btn{
+    border:0;
+    color:white;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    box-shadow:0 12px 24px rgba(37,99,235,.22);
+  }
+
+  .primary-btn:disabled{
+    opacity:.55;
+    cursor:not-allowed;
+  }
+
+  .request-msg{
+    margin-top:14px;
+    border-radius:16px;
+    padding:13px;
+    font-weight:850;
+    font-size:.9rem;
+    line-height:1.4;
+    display:none;
+  }
+
+  .request-msg.ok{
+    display:block;
+    background:rgba(22,163,74,.10);
+    color:var(--green);
+    border:1px solid rgba(22,163,74,.24);
+  }
+
+  .request-msg.bad{
+    display:block;
+    background:rgba(220,38,38,.10);
+    color:var(--red);
+    border:1px solid rgba(220,38,38,.24);
   }
 
   /* =========================
-     Mobile / Tablet
+     Responsive
   ========================= */
   @media (max-width:980px){
     .header-inner{
@@ -715,13 +983,8 @@
       padding:10px 14px;
     }
 
-    .brand{
-      min-width:0;
-    }
-
-    .brand-sub{
-      display:none;
-    }
+    .brand{min-width:0}
+    .brand-sub{display:none}
 
     .search-wrap{
       grid-column:1 / -1;
@@ -734,42 +997,27 @@
       gap:7px;
     }
 
-    .status-pill{
-      display:none;
-    }
+    .status-pill,
+    .steps-pill{display:none}
 
-    .steps-pill{
-      display:none;
-    }
-
-    .page{
-      padding:16px 14px 26px;
-    }
+    .page{padding:16px 14px 26px}
 
     .hero-row{
       grid-template-columns:1fr;
       align-items:start;
     }
 
-    .quick-stats{
-      justify-content:flex-start;
-    }
+    .quick-stats{justify-content:flex-start}
 
     .stat-card{
-      min-width:calc(50% - 5px);
+      min-width:calc(33.333% - 7px);
       flex:1;
     }
 
-    #depGrid,
-    #subGrid,
-    #linkGrid{
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:12px;
-    }
-
     .card,
-    .link{
-      min-height:138px;
+    .link,
+    .add-card{
+      min-height:156px;
       border-radius:17px;
       aspect-ratio:1.05;
     }
@@ -791,9 +1039,7 @@
       -webkit-box-orient:vertical;
     }
 
-    .label-sub{
-      display:none;
-    }
+    .label-sub{display:none}
 
     .pill{
       height:24px;
@@ -806,6 +1052,9 @@
       border-radius:17px;
       padding:14px;
     }
+
+    .form-grid{grid-template-columns:1fr}
+    .gallery-grid{grid-template-columns:repeat(3,1fr)}
   }
 
   @media (max-width:520px){
@@ -814,11 +1063,28 @@
     .iconbtn{width:36px;height:36px;border-radius:13px}
     .page-title{font-size:1.45rem}
     .page-note{font-size:.88rem}
+
     #depGrid,
     #subGrid,
     #linkGrid{
       grid-template-columns:repeat(2,minmax(0,1fr));
     }
+
+    .stat-card{
+      min-width:calc(33.333% - 6px);
+      padding:9px 10px;
+    }
+
+    .stat-label{font-size:.58rem}
+    .stat-value{font-size:.95rem}
+
+    .modal-backdrop{padding:10px}
+    .modal{border-radius:20px}
+    .modal-head{padding:15px}
+    .modal-body{padding:15px}
+    .modal-actions{padding:12px 15px 15px;flex-direction:column}
+    .primary-btn,.secondary-btn{width:100%}
+    .gallery-grid{grid-template-columns:repeat(2,1fr)}
   }
 </style>
 </head>
@@ -831,7 +1097,7 @@
         <div class="logo">RV</div>
         <div class="brand-text">
           <div class="brand-title">RANVEXSI UI</div>
-          <div class="brand-sub">Supabase powered workplace links</div>
+          <div class="brand-sub">Supabase workplace links</div>
         </div>
       </div>
 
@@ -924,13 +1190,103 @@
     <section id="linkGrid" class="grid hidden" aria-label="Links grid"></section>
   </main>
 
+  <!-- Add New Link Request Modal -->
+  <div class="modal-backdrop" id="requestModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="requestTitle">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title" id="requestTitle">Add New Link Request</div>
+          <div class="modal-sub">
+            Submit a new link request. It will show as pending until admin approval.
+          </div>
+        </div>
+        <button class="close-btn" id="closeRequestModal" type="button">×</button>
+      </div>
+
+      <form id="requestForm">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="field">
+              <label>Department</label>
+              <input id="reqDepartment" name="department" readonly />
+            </div>
+
+            <div class="field">
+              <label>Sub-Department</label>
+              <select id="reqSubDepartment" name="sub_department"></select>
+            </div>
+
+            <div class="field">
+              <label>Link Name</label>
+              <input id="reqLinkName" name="link_name" placeholder="Example: Shift Metrics" required />
+            </div>
+
+            <div class="field">
+              <label>Link URL</label>
+              <input id="reqUrl" name="url" placeholder="https://example.com" required />
+            </div>
+
+            <div class="field">
+              <label>Your Name Optional</label>
+              <input id="reqName" name="requested_by_name" placeholder="Your name" />
+            </div>
+
+            <div class="field">
+              <label>Your Email Optional</label>
+              <input id="reqEmail" name="requested_by_email" placeholder="name@example.com" type="email" />
+            </div>
+
+            <div class="field full">
+              <label>Photo Option</label>
+
+              <div class="photo-options">
+                <button class="photo-mode active" data-mode="gallery" type="button">Choose Existing Photo</button>
+                <button class="photo-mode" data-mode="url" type="button">Paste Image URL</button>
+                <button class="photo-mode" data-mode="none" type="button">No Photo</button>
+              </div>
+
+              <div id="galleryPanel">
+                <div class="gallery-grid" id="galleryGrid"></div>
+                <div class="mini-note">
+                  Existing photos are reused from the gallery, so Supabase storage will not fill up.
+                </div>
+              </div>
+
+              <div id="urlPhotoPanel" class="hidden">
+                <input id="reqImageUrl" name="image_url" placeholder="https://image-link.com/photo.jpg" />
+                <div class="mini-note">
+                  Paste an external image URL only. Public upload is disabled for now.
+                </div>
+              </div>
+            </div>
+
+            <div class="field full">
+              <label>Note Optional</label>
+              <textarea id="reqNote" name="note" placeholder="Any note for admin?"></textarea>
+            </div>
+          </div>
+
+          <div id="requestMsg" class="request-msg"></div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="secondary-btn" id="cancelRequest" type="button">Cancel</button>
+          <button class="primary-btn" id="submitRequest" type="submit">Submit for Approval</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
 <script>
 /* =========================================================
    Supabase Config
 ========================================================= */
 const SUPABASE_URL = "https://qpplbqodulenhccfzrjv.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_ph2JpBSdGl-dIqvx9F6__g_Oo4r96Y_";
+
 const SUPABASE_TABLE = "ranvexsi_links";
+const REQUEST_TABLE = "ranvexsi_link_requests";
+const GALLERY_TABLE = "ranvexsi_media_gallery";
 const STORAGE_BUCKET = "media";
 
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
@@ -963,26 +1319,48 @@ const els = {
   dbText: document.getElementById("dbText"),
   statDepartments: document.getElementById("statDepartments"),
   statSubs: document.getElementById("statSubs"),
-  statLinks: document.getElementById("statLinks")
+  statLinks: document.getElementById("statLinks"),
+
+  requestModal: document.getElementById("requestModal"),
+  closeRequestModal: document.getElementById("closeRequestModal"),
+  requestForm: document.getElementById("requestForm"),
+  cancelRequest: document.getElementById("cancelRequest"),
+  submitRequest: document.getElementById("submitRequest"),
+  requestMsg: document.getElementById("requestMsg"),
+
+  reqDepartment: document.getElementById("reqDepartment"),
+  reqSubDepartment: document.getElementById("reqSubDepartment"),
+  reqLinkName: document.getElementById("reqLinkName"),
+  reqUrl: document.getElementById("reqUrl"),
+  reqName: document.getElementById("reqName"),
+  reqEmail: document.getElementById("reqEmail"),
+  reqImageUrl: document.getElementById("reqImageUrl"),
+  reqNote: document.getElementById("reqNote"),
+  galleryGrid: document.getElementById("galleryGrid"),
+  galleryPanel: document.getElementById("galleryPanel"),
+  urlPhotoPanel: document.getElementById("urlPhotoPanel")
 };
 
 let rawRows = [];
 let departmentsData = [];
+let galleryImages = [];
 let currentDep = null;
 let currentSub = "__all__";
 let sorting = false;
 let depSortable = null;
 let linkSortable = null;
 let realtimeChannel = null;
+let requestPhotoMode = "gallery";
+let selectedGalleryImage = null;
 
 const LS = {
   THEME: "rv_theme",
   STEPS: "rv_steps_total",
-  SETTINGS_OPEN: "rv_settings_open_laptop",
-  DEPT_ORDER: "rv_dept_order_laptop",
-  LINK_ORDER: (dep, sub) => `rv_link_order_laptop_${dep}__${sub}`,
-  DENSITY: "rv_density_laptop",
-  MEDIA: "rv_media_laptop"
+  SETTINGS_OPEN: "rv_settings_open_index",
+  DEPT_ORDER: "rv_dept_order_index",
+  LINK_ORDER: (dep, sub) => `rv_link_order_index_${dep}__${sub}`,
+  DENSITY: "rv_density_index",
+  MEDIA: "rv_media_index"
 };
 
 /* =========================================================
@@ -1006,7 +1384,7 @@ function safeUrl(url){
 
 function getPublicImage(path){
   const p = String(path || "").trim();
-  if(!p) return "";
+  if(!p || p === "null" || p === "undefined") return "";
   const { data } = db.storage.from(STORAGE_BUCKET).getPublicUrl(p);
   return data?.publicUrl || "";
 }
@@ -1020,17 +1398,17 @@ function firstGood(...values){
 }
 
 function imageFromRow(row){
-  return firstGood(row.image_url, row.ImageURL, getPublicImage(row.image_path || row.ImagePath));
+  return firstGood(row.ImageURL, row.image_url, getPublicImage(row.ImagePath || row.image_path));
 }
 
 function departmentImageFromRow(row){
   return firstGood(
-    row.department_image_url,
     row.DIURL,
-    getPublicImage(row.department_image_path || row.DepartmentImagePath),
-    row.image_url,
+    row.department_image_url,
+    getPublicImage(row.DepartmentImagePath || row.department_image_path),
     row.ImageURL,
-    getPublicImage(row.image_path || row.ImagePath)
+    row.image_url,
+    getPublicImage(row.ImagePath || row.image_path)
   );
 }
 
@@ -1057,10 +1435,16 @@ function allSubsCount(){
   return set.size;
 }
 
+function showMessage(type, message){
+  els.requestMsg.className = `request-msg ${type}`;
+  els.requestMsg.innerHTML = message;
+}
+
 /* =========================================================
    Steps / Theme / Prefs
 ========================================================= */
 let sessionSteps = 0;
+
 function step(n=1){
   sessionSteps += n;
   els.steps.textContent = sessionSteps;
@@ -1104,9 +1488,9 @@ function applyDensity(value){
   if(value === "compact"){
     root.style.setProperty("--radius", "16px");
   }else if(value === "large"){
-    root.style.setProperty("--radius", "24px");
+    root.style.setProperty("--radius", "22px");
   }else{
-    root.style.setProperty("--radius", "20px");
+    root.style.setProperty("--radius", "18px");
   }
 }
 
@@ -1155,6 +1539,7 @@ async function loadData(){
       .filter(row => row.Department && row.LinkName);
 
     buildMaps();
+    await loadGallery();
     render();
     setDbStatus("ok", `${rawRows.length} links`);
   }catch(e){
@@ -1207,6 +1592,113 @@ function updateStats(){
   els.statDepartments.textContent = departmentsData.length;
   els.statSubs.textContent = allSubsCount();
   els.statLinks.textContent = rawRows.length;
+}
+
+/* =========================================================
+   Gallery
+========================================================= */
+function fallbackGalleryFromLinks(){
+  const seen = new Set();
+  const items = [];
+
+  rawRows.forEach(row => {
+    const url = firstGood(imageFromRow(row), departmentImageFromRow(row));
+    if(!url || seen.has(url)) return;
+    seen.add(url);
+
+    items.push({
+      id:"",
+      title: row.LinkName || row.Department || "Existing image",
+      category: row.Department || "",
+      url
+    });
+  });
+
+  return items.slice(0, 100);
+}
+
+async function loadGallery(){
+  const fallback = fallbackGalleryFromLinks();
+
+  try{
+    const { data, error } = await db
+      .from(GALLERY_TABLE)
+      .select("id,title,category,image_url,image_path,is_active")
+      .eq("is_active", true)
+      .order("created_at", { ascending:false })
+      .limit(120);
+
+    if(error) throw error;
+
+    const fromTable = (data || []).map(item => {
+      const url = firstGood(item.image_url, getPublicImage(item.image_path));
+      return {
+        id:item.id || "",
+        title:item.title || "Gallery image",
+        category:item.category || "",
+        url
+      };
+    }).filter(x => x.url);
+
+    const merged = [];
+    const seen = new Set();
+
+    [...fromTable, ...fallback].forEach(item => {
+      if(!item.url || seen.has(item.url)) return;
+      seen.add(item.url);
+      merged.push(item);
+    });
+
+    galleryImages = merged;
+  }catch(e){
+    console.warn("Gallery table not available, using existing link images:", e.message || e);
+    galleryImages = fallback;
+  }
+
+  selectedGalleryImage = galleryImages[0] || null;
+}
+
+function renderGallery(){
+  els.galleryGrid.innerHTML = "";
+
+  if(!galleryImages.length){
+    els.galleryGrid.innerHTML = `
+      <div class="empty" style="grid-column:1/-1;padding:18px">
+        <strong>No gallery images yet.</strong><br>
+        You can paste an image URL or admin can add gallery images later.
+      </div>
+    `;
+    return;
+  }
+
+  galleryImages.forEach((item, index) => {
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "gallery-item" + ((selectedGalleryImage && selectedGalleryImage.url === item.url) ? " selected" : "");
+    card.title = item.title || "Gallery image";
+    card.innerHTML = `
+      <img src="${esc(item.url)}" alt="${esc(item.title || "Gallery image")}" loading="lazy">
+      <span class="gallery-check">✓</span>
+    `;
+
+    card.addEventListener("click", () => {
+      selectedGalleryImage = item;
+      renderGallery();
+    });
+
+    els.galleryGrid.appendChild(card);
+  });
+}
+
+function setPhotoMode(mode){
+  requestPhotoMode = mode;
+
+  document.querySelectorAll(".photo-mode").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.mode === mode);
+  });
+
+  els.galleryPanel.classList.toggle("hidden", mode !== "gallery");
+  els.urlPhotoPanel.classList.toggle("hidden", mode !== "url");
 }
 
 /* =========================================================
@@ -1277,7 +1769,7 @@ function updateTitleAndCrumbs(){
   const subTxt = currentSub === "__all__" ? "All Links" : currentSub;
   els.crumbs.innerHTML = `<b>${esc(currentDep)}</b> / ${esc(subTxt)}`;
   els.pageTitle.textContent = subTxt;
-  els.pageNote.textContent = "Open tools in a new tab. Use search to quickly find exact links.";
+  els.pageNote.textContent = "Open tools in a new tab. Use Add New Link to send a request for admin approval.";
 }
 
 function render(){
@@ -1450,6 +1942,22 @@ function linksFor(dep, sub){
     .sort((a,b) => (a.sort - b.sort) || a.name.localeCompare(b.name));
 }
 
+function addNewLinkCard(){
+  const card = document.createElement("button");
+  card.type = "button";
+  card.className = "add-card";
+  card.innerHTML = `
+    <div class="add-content">
+      <div class="add-plus">+</div>
+      <div class="add-title">Add New Link</div>
+      <div class="add-desc">Send a request. Admin will approve it before it appears here.</div>
+    </div>
+  `;
+
+  card.addEventListener("click", () => openRequestModal());
+  return card;
+}
+
 function renderLinks(){
   showOnly("linkGrid");
 
@@ -1487,35 +1995,39 @@ function renderLinks(){
 
   els.linkGrid.innerHTML = "";
 
+  els.linkGrid.appendChild(addNewLinkCard());
+
   if(sorted.length === 0){
-    els.linkGrid.innerHTML = `<div class="empty"><strong>No links found.</strong><br>Try another search keyword or check this sub-department.</div>`;
-    return;
-  }
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.innerHTML = `<strong>No links found.</strong><br>You can submit a new link request using the Add New Link card.`;
+    els.linkGrid.appendChild(empty);
+  }else{
+    sorted.forEach(l => {
+      const item = document.createElement("a");
+      item.className = "link";
+      item.dataset.name = l.name;
+      item.href = l.url;
+      item.target = "_blank";
+      item.rel = "noopener noreferrer";
 
-  sorted.forEach(l => {
-    const item = document.createElement("a");
-    item.className = "link";
-    item.dataset.name = l.name;
-    item.href = l.url;
-    item.target = "_blank";
-    item.rel = "noopener noreferrer";
-
-    item.innerHTML = `
-      <img class="img" loading="lazy" decoding="async" src="${esc(l.image)}" alt="${esc(l.name)}">
-      <div class="veil"></div>
-      <div class="overlay"></div>
-      <div class="label">
-        <div class="label-main">
-          <span class="label-title">${esc(l.name)}</span>
-          <span class="label-sub">${esc(l.sub || currentDep)}</span>
+      item.innerHTML = `
+        <img class="img" loading="lazy" decoding="async" src="${esc(l.image)}" alt="${esc(l.name)}">
+        <div class="veil"></div>
+        <div class="overlay"></div>
+        <div class="label">
+          <div class="label-main">
+            <span class="label-title">${esc(l.name)}</span>
+            <span class="label-sub">${esc(l.sub || currentDep)}</span>
+          </div>
+          <span class="pill">Open</span>
         </div>
-        <span class="pill">Open</span>
-      </div>
-    `;
+      `;
 
-    item.addEventListener("click", () => step());
-    els.linkGrid.appendChild(item);
-  });
+      item.addEventListener("click", () => step());
+      els.linkGrid.appendChild(item);
+    });
+  }
 
   if(linkSortable){
     linkSortable.destroy();
@@ -1525,12 +2037,122 @@ function renderLinks(){
   if(sorting){
     linkSortable = Sortable.create(els.linkGrid, {
       animation:140,
+      filter: ".add-card,.empty",
       onEnd:() => {
         const names = [...els.linkGrid.children].map(el => el.dataset.name).filter(Boolean);
         setLinkOrder(currentDep, currentSub, names);
         step();
       }
     });
+  }
+}
+
+/* =========================================================
+   Request Modal
+========================================================= */
+function openRequestModal(){
+  if(!currentDep){
+    alert("Please open a department/sub-department first.");
+    return;
+  }
+
+  const depObj = departmentsData.find(d => d.dep === currentDep);
+  const subs = depObj?.subs || [];
+
+  els.requestForm.reset();
+  els.requestMsg.className = "request-msg";
+  els.requestMsg.innerHTML = "";
+
+  els.reqDepartment.value = currentDep;
+
+  els.reqSubDepartment.innerHTML = subs.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join("");
+
+  if(currentSub && currentSub !== "__all__" && subs.includes(currentSub)){
+    els.reqSubDepartment.value = currentSub;
+  }else if(subs[0]){
+    els.reqSubDepartment.value = subs[0];
+  }
+
+  requestPhotoMode = "gallery";
+  selectedGalleryImage = selectedGalleryImage || galleryImages[0] || null;
+  setPhotoMode("gallery");
+  renderGallery();
+
+  els.requestModal.classList.add("show");
+  setTimeout(() => els.reqLinkName.focus(), 50);
+}
+
+function closeRequestModal(){
+  els.requestModal.classList.remove("show");
+}
+
+async function submitLinkRequest(e){
+  e.preventDefault();
+
+  const department = els.reqDepartment.value.trim();
+  const sub_department = els.reqSubDepartment.value.trim();
+  const link_name = els.reqLinkName.value.trim();
+  const url = safeUrl(els.reqUrl.value.trim());
+  const requested_by_name = els.reqName.value.trim();
+  const requested_by_email = els.reqEmail.value.trim();
+  const note = els.reqNote.value.trim();
+
+  let image_url = "";
+
+  if(requestPhotoMode === "gallery"){
+    image_url = selectedGalleryImage?.url || "";
+  }else if(requestPhotoMode === "url"){
+    image_url = els.reqImageUrl.value.trim();
+  }
+
+  if(!department || !sub_department || !link_name || !url || url === "#"){
+    showMessage("bad", "Please fill department, sub-department, link name, and valid URL.");
+    return;
+  }
+
+  els.submitRequest.disabled = true;
+  els.submitRequest.textContent = "Submitting...";
+  showMessage("", "");
+
+  try{
+    const payload = {
+      department,
+      sub_department,
+      link_name,
+      url,
+      image_url: image_url || null,
+      note: note || null,
+      requested_by_name: requested_by_name || null,
+      requested_by_email: requested_by_email || null,
+      status:"pending"
+    };
+
+    const { error } = await db
+      .from(REQUEST_TABLE)
+      .insert(payload);
+
+    if(error) throw error;
+
+    showMessage(
+      "ok",
+      "Request sent successfully. Waiting for admin approval. It will appear on this page after admin approves it."
+    );
+
+    els.reqLinkName.value = "";
+    els.reqUrl.value = "";
+    els.reqImageUrl.value = "";
+    els.reqNote.value = "";
+
+    step();
+  }catch(err){
+    console.error(err);
+    showMessage(
+      "bad",
+      `Could not submit request.<br>${esc(err.message || err)}<br><br>Check request table and insert policy.`
+    );
+  }finally{
+    els.submitRequest.disabled = false;
+    els.submitRequest.textContent = "Submit for Approval";
   }
 }
 
@@ -1578,7 +2200,7 @@ els.btnRefresh.addEventListener("click", () => {
 els.btnClear.addEventListener("click", () => {
   localStorage.removeItem(LS.DEPT_ORDER);
   Object.keys(localStorage).forEach(k => {
-    if(k.startsWith("rv_link_order_laptop_")) localStorage.removeItem(k);
+    if(k.startsWith("rv_link_order_index_")) localStorage.removeItem(k);
   });
   render();
   step();
@@ -1616,6 +2238,24 @@ els.density.addEventListener("change", () => {
 els.media.addEventListener("change", () => {
   localStorage.setItem(LS.MEDIA, els.media.value);
   applyMedia(els.media.value);
+});
+
+document.querySelectorAll(".photo-mode").forEach(btn => {
+  btn.addEventListener("click", () => setPhotoMode(btn.dataset.mode));
+});
+
+els.closeRequestModal.addEventListener("click", closeRequestModal);
+els.cancelRequest.addEventListener("click", closeRequestModal);
+els.requestForm.addEventListener("submit", submitLinkRequest);
+
+els.requestModal.addEventListener("click", (e) => {
+  if(e.target === els.requestModal) closeRequestModal();
+});
+
+document.addEventListener("keydown", (e) => {
+  if(e.key === "Escape" && els.requestModal.classList.contains("show")){
+    closeRequestModal();
+  }
 });
 
 let searchTimer = null;
