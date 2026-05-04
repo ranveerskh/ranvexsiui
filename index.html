@@ -302,6 +302,119 @@
     white-space:nowrap;
   }
 
+
+
+  /* =========================
+     Vote + Report UI
+  ========================= */
+  .vote-btn{
+    position:absolute;
+    z-index:6;
+    top:10px;
+    left:10px;
+    height:30px;
+    min-width:78px;
+    border:1px solid rgba(255,255,255,.28);
+    border-radius:999px;
+    background:rgba(0,0,0,.44);
+    color:#fff;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    padding:0 10px;
+    font-size:.74rem;
+    font-weight:950;
+    cursor:pointer;
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+    box-shadow:0 8px 20px rgba(0,0,0,.18);
+    transition:.18s ease;
+  }
+
+  .vote-btn:hover{
+    transform:translateY(-1px);
+    background:rgba(37,99,235,.78);
+  }
+
+  .vote-btn.voted{
+    background:rgba(22,163,74,.86);
+    border-color:rgba(255,255,255,.36);
+  }
+
+  .vote-btn:disabled{
+    opacity:.72;
+    cursor:not-allowed;
+  }
+
+  .link-actions-top{
+    position:absolute;
+    z-index:7;
+    top:10px;
+    right:10px;
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:7px;
+  }
+
+  .report-btn{
+    height:30px;
+    border:1px solid rgba(255,255,255,.28);
+    border-radius:999px;
+    background:rgba(0,0,0,.46);
+    color:#fff;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    padding:0 10px;
+    font-size:.72rem;
+    font-weight:950;
+    cursor:pointer;
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+    box-shadow:0 8px 20px rgba(0,0,0,.18);
+    transition:.18s ease;
+  }
+
+  .report-btn:hover{
+    transform:translateY(-1px);
+    background:rgba(220,38,38,.84);
+  }
+
+  .link{
+    outline:none;
+  }
+
+  .link:focus-visible{
+    box-shadow:0 0 0 4px var(--accent-soft), var(--shadow-lg);
+    border-color:rgba(37,99,235,.55);
+  }
+
+  .report-summary{
+    border:1px solid var(--line);
+    border-radius:18px;
+    background:var(--surface-2);
+    padding:13px;
+    margin-bottom:14px;
+  }
+
+  .report-summary b{
+    display:block;
+    font-weight:950;
+    letter-spacing:-.03em;
+  }
+
+  .report-summary span{
+    display:block;
+    margin-top:5px;
+    color:var(--muted);
+    font-size:.82rem;
+    font-weight:750;
+    word-break:break-all;
+  }
+
   /* =========================
      Main
   ========================= */
@@ -1178,8 +1291,8 @@
         <button class="iconbtn" id="btnRefresh" title="Reload">↻</button>
         <button class="iconbtn" id="btnClear" title="Clear saved order">🧹</button>
         <button class="iconbtn" id="btnTheme" title="Light/Dark">🌗</button>
-        <div class="steps-pill" title="Daily steps | Total views">
-          👣 <span id="steps">0</span> | 📊 <span id="stepsTotal">0</span>
+        <div class="steps-pill" title="Today visits/clicks | Total views">
+          Today <span id="steps">0</span> | Total <span id="stepsTotal">0</span>
         </div>
       </div>
     </div>
@@ -1410,6 +1523,58 @@
     </div>
   </div>
 
+  <!-- Link Report Modal -->
+  <div class="modal-backdrop" id="reportModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title" id="reportTitle">Report Link</div>
+          <div class="modal-sub">
+            Tell admin if this link is broken or needs to be updated.
+          </div>
+        </div>
+        <button class="close-btn" id="closeReportModal" type="button">×</button>
+      </div>
+
+      <form id="reportForm">
+        <div class="modal-body">
+          <div class="report-summary">
+            <b id="reportSummaryName">Selected Link</b>
+            <span id="reportSummaryUrl"></span>
+          </div>
+
+          <div class="form-grid">
+            <div class="field full">
+              <label>Reason</label>
+              <select id="reportReason" name="reason" required>
+                <option value="broken">Link is broken</option>
+                <option value="updated">Link is updated / new URL needed</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div class="field full">
+              <label>Correct / Updated Link Optional</label>
+              <input id="reportSuggestedUrl" name="suggested_url" placeholder="https://new-link.com" />
+            </div>
+
+            <div class="field full">
+              <label>Note Optional</label>
+              <textarea id="reportNote" name="note" placeholder="Example: This link opens old page, correct link is above."></textarea>
+            </div>
+          </div>
+
+          <div id="reportMsg" class="request-msg"></div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="secondary-btn" id="cancelReport" type="button">Cancel</button>
+          <button class="primary-btn" id="submitReport" type="submit">Submit Report</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
 <script>
 /* =========================================================
    Supabase Config
@@ -1489,7 +1654,19 @@ const els = {
   depReqNote: document.getElementById("departmentMsgNote"),
   depGalleryGrid: document.getElementById("depGalleryGrid"),
   depGalleryPanel: document.getElementById("depGalleryPanel"),
-  depUrlPhotoPanel: document.getElementById("depUrlPhotoPanel")
+  depUrlPhotoPanel: document.getElementById("depUrlPhotoPanel"),
+
+  reportModal: document.getElementById("reportModal"),
+  closeReportModal: document.getElementById("closeReportModal"),
+  cancelReport: document.getElementById("cancelReport"),
+  reportForm: document.getElementById("reportForm"),
+  submitReport: document.getElementById("submitReport"),
+  reportMsg: document.getElementById("reportMsg"),
+  reportSummaryName: document.getElementById("reportSummaryName"),
+  reportSummaryUrl: document.getElementById("reportSummaryUrl"),
+  reportReason: document.getElementById("reportReason"),
+  reportSuggestedUrl: document.getElementById("reportSuggestedUrl"),
+  reportNote: document.getElementById("reportNote")
 };
 
 let rawRows = [];
@@ -1504,6 +1681,10 @@ let sorting = false;
 let depSortable = null;
 let linkSortable = null;
 let realtimeChannel = null;
+let realtimeReloadTimer = null;
+let voteCounts = {};
+let votedDepartments = new Set();
+let currentReportLink = null;
 let requestPhotoMode = "gallery";
 let selectedGalleryImage = null;
 let departmentPhotoMode = "gallery";
@@ -1520,7 +1701,8 @@ const LS = {
   LINK_ORDER: (dep, sub) => `rv_link_order_index_${dep}__${sub}`,
   DENSITY: "rv_density_index",
   MEDIA: "rv_media_index",
-  LOCAL_REQUESTS: "rv_local_pending_requests_v1"
+  LOCAL_REQUESTS: "rv_local_pending_requests_v1",
+  VISITOR_KEY: "rv_visitor_key_v1"
 };
 
 /* =========================================================
@@ -1534,6 +1716,20 @@ function esc(v){
     .replaceAll('"',"&quot;")
     .replaceAll("'","&#039;");
 }
+
+function getVisitorKey(){
+  let key = localStorage.getItem(LS.VISITOR_KEY);
+  if(!key){
+    const cryptoKey = (window.crypto && window.crypto.randomUUID)
+      ? window.crypto.randomUUID()
+      : `rv_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    key = cryptoKey;
+    localStorage.setItem(LS.VISITOR_KEY, key);
+  }
+  return key;
+}
+
+const VISITOR_KEY = getVisitorKey();
 
 function safeUrl(url){
   const u = String(url || "").trim();
@@ -1708,6 +1904,151 @@ function refreshLocalAndRender(){
   render();
 }
 
+
+/* =========================================================
+   Votes + Reports
+========================================================= */
+function voteKey(dep){
+  return String(dep || "").trim().toLowerCase();
+}
+
+function voteCountFor(dep){
+  return Number(voteCounts[voteKey(dep)] || 0);
+}
+
+function hasVotedFor(dep){
+  return votedDepartments.has(voteKey(dep));
+}
+
+async function loadVoteData(){
+  voteCounts = {};
+  votedDepartments = new Set();
+
+  try{
+    const { data, error } = await db.rpc("rv_public_department_vote_counts");
+    if(error) throw error;
+
+    (data || []).forEach(row => {
+      voteCounts[voteKey(row.department)] = Number(row.total_votes || 0);
+    });
+  }catch(err){
+    console.warn("Could not load department vote counts:", err.message || err);
+  }
+
+  try{
+    const { data, error } = await db.rpc("rv_public_department_vote_statuses", {
+      p_voter_key:VISITOR_KEY
+    });
+    if(error) throw error;
+
+    (data || []).forEach(row => {
+      votedDepartments.add(voteKey(row.department));
+    });
+  }catch(err){
+    console.warn("Could not load user vote statuses:", err.message || err);
+  }
+}
+
+async function voteForDepartment(dep, btn){
+  if(!dep) return;
+
+  if(btn){
+    btn.disabled = true;
+    btn.innerHTML = "Saving...";
+  }
+
+  try{
+    const { data, error } = await db.rpc("rv_public_vote_department", {
+      p_department:dep,
+      p_voter_key:VISITOR_KEY
+    });
+    if(error) throw error;
+
+    const row = Array.isArray(data) ? data[0] : data;
+    voteCounts[voteKey(dep)] = Number(row?.total_votes || voteCountFor(dep));
+    votedDepartments.add(voteKey(dep));
+    renderDepartments();
+    step();
+  }catch(err){
+    console.error(err);
+    alert(err.message || "Could not save vote.");
+    renderDepartments();
+  }
+}
+
+function showReportMessage(type, message){
+  els.reportMsg.className = `request-msg ${type}`;
+  els.reportMsg.innerHTML = message;
+}
+
+function openReportModal(link){
+  if(!link) return;
+
+  currentReportLink = link;
+  els.reportForm.reset();
+  els.reportMsg.className = "request-msg";
+  els.reportMsg.innerHTML = "";
+  els.reportSummaryName.textContent = link.name || "Selected Link";
+  els.reportSummaryUrl.textContent = link.url || "";
+  els.reportReason.value = "broken";
+  els.reportModal.classList.add("show");
+  setTimeout(() => els.reportReason.focus(), 60);
+}
+
+function closeReportModal(){
+  els.reportModal.classList.remove("show");
+  currentReportLink = null;
+}
+
+async function submitLinkReport(e){
+  e.preventDefault();
+
+  if(!currentReportLink){
+    showReportMessage("bad", "No link selected.");
+    return;
+  }
+
+  const reason = els.reportReason.value;
+  const suggested = els.reportSuggestedUrl.value.trim();
+  const note = els.reportNote.value.trim();
+
+  if(reason === "updated" && suggested && !/^https?:\/\//i.test(suggested)){
+    showReportMessage("bad", "Updated link should start with http:// or https://");
+    return;
+  }
+
+  els.submitReport.disabled = true;
+  els.submitReport.textContent = "Submitting...";
+  els.reportMsg.className = "request-msg";
+  els.reportMsg.innerHTML = "";
+
+  try{
+    const { error } = await db.rpc("rv_public_report_link", {
+      p_link_id:currentReportLink.id || null,
+      p_department:currentReportLink.department || currentDep || "",
+      p_sub_department:currentReportLink.sub || "",
+      p_link_name:currentReportLink.name || "",
+      p_url:currentReportLink.url || "",
+      p_reason:reason,
+      p_suggested_url:suggested || null,
+      p_note:note || null,
+      p_reporter_key:VISITOR_KEY
+    });
+
+    if(error) throw error;
+
+    showReportMessage("ok", "Report sent to admin. Thank you for helping keep links clean.");
+    step();
+    setTimeout(() => closeReportModal(), 850);
+  }catch(err){
+    console.error(err);
+    showReportMessage("bad", esc(err.message || "Could not submit report."));
+  }finally{
+    els.submitReport.disabled = false;
+    els.submitReport.textContent = "Submit Report";
+  }
+}
+
 /* =========================================================
    Steps / Theme / Prefs
 ========================================================= */
@@ -1834,6 +2175,7 @@ function normalizeSubDepartment(row){
 
 function normalizeRow(row){
   return {
+    ID: row.id || row.ID || null,
     Department: String(row.department ?? row.Department ?? "").trim(),
     SubDepartment: String(row.sub_department ?? row.SubDepartment ?? "").trim(),
     DIURL: String(row.department_image_url ?? row.DIURL ?? "").trim(),
@@ -1901,7 +2243,7 @@ async function loadData(){
     await syncLocalRequestsWithAdmin();
 
     buildMaps();
-    await loadGallery();
+    await Promise.all([loadGallery(), loadVoteData()]);
     render();
     setDbStatus("ok", `${rawRows.length} links`);
   }catch(e){
@@ -2380,10 +2722,16 @@ function renderDepartments(){
     const card = document.createElement("div");
     card.className = "card" + (d.pending ? " pending-card" : "");
     card.dataset.id = d.dep;
+    const votes = voteCountFor(d.dep);
+    const alreadyVoted = hasVotedFor(d.dep);
+
     card.innerHTML = `
       <img class="img" loading="lazy" decoding="async" src="${esc(d.imageUrl)}" alt="${esc(d.dep)}">
       <div class="veil"></div>
       <div class="overlay"></div>
+      <button class="vote-btn ${alreadyVoted ? "voted" : ""}" type="button" title="${alreadyVoted ? "You voted" : "Vote for this department"}">
+        ${alreadyVoted ? "✓" : "👍"} <span>${votes}</span>
+      </button>
       ${d.pending ? `<div class="pending-ribbon">Pending</div>` : ``}
       <div class="label">
         <div class="label-main">
@@ -2393,6 +2741,12 @@ function renderDepartments(){
         <span class="pill">${d.pending ? "Pending" : `${d.subs.length} subs`}</span>
       </div>
     `;
+
+    card.querySelector(".vote-btn").addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      voteForDepartment(d.dep, e.currentTarget);
+    });
 
     card.addEventListener("click", () => {
       currentDep = d.dep;
@@ -2502,6 +2856,8 @@ function linksFor(dep, sub){
       return rowSub === lowerSub;
     })
     .map(row => ({
+      id: row.ID || null,
+      department: row.Department || dep || "",
       name: row.LinkName || "Unnamed",
       url: safeUrl(row.URL),
       image: imageFromRow(row) || fallbackImage(row.LinkName),
@@ -2519,6 +2875,8 @@ function linksFor(dep, sub){
       return rowSub === lowerSub;
     })
     .map(req => ({
+      id:null,
+      department:req.department || dep || "",
       name: req.link_name || "Pending Link",
       url: safeUrl(req.url),
       image: req.image_url || fallbackImage(req.link_name || "Pending Link"),
@@ -2669,17 +3027,22 @@ function renderLinks(){
     els.linkGrid.appendChild(empty);
   }else{
     sorted.forEach(l => {
-      const item = document.createElement("a");
+      const item = document.createElement("div");
       item.className = "link" + (l.pending ? " pending-card" : "");
       item.dataset.name = l.name;
-      item.href = l.url;
-      item.target = "_blank";
-      item.rel = "noopener noreferrer";
+      item.setAttribute("role", "link");
+      item.setAttribute("tabindex", "0");
+      item.setAttribute("aria-label", `Open ${l.name}`);
 
       item.innerHTML = `
         <img class="img" loading="lazy" decoding="async" src="${esc(l.image)}" alt="${esc(l.name)}">
         <div class="veil"></div>
         <div class="overlay"></div>
+        ${!l.pending ? `
+          <div class="link-actions-top">
+            <button class="report-btn" type="button" title="Report this link">⚑ Report</button>
+          </div>
+        ` : ``}
         ${l.pending ? `<div class="pending-ribbon">Pending</div>` : ``}
         <div class="label">
           <div class="label-main">
@@ -2690,7 +3053,33 @@ function renderLinks(){
         </div>
       `;
 
-      item.addEventListener("click", () => step());
+      const openLink = () => {
+        if(!l.url || l.url === "#") return;
+        window.open(l.url, "_blank", "noopener,noreferrer");
+        step();
+      };
+
+      item.addEventListener("click", (e) => {
+        if(e.target.closest("button")) return;
+        openLink();
+      });
+
+      item.addEventListener("keydown", (e) => {
+        if(e.key === "Enter" || e.key === " "){
+          e.preventDefault();
+          openLink();
+        }
+      });
+
+      const reportBtn = item.querySelector(".report-btn");
+      if(reportBtn){
+        reportBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openReportModal(l);
+        });
+      }
+
       els.linkGrid.appendChild(item);
     });
   }
@@ -2843,6 +3232,11 @@ async function submitLinkRequest(e){
 /* =========================================================
    Realtime
 ========================================================= */
+function scheduleRealtimeReload(){
+  clearTimeout(realtimeReloadTimer);
+  realtimeReloadTimer = setTimeout(() => loadData(), 350);
+}
+
 function setupRealtime(){
   try{
     if(realtimeChannel){
@@ -2850,14 +3244,26 @@ function setupRealtime(){
       realtimeChannel = null;
     }
 
-    realtimeChannel = db
-      .channel("ranvexsi-links-live")
-      .on(
+    const tables = [
+      SUPABASE_TABLE,
+      DEPT_TABLE,
+      SUB_TABLE,
+      REQUEST_TABLE,
+      GALLERY_TABLE,
+      "ranvexsi_department_votes"
+    ];
+
+    let channel = db.channel("ranvexsi-ui-live-votes-reports");
+
+    tables.forEach(tableName => {
+      channel = channel.on(
         "postgres_changes",
-        { event:"*", schema:"public", table:SUPABASE_TABLE },
-        () => loadData()
-      )
-      .subscribe();
+        { event:"*", schema:"public", table:tableName },
+        scheduleRealtimeReload
+      );
+    });
+
+    realtimeChannel = channel.subscribe();
   }catch(e){
     console.warn("Realtime not started:", e);
   }
@@ -2948,6 +3354,10 @@ els.closeDepartmentModal.addEventListener("click", closeDepartmentModal);
 els.cancelDepartmentRequest.addEventListener("click", closeDepartmentModal);
 els.departmentForm.addEventListener("submit", submitDepartmentRequestHandler);
 
+els.closeReportModal.addEventListener("click", closeReportModal);
+els.cancelReport.addEventListener("click", closeReportModal);
+els.reportForm.addEventListener("submit", submitLinkReport);
+
 els.requestModal.addEventListener("click", (e) => {
   if(e.target === els.requestModal) closeRequestModal();
 });
@@ -2956,12 +3366,19 @@ els.departmentModal.addEventListener("click", (e) => {
   if(e.target === els.departmentModal) closeDepartmentModal();
 });
 
+els.reportModal.addEventListener("click", (e) => {
+  if(e.target === els.reportModal) closeReportModal();
+});
+
 document.addEventListener("keydown", (e) => {
   if(e.key === "Escape" && els.requestModal.classList.contains("show")){
     closeRequestModal();
   }
   if(e.key === "Escape" && els.departmentModal.classList.contains("show")){
     closeDepartmentModal();
+  }
+  if(e.key === "Escape" && els.reportModal.classList.contains("show")){
+    closeReportModal();
   }
 });
 
