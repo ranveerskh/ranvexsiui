@@ -306,7 +306,7 @@
 
   .stats{
     display:grid;
-    grid-template-columns:repeat(5,minmax(120px,1fr));
+    grid-template-columns:repeat(6,minmax(120px,1fr));
     gap:12px;
     margin:12px 0 18px;
   }
@@ -753,6 +753,144 @@
   }
 
 
+  .filter-bar{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    flex-wrap:wrap;
+    margin:0 0 14px;
+  }
+
+  .filter-pill{
+    min-height:38px;
+    border:1px solid var(--line);
+    border-radius:999px;
+    background:var(--surface);
+    color:var(--ink);
+    padding:0 13px;
+    font-size:.82rem;
+    font-weight:950;
+    box-shadow:0 6px 16px rgba(15,23,42,.05);
+    transition:.18s ease;
+  }
+
+  .filter-pill.active{
+    border-color:transparent;
+    color:#fff;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    box-shadow:0 12px 26px rgba(37,99,235,.22);
+  }
+
+  .gallery-picker-wrap{
+    margin-top:10px;
+    border:1px solid var(--line);
+    border-radius:17px;
+    background:var(--surface2);
+    padding:10px;
+  }
+
+  .gallery-picker-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:10px;
+  }
+
+  .gallery-picker-head b{
+    font-size:.82rem;
+    font-weight:950;
+    color:var(--ink);
+  }
+
+  .gallery-picker-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(92px,1fr));
+    gap:9px;
+    max-height:220px;
+    overflow:auto;
+  }
+
+  .gallery-pick{
+    position:relative;
+    aspect-ratio:1.25;
+    border:2px solid transparent;
+    border-radius:13px;
+    overflow:hidden;
+    background:var(--surface);
+    box-shadow:0 4px 12px rgba(15,23,42,.06);
+  }
+
+  .gallery-pick img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+  .gallery-pick.active{
+    border-color:var(--accent);
+    box-shadow:0 0 0 4px rgba(37,99,235,.10), 0 4px 12px rgba(15,23,42,.06);
+  }
+
+  .gallery-pick span{
+    position:absolute;
+    top:6px;
+    right:6px;
+    width:22px;
+    height:22px;
+    border-radius:999px;
+    display:none;
+    place-items:center;
+    background:rgba(15,23,42,.72);
+    color:#fff;
+    font-size:.72rem;
+    font-weight:950;
+  }
+
+  .gallery-pick.active span{display:grid}
+
+  .report-reason{
+    display:inline-flex;
+    align-items:center;
+    min-height:28px;
+    padding:0 10px;
+    border-radius:999px;
+    font-size:.72rem;
+    font-weight:950;
+    background:rgba(37,99,235,.10);
+    color:var(--accent);
+  }
+
+  .export-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:12px;
+  }
+
+  .export-card{
+    border:1px solid var(--line);
+    border-radius:18px;
+    background:var(--surface);
+    padding:15px;
+    box-shadow:0 8px 20px rgba(15,23,42,.06);
+  }
+
+  .export-card h4{
+    font-size:.96rem;
+    font-weight:950;
+    letter-spacing:-.035em;
+  }
+
+  .export-card p{
+    margin-top:6px;
+    color:var(--muted);
+    font-size:.8rem;
+    line-height:1.4;
+    font-weight:700;
+  }
+
+
   @media(max-width:1080px){
     .top-inner{
       grid-template-columns:1fr auto;
@@ -851,17 +989,20 @@
     <section class="hero">
       <div>
         <h2>Admin Dashboard</h2>
-        <p>Review pending Department, Sub-Department, and Link requests. Add items manually, bulk import links, and manage gallery images.</p>
+        <p>Review requests, link reports, departments, sub-departments, links, gallery images, and exports from one place.</p>
       </div>
       <div class="top-actions">
         <button class="btn primary" id="btnQuickRequest" type="button">Pending Requests</button>
         <button class="btn" id="btnQuickAdd" type="button">Manual Add</button>
         <button class="btn" id="btnQuickBulk" type="button">Bulk Import</button>
+        <button class="btn" id="btnQuickReports" type="button">Reports</button>
+        <button class="btn" id="btnQuickExport" type="button">Export</button>
       </div>
     </section>
 
     <section class="stats">
       <div class="stat"><span>Pending</span><b id="statPending">0</b></div>
+      <div class="stat"><span>Reports</span><b id="statReports">0</b></div>
       <div class="stat"><span>Departments</span><b id="statDepartments">0</b></div>
       <div class="stat"><span>Sub-Depts</span><b id="statSubs">0</b></div>
       <div class="stat"><span>Links</span><b id="statLinks">0</b></div>
@@ -873,12 +1014,43 @@
       <button class="tab" data-tab="manual" type="button">Manual Add</button>
       <button class="tab" data-tab="bulk" type="button">Bulk Links</button>
       <button class="tab" data-tab="manage" type="button">Manage</button>
+      <button class="tab" data-tab="reports" type="button">Reports</button>
       <button class="tab" data-tab="gallery" type="button">Gallery</button>
+      <button class="tab" data-tab="export" type="button">Export</button>
       <button class="tab" data-tab="history" type="button">History</button>
     </section>
 
     <section class="panel active" id="panel-requests">
+      <div class="filter-bar" id="requestTypeFilters">
+        <button class="filter-pill active" data-request-type="all" type="button">All</button>
+        <button class="filter-pill" data-request-type="department" type="button">Departments</button>
+        <button class="filter-pill" data-request-type="sub_department" type="button">Sub-Depts</button>
+        <button class="filter-pill" data-request-type="link" type="button">Links</button>
+      </div>
       <div id="requestsList"></div>
+    </section>
+
+    <section class="panel" id="panel-reports">
+      <div class="card">
+        <div class="card-title">
+          <div>
+            <h3>Link Reports</h3>
+            <p>Review broken links, updated-link suggestions, and user notes.</p>
+          </div>
+        </div>
+        <div class="search-row">
+          <select id="reportStatusFilter">
+            <option value="pending">Pending</option>
+            <option value="fixed">Fixed</option>
+            <option value="ignored">Ignored</option>
+            <option value="all">All</option>
+          </select>
+          <select id="reportDepartmentFilter"><option value="">All Departments</option></select>
+          <select id="reportSubFilter"><option value="">All Sub-Depts</option></select>
+          <button class="btn" id="btnReportSearch" type="button">Refresh Reports</button>
+        </div>
+        <div id="reportsList"></div>
+      </div>
     </section>
 
     <section class="panel" id="panel-manual">
@@ -1046,6 +1218,8 @@ Ship Dock,Ship Clerk,New Tool,https://example.com,https://image.com/pic.jpg,,blu
             <option value="departments">Departments</option>
             <option value="sub_departments">Sub-Departments</option>
           </select>
+          <select id="manageDepartmentFilter"><option value="">Select Department</option></select>
+          <select id="manageSubFilter"><option value="">All Sub-Depts</option></select>
           <button class="btn" id="btnManageSearch" type="button">Search</button>
         </div>
 
@@ -1064,21 +1238,9 @@ Ship Dock,Ship Clerk,New Tool,https://example.com,https://image.com/pic.jpg,,blu
 
         <form id="galleryForm">
           <div class="form-grid">
-            <div class="field">
-              <label>Title</label>
-              <input name="title" placeholder="Office / Ship Dock / Tool image" />
-            </div>
-            <div class="field">
-              <label>Category Optional</label>
-              <input name="category" placeholder="Ship Dock" />
-            </div>
             <div class="field full">
               <label>Image URL</label>
               <input name="image_url" required placeholder="https://image-link.com/photo.jpg" />
-            </div>
-            <div class="field full">
-              <label>Tags Optional</label>
-              <input name="tags" placeholder="office, tool, department" />
             </div>
           </div>
           <div class="row-actions"><button class="btn primary" type="submit">Save Gallery Image</button></div>
@@ -1094,6 +1256,26 @@ Ship Dock,Ship Clerk,New Tool,https://example.com,https://image.com/pic.jpg,,blu
           </div>
         </div>
         <div id="galleryList"></div>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-export">
+      <div class="card">
+        <div class="card-title">
+          <div>
+            <h3>Export CSV</h3>
+            <p>Download your public data, requests, reports, and gallery list as CSV backups.</p>
+          </div>
+        </div>
+        <div class="export-grid">
+          <div class="export-card"><h4>Departments</h4><p>All department records.</p><button class="btn primary btn-export" data-export="departments" type="button">Export Departments</button></div>
+          <div class="export-card"><h4>Sub-Departments</h4><p>All sub-department records.</p><button class="btn primary btn-export" data-export="sub_departments" type="button">Export Sub-Depts</button></div>
+          <div class="export-card"><h4>Links</h4><p>All public links with department and sub-department.</p><button class="btn primary btn-export" data-export="links" type="button">Export Links</button></div>
+          <div class="export-card"><h4>Requests</h4><p>Pending, approved, and rejected user requests.</p><button class="btn primary btn-export" data-export="requests" type="button">Export Requests</button></div>
+          <div class="export-card"><h4>Reports</h4><p>Broken and updated link reports.</p><button class="btn primary btn-export" data-export="reports" type="button">Export Reports</button></div>
+          <div class="export-card"><h4>Gallery</h4><p>Reusable gallery image URLs.</p><button class="btn primary btn-export" data-export="gallery" type="button">Export Gallery</button></div>
+        </div>
+        <div class="msg" id="exportMsg"></div>
       </div>
     </section>
 
@@ -1131,9 +1313,16 @@ Ship Dock,Ship Clerk,New Tool,https://example.com,https://image.com/pic.jpg,,blu
           </div>
 
           <div class="field full">
-            <label>Department Photo / Image URL</label>
-            <input id="editDepartmentImageUrl" name="image_url" placeholder="https://image-link.com/department.jpg" />
+            <label>Department Photo</label>
+            <input id="editDepartmentImageUrl" name="image_url" placeholder="Paste image URL or choose from gallery below" />
             <div class="image-preview hidden" id="editDepartmentPreview"></div>
+            <div class="gallery-picker-wrap">
+              <div class="gallery-picker-head">
+                <b>Choose from Gallery</b>
+                <button class="btn small" id="refreshDepartmentGalleryPicker" type="button">Refresh</button>
+              </div>
+              <div class="gallery-picker-grid" id="editDepartmentGalleryPicker"></div>
+            </div>
           </div>
 
           <div class="field">
@@ -1193,9 +1382,16 @@ Ship Dock,Ship Clerk,New Tool,https://example.com,https://image.com/pic.jpg,,blu
           </div>
 
           <div class="field full">
-            <label>Image URL Optional</label>
-            <input id="editLinkImageUrl" name="image_url" />
+            <label>Link Photo</label>
+            <input id="editLinkImageUrl" name="image_url" placeholder="Paste image URL or choose from gallery below" />
             <div class="image-preview hidden" id="editLinkPreview"></div>
+            <div class="gallery-picker-wrap">
+              <div class="gallery-picker-head">
+                <b>Choose from Gallery</b>
+                <button class="btn small" id="refreshLinkGalleryPicker" type="button">Refresh</button>
+              </div>
+              <div class="gallery-picker-grid" id="editLinkGalleryPicker"></div>
+            </div>
           </div>
 
           <div class="field full">
@@ -1245,12 +1441,20 @@ const els = {
   globalSearch: document.getElementById("globalSearch"),
 
   statPending: document.getElementById("statPending"),
+  statReports: document.getElementById("statReports"),
   statDepartments: document.getElementById("statDepartments"),
   statSubs: document.getElementById("statSubs"),
   statLinks: document.getElementById("statLinks"),
   statGallery: document.getElementById("statGallery"),
 
+  requestTypeFilters: document.getElementById("requestTypeFilters"),
   requestsList: document.getElementById("requestsList"),
+
+  reportsList: document.getElementById("reportsList"),
+  reportStatusFilter: document.getElementById("reportStatusFilter"),
+  reportDepartmentFilter: document.getElementById("reportDepartmentFilter"),
+  reportSubFilter: document.getElementById("reportSubFilter"),
+  btnReportSearch: document.getElementById("btnReportSearch"),
 
   departmentForm: document.getElementById("departmentForm"),
   departmentMsg: document.getElementById("departmentMsg"),
@@ -1270,12 +1474,16 @@ const els = {
 
   manageSearch: document.getElementById("manageSearch"),
   manageType: document.getElementById("manageType"),
+  manageDepartmentFilter: document.getElementById("manageDepartmentFilter"),
+  manageSubFilter: document.getElementById("manageSubFilter"),
   btnManageSearch: document.getElementById("btnManageSearch"),
   manageList: document.getElementById("manageList"),
 
   galleryForm: document.getElementById("galleryForm"),
   galleryMsg: document.getElementById("galleryMsg"),
   galleryList: document.getElementById("galleryList"),
+
+  exportMsg: document.getElementById("exportMsg"),
 
   historyList: document.getElementById("historyList"),
 
@@ -1290,6 +1498,8 @@ const els = {
   editDepartmentColor: document.getElementById("editDepartmentColor"),
   editDepartmentSortOrder: document.getElementById("editDepartmentSortOrder"),
   editDepartmentPreview: document.getElementById("editDepartmentPreview"),
+  editDepartmentGalleryPicker: document.getElementById("editDepartmentGalleryPicker"),
+  refreshDepartmentGalleryPicker: document.getElementById("refreshDepartmentGalleryPicker"),
 
   editLinkModal: document.getElementById("editLinkModal"),
   closeEditLinkModal: document.getElementById("closeEditLinkModal"),
@@ -1306,16 +1516,22 @@ const els = {
   editLinkColor: document.getElementById("editLinkColor"),
   editLinkSortOrder: document.getElementById("editLinkSortOrder"),
   editLinkPreview: document.getElementById("editLinkPreview"),
+  editLinkGalleryPicker: document.getElementById("editLinkGalleryPicker"),
+  refreshLinkGalleryPicker: document.getElementById("refreshLinkGalleryPicker"),
 
   btnQuickRequest: document.getElementById("btnQuickRequest"),
   btnQuickAdd: document.getElementById("btnQuickAdd"),
-  btnQuickBulk: document.getElementById("btnQuickBulk")
+  btnQuickBulk: document.getElementById("btnQuickBulk"),
+  btnQuickReports: document.getElementById("btnQuickReports"),
+  btnQuickExport: document.getElementById("btnQuickExport")
 };
 
 let ADMIN_PASSWORD = sessionStorage.getItem("rv_admin_password") || "";
 let bulkRows = [];
 let cachedDepartments = [];
 let cachedSubDepartments = [];
+let cachedGallery = [];
+let requestTypeFilter = "all";
 
 /* =========================================================
    Helpers
@@ -1344,11 +1560,13 @@ function setStatus(type, text){
 }
 
 function setMsg(el, type, text){
+  if(!el) return;
   el.className = `msg ${type}`;
   el.innerHTML = text;
 }
 
 function clearMsg(el){
+  if(!el) return;
   el.className = "msg";
   el.innerHTML = "";
 }
@@ -1386,6 +1604,12 @@ function prettyType(type){
   return "Link";
 }
 
+function prettyReason(reason){
+  if(reason === "broken") return "Link is broken";
+  if(reason === "updated") return "Link is updated";
+  return "Other";
+}
+
 function activeTab(){
   return document.querySelector(".tab.active")?.dataset.tab || "requests";
 }
@@ -1393,23 +1617,58 @@ function activeTab(){
 function switchTab(tabName){
   document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.tab === tabName));
   document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
-  document.getElementById(`panel-${tabName}`).classList.add("active");
+  document.getElementById(`panel-${tabName}`)?.classList.add("active");
 
   if(tabName === "requests") loadRequests();
   if(tabName === "manage") loadManage();
+  if(tabName === "reports") loadReports();
   if(tabName === "gallery") loadGallery();
   if(tabName === "history") loadHistory();
+}
+
+function downloadCSV(filename, rows){
+  if(!rows || !rows.length){
+    throw new Error("No data found to export.");
+  }
+
+  const headers = Object.keys(rows[0]);
+  const csv = [
+    headers.join(","),
+    ...rows.map(row => headers.map(h => {
+      const value = row[h] ?? "";
+      return `"${String(value).replaceAll('"','""')}"`;
+    }).join(","))
+  ].join("\n");
+
+  const blob = new Blob([csv], { type:"text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
 }
 
 /* =========================================================
    Login / Refresh
 ========================================================= */
+async function getStats(password){
+  try{
+    return await rpc("rv_admin_stats_v3", { p_password: password });
+  }catch(err){
+    console.warn("Stats v3 unavailable, trying v2:", err.message || err);
+    return await rpc("rv_admin_stats_v2", { p_password: password });
+  }
+}
+
 async function unlock(password){
   setStatus("", "Checking");
   clearMsg(els.loginMsg);
 
   try{
-    const stats = await rpc("rv_admin_stats_v2", { p_password: password });
+    const stats = await getStats(password);
     ADMIN_PASSWORD = password;
     sessionStorage.setItem("rv_admin_password", password);
 
@@ -1418,7 +1677,9 @@ async function unlock(password){
     setStatus("ok", "Admin");
 
     renderStats(stats);
-    await Promise.all([loadDepartmentOptions(), loadRequests()]);
+    await Promise.all([loadDepartmentOptions(), loadGalleryRows()]);
+    populateFilterDropdowns();
+    await loadRequests();
   }catch(err){
     console.error(err);
     setStatus("bad", "Locked");
@@ -1430,13 +1691,15 @@ async function refreshAll(){
   if(!ADMIN_PASSWORD) return;
   try{
     setStatus("", "Loading");
-    const stats = await rpc("rv_admin_stats_v2", { p_password: ADMIN_PASSWORD });
+    const stats = await getStats(ADMIN_PASSWORD);
     renderStats(stats);
-    await loadDepartmentOptions();
+    await Promise.all([loadDepartmentOptions(), loadGalleryRows()]);
+    populateFilterDropdowns();
 
     const tab = activeTab();
     if(tab === "requests") await loadRequests();
     if(tab === "manage") await loadManage();
+    if(tab === "reports") await loadReports();
     if(tab === "gallery") await loadGallery();
     if(tab === "history") await loadHistory();
 
@@ -1451,6 +1714,7 @@ async function refreshAll(){
 function renderStats(stats){
   const s = stats || {};
   els.statPending.textContent = s.pending_requests ?? 0;
+  els.statReports.textContent = s.pending_reports ?? 0;
   els.statDepartments.textContent = s.departments ?? 0;
   els.statSubs.textContent = s.sub_departments ?? 0;
   els.statLinks.textContent = s.active_links ?? 0;
@@ -1458,7 +1722,7 @@ function renderStats(stats){
 }
 
 /* =========================================================
-   Options
+   Options / Gallery Cache
 ========================================================= */
 async function loadDepartmentOptions(){
   try{
@@ -1477,6 +1741,97 @@ async function loadDepartmentOptions(){
   }
 }
 
+async function loadGalleryRows(){
+  try{
+    const rows = await rpc("rv_admin_list_gallery_v2", {
+      p_password: ADMIN_PASSWORD,
+      p_search: ""
+    });
+
+    const seen = new Set();
+    cachedGallery = (rows || []).filter(r => {
+      const url = String(r.image_url || "").trim();
+      if(!url) return false;
+      const key = url.toLowerCase();
+      if(seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }catch(err){
+    console.warn("Could not load gallery rows:", err.message || err);
+    cachedGallery = [];
+  }
+}
+
+function populateFilterDropdowns(){
+  const departmentOptions = `<option value="">All Departments</option>` +
+    (cachedDepartments || []).map(d => `<option value="${esc(d.department)}">${esc(d.department)}</option>`).join("");
+
+  if(els.reportDepartmentFilter) els.reportDepartmentFilter.innerHTML = departmentOptions;
+  if(els.manageDepartmentFilter) els.manageDepartmentFilter.innerHTML = `<option value="">Select Department</option>` +
+    (cachedDepartments || []).map(d => `<option value="${esc(d.department)}">${esc(d.department)}</option>`).join("");
+
+  updateReportSubFilter();
+  updateManageSubFilter();
+}
+
+function subOptionsForDepartment(dep, includeAllLabel="All Sub-Depts"){
+  const selected = String(dep || "").trim().toLowerCase();
+  const subs = (cachedSubDepartments || [])
+    .filter(s => !selected || String(s.department || "").trim().toLowerCase() === selected)
+    .map(s => s.sub_department)
+    .filter(Boolean)
+    .filter((value, index, arr) => arr.indexOf(value) === index)
+    .sort((a,b) => a.localeCompare(b));
+
+  return `<option value="">${includeAllLabel}</option>` + subs.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join("");
+}
+
+function updateReportSubFilter(){
+  if(!els.reportSubFilter) return;
+  els.reportSubFilter.innerHTML = subOptionsForDepartment(els.reportDepartmentFilter?.value || "", "All Sub-Depts");
+}
+
+function updateManageSubFilter(){
+  if(!els.manageSubFilter) return;
+  els.manageSubFilter.innerHTML = subOptionsForDepartment(els.manageDepartmentFilter?.value || "", "All Sub-Depts");
+}
+
+function renderGalleryPicker(container, input, preview){
+  if(!container) return;
+
+  if(!cachedGallery.length){
+    container.innerHTML = `<div class="empty" style="grid-column:1/-1;padding:14px"><strong>No gallery images</strong>Add image URLs in Gallery first.</div>`;
+    return;
+  }
+
+  const current = String(input.value || "").trim().toLowerCase();
+  container.innerHTML = cachedGallery.map(g => {
+    const url = String(g.image_url || "").trim();
+    const active = current && current === url.toLowerCase();
+    return `
+      <button class="gallery-pick ${active ? "active" : ""}" type="button" data-url="${esc(url)}" title="Choose this image">
+        <img src="${esc(url)}" alt="">
+        <span>✓</span>
+      </button>
+    `;
+  }).join("");
+
+  container.querySelectorAll(".gallery-pick").forEach(btn => {
+    btn.addEventListener("click", () => {
+      input.value = btn.dataset.url || "";
+      updatePreview(preview, input.value);
+      renderGalleryPicker(container, input, preview);
+    });
+  });
+}
+
+async function refreshGalleryPickers(){
+  await loadGalleryRows();
+  renderGalleryPicker(els.editDepartmentGalleryPicker, els.editDepartmentImageUrl, els.editDepartmentPreview);
+  renderGalleryPicker(els.editLinkGalleryPicker, els.editLinkImageUrl, els.editLinkPreview);
+}
+
 /* =========================================================
    Requests
 ========================================================= */
@@ -1484,8 +1839,9 @@ async function loadRequests(){
   els.requestsList.innerHTML = `<div class="card">Loading pending requests...</div>`;
 
   try{
-    const rows = await rpc("rv_admin_pending_requests_v2", {
+    const rows = await rpc("rv_admin_pending_requests_v3", {
       p_password: ADMIN_PASSWORD,
+      p_request_type: requestTypeFilter,
       p_search: els.globalSearch.value.trim()
     });
 
@@ -1602,19 +1958,9 @@ async function approveRequest(card){
     p_sort_order: Number(card.querySelector(".rq-sort").value || 0)
   };
 
-  if(!payload.p_department){
-    alert("Department is required.");
-    return;
-  }
-  if(type !== "department" && !payload.p_sub_department){
-    alert("Sub-department is required.");
-    return;
-  }
-  if(type === "link" && (!payload.p_link_name || !payload.p_url)){
-    alert("Link name and URL are required.");
-    return;
-  }
-
+  if(!payload.p_department){ alert("Department is required."); return; }
+  if(type !== "department" && !payload.p_sub_department){ alert("Sub-department is required."); return; }
+  if(type === "link" && (!payload.p_link_name || !payload.p_url)){ alert("Link name and URL are required."); return; }
   if(!confirm(`Approve this ${prettyType(type)} request?`)) return;
 
   try{
@@ -1629,7 +1975,6 @@ async function approveRequest(card){
 async function rejectRequest(card){
   const id = card.dataset.id;
   const note = card.querySelector(".rq-admin-note").value.trim() || prompt("Reason/note for rejection?") || "";
-
   if(!confirm("Reject this request?")) return;
 
   try{
@@ -1646,12 +1991,83 @@ async function rejectRequest(card){
 }
 
 /* =========================================================
+   Reports
+========================================================= */
+async function loadReports(){
+  els.reportsList.innerHTML = `<div class="card">Loading link reports...</div>`;
+
+  try{
+    const rows = await rpc("rv_admin_list_link_reports_v2", {
+      p_password: ADMIN_PASSWORD,
+      p_status: els.reportStatusFilter.value,
+      p_department: els.reportDepartmentFilter.value,
+      p_sub_department: els.reportSubFilter.value,
+      p_search: els.globalSearch.value.trim()
+    });
+
+    if(!rows || rows.length === 0){
+      els.reportsList.innerHTML = `<div class="empty"><strong>No reports found</strong>Broken/updated link reports will appear here.</div>`;
+      return;
+    }
+
+    els.reportsList.innerHTML = rows.map(reportCard).join("");
+  }catch(err){
+    console.error(err);
+    els.reportsList.innerHTML = `<div class="card"><div class="msg bad" style="display:block">${esc(err.message || err)}</div></div>`;
+  }
+}
+
+function reportCard(r){
+  const suggested = r.suggested_url || "";
+  return `
+    <div class="listbar report-row" data-id="${esc(r.id)}" data-suggested="${esc(suggested)}">
+      <div>
+        <h4>${esc(r.link_name || "Reported Link")}</h4>
+        <p>
+          ${esc(r.department || "")} ${r.sub_department ? "/ " + esc(r.sub_department) : ""}<br>
+          Current: ${r.url ? esc(r.url) : "No current URL saved"}<br>
+          ${suggested ? `Suggested: ${esc(suggested)}<br>` : ""}
+          ${r.note ? `Note: ${esc(r.note)}<br>` : ""}
+          ${timeAgo(r.created_at)}
+        </p>
+      </div>
+      <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end;">
+        <span class="report-reason">${prettyReason(r.reason)}</span>
+        <span class="badge ${esc(r.status)}">${esc(r.status)}</span>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
+        ${r.url ? `<a class="btn small" href="${esc(safeUrl(r.url))}" target="_blank" rel="noopener">Open</a>` : ""}
+        ${suggested ? `<button class="btn small btn-copy-suggested" type="button">Copy Suggested</button>` : ""}
+        <button class="btn green small btn-report-fixed" type="button">Mark Fixed</button>
+        <button class="btn yellow small btn-report-ignored" type="button">Ignore</button>
+      </div>
+    </div>
+  `;
+}
+
+async function updateReportStatus(row, status){
+  const note = status === "ignored" ? (prompt("Admin note optional:") || "") : "";
+  try{
+    await rpc("rv_admin_update_link_report_status_v2", {
+      p_password: ADMIN_PASSWORD,
+      p_report_id: row.dataset.id,
+      p_status: status,
+      p_admin_note: note
+    });
+    await refreshAll();
+    await loadReports();
+  }catch(err){
+    console.error(err);
+    alert(err.message || err);
+  }
+}
+
+/* =========================================================
    Manual Add
 ========================================================= */
 async function addDepartment(e){
   e.preventDefault();
   clearMsg(els.departmentMsg);
-
   const f = getFormData(els.departmentForm);
 
   try{
@@ -1675,7 +2091,6 @@ async function addDepartment(e){
 async function addSubDepartment(e){
   e.preventDefault();
   clearMsg(els.subDepartmentMsg);
-
   const f = getFormData(els.subDepartmentForm);
 
   try{
@@ -1699,7 +2114,6 @@ async function addSubDepartment(e){
 async function addManualLink(e){
   e.preventDefault();
   clearMsg(els.manualLinkMsg);
-
   const f = getFormData(els.manualLinkForm);
 
   try{
@@ -1736,7 +2150,6 @@ function parseCSV(text){
   for(let i=0;i<text.length;i++){
     const ch = text[i];
     const next = text[i+1];
-
     if(ch === '"' && inQuotes && next === '"'){
       cell += '"';
       i++;
@@ -1768,10 +2181,8 @@ function cleanHeader(h){
 function mapBulkRows(){
   const text = els.bulkText.value.trim();
   if(!text) return [];
-
   const rows = parseCSV(text);
   if(rows.length < 2) throw new Error("Please paste headers and at least one data row.");
-
   const headers = rows[0].map(cleanHeader);
 
   function idx(...names){
@@ -1791,7 +2202,6 @@ function mapBulkRows(){
   };
 
   const out = [];
-
   rows.slice(1).forEach((r) => {
     const obj = {
       department: map.department >= 0 ? r[map.department] : "",
@@ -1803,45 +2213,29 @@ function mapBulkRows(){
       color: map.color >= 0 ? r[map.color] : "",
       sort_order: map.sort_order >= 0 ? Number(r[map.sort_order] || 0) : 0
     };
-
-    if(obj.department && obj.sub_department && obj.link_name && obj.url){
-      out.push(obj);
-    }
+    if(obj.department && obj.sub_department && obj.link_name && obj.url) out.push(obj);
   });
-
   return out;
 }
 
 function previewBulk(){
   clearMsg(els.bulkMsg);
-
   try{
     bulkRows = mapBulkRows();
-
-    if(!bulkRows.length){
-      throw new Error("No valid rows found. Required: department, sub_department, link_name, url.");
-    }
+    if(!bulkRows.length) throw new Error("No valid rows found. Required: department, sub_department, link_name, url.");
 
     const previewRows = bulkRows.slice(0, 30);
     els.bulkPreview.classList.remove("hidden");
     els.bulkPreview.innerHTML = `
       <table>
-        <thead>
-          <tr><th>Department</th><th>Sub</th><th>Name</th><th>URL</th></tr>
-        </thead>
+        <thead><tr><th>Department</th><th>Sub</th><th>Name</th><th>URL</th></tr></thead>
         <tbody>
           ${previewRows.map(r => `
-            <tr>
-              <td>${esc(r.department)}</td>
-              <td>${esc(r.sub_department)}</td>
-              <td>${esc(r.link_name)}</td>
-              <td>${esc(r.url)}</td>
-            </tr>
+            <tr><td>${esc(r.department)}</td><td>${esc(r.sub_department)}</td><td>${esc(r.link_name)}</td><td>${esc(r.url)}</td></tr>
           `).join("")}
         </tbody>
       </table>
     `;
-
     setMsg(els.bulkMsg, "ok", `${bulkRows.length} valid rows ready to import.`);
   }catch(err){
     bulkRows = [];
@@ -1852,11 +2246,9 @@ function previewBulk(){
 
 async function importBulk(){
   clearMsg(els.bulkMsg);
-
   try{
     if(!bulkRows.length) previewBulk();
     if(!bulkRows.length) return;
-
     if(!confirm(`Import ${bulkRows.length} approved links?`)) return;
 
     const result = await rpc("rv_admin_bulk_add_links_v2", {
@@ -1884,7 +2276,6 @@ async function loadManage(){
   try{
     const type = els.manageType.value;
     const search = els.manageSearch.value.trim() || els.globalSearch.value.trim();
-
     let rows = [];
 
     if(type === "departments"){
@@ -1893,10 +2284,20 @@ async function loadManage(){
       rows = await rpc("rv_admin_list_sub_departments_v2", { p_password: ADMIN_PASSWORD, p_search: search });
     }else{
       rows = await rpc("rv_admin_list_links_v2", { p_password: ADMIN_PASSWORD, p_search: search });
+      const dep = els.manageDepartmentFilter.value.trim().toLowerCase();
+      const sub = els.manageSubFilter.value.trim().toLowerCase();
+
+      rows = (rows || []).filter(r => {
+        const okDep = !dep || String(r.department || "").trim().toLowerCase() === dep;
+        const okSub = !sub || String(r.sub_department || "").trim().toLowerCase() === sub;
+        return okDep && okSub;
+      });
     }
 
+    updateManageFilterVisibility();
+
     if(!rows || rows.length === 0){
-      els.manageList.innerHTML = `<div class="empty"><strong>No items found</strong>Try a different search.</div>`;
+      els.manageList.innerHTML = `<div class="empty"><strong>No items found</strong>Try a different department, sub-department, or search.</div>`;
       return;
     }
 
@@ -1905,6 +2306,12 @@ async function loadManage(){
     console.error(err);
     els.manageList.innerHTML = `<div class="card"><div class="msg bad" style="display:block">${esc(err.message || err)}</div></div>`;
   }
+}
+
+function updateManageFilterVisibility(){
+  const isLinks = els.manageType.value === "links";
+  els.manageDepartmentFilter.classList.toggle("hidden", !isLinks);
+  els.manageSubFilter.classList.toggle("hidden", !isLinks);
 }
 
 function manageRow(type, r){
@@ -1917,10 +2324,7 @@ function manageRow(type, r){
         data-image-url="${esc(r.image_url || "")}"
         data-color="${esc(r.color || "")}"
         data-sort-order="${esc(r.sort_order ?? 0)}">
-        <div>
-          <h4>${esc(r.department)}</h4>
-          <p>${Number(r.total_links || 0)} links • ${Number(r.sub_count || 0)} sub-departments</p>
-        </div>
+        <div><h4>${esc(r.department)}</h4><p>${Number(r.total_links || 0)} links • ${Number(r.sub_count || 0)} sub-departments</p></div>
         <button class="btn small btn-edit-department" type="button">Edit</button>
         <button class="btn red small btn-hide-item" type="button">Hide</button>
       </div>
@@ -1930,10 +2334,7 @@ function manageRow(type, r){
   if(type === "sub_departments"){
     return `
       <div class="listbar" data-type="sub_departments" data-id="${esc(r.id)}">
-        <div>
-          <h4>${esc(r.sub_department)}</h4>
-          <p>${esc(r.department)} • ${Number(r.total_links || 0)} links</p>
-        </div>
+        <div><h4>${esc(r.sub_department)}</h4><p>${esc(r.department)} • ${Number(r.total_links || 0)} links</p></div>
         <span class="badge approved">Active</span>
         <button class="btn red small btn-hide-item" type="button">Hide</button>
       </div>
@@ -1952,11 +2353,8 @@ function manageRow(type, r){
       data-department-image-url="${esc(r.department_image_url || "")}"
       data-color="${esc(r.color || "")}"
       data-sort-order="${esc(r.sort_order ?? 0)}">
-      <div>
-        <h4>${esc(r.link_name)}</h4>
-        <p>${esc(r.department)} / ${esc(r.sub_department)}<br>${esc(r.url)}</p>
-      </div>
-      <a class="btn small" href="${esc(r.url)}" target="_blank" rel="noopener">Open</a>
+      <div><h4>${esc(r.link_name)}</h4><p>${esc(r.department)} / ${esc(r.sub_department)}<br>${esc(r.url)}</p></div>
+      <a class="btn small" href="${esc(safeUrl(r.url))}" target="_blank" rel="noopener">Open</a>
       <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
         <button class="btn small btn-edit-link" type="button">Edit</button>
         <button class="btn red small btn-hide-item" type="button">Hide</button>
@@ -1982,11 +2380,7 @@ async function hideItem(type, id){
         ? "p_sub_department_id"
         : "p_link_id";
 
-    await rpc(fn, {
-      p_password: ADMIN_PASSWORD,
-      [argName]: id
-    });
-
+    await rpc(fn, { p_password: ADMIN_PASSWORD, [argName]: id });
     await refreshAll();
     await loadManage();
   }catch(err){
@@ -2005,14 +2399,12 @@ function updatePreview(container, url){
     container.innerHTML = "";
     return;
   }
-
   container.classList.remove("hidden");
   container.innerHTML = `<img src="${esc(clean)}" alt="">`;
 }
 
-function openEditDepartment(bar){
+async function openEditDepartment(bar){
   clearMsg(els.editDepartmentMsg);
-
   els.editDepartmentId.value = bar.dataset.id || "";
   els.editDepartmentName.value = bar.dataset.department || "";
   els.editDepartmentImageUrl.value = bar.dataset.imageUrl || "";
@@ -2020,6 +2412,8 @@ function openEditDepartment(bar){
   els.editDepartmentSortOrder.value = bar.dataset.sortOrder || "0";
 
   updatePreview(els.editDepartmentPreview, els.editDepartmentImageUrl.value);
+  await loadGalleryRows();
+  renderGalleryPicker(els.editDepartmentGalleryPicker, els.editDepartmentImageUrl, els.editDepartmentPreview);
   els.editDepartmentModal.classList.add("show");
   setTimeout(() => els.editDepartmentName.focus(), 60);
 }
@@ -2052,9 +2446,8 @@ async function saveEditDepartment(e){
   }
 }
 
-function openEditLink(bar){
+async function openEditLink(bar){
   clearMsg(els.editLinkMsg);
-
   els.editLinkId.value = bar.dataset.id || "";
   els.editLinkDepartment.value = bar.dataset.department || "";
   els.editLinkSubDepartment.value = bar.dataset.subDepartment || "";
@@ -2066,6 +2459,8 @@ function openEditLink(bar){
   els.editLinkSortOrder.value = bar.dataset.sortOrder || "0";
 
   updatePreview(els.editLinkPreview, els.editLinkImageUrl.value);
+  await loadGalleryRows();
+  renderGalleryPicker(els.editLinkGalleryPicker, els.editLinkImageUrl, els.editLinkPreview);
   els.editLinkModal.classList.add("show");
   setTimeout(() => els.editLinkName.focus(), 60);
 }
@@ -2108,16 +2503,12 @@ async function saveEditLink(e){
 async function addGalleryImage(e){
   e.preventDefault();
   clearMsg(els.galleryMsg);
-
   const f = getFormData(els.galleryForm);
 
   try{
-    await rpc("rv_admin_add_gallery_image_v2", {
+    await rpc("rv_admin_add_gallery_image_v3", {
       p_password: ADMIN_PASSWORD,
-      p_title: f.title || null,
-      p_category: f.category || null,
-      p_image_url: safeUrl(f.image_url),
-      p_tags: f.tags || null
+      p_image_url: safeUrl(f.image_url)
     });
 
     setMsg(els.galleryMsg, "ok", "Gallery image saved.");
@@ -2134,10 +2525,8 @@ async function loadGallery(){
   els.galleryList.innerHTML = `<div class="card">Loading gallery...</div>`;
 
   try{
-    const rows = await rpc("rv_admin_list_gallery_v2", {
-      p_password: ADMIN_PASSWORD,
-      p_search: els.globalSearch.value.trim()
-    });
+    await loadGalleryRows();
+    const rows = cachedGallery;
 
     if(!rows || rows.length === 0){
       els.galleryList.innerHTML = `<div class="empty"><strong>No gallery images</strong>Add image URLs above.</div>`;
@@ -2149,10 +2538,9 @@ async function loadGallery(){
         ${rows.map(r => `
           <div class="card" style="padding:10px;margin:0;" data-id="${esc(r.id)}">
             <div class="thumb" style="aspect-ratio:1.25;max-width:none;">
-              ${r.image_url ? `<img src="${esc(r.image_url)}" alt="">` : `<div class="thumb-placeholder">No Image</div>`}
+              <img src="${esc(r.image_url)}" alt="">
             </div>
-            <h4 style="font-weight:950;margin-top:10px;font-size:.9rem;">${esc(r.title || "Gallery Image")}</h4>
-            <p class="mini">${esc(r.category || "No category")}</p>
+            <p class="mini" style="word-break:break-all;">${esc(r.image_url)}</p>
             <button class="btn red small btn-hide-gallery" type="button" style="margin-top:10px;width:100%;">Hide</button>
           </div>
         `).join("")}
@@ -2166,7 +2554,6 @@ async function loadGallery(){
 
 async function hideGalleryImage(id){
   if(!confirm("Hide this gallery image?")) return;
-
   try{
     await rpc("rv_admin_deactivate_gallery_image_v2", {
       p_password: ADMIN_PASSWORD,
@@ -2177,6 +2564,33 @@ async function hideGalleryImage(id){
   }catch(err){
     console.error(err);
     alert(err.message || err);
+  }
+}
+
+/* =========================================================
+   Export
+========================================================= */
+async function exportData(type){
+  clearMsg(els.exportMsg);
+
+  const map = {
+    departments: { fn:"rv_admin_export_departments_v2", file:"ranvexsi_departments.csv" },
+    sub_departments: { fn:"rv_admin_export_sub_departments_v2", file:"ranvexsi_sub_departments.csv" },
+    links: { fn:"rv_admin_export_links_v2", file:"ranvexsi_links.csv" },
+    requests: { fn:"rv_admin_export_requests_v2", file:"ranvexsi_requests.csv" },
+    reports: { fn:"rv_admin_export_reports_v2", file:"ranvexsi_link_reports.csv" },
+    gallery: { fn:"rv_admin_export_gallery_v2", file:"ranvexsi_gallery.csv" }
+  };
+
+  try{
+    const info = map[type];
+    if(!info) throw new Error("Invalid export type.");
+    const rows = await rpc(info.fn, { p_password: ADMIN_PASSWORD });
+    downloadCSV(info.file, rows || []);
+    setMsg(els.exportMsg, "ok", `Exported ${info.file} successfully.`);
+  }catch(err){
+    console.error(err);
+    setMsg(els.exportMsg, "bad", esc(err.message || err));
   }
 }
 
@@ -2239,6 +2653,16 @@ document.querySelectorAll(".tab").forEach(btn => {
 els.btnQuickRequest.addEventListener("click", () => switchTab("requests"));
 els.btnQuickAdd.addEventListener("click", () => switchTab("manual"));
 els.btnQuickBulk.addEventListener("click", () => switchTab("bulk"));
+els.btnQuickReports.addEventListener("click", () => switchTab("reports"));
+els.btnQuickExport.addEventListener("click", () => switchTab("export"));
+
+els.requestTypeFilters.addEventListener("click", (e) => {
+  const btn = e.target.closest(".filter-pill");
+  if(!btn) return;
+  requestTypeFilter = btn.dataset.requestType || "all";
+  els.requestTypeFilters.querySelectorAll(".filter-pill").forEach(b => b.classList.toggle("active", b === btn));
+  loadRequests();
+});
 
 els.departmentForm.addEventListener("submit", addDepartment);
 els.subDepartmentForm.addEventListener("submit", addSubDepartment);
@@ -2248,23 +2672,56 @@ els.btnPreviewBulk.addEventListener("click", previewBulk);
 els.btnImportBulk.addEventListener("click", importBulk);
 
 els.btnManageSearch.addEventListener("click", loadManage);
-els.manageType.addEventListener("change", loadManage);
+els.manageType.addEventListener("change", () => {
+  updateManageFilterVisibility();
+  loadManage();
+});
+els.manageDepartmentFilter.addEventListener("change", () => {
+  updateManageSubFilter();
+  loadManage();
+});
+els.manageSubFilter.addEventListener("change", loadManage);
 els.manageSearch.addEventListener("keydown", (e) => {
   if(e.key === "Enter") loadManage();
 });
+
+els.reportStatusFilter.addEventListener("change", loadReports);
+els.reportDepartmentFilter.addEventListener("change", () => {
+  updateReportSubFilter();
+  loadReports();
+});
+els.reportSubFilter.addEventListener("change", loadReports);
+els.btnReportSearch.addEventListener("click", loadReports);
 
 els.galleryForm.addEventListener("submit", addGalleryImage);
 
 els.requestsList.addEventListener("click", async (e) => {
   const approve = e.target.closest(".btn-approve");
   const reject = e.target.closest(".btn-reject");
+  if(approve) await approveRequest(approve.closest(".request-card"));
+  if(reject) await rejectRequest(reject.closest(".request-card"));
+});
 
-  if(approve){
-    await approveRequest(approve.closest(".request-card"));
+els.reportsList.addEventListener("click", async (e) => {
+  const row = e.target.closest(".report-row");
+  if(!row) return;
+
+  if(e.target.closest(".btn-copy-suggested")){
+    const url = row.dataset.suggested || "";
+    if(url){
+      await navigator.clipboard.writeText(url);
+      alert("Suggested URL copied.");
+    }
+    return;
   }
 
-  if(reject){
-    await rejectRequest(reject.closest(".request-card"));
+  if(e.target.closest(".btn-report-fixed")){
+    await updateReportStatus(row, "fixed");
+    return;
+  }
+
+  if(e.target.closest(".btn-report-ignored")){
+    await updateReportStatus(row, "ignored");
   }
 });
 
@@ -2273,16 +2730,8 @@ els.manageList.addEventListener("click", async (e) => {
   const editLink = e.target.closest(".btn-edit-link");
   const hideBtn = e.target.closest(".btn-hide-item");
 
-  if(editDept){
-    openEditDepartment(editDept.closest(".listbar"));
-    return;
-  }
-
-  if(editLink){
-    openEditLink(editLink.closest(".listbar"));
-    return;
-  }
-
+  if(editDept){ await openEditDepartment(editDept.closest(".listbar")); return; }
+  if(editLink){ await openEditLink(editLink.closest(".listbar")); return; }
   if(hideBtn){
     const bar = hideBtn.closest(".listbar");
     await hideItem(bar.dataset.type, bar.dataset.id);
@@ -2296,6 +2745,10 @@ els.galleryList.addEventListener("click", async (e) => {
   await hideGalleryImage(card.dataset.id);
 });
 
+document.querySelectorAll(".btn-export").forEach(btn => {
+  btn.addEventListener("click", () => exportData(btn.dataset.export));
+});
+
 let searchTimer = null;
 els.globalSearch.addEventListener("input", () => {
   clearTimeout(searchTimer);
@@ -2303,6 +2756,7 @@ els.globalSearch.addEventListener("input", () => {
     const tab = activeTab();
     if(tab === "requests") loadRequests();
     if(tab === "manage") loadManage();
+    if(tab === "reports") loadReports();
     if(tab === "gallery") loadGallery();
     if(tab === "history") loadHistory();
   }, 250);
@@ -2311,12 +2765,20 @@ els.globalSearch.addEventListener("input", () => {
 els.closeEditDepartmentModal.addEventListener("click", closeEditDepartment);
 els.cancelEditDepartment.addEventListener("click", closeEditDepartment);
 els.editDepartmentForm.addEventListener("submit", saveEditDepartment);
-els.editDepartmentImageUrl.addEventListener("input", () => updatePreview(els.editDepartmentPreview, els.editDepartmentImageUrl.value));
+els.editDepartmentImageUrl.addEventListener("input", () => {
+  updatePreview(els.editDepartmentPreview, els.editDepartmentImageUrl.value);
+  renderGalleryPicker(els.editDepartmentGalleryPicker, els.editDepartmentImageUrl, els.editDepartmentPreview);
+});
+els.refreshDepartmentGalleryPicker.addEventListener("click", refreshGalleryPickers);
 
 els.closeEditLinkModal.addEventListener("click", closeEditLink);
 els.cancelEditLink.addEventListener("click", closeEditLink);
 els.editLinkForm.addEventListener("submit", saveEditLink);
-els.editLinkImageUrl.addEventListener("input", () => updatePreview(els.editLinkPreview, els.editLinkImageUrl.value));
+els.editLinkImageUrl.addEventListener("input", () => {
+  updatePreview(els.editLinkPreview, els.editLinkImageUrl.value);
+  renderGalleryPicker(els.editLinkGalleryPicker, els.editLinkImageUrl, els.editLinkPreview);
+});
+els.refreshLinkGalleryPicker.addEventListener("click", refreshGalleryPickers);
 
 els.editDepartmentModal.addEventListener("click", (e) => {
   if(e.target === els.editDepartmentModal) closeEditDepartment();
@@ -2330,6 +2792,8 @@ document.addEventListener("keydown", (e) => {
   if(e.key === "Escape" && els.editDepartmentModal.classList.contains("show")) closeEditDepartment();
   if(e.key === "Escape" && els.editLinkModal.classList.contains("show")) closeEditLink();
 });
+
+updateManageFilterVisibility();
 
 /* Auto unlock for same browser tab session */
 if(ADMIN_PASSWORD){
