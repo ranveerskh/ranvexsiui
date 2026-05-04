@@ -310,41 +310,48 @@
   .vote-btn{
     position:absolute;
     z-index:6;
-    top:10px;
-    left:10px;
-    height:30px;
-    min-width:78px;
-    border:1px solid rgba(255,255,255,.28);
+    top:8px;
+    left:8px;
+    height:24px;
+    min-width:50px;
+    border:1px solid rgba(255,255,255,.24);
     border-radius:999px;
-    background:rgba(0,0,0,.44);
+    background:rgba(0,0,0,.38);
     color:#fff;
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    gap:6px;
-    padding:0 10px;
-    font-size:.74rem;
-    font-weight:950;
+    gap:4px;
+    padding:0 8px;
+    font-size:.66rem;
+    font-weight:900;
+    line-height:1;
     cursor:pointer;
     backdrop-filter:blur(12px);
     -webkit-backdrop-filter:blur(12px);
-    box-shadow:0 8px 20px rgba(0,0,0,.18);
+    box-shadow:0 6px 14px rgba(0,0,0,.16);
     transition:.18s ease;
   }
 
   .vote-btn:hover{
     transform:translateY(-1px);
-    background:rgba(37,99,235,.78);
+    background:rgba(0,0,0,.52);
+    border-color:rgba(255,255,255,.34);
   }
 
   .vote-btn.voted{
-    background:rgba(22,163,74,.86);
-    border-color:rgba(255,255,255,.36);
+    background:rgba(0,0,0,.38);
+    border-color:rgba(255,255,255,.24);
+  }
+
+  .vote-btn.voted:hover{
+    background:rgba(0,0,0,.52);
+    border-color:rgba(255,255,255,.34);
   }
 
   .vote-btn:disabled{
     opacity:.72;
-    cursor:not-allowed;
+    cursor:wait;
   }
 
   .link-actions-top{
@@ -1954,7 +1961,7 @@ async function voteForDepartment(dep, btn){
 
   if(btn){
     btn.disabled = true;
-    btn.innerHTML = "Saving...";
+    btn.innerHTML = "...";
   }
 
   try{
@@ -2729,8 +2736,8 @@ function renderDepartments(){
       <img class="img" loading="lazy" decoding="async" src="${esc(d.imageUrl)}" alt="${esc(d.dep)}">
       <div class="veil"></div>
       <div class="overlay"></div>
-      <button class="vote-btn ${alreadyVoted ? "voted" : ""}" type="button" title="${alreadyVoted ? "You voted" : "Vote for this department"}">
-        ${alreadyVoted ? "✓" : "👍"} <span>${votes}</span>
+      <button class="vote-btn ${alreadyVoted ? "voted" : ""}" type="button" title="${alreadyVoted ? "Vote counted" : "Vote for this department"}">
+        👍 <span>${votes}</span>
       </button>
       ${d.pending ? `<div class="pending-ribbon">Pending</div>` : ``}
       <div class="label">
@@ -3397,5 +3404,3 @@ initPrefs();
 loadData();
 setupRealtime();
 </script>
-</body>
-</html>
