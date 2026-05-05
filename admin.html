@@ -1267,6 +1267,11 @@ Ship Dock,Ship Clerk,New Tool,https://example.com,https://image.com/pic.jpg,,blu
             <p>Download your public data, requests, reports, and gallery list as CSV backups.</p>
           </div>
         </div>
+
+        <div class="row-actions" style="justify-content:flex-start;margin-top:0;margin-bottom:14px;">
+          <button class="btn green" id="btnExportAll" type="button">Export All Data</button>
+        </div>
+
         <div class="export-grid">
           <div class="export-card"><h4>Departments</h4><p>All department records.</p><button class="btn primary btn-export" data-export="departments" type="button">Export Departments</button></div>
           <div class="export-card"><h4>Sub-Departments</h4><p>All sub-department records.</p><button class="btn primary btn-export" data-export="sub_departments" type="button">Export Sub-Depts</button></div>
@@ -1484,6 +1489,7 @@ const els = {
   galleryList: document.getElementById("galleryList"),
 
   exportMsg: document.getElementById("exportMsg"),
+  btnExportAll: document.getElementById("btnExportAll"),
 
   historyList: document.getElementById("historyList"),
 
@@ -2594,6 +2600,55 @@ async function exportData(type){
   }
 }
 
+async function exportAllData(){
+  clearMsg(els.exportMsg);
+
+  const allExports = [
+    { fn:"rv_admin_export_departments_v2", file:"ranvexsi_departments.csv", label:"Departments" },
+    { fn:"rv_admin_export_sub_departments_v2", file:"ranvexsi_sub_departments.csv", label:"Sub-Departments" },
+    { fn:"rv_admin_export_links_v2", file:"ranvexsi_links.csv", label:"Links" },
+    { fn:"rv_admin_export_requests_v2", file:"ranvexsi_requests.csv", label:"Requests" },
+    { fn:"rv_admin_export_reports_v2", file:"ranvexsi_link_reports.csv", label:"Reports" },
+    { fn:"rv_admin_export_gallery_v2", file:"ranvexsi_gallery.csv", label:"Gallery" }
+  ];
+
+  try{
+    if(!ADMIN_PASSWORD){
+      throw new Error("Admin is locked. Please unlock first.");
+    }
+
+    setMsg(els.exportMsg, "info", "Preparing all CSV exports...");
+
+    let exportedCount = 0;
+    let skippedCount = 0;
+    const skipped = [];
+
+    for(const item of allExports){
+      const rows = await rpc(item.fn, { p_password: ADMIN_PASSWORD });
+
+      if(rows && rows.length){
+        downloadCSV(item.file, rows);
+        exportedCount++;
+        await new Promise(resolve => setTimeout(resolve, 350));
+      }else{
+        skippedCount++;
+        skipped.push(item.label);
+      }
+    }
+
+    if(exportedCount === 0){
+      setMsg(els.exportMsg, "bad", "No data found to export.");
+      return;
+    }
+
+    const skippedText = skippedCount ? `<br>Skipped empty: ${esc(skipped.join(", "))}` : "";
+    setMsg(els.exportMsg, "ok", `Exported ${exportedCount} CSV file${exportedCount > 1 ? "s" : ""} successfully.${skippedText}`);
+  }catch(err){
+    console.error(err);
+    setMsg(els.exportMsg, "bad", esc(err.message || err));
+  }
+}
+
 /* =========================================================
    History
 ========================================================= */
@@ -2748,6 +2803,8 @@ els.galleryList.addEventListener("click", async (e) => {
 document.querySelectorAll(".btn-export").forEach(btn => {
   btn.addEventListener("click", () => exportData(btn.dataset.export));
 });
+
+els.btnExportAll.addEventListener("click", exportAllData);
 
 let searchTimer = null;
 els.globalSearch.addEventListener("input", () => {
