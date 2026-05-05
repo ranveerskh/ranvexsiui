@@ -33,6 +33,7 @@
     --shadow-lg:0 24px 60px rgba(15,23,42,.14);
     --radius:18px;
     --max:1360px;
+    --grid-cols:4;
   }
 
   body.dark{
@@ -123,26 +124,26 @@
   .header-inner{
     width:min(var(--max),100%);
     margin:0 auto;
-    min-height:62px;
-    padding:9px 18px;
+    min-height:58px;
+    padding:8px 18px;
     display:grid;
-    grid-template-columns:auto minmax(260px,1fr) auto;
+    grid-template-columns:auto minmax(190px,420px) auto;
     align-items:center;
-    gap:14px;
+    gap:12px;
   }
 
   .brand{
     display:flex;
     align-items:center;
-    gap:11px;
+    gap:10px;
     min-width:230px;
   }
 
   .backbtn{
-    width:36px;
-    height:36px;
+    width:34px;
+    height:34px;
     border:1px solid var(--line);
-    border-radius:13px;
+    border-radius:12px;
     background:var(--surface);
     color:var(--ink);
     cursor:pointer;
@@ -160,9 +161,9 @@
   }
 
   .logo{
-    width:40px;
-    height:40px;
-    border-radius:15px;
+    width:38px;
+    height:38px;
+    border-radius:14px;
     display:grid;
     place-items:center;
     color:white;
@@ -180,28 +181,28 @@
   }
 
   .brand-title{
-    font-size:1.01rem;
+    font-size:.98rem;
     font-weight:950;
     letter-spacing:-.045em;
   }
 
   .brand-sub{
-    font-size:.62rem;
+    font-size:.60rem;
     color:var(--muted);
-    font-weight:700;
+    font-weight:750;
     letter-spacing:.01em;
   }
 
   .search-wrap{
     position:relative;
     width:100%;
-    max-width:640px;
+    max-width:390px;
     justify-self:center;
   }
 
   .search-wrap svg{
     position:absolute;
-    left:14px;
+    left:13px;
     top:50%;
     transform:translateY(-50%);
     color:var(--muted);
@@ -210,15 +211,15 @@
 
   .search-wrap input{
     width:100%;
-    height:40px;
+    height:36px;
     border:1px solid var(--line);
     background:rgba(255,255,255,.88);
     color:var(--ink);
     outline:none;
-    border-radius:15px;
-    padding:0 16px 0 43px;
-    font-size:.9rem;
-    font-weight:700;
+    border-radius:14px;
+    padding:0 14px 0 40px;
+    font-size:.84rem;
+    font-weight:750;
     box-shadow:var(--shadow-sm);
     transition:.18s ease;
   }
@@ -236,12 +237,12 @@
     display:flex;
     align-items:center;
     justify-content:flex-end;
-    gap:8px;
-    min-width:270px;
+    gap:7px;
+    min-width:0;
   }
 
   .status-pill{
-    height:34px;
+    height:32px;
     display:flex;
     align-items:center;
     gap:7px;
@@ -251,7 +252,7 @@
     padding:0 10px;
     color:var(--muted);
     font-weight:850;
-    font-size:.73rem;
+    font-size:.70rem;
     box-shadow:var(--shadow-sm);
     white-space:nowrap;
   }
@@ -274,10 +275,10 @@
   }
 
   .iconbtn{
-    width:34px;
-    height:34px;
+    width:32px;
+    height:32px;
     border:1px solid var(--line);
-    border-radius:13px;
+    border-radius:12px;
     background:var(--surface);
     color:var(--ink);
     display:grid;
@@ -285,7 +286,7 @@
     cursor:pointer;
     box-shadow:var(--shadow-sm);
     transition:.18s ease;
-    font-size:15px;
+    font-size:14px;
   }
 
   .iconbtn:hover{
@@ -295,10 +296,10 @@
   }
 
   .top-link-btn{
-    height:34px;
+    height:32px;
     border:0;
-    border-radius:13px;
-    padding:0 12px;
+    border-radius:12px;
+    padding:0 11px;
     display:inline-flex;
     align-items:center;
     justify-content:center;
@@ -307,7 +308,7 @@
     color:white;
     background:linear-gradient(135deg,var(--accent),var(--accent-2));
     box-shadow:0 10px 22px rgba(37,99,235,.22);
-    font-size:.78rem;
+    font-size:.75rem;
     font-weight:950;
     white-space:nowrap;
     transition:.18s ease;
@@ -318,6 +319,36 @@
     box-shadow:0 14px 28px rgba(37,99,235,.28);
   }
 
+  .script-btn{
+    height:32px;
+    border:0;
+    border-radius:12px;
+    padding:0 11px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    cursor:pointer;
+    color:white;
+    background:linear-gradient(135deg,#16a34a,#15803d);
+    box-shadow:0 10px 22px rgba(22,163,74,.22);
+    font-size:.75rem;
+    font-weight:950;
+    white-space:nowrap;
+    transition:.18s ease;
+  }
+
+  .script-btn:hover{
+    transform:translateY(-1px);
+    box-shadow:0 14px 28px rgba(22,163,74,.28);
+  }
+
+  .script-btn svg{
+    width:17px;
+    height:17px;
+    flex:0 0 auto;
+  }
+
   /* =========================
      Page
   ========================= */
@@ -325,165 +356,112 @@
   .page{
     width:min(var(--max),100%);
     margin:0 auto;
-    padding:18px 18px 28px;
+    padding:16px 18px 28px;
   }
 
-  .hero-row{
-    display:grid;
-    grid-template-columns:1fr auto;
-    align-items:end;
-    gap:16px;
+  .titlebar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
     margin-bottom:14px;
   }
 
-  .crumbs{
-    color:var(--muted);
-    font-weight:800;
-    font-size:.82rem;
+  .title-left{
+    min-width:0;
     display:flex;
-    align-items:center;
-    gap:7px;
+    align-items:baseline;
+    gap:10px;
     flex-wrap:wrap;
   }
 
-  .crumbs a{
-    color:var(--muted);
-    cursor:pointer;
-  }
-
-  .crumbs a:hover{
-    color:var(--accent);
-  }
-
-  .crumbs b{
-    color:var(--ink);
-  }
-
   .page-title{
-    margin-top:5px;
-    font-size:clamp(1.48rem,2vw,2.05rem);
+    font-size:clamp(1.42rem,2vw,2rem);
     letter-spacing:-.06em;
     line-height:1.02;
     font-weight:950;
   }
 
-  .page-note{
-    margin-top:7px;
-    color:var(--muted);
-    font-weight:650;
-    max-width:760px;
-    font-size:.9rem;
-    line-height:1.45;
-  }
-
-  .quick-stats{
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-    justify-content:flex-end;
-  }
-
-  .stat-card{
-    min-width:106px;
+  .title-meta{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    min-height:26px;
     border:1px solid var(--line);
-    border-radius:16px;
-    background:rgba(255,255,255,.74);
-    backdrop-filter:blur(16px);
-    padding:9px 11px;
+    border-radius:999px;
+    background:rgba(255,255,255,.68);
+    color:var(--muted);
+    padding:0 10px;
+    font-size:.72rem;
+    font-weight:850;
     box-shadow:var(--shadow-sm);
   }
 
-  body.dark .stat-card{
-    background:rgba(17,24,39,.68);
+  body.dark .title-meta{
+    background:rgba(17,24,39,.60);
   }
 
-  .stat-label{
-    font-size:.62rem;
-    text-transform:uppercase;
-    letter-spacing:.08em;
-    color:var(--muted);
-    font-weight:900;
-  }
-
-  .stat-value{
-    margin-top:3px;
-    font-size:1.02rem;
-    letter-spacing:-.04em;
-    font-weight:950;
-  }
-
-  .toolbar{
+  .title-actions{
     display:flex;
     align-items:center;
-    justify-content:space-between;
-    gap:10px;
-    margin:0 0 14px;
-    flex-wrap:wrap;
-  }
-
-  .left-tools,
-  .right-tools{
-    display:flex;
-    align-items:center;
+    justify-content:flex-end;
     gap:8px;
     flex-wrap:wrap;
   }
 
-  .chip{
-    min-height:34px;
+  .mini-control{
+    height:32px;
     display:inline-flex;
     align-items:center;
     gap:7px;
     border:1px solid var(--line);
     border-radius:999px;
     background:var(--surface);
-    color:var(--ink);
-    padding:0 11px;
-    font-size:.78rem;
-    font-weight:850;
+    color:var(--muted);
+    padding:0 10px;
+    font-size:.73rem;
+    font-weight:900;
     box-shadow:var(--shadow-sm);
+    white-space:nowrap;
   }
 
-  .chip select{
+  .mini-control select{
     border:0;
     outline:0;
     background:transparent;
     color:var(--ink);
-    font-weight:850;
+    font-weight:950;
     cursor:pointer;
   }
 
-  .simple-btn{
-    min-height:34px;
+  .mini-btn{
+    min-height:32px;
     border:1px solid var(--line);
     border-radius:999px;
     background:var(--surface);
     color:var(--ink);
-    padding:0 12px;
+    padding:0 11px;
     display:inline-flex;
     align-items:center;
     justify-content:center;
     gap:6px;
-    font-size:.78rem;
-    font-weight:900;
+    font-size:.73rem;
+    font-weight:950;
     box-shadow:var(--shadow-sm);
     cursor:pointer;
     transition:.18s ease;
+    white-space:nowrap;
   }
 
-  .simple-btn:hover{
+  .mini-btn:hover{
     transform:translateY(-1px);
     box-shadow:var(--shadow-md);
   }
 
-  .simple-btn.primary{
-    border:0;
-    color:white;
-    background:linear-gradient(135deg,var(--accent),var(--accent-2));
-  }
-
-  .simple-btn.red{
-    color:var(--red);
+  .mini-btn.active{
+    border-color:rgba(22,163,74,.30);
+    color:#fff;
+    background:linear-gradient(135deg,#16a34a,#15803d);
   }
 
   /* =========================
@@ -492,82 +470,94 @@
 
   .links-grid{
     display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:14px;
-  }
-
-  body.compact .links-grid{
-    grid-template-columns:repeat(5,1fr);
-    gap:10px;
-  }
-
-  body.large .links-grid{
-    grid-template-columns:repeat(3,1fr);
-    gap:18px;
+    grid-template-columns:repeat(var(--grid-cols),minmax(0,1fr));
+    gap:16px;
   }
 
   .link-card{
     position:relative;
+    min-height:188px;
+    aspect-ratio:4/3;
     border:1px solid var(--line);
     border-radius:var(--radius);
-    background:rgba(255,255,255,.78);
-    backdrop-filter:blur(16px);
-    box-shadow:var(--shadow-sm);
+    background:
+      radial-gradient(circle at top left, rgba(37,99,235,.16), transparent 44%),
+      linear-gradient(135deg, rgba(37,99,235,.12), rgba(124,58,237,.10)),
+      var(--surface);
     overflow:hidden;
-    min-height:150px;
-    display:flex;
-    flex-direction:column;
-    transition:.18s ease;
-  }
-
-  body.dark .link-card{
-    background:rgba(17,24,39,.70);
+    cursor:pointer;
+    text-decoration:none;
+    box-shadow:var(--shadow-sm);
+    transform:translateZ(0);
+    transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
   }
 
   .link-card:hover{
     transform:translateY(-3px);
     box-shadow:var(--shadow-lg);
-    border-color:rgba(37,99,235,.32);
+    border-color:rgba(37,99,235,.34);
   }
 
-  .link-photo{
-    height:92px;
-    position:relative;
-    overflow:hidden;
-    background:var(--surface-3);
+  .link-card:active{
+    transform:translateY(-1px) scale(.993);
   }
 
-  body.compact .link-photo{
-    height:68px;
-  }
-
-  body.large .link-photo{
-    height:128px;
-  }
-
-  .link-photo img{
+  .link-img{
+    position:absolute;
+    inset:0;
     width:100%;
     height:100%;
     object-fit:cover;
     display:block;
-    opacity:.92;
+    opacity:.90;
     transform:scale(1.01);
+    transition:transform .28s ease, opacity .18s ease;
   }
 
-  body.dark .link-photo img{
-    opacity:.70;
+  body.dark .link-img{
+    opacity:.64;
   }
 
-  .photo-off .link-photo{
-    display:none;
+  body.no-images .link-img{
+    display:none!important;
+  }
+
+  .link-card:hover .link-img{
+    transform:scale(1.04);
+  }
+
+  .veil{
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(circle at top left, rgba(37,99,235,.16), transparent 42%),
+      linear-gradient(180deg, rgba(0,0,0,.03), rgba(0,0,0,.10));
+    pointer-events:none;
+  }
+
+  body.dark .veil{
+    background:
+      radial-gradient(circle at top left, rgba(96,165,250,.18), transparent 42%),
+      linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.22));
+  }
+
+  .overlay{
+    position:absolute;
+    inset:0;
+    background:linear-gradient(180deg, rgba(0,0,0,.03) 6%, rgba(0,0,0,.16) 52%, rgba(0,0,0,.80) 100%);
+    pointer-events:none;
+  }
+
+  body.no-images .overlay{
+    background:linear-gradient(180deg, rgba(0,0,0,.03), rgba(0,0,0,.28));
   }
 
   .pending-ribbon{
     position:absolute;
-    top:9px;
-    right:9px;
+    top:10px;
+    left:10px;
     z-index:4;
-    height:23px;
+    height:24px;
     padding:0 9px;
     border-radius:999px;
     display:inline-flex;
@@ -575,95 +565,95 @@
     justify-content:center;
     background:rgba(217,119,6,.92);
     color:#fff;
-    font-size:.64rem;
+    font-size:.66rem;
     font-weight:950;
     box-shadow:0 8px 18px rgba(0,0,0,.20);
     backdrop-filter:blur(10px);
   }
 
-  .link-body{
-    padding:12px;
+  .report-btn{
+    position:absolute;
+    top:10px;
+    right:10px;
+    z-index:8;
+    width:30px;
+    height:30px;
+    border-radius:999px;
+    border:1px solid rgba(255,255,255,.30);
+    background:rgba(255,255,255,.20);
+    color:#fff;
+    display:grid;
+    place-items:center;
+    cursor:pointer;
+    backdrop-filter:blur(12px);
+    box-shadow:0 8px 18px rgba(0,0,0,.18);
+    transition:.16s ease;
+    font-weight:950;
+    font-size:.9rem;
+  }
+
+  .report-btn:hover{
+    background:rgba(220,38,38,.86);
+    border-color:rgba(255,255,255,.38);
+    transform:translateY(-1px);
+  }
+
+  .label{
+    position:absolute;
+    z-index:2;
+    left:13px;
+    right:13px;
+    bottom:12px;
     display:flex;
-    flex-direction:column;
-    gap:9px;
-    flex:1;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:10px;
+    color:white;
   }
 
-  body.compact .link-body{
-    padding:10px;
-    gap:7px;
+  .label-main{
+    min-width:0;
   }
 
-  .link-name{
-    font-size:.93rem;
-    line-height:1.16;
+  .label-title{
+    display:block;
+    font-size:.98rem;
+    line-height:1.1;
     font-weight:950;
     letter-spacing:-.035em;
-    color:var(--ink);
-    display:-webkit-box;
-    -webkit-line-clamp:2;
-    -webkit-box-orient:vertical;
+    text-shadow:0 2px 10px rgba(0,0,0,.42);
     overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
   }
 
-  .link-meta{
-    color:var(--muted);
-    font-size:.72rem;
-    font-weight:750;
-    line-height:1.32;
-    display:-webkit-box;
-    -webkit-line-clamp:2;
-    -webkit-box-orient:vertical;
+  .label-sub{
+    margin-top:4px;
+    display:block;
+    font-size:.70rem;
+    color:rgba(255,255,255,.80);
+    font-weight:800;
     overflow:hidden;
-    word-break:break-word;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    text-shadow:0 2px 8px rgba(0,0,0,.38);
   }
 
-  .link-actions{
-    margin-top:auto;
-    display:grid;
-    grid-template-columns:1fr auto;
-    gap:8px;
-    align-items:center;
-  }
-
-  .open-btn,
-  .report-btn{
-    min-height:34px;
-    border-radius:13px;
-    font-size:.78rem;
-    font-weight:950;
+  .pill{
+    flex:0 0 auto;
     display:inline-flex;
     align-items:center;
-    justify-content:center;
     gap:6px;
-    cursor:pointer;
-    transition:.16s ease;
-  }
-
-  .open-btn{
-    border:0;
+    height:25px;
+    padding:0 9px;
+    border-radius:999px;
+    background:rgba(255,255,255,.18);
+    border:1px solid rgba(255,255,255,.22);
     color:white;
-    background:linear-gradient(135deg,var(--accent),var(--accent-2));
-    box-shadow:0 10px 22px rgba(37,99,235,.20);
-  }
-
-  .report-btn{
-    width:38px;
-    border:1px solid var(--line);
-    color:var(--muted);
-    background:var(--surface);
-    box-shadow:var(--shadow-sm);
-  }
-
-  .open-btn:hover,
-  .report-btn:hover{
-    transform:translateY(-1px);
-    box-shadow:var(--shadow-md);
-  }
-
-  .report-btn:hover{
-    color:var(--red);
-    border-color:rgba(220,38,38,.24);
+    font-size:.69rem;
+    font-weight:950;
+    backdrop-filter:blur(10px);
+    box-shadow:0 6px 18px rgba(0,0,0,.15);
   }
 
   .empty{
@@ -880,23 +870,15 @@
 
   @media (max-width:1180px){
     .links-grid{
-      grid-template-columns:repeat(3,1fr);
-    }
-
-    body.compact .links-grid{
-      grid-template-columns:repeat(4,1fr);
-    }
-
-    body.large .links-grid{
-      grid-template-columns:repeat(3,1fr);
+      grid-template-columns:repeat(3,minmax(0,1fr));
     }
   }
 
   @media (max-width:980px){
     .header-inner{
       grid-template-columns:1fr auto;
-      gap:10px;
-      padding:9px 14px;
+      gap:9px;
+      padding:8px 14px;
     }
 
     .brand{
@@ -911,46 +893,87 @@
 
     .header-actions{
       min-width:0;
-      gap:7px;
+      gap:6px;
     }
 
     .status-pill{
       display:none;
     }
 
-    .top-link-btn{
-      height:34px;
+    .top-link-btn,
+    .script-btn{
+      height:32px;
       padding:0 10px;
-      font-size:.76rem;
+      font-size:.73rem;
+    }
+
+    .script-btn span{
+      display:none;
+    }
+
+    .script-btn{
+      width:34px;
+      padding:0;
+      border-radius:12px;
     }
 
     .page{
-      padding:15px 14px 26px;
+      padding:14px 14px 26px;
     }
 
-    .hero-row{
-      grid-template-columns:1fr;
-      align-items:start;
+    .titlebar{
+      align-items:flex-start;
+      flex-direction:column;
+      gap:10px;
     }
 
-    .quick-stats{
+    .title-actions{
+      width:100%;
       justify-content:flex-start;
     }
 
-    .stat-card{
-      min-width:calc(33.333% - 7px);
-      flex:1;
-    }
-
-    .links-grid,
-    body.compact .links-grid,
-    body.large .links-grid{
-      grid-template-columns:repeat(2,1fr);
+    .links-grid{
+      grid-template-columns:repeat(2,minmax(0,1fr));
       gap:12px;
     }
 
-    .link-photo{
-      height:82px;
+    .link-card{
+      min-height:152px;
+      border-radius:17px;
+      aspect-ratio:1.05;
+    }
+
+    .label{
+      left:11px;
+      right:11px;
+      bottom:10px;
+      align-items:flex-start;
+      flex-direction:column;
+      gap:7px;
+    }
+
+    .label-title{
+      font-size:.86rem;
+      white-space:normal;
+      display:-webkit-box;
+      -webkit-line-clamp:2;
+      -webkit-box-orient:vertical;
+    }
+
+    .label-sub{
+      display:none;
+    }
+
+    .pill{
+      height:23px;
+      font-size:.66rem;
+      padding:0 8px;
+    }
+
+    .report-btn{
+      width:28px;
+      height:28px;
+      font-size:.82rem;
     }
 
     .form-grid{
@@ -960,59 +983,39 @@
 
   @media (max-width:520px){
     .logo{
-      width:38px;
-      height:38px;
-      border-radius:14px;
-    }
-
-    .brand-title{
-      font-size:.93rem;
-    }
-
-    .brand-sub{
-      font-size:.58rem;
-    }
-
-    .iconbtn{
-      width:34px;
-      height:34px;
+      width:36px;
+      height:36px;
       border-radius:13px;
     }
 
-    .page-title{
-      font-size:1.38rem;
+    .brand-title{
+      font-size:.90rem;
     }
 
-    .page-note{
-      font-size:.86rem;
-    }
-
-    .stat-card{
-      min-width:calc(33.333% - 6px);
-      padding:8px 9px;
-    }
-
-    .stat-label{
+    .brand-sub{
       font-size:.56rem;
     }
 
-    .stat-value{
-      font-size:.92rem;
+    .iconbtn{
+      width:32px;
+      height:32px;
+      border-radius:12px;
     }
 
-    .toolbar{
-      align-items:stretch;
+    .page-title{
+      font-size:1.34rem;
     }
 
-    .left-tools,
-    .right-tools{
-      width:100%;
+    .mini-control,
+    .mini-btn{
+      height:31px;
+      min-height:31px;
+      font-size:.70rem;
+      padding:0 9px;
     }
 
-    .simple-btn,
-    .chip{
-      flex:1;
-      justify-content:center;
+    .title-actions{
+      gap:7px;
     }
 
     .modal-backdrop{
@@ -1059,7 +1062,7 @@
       </div>
 
       <div class="search-wrap" title="Search links">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
           <path d="M21 21l-4.3-4.3M10.8 18.2a7.4 7.4 0 1 1 0-14.8 7.4 7.4 0 0 1 0 14.8Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
         </svg>
         <input id="search" placeholder="Search links..." autocomplete="off" />
@@ -1073,6 +1076,23 @@
 
         <a class="top-link-btn" id="btnRequestTop" href="request.html">+ Request</a>
 
+        <a class="script-btn hidden" id="btnScriptTop" href="#" target="_blank" rel="noopener" title="Install Tampermonkey Script">
+          <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+            <circle cx="16" cy="16" r="14" fill="rgba(255,255,255,.18)"/>
+            <path d="M8.3 15.3c-1.9-.6-3.3.5-3.3 2.2 0 1.8 1.4 3.2 3.3 3.2h.6" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            <path d="M23.7 15.3c1.9-.6 3.3.5 3.3 2.2 0 1.8-1.4 3.2-3.3 3.2h-.6" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            <path d="M9.2 15.4c0-4.2 2.7-7.1 6.8-7.1s6.8 2.9 6.8 7.1v2.1c0 4.1-2.7 6.9-6.8 6.9s-6.8-2.8-6.8-6.9v-2.1Z" fill="white"/>
+            <path d="M11.3 15.3c.6-2.6 2.3-4.1 4.7-4.1s4.1 1.5 4.7 4.1c-.9-.6-1.8-.9-2.8-.9-.9 0-1.5.3-1.9.9-.4-.6-1-.9-1.9-.9-1 0-1.9.3-2.8.9Z" fill="#7c4a20"/>
+            <path d="M11.4 17.3c.9-1.3 1.9-1.9 3-1.9.8 0 1.3.3 1.6.9.3-.6.8-.9 1.6-.9 1.1 0 2.1.6 3 1.9v1.1c0 2.7-1.7 4.5-4.6 4.5s-4.6-1.8-4.6-4.5v-1.1Z" fill="#ffd89a"/>
+            <circle cx="13.7" cy="17.5" r="1" fill="#111827"/>
+            <circle cx="18.3" cy="17.5" r="1" fill="#111827"/>
+            <path d="M14.2 20.3c1.1.9 2.5.9 3.6 0" stroke="#111827" stroke-width="1.4" stroke-linecap="round"/>
+            <path d="M11.6 26.2h8.6" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            <path d="M23.6 22.4v5.2m0 0l-2-2m2 2l2-2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Script</span>
+        </a>
+
         <button class="iconbtn" id="btnRefresh" title="Reload">↻</button>
         <button class="iconbtn" id="btnTheme" title="Light/Dark">🌗</button>
       </div>
@@ -1080,59 +1100,25 @@
   </header>
 
   <main class="page">
-    <section class="hero-row">
-      <div>
-        <div class="crumbs" id="crumbs">
-          <a href="index.html">Home</a> / <span>Links</span>
-        </div>
+    <section class="titlebar">
+      <div class="title-left">
         <h1 class="page-title" id="pageTitle">Links</h1>
-        <p class="page-note" id="pageNote">
-          Open your selected workplace tools quickly. Use report if a link is broken or updated.
-        </p>
+        <span class="title-meta" id="titleMeta">0 shown</span>
       </div>
 
-      <div class="quick-stats">
-        <div class="stat-card">
-          <div class="stat-label">Shown</div>
-          <div class="stat-value" id="statShown">0</div>
-        </div>
+      <div class="title-actions">
+        <button class="mini-btn" id="btnCopyPage" type="button">Copy Page</button>
 
-        <div class="stat-card">
-          <div class="stat-label">Total</div>
-          <div class="stat-value" id="statTotal">0</div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-label">Pending</div>
-          <div class="stat-value" id="statPending">0</div>
-        </div>
-      </div>
-    </section>
-
-    <section class="toolbar">
-      <div class="left-tools">
-        <button class="simple-btn primary" id="btnOpenFirst" type="button">Open First</button>
-        <button class="simple-btn" id="btnCopyPage" type="button">Copy Page Link</button>
-        <a class="simple-btn" id="btnBackToDepartment" href="index.html">Sub-Depts</a>
-      </div>
-
-      <div class="right-tools">
-        <label class="chip">
-          Layout
-          <select id="density">
-            <option value="comfort">Comfort</option>
-            <option value="compact">Compact</option>
-            <option value="large">Large</option>
+        <label class="mini-control">
+          Grid
+          <select id="gridCount">
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
           </select>
         </label>
 
-        <label class="chip">
-          Images
-          <select id="media">
-            <option value="on">On</option>
-            <option value="off">Off</option>
-          </select>
-        </label>
+        <button class="mini-btn active" id="btnMedia" type="button">Images On</button>
       </div>
     </section>
 
@@ -1207,7 +1193,16 @@ const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_ph2JpBSdGl-dIqvx9F6__g_Oo4r96Y_
 const SUPABASE_TABLE = "ranvexsi_links";
 const REQUEST_TABLE = "ranvexsi_requests";
 const REPORTS_TABLE = "ranvexsi_link_reports";
+const SETTINGS_TABLE = "ranvexsi_settings";
 const STORAGE_BUCKET = "media";
+
+/*
+  Optional fallback script URL.
+  If you do not have ranvexsi_settings table yet, you can paste your Tampermonkey link here.
+  Example:
+  const SCRIPT_DOWNLOAD_URL = "https://your-link.com/ranvexsi.user.js";
+*/
+const SCRIPT_DOWNLOAD_URL = "";
 
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
@@ -1218,23 +1213,18 @@ const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 const els = {
   search: document.getElementById("search"),
   linksGrid: document.getElementById("linksGrid"),
-  crumbs: document.getElementById("crumbs"),
   pageTitle: document.getElementById("pageTitle"),
-  pageNote: document.getElementById("pageNote"),
+  titleMeta: document.getElementById("titleMeta"),
   btnBack: document.getElementById("btnBack"),
-  btnBackToDepartment: document.getElementById("btnBackToDepartment"),
   btnRequestTop: document.getElementById("btnRequestTop"),
+  btnScriptTop: document.getElementById("btnScriptTop"),
   btnRefresh: document.getElementById("btnRefresh"),
   btnTheme: document.getElementById("btnTheme"),
-  btnOpenFirst: document.getElementById("btnOpenFirst"),
   btnCopyPage: document.getElementById("btnCopyPage"),
-  density: document.getElementById("density"),
-  media: document.getElementById("media"),
+  btnMedia: document.getElementById("btnMedia"),
+  gridCount: document.getElementById("gridCount"),
   dbDot: document.getElementById("dbDot"),
   dbText: document.getElementById("dbText"),
-  statShown: document.getElementById("statShown"),
-  statTotal: document.getElementById("statTotal"),
-  statPending: document.getElementById("statPending"),
 
   reportModal: document.getElementById("reportModal"),
   closeReportModal: document.getElementById("closeReportModal"),
@@ -1260,7 +1250,7 @@ let realtimeChannels = [];
 
 const LS = {
   THEME: "rv_theme",
-  DENSITY: "rv_density_links",
+  GRID: "rv_grid_links",
   MEDIA: "rv_media_links",
   LOCAL_REQUESTS: "rv_local_pending_requests_v1",
   REPORTER_KEY: "rv_reporter_key_v1"
@@ -1281,14 +1271,30 @@ function esc(v){
 
 function safeUrl(url){
   const u = String(url || "").trim();
-  if(!u || u === "#") return "#";
-  if(u.startsWith("http://") || u.startsWith("https://") || u.startsWith("mailto:") || u.startsWith("tel:")) return u;
+
+  if(!u || u === "#"){
+    return "#";
+  }
+
+  if(
+    u.startsWith("http://") ||
+    u.startsWith("https://") ||
+    u.startsWith("mailto:") ||
+    u.startsWith("tel:")
+  ){
+    return u;
+  }
+
   return "https://" + u;
 }
 
 function getPublicImage(path){
   const p = String(path || "").trim();
-  if(!p || p === "null" || p === "undefined") return "";
+
+  if(!p || p === "null" || p === "undefined"){
+    return "";
+  }
+
   const { data } = db.storage.from(STORAGE_BUCKET).getPublicUrl(p);
   return data?.publicUrl || "";
 }
@@ -1296,13 +1302,21 @@ function getPublicImage(path){
 function firstGood(...values){
   for(const v of values){
     const s = String(v || "").trim();
-    if(s && s !== "null" && s !== "undefined") return s;
+
+    if(s && s !== "null" && s !== "undefined"){
+      return s;
+    }
   }
+
   return "";
 }
 
 function imageFromRow(row){
-  return firstGood(row.ImageURL, row.image_url, getPublicImage(row.ImagePath || row.image_path));
+  return firstGood(
+    row.ImageURL,
+    row.image_url,
+    getPublicImage(row.ImagePath || row.image_path)
+  );
 }
 
 function fallbackImage(text){
@@ -1329,8 +1343,13 @@ function setDbStatus(type, text){
   els.dbText.textContent = text;
   els.dbDot.classList.remove("ok","bad");
 
-  if(type === "ok") els.dbDot.classList.add("ok");
-  if(type === "bad") els.dbDot.classList.add("bad");
+  if(type === "ok"){
+    els.dbDot.classList.add("ok");
+  }
+
+  if(type === "bad"){
+    els.dbDot.classList.add("bad");
+  }
 }
 
 function getParam(name, fallback=""){
@@ -1352,7 +1371,10 @@ function buildUrl(page, params){
 
 function makeReporterKey(){
   const existing = localStorage.getItem(LS.REPORTER_KEY);
-  if(existing) return existing;
+
+  if(existing){
+    return existing;
+  }
 
   let key = "";
 
@@ -1383,14 +1405,6 @@ function localLinkRequests(){
   return localRequests.filter(r => r.request_type === "link" && r.status !== "rejected");
 }
 
-function updateStats(){
-  const pending = shownRows.filter(r => r.Pending).length;
-
-  els.statShown.textContent = shownRows.length;
-  els.statTotal.textContent = rawRows.length;
-  els.statPending.textContent = pending;
-}
-
 function showMsg(type, message){
   els.reportMsg.className = `msg ${type}`;
   els.reportMsg.innerHTML = message;
@@ -1401,6 +1415,21 @@ function clearMsg(){
   els.reportMsg.innerHTML = "";
 }
 
+function updateTitleMeta(){
+  const pending = shownRows.filter(r => r.Pending).length;
+  const countText = `${shownRows.length} shown`;
+
+  if(pending > 0){
+    els.titleMeta.textContent = `${countText} · ${pending} pending`;
+  }else{
+    els.titleMeta.textContent = countText;
+  }
+}
+
+function getSubText(){
+  return currentSub === "__all__" ? "All Links" : currentSub;
+}
+
 /* =========================================================
    Theme / Prefs
 ========================================================= */
@@ -1409,7 +1438,7 @@ function initTheme(){
   let saved = localStorage.getItem(LS.THEME);
 
   if(!saved){
-    saved = "light";
+    saved = "dark";
     localStorage.setItem(LS.THEME, saved);
   }
 
@@ -1423,32 +1452,129 @@ function toggleTheme(){
 }
 
 function initPrefs(){
-  const density = localStorage.getItem(LS.DENSITY) || "comfort";
+  const grid = localStorage.getItem(LS.GRID) || "4";
   const media = localStorage.getItem(LS.MEDIA) || "on";
 
-  els.density.value = density;
-  els.media.value = media;
+  els.gridCount.value = ["3","4","5"].includes(grid) ? grid : "4";
 
-  applyDensity(density);
+  applyGrid(els.gridCount.value);
   applyMedia(media);
 }
 
-function applyDensity(value){
-  document.body.classList.remove("compact","large");
+function applyGrid(value){
+  const count = ["3","4","5"].includes(String(value)) ? String(value) : "4";
 
-  if(value === "compact"){
-    document.body.classList.add("compact");
-    document.documentElement.style.setProperty("--radius", "15px");
-  }else if(value === "large"){
-    document.body.classList.add("large");
-    document.documentElement.style.setProperty("--radius", "22px");
-  }else{
-    document.documentElement.style.setProperty("--radius", "18px");
-  }
+  document.documentElement.style.setProperty("--grid-cols", count);
+  localStorage.setItem(LS.GRID, count);
+  els.gridCount.value = count;
 }
 
 function applyMedia(value){
-  document.body.classList.toggle("photo-off", value === "off");
+  const on = value !== "off";
+
+  document.body.classList.toggle("no-images", !on);
+  els.btnMedia.textContent = on ? "Images On" : "Images Off";
+  els.btnMedia.classList.toggle("active", on);
+
+  localStorage.setItem(LS.MEDIA, on ? "on" : "off");
+}
+
+function toggleMedia(){
+  const current = localStorage.getItem(LS.MEDIA) || "on";
+  applyMedia(current === "on" ? "off" : "on");
+}
+
+/* =========================================================
+   Script Link
+========================================================= */
+
+function getRowKey(row){
+  return String(
+    row.setting_key ??
+    row.key ??
+    row.name ??
+    row.setting ??
+    row.slug ??
+    row.title ??
+    ""
+  ).trim().toLowerCase();
+}
+
+function getRowValue(row){
+  return firstGood(
+    row.setting_value,
+    row.value,
+    row.url,
+    row.script_url,
+    row.download_url,
+    row.link,
+    row.href
+  );
+}
+
+function isScriptSettingKey(key){
+  if(!key){
+    return false;
+  }
+
+  return (
+    key === "tampermonkey_script_url" ||
+    key === "tampermonkey_url" ||
+    key === "script_url" ||
+    key === "userscript_url" ||
+    key.includes("tampermonkey") ||
+    key.includes("script")
+  );
+}
+
+function showScriptButton(url){
+  const clean = String(url || "").trim();
+
+  if(!clean || clean === "#"){
+    els.btnScriptTop.classList.add("hidden");
+    els.btnScriptTop.href = "#";
+    return;
+  }
+
+  els.btnScriptTop.href = safeUrl(clean);
+  els.btnScriptTop.classList.remove("hidden");
+}
+
+async function loadScriptLink(){
+  let scriptUrl = String(SCRIPT_DOWNLOAD_URL || "").trim();
+
+  if(scriptUrl){
+    showScriptButton(scriptUrl);
+    return;
+  }
+
+  try{
+    const { data, error } = await db
+      .from(SETTINGS_TABLE)
+      .select("*")
+      .limit(100);
+
+    if(error){
+      throw error;
+    }
+
+    const rows = Array.isArray(data) ? data : [];
+
+    const found = rows.find(row => {
+      const key = getRowKey(row);
+      const value = getRowValue(row);
+      return isScriptSettingKey(key) && value;
+    });
+
+    if(found){
+      scriptUrl = getRowValue(found);
+    }
+
+    showScriptButton(scriptUrl);
+  }catch(err){
+    console.warn("Script settings table not ready. Script button hidden:", err.message || err);
+    showScriptButton("");
+  }
 }
 
 /* =========================================================
@@ -1476,7 +1602,9 @@ async function loadData(){
 
     const { data, error } = await query;
 
-    if(error) throw error;
+    if(error){
+      throw error;
+    }
 
     rawRows = (data || [])
       .map(normalizeRow)
@@ -1505,7 +1633,6 @@ function getPendingRows(){
     .filter(req => {
       const depOk = !currentDep || String(req.department || "").toLowerCase() === currentDep.toLowerCase();
       const sub = String(req.sub_department || "General").trim();
-
       const subOk = currentSub === "__all__" || sub.toLowerCase() === currentSub.toLowerCase();
 
       return depOk && subOk;
@@ -1542,7 +1669,7 @@ function filterRows(){
   }
 
   shownRows = rows;
-  updateStats();
+  updateTitleMeta();
 
   return rows;
 }
@@ -1553,25 +1680,20 @@ function filterRows(){
 
 function updatePageInfo(){
   const depText = currentDep || "All Departments";
-  const subText = currentSub === "__all__" ? "All Links" : currentSub;
+  const subText = getSubText();
 
   els.pageTitle.textContent = subText;
-  els.pageNote.textContent = currentDep
-    ? `${depText}${currentSub !== "__all__" ? " / " + subText : ""} — open links quickly or report broken/updated links.`
-    : "Open links quickly or report broken/updated links.";
-
-  els.crumbs.innerHTML = `
-    <a href="index.html">Home</a>
-    ${currentDep ? `/ <a href="index.html">${esc(currentDep)}</a>` : ""}
-    / <b>${esc(subText)}</b>
-  `;
 
   els.btnRequestTop.href = buildUrl("request.html", {
     dep: currentDep,
     sub: currentSub === "__all__" ? "" : currentSub
   });
 
-  els.btnBackToDepartment.href = "index.html";
+  if(currentDep){
+    els.titleMeta.textContent = `${depText} · 0 shown`;
+  }else{
+    els.titleMeta.textContent = "0 shown";
+  }
 }
 
 function render(){
@@ -1594,41 +1716,46 @@ function render(){
   rows.forEach(row => {
     const image = firstGood(imageFromRow(row), fallbackImage(row.LinkName));
     const url = safeUrl(row.URL);
-
     const card = document.createElement("article");
+
     card.className = "link-card";
     card.dataset.linkId = row.ID || "";
     card.dataset.name = row.LinkName;
     card.dataset.url = url;
+    card.tabIndex = 0;
+    card.setAttribute("role", "link");
+    card.setAttribute("aria-label", `Open ${row.LinkName}`);
 
     card.innerHTML = `
-      <div class="link-photo">
-        <img src="${esc(image)}" alt="${esc(row.LinkName)}" loading="lazy" decoding="async">
-        ${row.Pending ? `<span class="pending-ribbon">Pending</span>` : ``}
-      </div>
+      <img class="link-img" src="${esc(image)}" alt="${esc(row.LinkName)}" loading="lazy" decoding="async">
+      <div class="veil"></div>
+      <div class="overlay"></div>
 
-      <div class="link-body">
-        <div>
-          <div class="link-name">${esc(row.LinkName)}</div>
-          <div class="link-meta">
-            ${esc(row.Department)}${row.SubDepartment ? " / " + esc(row.SubDepartment) : ""}<br>
-            ${row.Pending ? "Local pending request" : esc(url)}
-          </div>
-        </div>
+      ${row.Pending ? `<span class="pending-ribbon">Pending</span>` : ``}
 
-        <div class="link-actions">
-          <a class="open-btn" href="${esc(url)}" target="_blank" rel="noopener noreferrer">Open</a>
-          <button class="report-btn" type="button" title="Report this link">!</button>
+      <button class="report-btn" type="button" title="Report this link" aria-label="Report ${esc(row.LinkName)}">!</button>
+
+      <div class="label">
+        <div class="label-main">
+          <span class="label-title">${esc(row.LinkName)}</span>
+          <span class="label-sub">${esc(row.Department)}${row.SubDepartment ? " / " + esc(row.SubDepartment) : ""}</span>
         </div>
+        <span class="pill">${row.Pending ? "Pending" : "Open"}</span>
       </div>
     `;
 
-    const openBtn = card.querySelector(".open-btn");
-    const reportBtn = card.querySelector(".report-btn");
-
-    openBtn.addEventListener("click", () => {
-      saveRecentlyOpened(row);
+    card.addEventListener("click", () => {
+      openLink(row);
     });
+
+    card.addEventListener("keydown", (event) => {
+      if(event.key === "Enter" || event.key === " "){
+        event.preventDefault();
+        openLink(row);
+      }
+    });
+
+    const reportBtn = card.querySelector(".report-btn");
 
     reportBtn.addEventListener("click", (event) => {
       event.preventDefault();
@@ -1640,10 +1767,23 @@ function render(){
   });
 }
 
+function openLink(row){
+  const url = safeUrl(row.URL);
+
+  if(!url || url === "#"){
+    alert("No valid link found.");
+    return;
+  }
+
+  saveRecentlyOpened(row);
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+
 function saveRecentlyOpened(row){
   try{
     const key = "rv_recent_opened_links_v1";
     const old = JSON.parse(localStorage.getItem(key) || "[]");
+
     const item = {
       name:row.LinkName,
       url:safeUrl(row.URL),
@@ -1717,7 +1857,9 @@ async function submitReport(event){
       p_reporter_key: getReporterKey()
     });
 
-    if(error) throw error;
+    if(error){
+      throw error;
+    }
 
     showMsg("ok", "Report submitted. Admin will review it.");
 
@@ -1741,24 +1883,14 @@ function goBack(){
   window.location.href = "index.html";
 }
 
-function openFirst(){
-  const first = shownRows[0];
-
-  if(!first){
-    alert("No link available to open.");
-    return;
-  }
-
-  saveRecentlyOpened(first);
-  window.open(safeUrl(first.URL), "_blank", "noopener,noreferrer");
-}
-
 async function copyPageLink(){
   try{
     await navigator.clipboard.writeText(window.location.href);
+
     els.btnCopyPage.textContent = "Copied";
+
     setTimeout(() => {
-      els.btnCopyPage.textContent = "Copy Page Link";
+      els.btnCopyPage.textContent = "Copy Page";
     }, 900);
   }catch{
     alert("Could not copy link.");
@@ -1781,7 +1913,8 @@ function setupRealtime(){
   const tables = [
     SUPABASE_TABLE,
     REQUEST_TABLE,
-    REPORTS_TABLE
+    REPORTS_TABLE,
+    SETTINGS_TABLE
   ];
 
   tables.forEach(table => {
@@ -1792,7 +1925,11 @@ function setupRealtime(){
           "postgres_changes",
           { event:"*", schema:"public", table },
           async () => {
-            await loadData();
+            if(table === SETTINGS_TABLE){
+              await loadScriptLink();
+            }else{
+              await loadData();
+            }
           }
         )
         .subscribe();
@@ -1809,20 +1946,18 @@ function setupRealtime(){
 ========================================================= */
 
 els.btnBack.addEventListener("click", goBack);
-els.btnRefresh.addEventListener("click", loadData);
+els.btnRefresh.addEventListener("click", async () => {
+  await loadData();
+  await loadScriptLink();
+});
 els.btnTheme.addEventListener("click", toggleTheme);
-els.btnOpenFirst.addEventListener("click", openFirst);
 els.btnCopyPage.addEventListener("click", copyPageLink);
 
-els.density.addEventListener("change", () => {
-  localStorage.setItem(LS.DENSITY, els.density.value);
-  applyDensity(els.density.value);
+els.gridCount.addEventListener("change", () => {
+  applyGrid(els.gridCount.value);
 });
 
-els.media.addEventListener("change", () => {
-  localStorage.setItem(LS.MEDIA, els.media.value);
-  applyMedia(els.media.value);
-});
+els.btnMedia.addEventListener("click", toggleMedia);
 
 els.closeReportModal.addEventListener("click", closeReportModal);
 els.cancelReport.addEventListener("click", closeReportModal);
@@ -1859,6 +1994,7 @@ async function init(){
   initPrefs();
 
   await loadData();
+  await loadScriptLink();
   setupRealtime();
 }
 
