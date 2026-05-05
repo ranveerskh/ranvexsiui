@@ -502,6 +502,12 @@
     transform:translateY(-1px) scale(.993);
   }
 
+  .link-card:focus-visible{
+    outline:none;
+    border-color:rgba(37,99,235,.55);
+    box-shadow:0 0 0 4px var(--accent-soft), var(--shadow-lg);
+  }
+
   .link-img{
     position:absolute;
     inset:0;
@@ -1227,6 +1233,7 @@ const els = {
   dbText: document.getElementById("dbText"),
 
   reportModal: document.getElementById("reportModal"),
+  reportTitle: document.getElementById("reportTitle"),
   closeReportModal: document.getElementById("closeReportModal"),
   cancelReport: document.getElementById("cancelReport"),
   reportForm: document.getElementById("reportForm"),
@@ -1744,7 +1751,11 @@ function render(){
       </div>
     `;
 
-    card.addEventListener("click", () => {
+    card.addEventListener("click", (event) => {
+      if(event.target.closest("button")){
+        return;
+      }
+
       openLink(row);
     });
 
@@ -1817,6 +1828,7 @@ function openReportModal(row){
   els.reportSub.textContent = `${row.Department}${row.SubDepartment ? " / " + row.SubDepartment : ""}`;
   els.reportLinkName.value = row.LinkName || "";
   els.reportCurrentUrl.value = url || "";
+  els.reportReason.value = "broken";
 
   els.reportModal.classList.add("show");
   setTimeout(() => els.reportReason.focus(), 50);
@@ -1841,6 +1853,11 @@ async function submitReport(event){
   const suggestedUrl = els.reportSuggestedUrl.value.trim();
   const note = els.reportNote.value.trim();
 
+  if(reason === "updated" && suggestedUrl && !/^https?:\/\//i.test(suggestedUrl)){
+    showMsg("bad", "Updated link should start with http:// or https://");
+    return;
+  }
+
   els.submitReport.disabled = true;
   els.submitReport.textContent = "Submitting...";
 
@@ -1852,8 +1869,8 @@ async function submitReport(event){
       p_link_name: selectedReportLink.LinkName || "",
       p_url: safeUrl(selectedReportLink.URL || ""),
       p_reason: reason,
-      p_suggested_url: suggestedUrl || "",
-      p_note: note || "",
+      p_suggested_url: suggestedUrl || null,
+      p_note: note || null,
       p_reporter_key: getReporterKey()
     });
 
@@ -1946,10 +1963,12 @@ function setupRealtime(){
 ========================================================= */
 
 els.btnBack.addEventListener("click", goBack);
+
 els.btnRefresh.addEventListener("click", async () => {
   await loadData();
   await loadScriptLink();
 });
+
 els.btnTheme.addEventListener("click", toggleTheme);
 els.btnCopyPage.addEventListener("click", copyPageLink);
 
