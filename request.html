@@ -124,26 +124,26 @@
   .header-inner{
     width:min(var(--max),100%);
     margin:0 auto;
-    min-height:62px;
-    padding:9px 18px;
+    min-height:58px;
+    padding:8px 18px;
     display:grid;
     grid-template-columns:auto 1fr auto;
     align-items:center;
-    gap:14px;
+    gap:12px;
   }
 
   .brand{
     display:flex;
     align-items:center;
-    gap:11px;
+    gap:10px;
     min-width:230px;
   }
 
   .backbtn{
-    width:36px;
-    height:36px;
+    width:34px;
+    height:34px;
     border:1px solid var(--line);
-    border-radius:13px;
+    border-radius:12px;
     background:var(--surface);
     color:var(--ink);
     cursor:pointer;
@@ -161,9 +161,9 @@
   }
 
   .logo{
-    width:40px;
-    height:40px;
-    border-radius:15px;
+    width:38px;
+    height:38px;
+    border-radius:14px;
     display:grid;
     place-items:center;
     color:white;
@@ -181,15 +181,15 @@
   }
 
   .brand-title{
-    font-size:1.01rem;
+    font-size:.98rem;
     font-weight:950;
     letter-spacing:-.045em;
   }
 
   .brand-sub{
-    font-size:.62rem;
+    font-size:.60rem;
     color:var(--muted);
-    font-weight:700;
+    font-weight:750;
     letter-spacing:.01em;
   }
 
@@ -197,11 +197,11 @@
     display:flex;
     align-items:center;
     justify-content:flex-end;
-    gap:8px;
+    gap:7px;
   }
 
   .status-pill{
-    height:34px;
+    height:32px;
     display:flex;
     align-items:center;
     gap:7px;
@@ -211,7 +211,7 @@
     padding:0 10px;
     color:var(--muted);
     font-weight:850;
-    font-size:.73rem;
+    font-size:.70rem;
     box-shadow:var(--shadow-sm);
     white-space:nowrap;
   }
@@ -234,10 +234,10 @@
   }
 
   .iconbtn{
-    width:34px;
-    height:34px;
+    width:32px;
+    height:32px;
     border:1px solid var(--line);
-    border-radius:13px;
+    border-radius:12px;
     background:var(--surface);
     color:var(--ink);
     display:grid;
@@ -245,37 +245,13 @@
     cursor:pointer;
     box-shadow:var(--shadow-sm);
     transition:.18s ease;
-    font-size:15px;
+    font-size:14px;
   }
 
   .iconbtn:hover{
     transform:translateY(-1px);
     box-shadow:var(--shadow-md);
     border-color:rgba(37,99,235,.28);
-  }
-
-  .top-link-btn{
-    height:34px;
-    border:0;
-    border-radius:13px;
-    padding:0 12px;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    gap:6px;
-    cursor:pointer;
-    color:white;
-    background:linear-gradient(135deg,var(--accent),var(--accent-2));
-    box-shadow:0 10px 22px rgba(37,99,235,.22);
-    font-size:.78rem;
-    font-weight:950;
-    white-space:nowrap;
-    transition:.18s ease;
-  }
-
-  .top-link-btn:hover{
-    transform:translateY(-1px);
-    box-shadow:0 14px 28px rgba(37,99,235,.28);
   }
 
   /* =========================
@@ -285,7 +261,7 @@
   .page{
     width:min(var(--max),100%);
     margin:0 auto;
-    padding:18px 18px 32px;
+    padding:16px 18px 32px;
   }
 
   .hero{
@@ -316,7 +292,7 @@
 
   .hero h1{
     margin-top:5px;
-    font-size:clamp(1.52rem,2vw,2.12rem);
+    font-size:clamp(1.46rem,2vw,2.04rem);
     letter-spacing:-.06em;
     line-height:1.02;
     font-weight:950;
@@ -327,7 +303,7 @@
     color:var(--muted);
     font-weight:650;
     max-width:760px;
-    font-size:.9rem;
+    font-size:.88rem;
     line-height:1.45;
   }
 
@@ -357,7 +333,7 @@
   .hero-card b{
     display:block;
     margin-top:4px;
-    font-size:.98rem;
+    font-size:.96rem;
     line-height:1.25;
     letter-spacing:-.035em;
   }
@@ -371,13 +347,13 @@
   }
 
   .tab{
-    min-height:38px;
+    min-height:36px;
     border:1px solid var(--line);
     border-radius:999px;
     background:var(--surface);
     color:var(--ink);
-    padding:0 15px;
-    font-size:.84rem;
+    padding:0 14px;
+    font-size:.82rem;
     font-weight:950;
     box-shadow:var(--shadow-sm);
     transition:.18s ease;
@@ -744,7 +720,7 @@
     .header-inner{
       grid-template-columns:1fr auto;
       gap:10px;
-      padding:9px 14px;
+      padding:8px 14px;
     }
 
     .brand{
@@ -756,7 +732,7 @@
     }
 
     .page{
-      padding:15px 14px 28px;
+      padding:14px 14px 28px;
     }
 
     .hero{
@@ -778,31 +754,25 @@
 
   @media(max-width:560px){
     .logo{
-      width:38px;
-      height:38px;
-      border-radius:14px;
+      width:36px;
+      height:36px;
+      border-radius:13px;
     }
 
     .brand-title{
-      font-size:.93rem;
+      font-size:.90rem;
     }
 
     .brand-sub{
-      font-size:.58rem;
+      font-size:.56rem;
     }
 
     .header-actions{
-      gap:7px;
-    }
-
-    .top-link-btn{
-      height:34px;
-      padding:0 10px;
-      font-size:.75rem;
+      gap:6px;
     }
 
     .hero h1{
-      font-size:1.42rem;
+      font-size:1.36rem;
     }
 
     .form-grid{
@@ -856,7 +826,6 @@
           <span id="dbText">Connecting</span>
         </div>
 
-        <a class="top-link-btn" href="index.html">Home</a>
         <button class="iconbtn" id="btnRefresh" title="Reload">↻</button>
         <button class="iconbtn" id="btnTheme" title="Light/Dark">🌗</button>
       </div>
@@ -873,7 +842,7 @@
         <h1>Submit a Request</h1>
 
         <p>
-          Add a department, sub-department, or link request. It will work locally on this browser first, then admin approval makes it permanent.
+          Add a department, sub-department, or link request. It is saved locally first, then admin approval makes it permanent for everyone.
         </p>
       </div>
 
@@ -1175,6 +1144,7 @@ let selectedLinkGalleryImage = null;
 let departmentPhotoMode = "gallery";
 let linkPhotoMode = "gallery";
 let realtimeChannels = [];
+let didInitialPrefill = false;
 
 const LS = {
   THEME: "rv_theme",
@@ -1196,8 +1166,20 @@ function esc(v){
 
 function safeUrl(url){
   const u = String(url || "").trim();
-  if(!u || u === "#") return "#";
-  if(u.startsWith("http://") || u.startsWith("https://") || u.startsWith("mailto:") || u.startsWith("tel:")) return u;
+
+  if(!u || u === "#"){
+    return "#";
+  }
+
+  if(
+    u.startsWith("http://") ||
+    u.startsWith("https://") ||
+    u.startsWith("mailto:") ||
+    u.startsWith("tel:")
+  ){
+    return u;
+  }
+
   return "https://" + u;
 }
 
@@ -1210,13 +1192,22 @@ function setStatus(type, text){
   els.dbText.textContent = text;
   els.dbDot.classList.remove("ok","bad");
 
-  if(type === "ok") els.dbDot.classList.add("ok");
-  if(type === "bad") els.dbDot.classList.add("bad");
+  if(type === "ok"){
+    els.dbDot.classList.add("ok");
+  }
+
+  if(type === "bad"){
+    els.dbDot.classList.add("bad");
+  }
 }
 
 function getPublicImage(path){
   const p = String(path || "").trim();
-  if(!p || p === "null" || p === "undefined") return "";
+
+  if(!p || p === "null" || p === "undefined"){
+    return "";
+  }
+
   const { data } = db.storage.from(STORAGE_BUCKET).getPublicUrl(p);
   return data?.publicUrl || "";
 }
@@ -1224,8 +1215,12 @@ function getPublicImage(path){
 function firstGood(...values){
   for(const v of values){
     const s = String(v || "").trim();
-    if(s && s !== "null" && s !== "undefined") return s;
+
+    if(s && s !== "null" && s !== "undefined"){
+      return s;
+    }
   }
+
   return "";
 }
 
@@ -1255,10 +1250,57 @@ function saveLocalRequest(req){
 }
 
 function updateLocalRequest(tempId, patch){
-  const rows = getLocalRequests().map(r => r.client_temp_id === tempId ? {...r, ...patch} : r);
+  const rows = getLocalRequests().map(r => {
+    return r.client_temp_id === tempId ? {...r, ...patch} : r;
+  });
+
   setLocalRequests(rows);
   localRequests = rows;
   renderPendingList();
+}
+
+async function syncLocalRequestsWithAdmin(){
+  const rows = getLocalRequests();
+
+  const clientIds = rows
+    .filter(r => r.client_temp_id && r.submitted !== false)
+    .map(r => r.client_temp_id);
+
+  if(!clientIds.length){
+    localRequests = rows;
+    renderPendingList();
+    return;
+  }
+
+  try{
+    const { data, error } = await db.rpc("rv_public_request_statuses", {
+      p_client_ids: clientIds
+    });
+
+    if(error){
+      throw error;
+    }
+
+    const statusMap = new Map(
+      (data || []).map(item => [item.client_temp_id, item.status])
+    );
+
+    const cleaned = rows.filter(r => {
+      const status = statusMap.get(r.client_temp_id);
+      return !(status === "approved" || status === "rejected");
+    });
+
+    if(cleaned.length !== rows.length){
+      setLocalRequests(cleaned);
+    }
+
+    localRequests = cleaned;
+    renderPendingList();
+  }catch(err){
+    console.warn("Could not sync local request statuses:", err.message || err);
+    localRequests = rows;
+    renderPendingList();
+  }
 }
 
 function clearMsg(el){
@@ -1308,7 +1350,7 @@ function updateContext(){
   const dep = getParam("dep", "");
   const sub = getParam("sub", "");
 
-  if(dep && sub){
+  if(dep && sub && sub !== "__all__"){
     els.contextText.textContent = `${dep} / ${sub}`;
   }else if(dep){
     els.contextText.textContent = dep;
@@ -1321,15 +1363,21 @@ function updateOptions(){
   const departments = new Set();
 
   departmentRows.forEach(d => {
-    if(d.department) departments.add(d.department);
+    if(d.department){
+      departments.add(d.department);
+    }
   });
 
   rawRows.forEach(r => {
-    if(r.department) departments.add(r.department);
+    if(r.department){
+      departments.add(r.department);
+    }
   });
 
   localRequests.forEach(r => {
-    if(r.department) departments.add(r.department);
+    if(r.department){
+      departments.add(r.department);
+    }
   });
 
   const deptList = [...departments].sort((a,b) => a.localeCompare(b));
@@ -1341,15 +1389,21 @@ function updateOptions(){
   const subs = new Set();
 
   subDepartmentRows.forEach(s => {
-    if(s.sub_department) subs.add(s.sub_department);
+    if(s.sub_department){
+      subs.add(s.sub_department);
+    }
   });
 
   rawRows.forEach(r => {
-    if(r.sub_department) subs.add(r.sub_department);
+    if(r.sub_department){
+      subs.add(r.sub_department);
+    }
   });
 
   localRequests.forEach(r => {
-    if(r.sub_department) subs.add(r.sub_department);
+    if(r.sub_department){
+      subs.add(r.sub_department);
+    }
   });
 
   els.subDepartmentList.innerHTML = [...subs]
@@ -1363,7 +1417,11 @@ function alreadyHasDepartment(name){
 
   return departmentRows.some(d => d.department.toLowerCase() === n) ||
     rawRows.some(r => r.department.toLowerCase() === n) ||
-    localRequests.some(r => String(r.department || "").toLowerCase() === n && r.request_type === "department");
+    localRequests.some(r =>
+      String(r.department || "").toLowerCase() === n &&
+      r.request_type === "department" &&
+      r.status !== "rejected"
+    );
 }
 
 function alreadyHasSubDepartment(dep, sub){
@@ -1375,7 +1433,8 @@ function alreadyHasSubDepartment(dep, sub){
     localRequests.some(r =>
       String(r.department || "").toLowerCase() === d &&
       String(r.sub_department || "").toLowerCase() === s &&
-      r.request_type === "sub_department"
+      r.request_type === "sub_department" &&
+      r.status !== "rejected"
     );
 }
 
@@ -1419,7 +1478,7 @@ function initTheme(){
   let saved = localStorage.getItem(LS.THEME);
 
   if(!saved){
-    saved = "light";
+    saved = "dark";
     localStorage.setItem(LS.THEME, saved);
   }
 
@@ -1447,7 +1506,10 @@ async function loadData(){
         .eq("is_active", true)
         .order("department", { ascending:true });
 
-      if(error) throw error;
+      if(error){
+        throw error;
+      }
+
       departmentRows = (data || []).map(normalizeDepartment).filter(d => d.department);
     }catch(err){
       console.warn("Could not load departments:", err.message || err);
@@ -1462,7 +1524,10 @@ async function loadData(){
         .order("department", { ascending:true })
         .order("sub_department", { ascending:true });
 
-      if(error) throw error;
+      if(error){
+        throw error;
+      }
+
       subDepartmentRows = (data || []).map(normalizeSubDepartment).filter(s => s.department && s.sub_department);
     }catch(err){
       console.warn("Could not load sub departments:", err.message || err);
@@ -1478,7 +1543,10 @@ async function loadData(){
         .order("sub_department", { ascending:true })
         .order("link_name", { ascending:true });
 
-      if(error) throw error;
+      if(error){
+        throw error;
+      }
+
       rawRows = (data || []).map(normalizeLink).filter(r => r.department && r.link_name);
     }catch(err){
       console.warn("Could not load links:", err.message || err);
@@ -1486,11 +1554,11 @@ async function loadData(){
     }
 
     localRequests = getLocalRequests();
+    await syncLocalRequestsWithAdmin();
 
     await loadGallery();
     updateOptions();
     renderPendingList();
-    prefillFromUrl();
 
     setStatus("ok", "Ready");
   }catch(err){
@@ -1503,7 +1571,11 @@ async function loadGallery(){
   const fallback = [];
 
   rawRows.forEach(row => {
-    const url = firstGood(row.image_url, getPublicImage(row.image_path), row.department_image_url);
+    const url = firstGood(
+      row.image_url,
+      getPublicImage(row.image_path),
+      row.department_image_url
+    );
 
     if(url && !fallback.some(x => x.url === url)){
       fallback.push({
@@ -1522,7 +1594,9 @@ async function loadGallery(){
       .order("created_at", { ascending:false })
       .limit(120);
 
-    if(error) throw error;
+    if(error){
+      throw error;
+    }
 
     const fromTable = (data || []).map(item => {
       const url = firstGood(item.image_url, getPublicImage(item.image_path));
@@ -1538,7 +1612,10 @@ async function loadGallery(){
     const seen = new Set();
 
     [...fromTable, ...fallback].forEach(item => {
-      if(!item.url || seen.has(item.url)) return;
+      if(!item.url || seen.has(item.url)){
+        return;
+      }
+
       seen.add(item.url);
       merged.push(item);
     });
@@ -1549,8 +1626,13 @@ async function loadGallery(){
     galleryImages = fallback;
   }
 
-  selectedDepartmentGalleryImage = galleryImages[0] || null;
-  selectedLinkGalleryImage = galleryImages[0] || null;
+  if(!selectedDepartmentGalleryImage){
+    selectedDepartmentGalleryImage = galleryImages[0] || null;
+  }
+
+  if(!selectedLinkGalleryImage){
+    selectedLinkGalleryImage = galleryImages[0] || null;
+  }
 
   renderGallery("department");
   renderGallery("link");
@@ -1624,7 +1706,7 @@ function setPhotoMode(type, mode){
    Tabs
 ========================================================= */
 
-function switchTab(tab){
+function switchTab(tab, updateUrl=true){
   activeTab = tab;
 
   els.tabs.forEach(btn => {
@@ -1656,7 +1738,10 @@ function switchTab(tab){
     els.panelBadge.textContent = "Link";
   }
 
-  history.replaceState(null, "", buildCurrentUrl(tab));
+  if(updateUrl){
+    history.replaceState(null, "", buildCurrentUrl(tab));
+    updateContext();
+  }
 }
 
 function buildCurrentUrl(tab){
@@ -1666,32 +1751,52 @@ function buildCurrentUrl(tab){
   const dep = getCurrentDepartmentValue();
   const sub = getCurrentSubValue();
 
-  if(dep) url.searchParams.set("dep", dep);
-  else url.searchParams.delete("dep");
+  if(dep){
+    url.searchParams.set("dep", dep);
+  }else{
+    url.searchParams.delete("dep");
+  }
 
-  if(sub) url.searchParams.set("sub", sub);
-  else url.searchParams.delete("sub");
+  if(sub){
+    url.searchParams.set("sub", sub);
+  }else{
+    url.searchParams.delete("sub");
+  }
 
   return url.pathname + url.search;
 }
 
 function getCurrentDepartmentValue(){
-  if(activeTab === "department") return els.depName.value.trim();
-  if(activeTab === "sub_department") return els.subDepartmentName.value.trim();
-  if(activeTab === "link") return els.linkDepartmentName.value.trim();
+  if(activeTab === "department"){
+    return els.depName.value.trim();
+  }
+
+  if(activeTab === "sub_department"){
+    return els.subDepartmentName.value.trim();
+  }
+
+  if(activeTab === "link"){
+    return els.linkDepartmentName.value.trim();
+  }
+
   return "";
 }
 
 function getCurrentSubValue(){
-  if(activeTab === "sub_department") return els.subName.value.trim();
-  if(activeTab === "link") return els.linkSubName.value.trim();
+  if(activeTab === "sub_department"){
+    return els.subName.value.trim();
+  }
+
+  if(activeTab === "link"){
+    return els.linkSubName.value.trim();
+  }
+
   return "";
 }
 
-function prefillFromUrl(){
+function applyUrlContextToForms(){
   const dep = getParam("dep", "");
   const sub = getParam("sub", "");
-  const type = getParam("type", "");
 
   if(dep){
     els.subDepartmentName.value = dep;
@@ -1701,16 +1806,27 @@ function prefillFromUrl(){
   if(sub && sub !== "__all__"){
     els.linkSubName.value = sub;
   }
+}
+
+function prefillFromUrl(){
+  const dep = getParam("dep", "");
+  const sub = getParam("sub", "");
+  const type = getParam("type", "");
+
+  applyUrlContextToForms();
 
   if(type === "department" || type === "sub_department" || type === "link"){
-    switchTab(type);
+    switchTab(type, false);
   }else if(dep && sub && sub !== "__all__"){
-    switchTab("link");
+    switchTab("link", false);
   }else if(dep){
-    switchTab("sub_department");
+    switchTab("sub_department", false);
   }else{
-    switchTab("department");
+    switchTab("department", false);
   }
+
+  updateContext();
+  didInitialPrefill = true;
 }
 
 /* =========================================================
@@ -1736,7 +1852,9 @@ async function submitGenericRequest(req){
 
   const { error } = await db.from(REQUEST_TABLE).insert(payload);
 
-  if(error) throw error;
+  if(error){
+    throw error;
+  }
 
   updateLocalRequest(req.client_temp_id, { submitted:true });
 }
@@ -1801,6 +1919,7 @@ async function submitDepartment(event){
     els.submitDepartment.disabled = false;
     els.submitDepartment.textContent = "Submit Department";
     updateOptions();
+    renderPendingList();
   }
 }
 
@@ -1849,6 +1968,7 @@ async function submitSubDepartment(event){
     await submitGenericRequest(req);
     setMsg(els.subDepartmentMsg, "ok", "Saved locally and sent for admin approval.");
     els.subDepartmentForm.reset();
+    applyUrlContextToForms();
   }catch(err){
     console.error(err);
     setMsg(els.subDepartmentMsg, "bad", `Saved locally, but could not send to admin.<br>${esc(err.message || err)}`);
@@ -1856,6 +1976,7 @@ async function submitSubDepartment(event){
     els.submitSubDepartment.disabled = false;
     els.submitSubDepartment.textContent = "Submit Sub-Department";
     updateOptions();
+    renderPendingList();
   }
 }
 
@@ -1920,6 +2041,7 @@ async function submitLink(event){
     els.submitLink.disabled = false;
     els.submitLink.textContent = "Submit Link";
     updateOptions();
+    renderPendingList();
   }
 }
 
@@ -1937,15 +2059,18 @@ function clearForm(type){
   if(type === "sub_department"){
     els.subDepartmentForm.reset();
     clearMsg(els.subDepartmentMsg);
+    applyUrlContextToForms();
   }
 
   if(type === "link"){
     els.linkForm.reset();
     clearMsg(els.linkMsg);
     setPhotoMode("link", "gallery");
+    applyUrlContextToForms();
   }
 
-  prefillFromUrl();
+  history.replaceState(null, "", buildCurrentUrl(activeTab));
+  updateContext();
 }
 
 /* =========================================================
@@ -1991,12 +2116,21 @@ els.btnBack.addEventListener("click", () => {
 
   if(dep && sub){
     window.location.href = `links.html?dep=${encodeURIComponent(dep)}&sub=${encodeURIComponent(sub)}`;
+  }else if(dep){
+    window.location.href = "index.html";
   }else{
     window.location.href = "index.html";
   }
 });
 
-els.btnRefresh.addEventListener("click", loadData);
+els.btnRefresh.addEventListener("click", async () => {
+  await loadData();
+
+  if(!didInitialPrefill){
+    prefillFromUrl();
+  }
+});
+
 els.btnTheme.addEventListener("click", toggleTheme);
 
 els.tabs.forEach(btn => {
@@ -2020,6 +2154,7 @@ els.linkForm.addEventListener("submit", submitLink);
 [els.depName, els.subDepartmentName, els.subName, els.linkDepartmentName, els.linkSubName].forEach(input => {
   input.addEventListener("input", () => {
     history.replaceState(null, "", buildCurrentUrl(activeTab));
+    updateContext();
   });
 });
 
@@ -2031,7 +2166,10 @@ async function init(){
   initTheme();
   updateContext();
   renderPendingList();
+
   await loadData();
+
+  prefillFromUrl();
   setupRealtime();
 }
 
