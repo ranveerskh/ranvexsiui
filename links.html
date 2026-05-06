@@ -319,6 +319,13 @@
     box-shadow:0 14px 28px rgba(37,99,235,.28);
   }
 
+  .script-menu{
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+  }
+
   .script-btn{
     height:32px;
     border:0;
@@ -347,6 +354,64 @@
     width:17px;
     height:17px;
     flex:0 0 auto;
+  }
+
+  .script-dropdown{
+    position:absolute;
+    top:calc(100% + 9px);
+    right:0;
+    width:240px;
+    border:1px solid var(--line);
+    border-radius:16px;
+    background:rgba(255,255,255,.94);
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+    box-shadow:var(--shadow-lg);
+    padding:8px;
+    display:none;
+    z-index:80;
+  }
+
+  body.dark .script-dropdown{
+    background:rgba(17,24,39,.94);
+  }
+
+  .script-menu.open .script-dropdown{
+    display:block;
+  }
+
+  .script-option{
+    width:100%;
+    min-height:42px;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:9px 10px;
+    color:var(--ink);
+    font-size:.78rem;
+    font-weight:950;
+    text-decoration:none;
+    transition:.16s ease;
+  }
+
+  .script-option:hover{
+    background:var(--surface-3);
+    transform:translateY(-1px);
+  }
+
+  .script-option small{
+    display:block;
+    margin-top:2px;
+    color:var(--muted);
+    font-size:.66rem;
+    font-weight:800;
+  }
+
+  .script-option .arrow{
+    color:var(--muted);
+    font-weight:950;
   }
 
   /* =========================
@@ -923,6 +988,11 @@
       border-radius:12px;
     }
 
+    .script-dropdown{
+      right:-52px;
+      width:230px;
+    }
+
     .page{
       padding:14px 14px 26px;
     }
@@ -1082,22 +1152,42 @@
 
         <a class="top-link-btn" id="btnRequestTop" href="request.html">+ Request</a>
 
-        <a class="script-btn hidden" id="btnScriptTop" href="#" target="_blank" rel="noopener" title="Install Tampermonkey Script">
-          <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
-            <circle cx="16" cy="16" r="14" fill="rgba(255,255,255,.18)"/>
-            <path d="M8.3 15.3c-1.9-.6-3.3.5-3.3 2.2 0 1.8 1.4 3.2 3.3 3.2h.6" stroke="white" stroke-width="2" stroke-linecap="round"/>
-            <path d="M23.7 15.3c1.9-.6 3.3.5 3.3 2.2 0 1.8-1.4 3.2-3.3 3.2h-.6" stroke="white" stroke-width="2" stroke-linecap="round"/>
-            <path d="M9.2 15.4c0-4.2 2.7-7.1 6.8-7.1s6.8 2.9 6.8 7.1v2.1c0 4.1-2.7 6.9-6.8 6.9s-6.8-2.8-6.8-6.9v-2.1Z" fill="white"/>
-            <path d="M11.3 15.3c.6-2.6 2.3-4.1 4.7-4.1s4.1 1.5 4.7 4.1c-.9-.6-1.8-.9-2.8-.9-.9 0-1.5.3-1.9.9-.4-.6-1-.9-1.9-.9-1 0-1.9.3-2.8.9Z" fill="#7c4a20"/>
-            <path d="M11.4 17.3c.9-1.3 1.9-1.9 3-1.9.8 0 1.3.3 1.6.9.3-.6.8-.9 1.6-.9 1.1 0 2.1.6 3 1.9v1.1c0 2.7-1.7 4.5-4.6 4.5s-4.6-1.8-4.6-4.5v-1.1Z" fill="#ffd89a"/>
-            <circle cx="13.7" cy="17.5" r="1" fill="#111827"/>
-            <circle cx="18.3" cy="17.5" r="1" fill="#111827"/>
-            <path d="M14.2 20.3c1.1.9 2.5.9 3.6 0" stroke="#111827" stroke-width="1.4" stroke-linecap="round"/>
-            <path d="M11.6 26.2h8.6" stroke="white" stroke-width="2" stroke-linecap="round"/>
-            <path d="M23.6 22.4v5.2m0 0l-2-2m2 2l2-2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span>Script</span>
-        </a>
+        <div class="script-menu hidden" id="scriptMenu">
+          <button class="script-btn" id="btnScriptTop" type="button" title="Download scripts">
+            <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+              <circle cx="16" cy="16" r="14" fill="rgba(255,255,255,.18)"/>
+              <path d="M8.3 15.3c-1.9-.6-3.3.5-3.3 2.2 0 1.8 1.4 3.2 3.3 3.2h.6" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              <path d="M23.7 15.3c1.9-.6 3.3.5 3.3 2.2 0 1.8-1.4 3.2-3.3 3.2h-.6" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              <path d="M9.2 15.4c0-4.2 2.7-7.1 6.8-7.1s6.8 2.9 6.8 7.1v2.1c0 4.1-2.7 6.9-6.8 6.9s-6.8-2.8-6.8-6.9v-2.1Z" fill="white"/>
+              <path d="M11.3 15.3c.6-2.6 2.3-4.1 4.7-4.1s4.1 1.5 4.7 4.1c-.9-.6-1.8-.9-2.8-.9-.9 0-1.5.3-1.9.9-.4-.6-1-.9-1.9-.9-1 0-1.9.3-2.8.9Z" fill="#7c4a20"/>
+              <path d="M11.4 17.3c.9-1.3 1.9-1.9 3-1.9.8 0 1.3.3 1.6.9.3-.6.8-.9 1.6-.9 1.1 0 2.1.6 3 1.9v1.1c0 2.7-1.7 4.5-4.6 4.5s-4.6-1.8-4.6-4.5v-1.1Z" fill="#ffd89a"/>
+              <circle cx="13.7" cy="17.5" r="1" fill="#111827"/>
+              <circle cx="18.3" cy="17.5" r="1" fill="#111827"/>
+              <path d="M14.2 20.3c1.1.9 2.5.9 3.6 0" stroke="#111827" stroke-width="1.4" stroke-linecap="round"/>
+              <path d="M11.6 26.2h8.6" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              <path d="M23.6 22.4v5.2m0 0l-2-2m2 2l2-2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Script</span>
+          </button>
+
+          <div class="script-dropdown" id="scriptDropdown">
+            <a class="script-option hidden" id="scriptRanvexsiLink" href="#" target="_blank" rel="noopener">
+              <span>
+                RANVEXSI UI Script
+                <small>Tampermonkey floating links</small>
+              </span>
+              <span class="arrow">↗</span>
+            </a>
+
+            <a class="script-option hidden" id="scriptAmazonPackLink" href="#" target="_blank" rel="noopener">
+              <span>
+                All Amazon Scripts
+                <small>Download full script pack</small>
+              </span>
+              <span class="arrow">↗</span>
+            </a>
+          </div>
+        </div>
 
         <button class="iconbtn" id="btnRefresh" title="Reload">↻</button>
         <button class="iconbtn" id="btnTheme" title="Light/Dark">🌗</button>
@@ -1202,13 +1292,12 @@ const REPORTS_TABLE = "ranvexsi_link_reports";
 const SETTINGS_TABLE = "ranvexsi_settings";
 const STORAGE_BUCKET = "media";
 
-/*
-  Optional fallback script URL.
-  If you do not have ranvexsi_settings table yet, you can paste your Tampermonkey link here.
-  Example:
-  const SCRIPT_DOWNLOAD_URL = "https://your-link.com/ranvexsi.user.js";
-*/
 const SCRIPT_DOWNLOAD_URL = "";
+const AMAZON_SCRIPTS_PACK_URL = "";
+
+const LEGACY_SCRIPT_SETTING_KEY = "tampermonkey_script_url";
+const RANVEXSI_SCRIPT_SETTING_KEY = "ranvexsi_ui_script_url";
+const AMAZON_PACK_SETTING_KEY = "amazon_scripts_pack_url";
 
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
@@ -1223,7 +1312,11 @@ const els = {
   titleMeta: document.getElementById("titleMeta"),
   btnBack: document.getElementById("btnBack"),
   btnRequestTop: document.getElementById("btnRequestTop"),
+  scriptMenu: document.getElementById("scriptMenu"),
   btnScriptTop: document.getElementById("btnScriptTop"),
+  scriptDropdown: document.getElementById("scriptDropdown"),
+  scriptRanvexsiLink: document.getElementById("scriptRanvexsiLink"),
+  scriptAmazonPackLink: document.getElementById("scriptAmazonPackLink"),
   btnRefresh: document.getElementById("btnRefresh"),
   btnTheme: document.getElementById("btnTheme"),
   btnCopyPage: document.getElementById("btnCopyPage"),
@@ -1492,7 +1585,7 @@ function toggleMedia(){
 }
 
 /* =========================================================
-   Script Link
+   Script Links
 ========================================================= */
 
 function getRowKey(row){
@@ -1519,41 +1612,38 @@ function getRowValue(row){
   );
 }
 
-function isScriptSettingKey(key){
-  if(!key){
-    return false;
-  }
+function findSettingValue(rows, keys){
+  const wanted = keys.map(k => String(k || "").trim().toLowerCase());
 
-  return (
-    key === "tampermonkey_script_url" ||
-    key === "tampermonkey_url" ||
-    key === "script_url" ||
-    key === "userscript_url" ||
-    key.includes("tampermonkey") ||
-    key.includes("script")
-  );
+  const found = (rows || []).find(row => {
+    const key = getRowKey(row);
+    return wanted.includes(key);
+  });
+
+  return found ? getRowValue(found) : "";
 }
 
-function showScriptButton(url){
-  const clean = String(url || "").trim();
+function showScriptLinks(ranvexsiUrl, amazonPackUrl){
+  const rv = String(ranvexsiUrl || "").trim();
+  const amz = String(amazonPackUrl || "").trim();
 
-  if(!clean || clean === "#"){
-    els.btnScriptTop.classList.add("hidden");
-    els.btnScriptTop.href = "#";
-    return;
+  els.scriptRanvexsiLink.classList.toggle("hidden", !rv);
+  els.scriptAmazonPackLink.classList.toggle("hidden", !amz);
+
+  els.scriptRanvexsiLink.href = rv ? safeUrl(rv) : "#";
+  els.scriptAmazonPackLink.href = amz ? safeUrl(amz) : "#";
+
+  if(rv || amz){
+    els.scriptMenu.classList.remove("hidden");
+  }else{
+    els.scriptMenu.classList.add("hidden");
+    els.scriptMenu.classList.remove("open");
   }
-
-  els.btnScriptTop.href = safeUrl(clean);
-  els.btnScriptTop.classList.remove("hidden");
 }
 
 async function loadScriptLink(){
-  let scriptUrl = String(SCRIPT_DOWNLOAD_URL || "").trim();
-
-  if(scriptUrl){
-    showScriptButton(scriptUrl);
-    return;
-  }
+  let ranvexsiUrl = String(SCRIPT_DOWNLOAD_URL || "").trim();
+  let amazonPackUrl = String(AMAZON_SCRIPTS_PACK_URL || "").trim();
 
   try{
     const { data, error } = await db
@@ -1567,21 +1657,31 @@ async function loadScriptLink(){
 
     const rows = Array.isArray(data) ? data : [];
 
-    const found = rows.find(row => {
-      const key = getRowKey(row);
-      const value = getRowValue(row);
-      return isScriptSettingKey(key) && value;
-    });
+    const dbRanvexsiUrl = findSettingValue(rows, [
+      RANVEXSI_SCRIPT_SETTING_KEY,
+      LEGACY_SCRIPT_SETTING_KEY
+    ]);
 
-    if(found){
-      scriptUrl = getRowValue(found);
-    }
+    const dbAmazonPackUrl = findSettingValue(rows, [
+      AMAZON_PACK_SETTING_KEY
+    ]);
 
-    showScriptButton(scriptUrl);
+    ranvexsiUrl = firstGood(dbRanvexsiUrl, ranvexsiUrl);
+    amazonPackUrl = firstGood(dbAmazonPackUrl, amazonPackUrl);
+
+    showScriptLinks(ranvexsiUrl, amazonPackUrl);
   }catch(err){
-    console.warn("Script settings table not ready. Script button hidden:", err.message || err);
-    showScriptButton("");
+    console.warn("Script settings table not ready. Using fallback links if available:", err.message || err);
+    showScriptLinks(ranvexsiUrl, amazonPackUrl);
   }
+}
+
+function toggleScriptMenu(){
+  els.scriptMenu.classList.toggle("open");
+}
+
+function closeScriptMenu(){
+  els.scriptMenu.classList.remove("open");
 }
 
 /* =========================================================
@@ -1978,6 +2078,21 @@ els.gridCount.addEventListener("change", () => {
 
 els.btnMedia.addEventListener("click", toggleMedia);
 
+els.btnScriptTop.addEventListener("click", (event) => {
+  event.stopPropagation();
+  toggleScriptMenu();
+});
+
+els.scriptDropdown.addEventListener("click", () => {
+  closeScriptMenu();
+});
+
+document.addEventListener("click", (event) => {
+  if(!els.scriptMenu.classList.contains("hidden") && !els.scriptMenu.contains(event.target)){
+    closeScriptMenu();
+  }
+});
+
 els.closeReportModal.addEventListener("click", closeReportModal);
 els.cancelReport.addEventListener("click", closeReportModal);
 els.reportForm.addEventListener("submit", submitReport);
@@ -1991,6 +2106,10 @@ els.reportModal.addEventListener("click", (event) => {
 document.addEventListener("keydown", (event) => {
   if(event.key === "Escape" && els.reportModal.classList.contains("show")){
     closeReportModal();
+  }
+
+  if(event.key === "Escape"){
+    closeScriptMenu();
   }
 });
 
