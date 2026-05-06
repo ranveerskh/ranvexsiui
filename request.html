@@ -926,11 +926,11 @@
             <div class="form-grid">
               <div class="field">
                 <label>Department</label>
-                <input id="subDepartmentName" name="department" placeholder="Department" list="departmentList" required />
+                <input id="subDepartmentName" name="department" placeholder="Choose department" list="departmentList" required />
               </div>
 
               <div class="field">
-                <label>Sub-Department Name</label>
+                <label>New Sub-Department Name</label>
                 <input id="subName" name="sub_department" placeholder="Example: Process Assistant" required />
               </div>
 
@@ -963,12 +963,12 @@
             <div class="form-grid">
               <div class="field">
                 <label>Department</label>
-                <input id="linkDepartmentName" name="department" placeholder="Department" list="departmentList" required />
+                <input id="linkDepartmentName" name="department" placeholder="Choose department" list="departmentList" required />
               </div>
 
               <div class="field">
                 <label>Sub-Department</label>
-                <input id="linkSubName" name="sub_department" placeholder="Sub-Department" list="subDepartmentList" required />
+                <input id="linkSubName" name="sub_department" placeholder="Choose sub-department" list="subDepartmentList" required />
               </div>
 
               <div class="field">
@@ -1183,6 +1183,27 @@ function safeUrl(url){
   return "https://" + u;
 }
 
+function looksLikeBadUrl(url){
+  const value = String(url || "").trim();
+
+  if(!value){
+    return true;
+  }
+
+  if(value.includes(" ")){
+    return true;
+  }
+
+  const normalized = safeUrl(value);
+
+  try{
+    const parsed = new URL(normalized);
+    return !parsed.hostname.includes(".");
+  }catch{
+    return true;
+  }
+}
+
 function getParam(name, fallback=""){
   const params = new URLSearchParams(window.location.search);
   return String(params.get(name) || fallback).trim();
@@ -1359,7 +1380,7 @@ function updateContext(){
   }
 }
 
-function updateOptions(){
+function getAllDepartmentNames(){
   const departments = new Set();
 
   departmentRows.forEach(d => {
@@ -1375,41 +1396,75 @@ function updateOptions(){
   });
 
   localRequests.forEach(r => {
-    if(r.department){
+    if(r.department && r.status !== "rejected"){
       departments.add(r.department);
     }
   });
 
-  const deptList = [...departments].sort((a,b) => a.localeCompare(b));
+  return [...departments].sort((a,b) => a.localeCompare(b));
+}
+
+function getSubNamesForDepartment(department){
+  const dep = String(department || "").trim().toLowerCase();
+  const subs = new Set();
+
+  subDepartmentRows.forEach(row => {
+    const rowDep = String(row.department || "").trim().toLowerCase();
+
+    if(!dep || rowDep === dep){
+      if(row.sub_department){
+        subs.add(row.sub_department);
+      }
+    }
+  });
+
+  rawRows.forEach(row => {
+    const rowDep = String(row.department || "").trim().toLowerCase();
+
+    if(!dep || rowDep === dep){
+      if(row.sub_department){
+        subs.add(row.sub_department);
+      }
+    }
+  });
+
+  localRequests.forEach(row => {
+    const rowDep = String(row.department || "").trim().toLowerCase();
+
+    if(row.status === "rejected"){
+      return;
+    }
+
+    if(!dep || rowDep === dep){
+      if(row.sub_department){
+        subs.add(row.sub_department);
+      }
+    }
+  });
+
+  return [...subs].sort((a,b) => a.localeCompare(b));
+}
+
+function updateDepartmentOptions(){
+  const deptList = getAllDepartmentNames();
 
   els.departmentList.innerHTML = deptList
     .map(d => `<option value="${esc(d)}"></option>`)
     .join("");
+}
 
-  const subs = new Set();
+function updateSubDepartmentOptionsForLink(){
+  const selectedDep = els.linkDepartmentName.value.trim();
+  const subs = getSubNamesForDepartment(selectedDep);
 
-  subDepartmentRows.forEach(s => {
-    if(s.sub_department){
-      subs.add(s.sub_department);
-    }
-  });
-
-  rawRows.forEach(r => {
-    if(r.sub_department){
-      subs.add(r.sub_department);
-    }
-  });
-
-  localRequests.forEach(r => {
-    if(r.sub_department){
-      subs.add(r.sub_department);
-    }
-  });
-
-  els.subDepartmentList.innerHTML = [...subs]
-    .sort((a,b) => a.localeCompare(b))
+  els.subDepartmentList.innerHTML = subs
     .map(s => `<option value="${esc(s)}"></option>`)
     .join("");
+}
+
+function updateOptions(){
+  updateDepartmentOptions();
+  updateSubDepartmentOptionsForLink();
 }
 
 function alreadyHasDepartment(name){
@@ -1736,6 +1791,7 @@ function switchTab(tab, updateUrl=true){
     els.panelTitle.textContent = "Add Link";
     els.panelSub.textContent = "Submit a new link under a department and sub-department.";
     els.panelBadge.textContent = "Link";
+    updateSubDepartmentOptionsForLink();
   }
 
   if(updateUrl){
@@ -1802,6 +1858,8 @@ function applyUrlContextToForms(){
     els.subDepartmentName.value = dep;
     els.linkDepartmentName.value = dep;
   }
+
+  updateSubDepartmentOptionsForLink();
 
   if(sub && sub !== "__all__"){
     els.linkSubName.value = sub;
@@ -1882,6 +1940,13 @@ async function submitDepartment(event){
     imageUrl = selectedDepartmentGalleryImage?.url || "";
   }else if(departmentPhotoMode === "url"){
     imageUrl = els.depImageUrl.value.trim();
+
+    if(imageUrl && looksLikeBadUrl(imageUrl)){
+      setMsg(els.departmentMsg, "bad", "Image URL looks invalid. Please paste a full image link.");
+      return;
+    }
+
+    imageUrl = imageUrl ? safeUrl(imageUrl) : "";
   }
 
   const req = {
@@ -1988,10 +2053,16 @@ async function submitLink(event){
   const department = els.linkDepartmentName.value.trim();
   const subDepartment = els.linkSubName.value.trim();
   const linkName = els.linkName.value.trim();
-  const url = safeUrl(els.linkUrl.value.trim());
+  const rawUrl = els.linkUrl.value.trim();
+  const url = safeUrl(rawUrl);
 
-  if(!department || !subDepartment || !linkName || !url || url === "#"){
+  if(!department || !subDepartment || !linkName || !rawUrl || url === "#"){
     setMsg(els.linkMsg, "bad", "Department, sub-department, link name, and URL are required.");
+    return;
+  }
+
+  if(looksLikeBadUrl(rawUrl)){
+    setMsg(els.linkMsg, "bad", "Link URL looks invalid. Please paste the full working link.");
     return;
   }
 
@@ -2001,6 +2072,13 @@ async function submitLink(event){
     imageUrl = selectedLinkGalleryImage?.url || "";
   }else if(linkPhotoMode === "url"){
     imageUrl = els.linkImageUrl.value.trim();
+
+    if(imageUrl && looksLikeBadUrl(imageUrl)){
+      setMsg(els.linkMsg, "bad", "Image URL looks invalid. Please paste a full image link.");
+      return;
+    }
+
+    imageUrl = imageUrl ? safeUrl(imageUrl) : "";
   }
 
   const req = {
@@ -2153,6 +2231,17 @@ els.linkForm.addEventListener("submit", submitLink);
 
 [els.depName, els.subDepartmentName, els.subName, els.linkDepartmentName, els.linkSubName].forEach(input => {
   input.addEventListener("input", () => {
+    if(input === els.linkDepartmentName){
+      updateSubDepartmentOptionsForLink();
+
+      const validSubs = getSubNamesForDepartment(els.linkDepartmentName.value.trim());
+      const currentSub = els.linkSubName.value.trim();
+
+      if(currentSub && !validSubs.some(s => s.toLowerCase() === currentSub.toLowerCase())){
+        els.linkSubName.value = "";
+      }
+    }
+
     history.replaceState(null, "", buildCurrentUrl(activeTab));
     updateContext();
   });
