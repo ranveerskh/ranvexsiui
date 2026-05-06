@@ -69,25 +69,25 @@
   .top-inner{
     width:min(var(--max),100%);
     margin:0 auto;
-    min-height:70px;
-    padding:12px 22px;
+    min-height:58px;
+    padding:8px 18px;
     display:grid;
-    grid-template-columns:auto 1fr auto;
+    grid-template-columns:auto minmax(260px,520px) auto;
     align-items:center;
-    gap:16px;
+    gap:12px;
   }
 
   .brand{
     display:flex;
     align-items:center;
-    gap:12px;
+    gap:10px;
     min-width:230px;
   }
 
   .logo{
-    width:46px;
-    height:46px;
-    border-radius:17px;
+    width:38px;
+    height:38px;
+    border-radius:14px;
     display:grid;
     place-items:center;
     color:white;
@@ -98,37 +98,37 @@
   }
 
   .brand h1{
-    font-size:1.08rem;
+    font-size:.98rem;
     line-height:1.04;
     letter-spacing:-.045em;
     font-weight:950;
   }
 
   .brand p{
-    margin-top:3px;
+    margin-top:2px;
     color:var(--muted);
-    font-size:.75rem;
+    font-size:.60rem;
     font-weight:750;
   }
 
   .admin-search{
     position:relative;
-    max-width:540px;
+    max-width:520px;
     width:100%;
     justify-self:center;
   }
 
   .admin-search input{
     width:100%;
-    min-height:42px;
+    min-height:36px;
     border:1px solid var(--line);
-    border-radius:15px;
+    border-radius:14px;
     background:rgba(255,255,255,.86);
     color:var(--ink);
     outline:none;
-    padding:0 14px 0 42px;
+    padding:0 13px 0 40px;
     box-shadow:0 6px 16px rgba(15,23,42,.05);
-    font-size:.9rem;
+    font-size:.84rem;
     font-weight:750;
   }
 
@@ -145,21 +145,21 @@
     display:flex;
     align-items:center;
     justify-content:flex-end;
-    gap:9px;
+    gap:7px;
     flex-wrap:wrap;
   }
 
   .status-pill{
-    height:38px;
+    height:32px;
     display:inline-flex;
     align-items:center;
-    gap:8px;
+    gap:7px;
     border:1px solid var(--line);
     border-radius:999px;
     background:var(--surface);
-    padding:0 12px;
+    padding:0 10px;
     color:var(--muted);
-    font-size:.78rem;
+    font-size:.70rem;
     font-weight:900;
     box-shadow:0 6px 16px rgba(15,23,42,.05);
     white-space:nowrap;
@@ -175,13 +175,13 @@
   .dot.bad{background:var(--red);box-shadow:0 0 0 4px rgba(220,38,38,.12)}
 
   .btn{
-    min-height:38px;
+    min-height:32px;
     border:1px solid var(--line);
-    border-radius:14px;
+    border-radius:12px;
     background:var(--surface);
     color:var(--ink);
-    padding:0 13px;
-    font-size:.84rem;
+    padding:0 11px;
+    font-size:.76rem;
     font-weight:900;
     box-shadow:0 6px 16px rgba(15,23,42,.05);
     transition:.18s ease;
@@ -217,10 +217,10 @@
   }
 
   .btn.small{
-    min-height:34px;
-    font-size:.78rem;
-    padding:0 10px;
-    border-radius:12px;
+    min-height:31px;
+    font-size:.72rem;
+    padding:0 9px;
+    border-radius:11px;
   }
 
   .btn:disabled{
@@ -278,7 +278,7 @@
   .page{
     width:min(var(--max),100%);
     margin:0 auto;
-    padding:22px 22px 34px;
+    padding:18px 18px 34px;
   }
 
   .hero{
@@ -286,29 +286,30 @@
     grid-template-columns:1fr auto;
     gap:18px;
     align-items:end;
-    margin-bottom:16px;
+    margin-bottom:14px;
   }
 
   .hero h2{
-    font-size:clamp(1.65rem,2.2vw,2.35rem);
+    font-size:clamp(1.55rem,2.1vw,2.20rem);
     font-weight:950;
     letter-spacing:-.065em;
     line-height:1.02;
   }
 
   .hero p{
-    margin-top:8px;
+    margin-top:7px;
     color:var(--muted);
     font-weight:700;
     line-height:1.45;
     max-width:760px;
+    font-size:.88rem;
   }
 
   .stats{
     display:grid;
     grid-template-columns:repeat(6,minmax(120px,1fr));
     gap:12px;
-    margin:12px 0 18px;
+    margin:12px 0 16px;
   }
 
   .stat{
@@ -317,13 +318,13 @@
     background:rgba(255,255,255,.76);
     backdrop-filter:blur(16px);
     box-shadow:0 8px 20px rgba(15,23,42,.06);
-    padding:14px;
+    padding:13px;
   }
 
   .stat span{
     display:block;
     color:var(--muted);
-    font-size:.7rem;
+    font-size:.68rem;
     font-weight:950;
     text-transform:uppercase;
     letter-spacing:.07em;
@@ -332,7 +333,7 @@
   .stat b{
     display:block;
     margin-top:5px;
-    font-size:1.42rem;
+    font-size:1.34rem;
     letter-spacing:-.06em;
     font-weight:950;
   }
@@ -340,19 +341,19 @@
   /* Tabs */
   .tabs{
     display:flex;
-    gap:9px;
+    gap:8px;
     flex-wrap:wrap;
-    margin:16px 0;
+    margin:14px 0;
   }
 
   .tab{
-    min-height:40px;
+    min-height:36px;
     border:1px solid var(--line);
     border-radius:999px;
     background:var(--surface);
     color:var(--ink);
-    padding:0 14px;
-    font-size:.84rem;
+    padding:0 13px;
+    font-size:.78rem;
     font-weight:950;
     box-shadow:0 6px 16px rgba(15,23,42,.05);
     transition:.18s ease;
@@ -419,6 +420,8 @@
   .badge.link{background:rgba(22,163,74,.12);color:var(--green)}
   .badge.approved{background:rgba(22,163,74,.12);color:var(--green)}
   .badge.rejected{background:rgba(220,38,38,.12);color:var(--red)}
+  .badge.fixed{background:rgba(22,163,74,.12);color:var(--green)}
+  .badge.ignored{background:rgba(217,119,6,.12);color:var(--yellow)}
 
   .request-card{
     overflow:hidden;
@@ -752,7 +755,6 @@
     display:block;
   }
 
-
   .filter-bar{
     display:flex;
     align-items:center;
@@ -762,13 +764,13 @@
   }
 
   .filter-pill{
-    min-height:38px;
+    min-height:36px;
     border:1px solid var(--line);
     border-radius:999px;
     background:var(--surface);
     color:var(--ink);
-    padding:0 13px;
-    font-size:.82rem;
+    padding:0 12px;
+    font-size:.78rem;
     font-weight:950;
     box-shadow:0 6px 16px rgba(15,23,42,.05);
     transition:.18s ease;
@@ -805,23 +807,32 @@
 
   .gallery-picker-grid{
     display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(92px,1fr));
+    grid-template-columns:repeat(auto-fill,minmax(82px,1fr));
     gap:9px;
-    max-height:220px;
+    max-height:230px;
     overflow:auto;
   }
 
   .gallery-pick{
     position:relative;
-    aspect-ratio:1.25;
+    display:block;
+    width:100%;
+    aspect-ratio:1/1;
+    min-width:0;
+    min-height:0;
+    padding:0;
     border:2px solid transparent;
-    border-radius:13px;
+    border-radius:14px;
     overflow:hidden;
     background:var(--surface);
     box-shadow:0 4px 12px rgba(15,23,42,.06);
+    appearance:none;
+    -webkit-appearance:none;
   }
 
   .gallery-pick img{
+    position:absolute;
+    inset:0;
     width:100%;
     height:100%;
     object-fit:cover;
@@ -846,9 +857,43 @@
     color:#fff;
     font-size:.72rem;
     font-weight:950;
+    z-index:2;
   }
 
   .gallery-pick.active span{display:grid}
+
+  .admin-gallery-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+    gap:12px;
+  }
+
+  .admin-gallery-card{
+    border:1px solid var(--line);
+    border-radius:18px;
+    background:var(--surface);
+    padding:10px;
+    box-shadow:0 8px 20px rgba(15,23,42,.06);
+  }
+
+  .admin-gallery-thumb{
+    position:relative;
+    width:100%;
+    aspect-ratio:1/1;
+    border-radius:15px;
+    overflow:hidden;
+    background:var(--surface2);
+    border:1px solid var(--line);
+  }
+
+  .admin-gallery-thumb img{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
 
   .report-reason{
     display:inline-flex;
@@ -890,6 +935,19 @@
     font-weight:700;
   }
 
+  .settings-pill{
+    min-height:34px;
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    border:1px solid var(--line);
+    border-radius:999px;
+    background:var(--surface2);
+    padding:0 11px;
+    color:var(--muted);
+    font-size:.78rem;
+    font-weight:900;
+  }
 
   @media(max-width:1080px){
     .top-inner{
@@ -934,6 +992,7 @@
     .edit-modal{border-radius:20px}
     .modal-actions{flex-direction:column}
     .modal-actions .btn{width:100%}
+    .admin-gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   }
 </style>
 </head>
@@ -945,13 +1004,13 @@
         <div class="logo">RV</div>
         <div>
           <h1>RANVEXSI UI Admin</h1>
-          <p>Approve requests, manage departments, sub-departments, links and gallery</p>
+          <p>Control panel by YXU1 AA Ranveer Singh</p>
         </div>
       </div>
 
       <div class="admin-search">
         <span>⌕</span>
-        <input id="globalSearch" placeholder="Search requests, departments, sub-departments, links..." />
+        <input id="globalSearch" placeholder="Search requests, reports, departments, links..." />
       </div>
 
       <div class="top-actions">
@@ -989,13 +1048,14 @@
     <section class="hero">
       <div>
         <h2>Admin Dashboard</h2>
-        <p>Review requests, link reports, departments, sub-departments, links, gallery images, and exports from one place.</p>
+        <p>Review requests, link reports, departments, sub-departments, links, gallery images, script settings, and exports from one place.</p>
       </div>
       <div class="top-actions">
-        <button class="btn primary" id="btnQuickRequest" type="button">Pending Requests</button>
+        <button class="btn primary" id="btnQuickRequest" type="button">Pending</button>
         <button class="btn" id="btnQuickAdd" type="button">Manual Add</button>
-        <button class="btn" id="btnQuickBulk" type="button">Bulk Import</button>
+        <button class="btn" id="btnQuickBulk" type="button">Bulk</button>
         <button class="btn" id="btnQuickReports" type="button">Reports</button>
+        <button class="btn" id="btnQuickSettings" type="button">Settings</button>
         <button class="btn" id="btnQuickExport" type="button">Export</button>
       </div>
     </section>
@@ -1016,6 +1076,7 @@
       <button class="tab" data-tab="manage" type="button">Manage</button>
       <button class="tab" data-tab="reports" type="button">Reports</button>
       <button class="tab" data-tab="gallery" type="button">Gallery</button>
+      <button class="tab" data-tab="settings" type="button">Settings</button>
       <button class="tab" data-tab="export" type="button">Export</button>
       <button class="tab" data-tab="history" type="button">History</button>
     </section>
@@ -1035,7 +1096,7 @@
         <div class="card-title">
           <div>
             <h3>Link Reports</h3>
-            <p>Review broken links, updated-link suggestions, and user notes.</p>
+            <p>Review broken links, updated-link suggestions, and user notes. Use Apply Suggested URL when user provides a new working link.</p>
           </div>
         </div>
         <div class="search-row">
@@ -1124,7 +1185,7 @@
         <div class="card-title">
           <div>
             <h3>Add Link Manually</h3>
-            <p>Add one approved link directly to the public site.</p>
+            <p>Add one approved link directly to the public site. Sub-department suggestions filter by selected department.</p>
           </div>
         </div>
 
@@ -1132,11 +1193,11 @@
           <div class="form-grid">
             <div class="field">
               <label>Department</label>
-              <input name="department" required placeholder="Ship Dock" list="departmentOptionsList" />
+              <input id="manualLinkDepartment" name="department" required placeholder="Ship Dock" list="departmentOptionsList" />
             </div>
             <div class="field">
               <label>Sub-Department</label>
-              <input name="sub_department" required placeholder="Ship Clerk" list="subDepartmentOptionsList" />
+              <input id="manualLinkSubDepartment" name="sub_department" required placeholder="Ship Clerk" list="subDepartmentOptionsList" />
             </div>
             <div class="field">
               <label>Link Name</label>
@@ -1256,6 +1317,44 @@ Ship Dock,Ship Clerk,New Tool,https://example.com,https://image.com/pic.jpg,,blu
           </div>
         </div>
         <div id="galleryList"></div>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-settings">
+      <div class="card">
+        <div class="card-title">
+          <div>
+            <h3>Settings / Script</h3>
+            <p>Save your Tampermonkey script download/install URL. Public Links page will show the Script button from this setting.</p>
+          </div>
+          <span class="settings-pill" id="settingsStatusText">Not loaded</span>
+        </div>
+
+        <form id="settingsForm">
+          <div class="form-grid">
+            <div class="field full">
+              <label>Tampermonkey Script Download URL</label>
+              <input id="settingScriptUrl" name="script_url" placeholder="https://your-site.com/ranvexsi-rv.user.js" />
+            </div>
+
+            <div class="field full">
+              <label>Setting Key</label>
+              <input value="tampermonkey_script_url" readonly />
+            </div>
+          </div>
+
+          <p class="mini">
+            Best setup: host your <b>.user.js</b> file on Netlify/GitHub, paste that URL here, then users can install/update from one button.
+          </p>
+
+          <div class="row-actions">
+            <button class="btn" id="btnOpenScriptUrl" type="button">Open Script URL</button>
+            <button class="btn" id="btnCopyScriptUrl" type="button">Copy Script URL</button>
+            <button class="btn primary" type="submit">Save Script URL</button>
+          </div>
+
+          <div class="msg" id="settingsMsg"></div>
+        </form>
       </div>
     </section>
 
@@ -1433,6 +1532,10 @@ const SUPABASE_URL = "https://qpplbqodulenhccfzrjv.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_ph2JpBSdGl-dIqvx9F6__g_Oo4r96Y_";
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
+const LINKS_TABLE = "ranvexsi_links";
+const SETTINGS_TABLE = "ranvexsi_settings";
+const SCRIPT_SETTING_KEY = "tampermonkey_script_url";
+
 const els = {
   dbDot: document.getElementById("dbDot"),
   dbText: document.getElementById("dbText"),
@@ -1467,6 +1570,8 @@ const els = {
   subDepartmentMsg: document.getElementById("subDepartmentMsg"),
   manualLinkForm: document.getElementById("manualLinkForm"),
   manualLinkMsg: document.getElementById("manualLinkMsg"),
+  manualLinkDepartment: document.getElementById("manualLinkDepartment"),
+  manualLinkSubDepartment: document.getElementById("manualLinkSubDepartment"),
 
   departmentOptionsList: document.getElementById("departmentOptionsList"),
   subDepartmentOptionsList: document.getElementById("subDepartmentOptionsList"),
@@ -1487,6 +1592,13 @@ const els = {
   galleryForm: document.getElementById("galleryForm"),
   galleryMsg: document.getElementById("galleryMsg"),
   galleryList: document.getElementById("galleryList"),
+
+  settingsForm: document.getElementById("settingsForm"),
+  settingScriptUrl: document.getElementById("settingScriptUrl"),
+  settingsMsg: document.getElementById("settingsMsg"),
+  settingsStatusText: document.getElementById("settingsStatusText"),
+  btnCopyScriptUrl: document.getElementById("btnCopyScriptUrl"),
+  btnOpenScriptUrl: document.getElementById("btnOpenScriptUrl"),
 
   exportMsg: document.getElementById("exportMsg"),
   btnExportAll: document.getElementById("btnExportAll"),
@@ -1529,6 +1641,7 @@ const els = {
   btnQuickAdd: document.getElementById("btnQuickAdd"),
   btnQuickBulk: document.getElementById("btnQuickBulk"),
   btnQuickReports: document.getElementById("btnQuickReports"),
+  btnQuickSettings: document.getElementById("btnQuickSettings"),
   btnQuickExport: document.getElementById("btnQuickExport")
 };
 
@@ -1629,6 +1742,7 @@ function switchTab(tabName){
   if(tabName === "manage") loadManage();
   if(tabName === "reports") loadReports();
   if(tabName === "gallery") loadGallery();
+  if(tabName === "settings") loadSettings();
   if(tabName === "history") loadHistory();
 }
 
@@ -1707,6 +1821,7 @@ async function refreshAll(){
     if(tab === "manage") await loadManage();
     if(tab === "reports") await loadReports();
     if(tab === "gallery") await loadGallery();
+    if(tab === "settings") await loadSettings();
     if(tab === "history") await loadHistory();
 
     setStatus("ok", "Admin");
@@ -1739,9 +1854,7 @@ async function loadDepartmentOptions(){
       .map(d => `<option value="${esc(d.department)}"></option>`)
       .join("");
 
-    els.subDepartmentOptionsList.innerHTML = (cachedSubDepartments || [])
-      .map(s => `<option value="${esc(s.sub_department)}"></option>`)
-      .join("");
+    updateManualSubDepartmentOptions();
   }catch(err){
     console.warn("Could not load options:", err.message || err);
   }
@@ -1779,6 +1892,7 @@ function populateFilterDropdowns(){
 
   updateReportSubFilter();
   updateManageSubFilter();
+  updateManualSubDepartmentOptions();
 }
 
 function subOptionsForDepartment(dep, includeAllLabel="All Sub-Depts"){
@@ -1791,6 +1905,29 @@ function subOptionsForDepartment(dep, includeAllLabel="All Sub-Depts"){
     .sort((a,b) => a.localeCompare(b));
 
   return `<option value="">${includeAllLabel}</option>` + subs.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join("");
+}
+
+function subOptionsOnlyForDepartment(dep){
+  const selected = String(dep || "").trim().toLowerCase();
+  const subs = (cachedSubDepartments || [])
+    .filter(s => !selected || String(s.department || "").trim().toLowerCase() === selected)
+    .map(s => s.sub_department)
+    .filter(Boolean)
+    .filter((value, index, arr) => arr.indexOf(value) === index)
+    .sort((a,b) => a.localeCompare(b));
+
+  return subs.map(s => `<option value="${esc(s)}"></option>`).join("");
+}
+
+function updateManualSubDepartmentOptions(){
+  const dep =
+    activeTab() === "manual"
+      ? (els.manualLinkDepartment?.value || "")
+      : activeTab() === "manage"
+        ? (els.editLinkDepartment?.value || "")
+        : (els.manualLinkDepartment?.value || "");
+
+  els.subDepartmentOptionsList.innerHTML = subOptionsOnlyForDepartment(dep);
 }
 
 function updateReportSubFilter(){
@@ -2025,8 +2162,18 @@ async function loadReports(){
 
 function reportCard(r){
   const suggested = r.suggested_url || "";
+  const linkId = r.link_id || r.linkId || r.linkID || "";
   return `
-    <div class="listbar report-row" data-id="${esc(r.id)}" data-suggested="${esc(suggested)}">
+    <div
+      class="listbar report-row"
+      data-id="${esc(r.id)}"
+      data-link-id="${esc(linkId)}"
+      data-suggested="${esc(suggested)}"
+      data-department="${esc(r.department || "")}"
+      data-sub-department="${esc(r.sub_department || "")}"
+      data-link-name="${esc(r.link_name || "")}"
+      data-current-url="${esc(r.url || "")}"
+    >
       <div>
         <h4>${esc(r.link_name || "Reported Link")}</h4>
         <p>
@@ -2044,6 +2191,7 @@ function reportCard(r){
       <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
         ${r.url ? `<a class="btn small" href="${esc(safeUrl(r.url))}" target="_blank" rel="noopener">Open</a>` : ""}
         ${suggested ? `<button class="btn small btn-copy-suggested" type="button">Copy Suggested</button>` : ""}
+        ${suggested ? `<button class="btn green small btn-apply-suggested" type="button">Apply Suggested URL</button>` : ""}
         <button class="btn green small btn-report-fixed" type="button">Mark Fixed</button>
         <button class="btn yellow small btn-report-ignored" type="button">Ignore</button>
       </div>
@@ -2065,6 +2213,58 @@ async function updateReportStatus(row, status){
   }catch(err){
     console.error(err);
     alert(err.message || err);
+  }
+}
+
+async function applySuggestedUrl(row){
+  const reportId = row.dataset.id || "";
+  const linkId = row.dataset.linkId || "";
+  const suggestedUrl = safeUrl(row.dataset.suggested || "");
+
+  if(!suggestedUrl){
+    alert("No suggested URL found.");
+    return;
+  }
+
+  if(!confirm("Apply suggested URL to this link and mark report fixed?")){
+    return;
+  }
+
+  try{
+    try{
+      await rpc("rv_admin_apply_report_suggested_url_v2", {
+        p_password: ADMIN_PASSWORD,
+        p_report_id: reportId,
+        p_link_id: linkId || null,
+        p_suggested_url: suggestedUrl
+      });
+    }catch(rpcErr){
+      if(!linkId){
+        throw new Error("This report does not include link_id. Add rv_admin_apply_report_suggested_url_v2 SQL function or include link_id in report list.");
+      }
+
+      const { error:updateError } = await db
+        .from(LINKS_TABLE)
+        .update({ url:suggestedUrl })
+        .eq("id", linkId);
+
+      if(updateError){
+        throw rpcErr;
+      }
+
+      await rpc("rv_admin_update_link_report_status_v2", {
+        p_password: ADMIN_PASSWORD,
+        p_report_id: reportId,
+        p_status: "fixed",
+        p_admin_note: "Applied suggested URL from report."
+      });
+    }
+
+    await refreshAll();
+    await loadReports();
+  }catch(err){
+    console.error(err);
+    alert((err.message || err) + "\n\nIf this fails, you need the SQL function: rv_admin_apply_report_suggested_url_v2.");
   }
 }
 
@@ -2137,6 +2337,7 @@ async function addManualLink(e){
     setMsg(els.manualLinkMsg, "ok", "Link saved successfully.");
     els.manualLinkForm.reset();
     els.manualLinkForm.querySelector('[name="sort_order"]').value = "0";
+    updateManualSubDepartmentOptions();
     await refreshAll();
   }catch(err){
     console.error(err);
@@ -2464,6 +2665,7 @@ async function openEditLink(bar){
   els.editLinkColor.value = bar.dataset.color || "";
   els.editLinkSortOrder.value = bar.dataset.sortOrder || "0";
 
+  updateManualSubDepartmentOptions();
   updatePreview(els.editLinkPreview, els.editLinkImageUrl.value);
   await loadGalleryRows();
   renderGalleryPicker(els.editLinkGalleryPicker, els.editLinkImageUrl, els.editLinkPreview);
@@ -2540,10 +2742,10 @@ async function loadGallery(){
     }
 
     els.galleryList.innerHTML = `
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;">
+      <div class="admin-gallery-grid">
         ${rows.map(r => `
-          <div class="card" style="padding:10px;margin:0;" data-id="${esc(r.id)}">
-            <div class="thumb" style="aspect-ratio:1.25;max-width:none;">
+          <div class="admin-gallery-card" data-id="${esc(r.id)}">
+            <div class="admin-gallery-thumb">
               <img src="${esc(r.image_url)}" alt="">
             </div>
             <p class="mini" style="word-break:break-all;">${esc(r.image_url)}</p>
@@ -2571,6 +2773,142 @@ async function hideGalleryImage(id){
     console.error(err);
     alert(err.message || err);
   }
+}
+
+/* =========================================================
+   Settings / Script
+========================================================= */
+function getSettingValue(row){
+  return String(
+    row.setting_value ??
+    row.value ??
+    row.url ??
+    row.script_url ??
+    row.download_url ??
+    row.link ??
+    row.href ??
+    ""
+  ).trim();
+}
+
+function getSettingKey(row){
+  return String(
+    row.setting_key ??
+    row.key ??
+    row.name ??
+    row.setting ??
+    row.slug ??
+    row.title ??
+    ""
+  ).trim().toLowerCase();
+}
+
+async function loadSettings(){
+  clearMsg(els.settingsMsg);
+  els.settingsStatusText.textContent = "Loading";
+
+  try{
+    let scriptUrl = "";
+
+    try{
+      const rows = await rpc("rv_admin_get_settings_v2", {
+        p_password: ADMIN_PASSWORD
+      });
+
+      const found = (rows || []).find(row => getSettingKey(row) === SCRIPT_SETTING_KEY);
+      scriptUrl = found ? getSettingValue(found) : "";
+    }catch(rpcErr){
+      const { data, error } = await db
+        .from(SETTINGS_TABLE)
+        .select("*")
+        .limit(100);
+
+      if(error) throw rpcErr;
+
+      const found = (data || []).find(row => {
+        const key = getSettingKey(row);
+        return key === SCRIPT_SETTING_KEY || key.includes("tampermonkey") || key.includes("script");
+      });
+
+      scriptUrl = found ? getSettingValue(found) : "";
+    }
+
+    els.settingScriptUrl.value = scriptUrl || "";
+    els.settingsStatusText.textContent = scriptUrl ? "Script URL saved" : "No script URL";
+  }catch(err){
+    console.error(err);
+    els.settingsStatusText.textContent = "Settings error";
+    setMsg(els.settingsMsg, "bad", `${esc(err.message || err)}<br><br>If this fails, create admin SQL function <b>rv_admin_get_settings_v2</b> and <b>rv_admin_upsert_setting_v2</b>, or allow admin-safe access to <b>ranvexsi_settings</b>.`);
+  }
+}
+
+async function saveSettings(e){
+  e.preventDefault();
+  clearMsg(els.settingsMsg);
+
+  const scriptUrl = safeUrl(els.settingScriptUrl.value.trim());
+
+  if(!scriptUrl){
+    setMsg(els.settingsMsg, "bad", "Script URL is required.");
+    return;
+  }
+
+  try{
+    try{
+      await rpc("rv_admin_upsert_setting_v2", {
+        p_password: ADMIN_PASSWORD,
+        p_setting_key: SCRIPT_SETTING_KEY,
+        p_setting_value: scriptUrl
+      });
+    }catch(rpcErr){
+      const { error } = await db
+        .from(SETTINGS_TABLE)
+        .upsert(
+          {
+            setting_key: SCRIPT_SETTING_KEY,
+            setting_value: scriptUrl,
+            updated_at: new Date().toISOString()
+          },
+          { onConflict:"setting_key" }
+        );
+
+      if(error) throw rpcErr;
+    }
+
+    els.settingScriptUrl.value = scriptUrl;
+    els.settingsStatusText.textContent = "Script URL saved";
+    setMsg(els.settingsMsg, "ok", "Tampermonkey script URL saved successfully.");
+  }catch(err){
+    console.error(err);
+    setMsg(els.settingsMsg, "bad", `${esc(err.message || err)}<br><br>If save fails, you need SQL function <b>rv_admin_upsert_setting_v2</b> or an upsert policy for <b>ranvexsi_settings</b>.`);
+  }
+}
+
+async function copyScriptUrl(){
+  const url = els.settingScriptUrl.value.trim();
+
+  if(!url){
+    alert("No script URL to copy.");
+    return;
+  }
+
+  try{
+    await navigator.clipboard.writeText(url);
+    setMsg(els.settingsMsg, "ok", "Script URL copied.");
+  }catch{
+    alert("Could not copy URL.");
+  }
+}
+
+function openScriptUrl(){
+  const url = els.settingScriptUrl.value.trim();
+
+  if(!url){
+    alert("No script URL saved.");
+    return;
+  }
+
+  window.open(safeUrl(url), "_blank", "noopener,noreferrer");
 }
 
 /* =========================================================
@@ -2709,6 +3047,7 @@ els.btnQuickRequest.addEventListener("click", () => switchTab("requests"));
 els.btnQuickAdd.addEventListener("click", () => switchTab("manual"));
 els.btnQuickBulk.addEventListener("click", () => switchTab("bulk"));
 els.btnQuickReports.addEventListener("click", () => switchTab("reports"));
+els.btnQuickSettings.addEventListener("click", () => switchTab("settings"));
 els.btnQuickExport.addEventListener("click", () => switchTab("export"));
 
 els.requestTypeFilters.addEventListener("click", (e) => {
@@ -2722,6 +3061,20 @@ els.requestTypeFilters.addEventListener("click", (e) => {
 els.departmentForm.addEventListener("submit", addDepartment);
 els.subDepartmentForm.addEventListener("submit", addSubDepartment);
 els.manualLinkForm.addEventListener("submit", addManualLink);
+
+els.manualLinkDepartment.addEventListener("input", () => {
+  updateManualSubDepartmentOptions();
+
+  const currentSub = els.manualLinkSubDepartment.value.trim().toLowerCase();
+  const selectedDep = els.manualLinkDepartment.value.trim().toLowerCase();
+  const validSubs = (cachedSubDepartments || [])
+    .filter(s => String(s.department || "").trim().toLowerCase() === selectedDep)
+    .map(s => String(s.sub_department || "").trim().toLowerCase());
+
+  if(currentSub && validSubs.length && !validSubs.includes(currentSub)){
+    els.manualLinkSubDepartment.value = "";
+  }
+});
 
 els.btnPreviewBulk.addEventListener("click", previewBulk);
 els.btnImportBulk.addEventListener("click", importBulk);
@@ -2749,6 +3102,9 @@ els.reportSubFilter.addEventListener("change", loadReports);
 els.btnReportSearch.addEventListener("click", loadReports);
 
 els.galleryForm.addEventListener("submit", addGalleryImage);
+els.settingsForm.addEventListener("submit", saveSettings);
+els.btnCopyScriptUrl.addEventListener("click", copyScriptUrl);
+els.btnOpenScriptUrl.addEventListener("click", openScriptUrl);
 
 els.requestsList.addEventListener("click", async (e) => {
   const approve = e.target.closest(".btn-approve");
@@ -2767,6 +3123,11 @@ els.reportsList.addEventListener("click", async (e) => {
       await navigator.clipboard.writeText(url);
       alert("Suggested URL copied.");
     }
+    return;
+  }
+
+  if(e.target.closest(".btn-apply-suggested")){
+    await applySuggestedUrl(row);
     return;
   }
 
@@ -2796,7 +3157,7 @@ els.manageList.addEventListener("click", async (e) => {
 els.galleryList.addEventListener("click", async (e) => {
   const btn = e.target.closest(".btn-hide-gallery");
   if(!btn) return;
-  const card = btn.closest(".card");
+  const card = btn.closest(".admin-gallery-card");
   await hideGalleryImage(card.dataset.id);
 });
 
@@ -2815,6 +3176,7 @@ els.globalSearch.addEventListener("input", () => {
     if(tab === "manage") loadManage();
     if(tab === "reports") loadReports();
     if(tab === "gallery") loadGallery();
+    if(tab === "settings") loadSettings();
     if(tab === "history") loadHistory();
   }, 250);
 });
@@ -2834,6 +3196,19 @@ els.editLinkForm.addEventListener("submit", saveEditLink);
 els.editLinkImageUrl.addEventListener("input", () => {
   updatePreview(els.editLinkPreview, els.editLinkImageUrl.value);
   renderGalleryPicker(els.editLinkGalleryPicker, els.editLinkImageUrl, els.editLinkPreview);
+});
+els.editLinkDepartment.addEventListener("input", () => {
+  updateManualSubDepartmentOptions();
+
+  const currentSub = els.editLinkSubDepartment.value.trim().toLowerCase();
+  const selectedDep = els.editLinkDepartment.value.trim().toLowerCase();
+  const validSubs = (cachedSubDepartments || [])
+    .filter(s => String(s.department || "").trim().toLowerCase() === selectedDep)
+    .map(s => String(s.sub_department || "").trim().toLowerCase());
+
+  if(currentSub && validSubs.length && !validSubs.includes(currentSub)){
+    els.editLinkSubDepartment.value = "";
+  }
 });
 els.refreshLinkGalleryPicker.addEventListener("click", refreshGalleryPickers);
 
