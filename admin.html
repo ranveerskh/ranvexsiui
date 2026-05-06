@@ -171,8 +171,16 @@
     border-radius:999px;
     background:#94a3b8;
   }
-  .dot.ok{background:var(--green);box-shadow:0 0 0 4px rgba(22,163,74,.12)}
-  .dot.bad{background:var(--red);box-shadow:0 0 0 4px rgba(220,38,38,.12)}
+
+  .dot.ok{
+    background:var(--green);
+    box-shadow:0 0 0 4px rgba(22,163,74,.12);
+  }
+
+  .dot.bad{
+    background:var(--red);
+    box-shadow:0 0 0 4px rgba(220,38,38,.12);
+  }
 
   .btn{
     min-height:32px;
@@ -205,15 +213,21 @@
   }
 
   .btn.green{
-    border:0;color:#fff;background:linear-gradient(135deg,#16a34a,#22c55e);
+    border:0;
+    color:#fff;
+    background:linear-gradient(135deg,#16a34a,#22c55e);
   }
 
   .btn.red{
-    border:0;color:#fff;background:linear-gradient(135deg,#dc2626,#f43f5e);
+    border:0;
+    color:#fff;
+    background:linear-gradient(135deg,#dc2626,#f43f5e);
   }
 
   .btn.yellow{
-    border:0;color:#fff;background:linear-gradient(135deg,#d97706,#f59e0b);
+    border:0;
+    color:#fff;
+    background:linear-gradient(135deg,#d97706,#f59e0b);
   }
 
   .btn.small{
@@ -359,7 +373,10 @@
     transition:.18s ease;
   }
 
-  .tab:hover{transform:translateY(-1px)}
+  .tab:hover{
+    transform:translateY(-1px);
+  }
+
   .tab.active{
     border-color:transparent;
     color:#fff;
@@ -860,7 +877,9 @@
     z-index:2;
   }
 
-  .gallery-pick.active span{display:grid}
+  .gallery-pick.active span{
+    display:grid;
+  }
 
   .admin-gallery-grid{
     display:grid;
@@ -947,17 +966,20 @@
     color:var(--muted);
     font-size:.78rem;
     font-weight:900;
+    white-space:nowrap;
   }
 
   @media(max-width:1080px){
     .top-inner{
       grid-template-columns:1fr auto;
     }
+
     .admin-search{
       grid-column:1/-1;
       grid-row:2;
       max-width:none;
     }
+
     .stats{
       grid-template-columns:repeat(3,1fr);
     }
@@ -969,30 +991,95 @@
       flex-direction:column;
       align-items:flex-start;
     }
-    .top-actions{justify-content:flex-start}
-    .page{padding:16px 14px 30px}
-    .hero{grid-template-columns:1fr}
-    .stats{grid-template-columns:repeat(2,1fr)}
-    .request-grid{grid-template-columns:1fr}
-    .thumb{max-width:220px}
-    .form-grid{grid-template-columns:1fr}
-    .two-col{grid-template-columns:1fr}
-    .listbar{grid-template-columns:1fr}
-    .modal-body-grid{grid-template-columns:1fr}
+
+    .top-actions{
+      justify-content:flex-start;
+    }
+
+    .page{
+      padding:16px 14px 30px;
+    }
+
+    .hero{
+      grid-template-columns:1fr;
+    }
+
+    .stats{
+      grid-template-columns:repeat(2,1fr);
+    }
+
+    .request-grid{
+      grid-template-columns:1fr;
+    }
+
+    .thumb{
+      max-width:220px;
+    }
+
+    .form-grid{
+      grid-template-columns:1fr;
+    }
+
+    .two-col{
+      grid-template-columns:1fr;
+    }
+
+    .listbar{
+      grid-template-columns:1fr;
+    }
+
+    .modal-body-grid{
+      grid-template-columns:1fr;
+    }
   }
 
   @media(max-width:520px){
-    .login-wrap{padding:12px}
-    .login-card{padding:18px;border-radius:24px}
-    .stats{grid-template-columns:1fr}
-    .card{padding:13px;border-radius:18px}
-    .top-actions{width:100%}
-    .top-actions .btn,.top-actions .status-pill{flex:1}
-    .modal-backdrop{padding:10px}
-    .edit-modal{border-radius:20px}
-    .modal-actions{flex-direction:column}
-    .modal-actions .btn{width:100%}
-    .admin-gallery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .login-wrap{
+      padding:12px;
+    }
+
+    .login-card{
+      padding:18px;
+      border-radius:24px;
+    }
+
+    .stats{
+      grid-template-columns:1fr;
+    }
+
+    .card{
+      padding:13px;
+      border-radius:18px;
+    }
+
+    .top-actions{
+      width:100%;
+    }
+
+    .top-actions .btn,
+    .top-actions .status-pill{
+      flex:1;
+    }
+
+    .modal-backdrop{
+      padding:10px;
+    }
+
+    .edit-modal{
+      border-radius:20px;
+    }
+
+    .modal-actions{
+      flex-direction:column;
+    }
+
+    .modal-actions .btn{
+      width:100%;
+    }
+
+    .admin-gallery-grid{
+      grid-template-columns:repeat(2,minmax(0,1fr));
+    }
   }
 </style>
 </head>
@@ -1014,7 +1101,10 @@
       </div>
 
       <div class="top-actions">
-        <div class="status-pill"><span class="dot" id="dbDot"></span><span id="dbText">Locked</span></div>
+        <div class="status-pill">
+          <span class="dot" id="dbDot"></span>
+          <span id="dbText">Locked</span>
+        </div>
         <button class="btn" id="btnRefresh" type="button">Refresh</button>
         <button class="btn" id="btnLogout" type="button">Lock</button>
         <a class="btn primary" href="index.html">Open Site</a>
@@ -1050,6 +1140,7 @@
         <h2>Admin Dashboard</h2>
         <p>Review requests, link reports, departments, sub-departments, links, gallery images, script settings, and exports from one place.</p>
       </div>
+
       <div class="top-actions">
         <button class="btn primary" id="btnQuickRequest" type="button">Pending</button>
         <button class="btn" id="btnQuickAdd" type="button">Manual Add</button>
@@ -1099,6 +1190,7 @@
             <p>Review broken links, updated-link suggestions, and user notes. Use Apply Suggested URL when user provides a new working link.</p>
           </div>
         </div>
+
         <div class="search-row">
           <select id="reportStatusFilter">
             <option value="pending">Pending</option>
@@ -1110,6 +1202,7 @@
           <select id="reportSubFilter"><option value="">All Sub-Depts</option></select>
           <button class="btn" id="btnReportSearch" type="button">Refresh Reports</button>
         </div>
+
         <div id="reportsList"></div>
       </div>
     </section>
@@ -1130,20 +1223,27 @@
                 <label>Department Name</label>
                 <input name="department" required placeholder="Ship Dock" />
               </div>
+
               <div class="field full">
                 <label>Department Image URL Optional</label>
                 <input name="image_url" placeholder="https://image-link.com/photo.jpg" />
               </div>
+
               <div class="field">
                 <label>Color Optional</label>
                 <input name="color" placeholder="#2563eb or blue" />
               </div>
+
               <div class="field">
                 <label>Sort Order</label>
                 <input name="sort_order" type="number" value="0" />
               </div>
             </div>
-            <div class="row-actions"><button class="btn primary" type="submit">Save Department</button></div>
+
+            <div class="row-actions">
+              <button class="btn primary" type="submit">Save Department</button>
+            </div>
+
             <div class="msg" id="departmentMsg"></div>
           </form>
         </div>
@@ -1162,20 +1262,27 @@
                 <label>Department</label>
                 <input name="department" required placeholder="Ship Dock" list="departmentOptionsList" />
               </div>
+
               <div class="field">
                 <label>Sub-Department</label>
                 <input name="sub_department" required placeholder="Ship Clerk" />
               </div>
+
               <div class="field">
                 <label>Color Optional</label>
                 <input name="color" placeholder="#7c3aed or purple" />
               </div>
+
               <div class="field">
                 <label>Sort Order</label>
                 <input name="sort_order" type="number" value="0" />
               </div>
             </div>
-            <div class="row-actions"><button class="btn primary" type="submit">Save Sub-Department</button></div>
+
+            <div class="row-actions">
+              <button class="btn primary" type="submit">Save Sub-Department</button>
+            </div>
+
             <div class="msg" id="subDepartmentMsg"></div>
           </form>
         </div>
@@ -1195,36 +1302,47 @@
               <label>Department</label>
               <input id="manualLinkDepartment" name="department" required placeholder="Ship Dock" list="departmentOptionsList" />
             </div>
+
             <div class="field">
               <label>Sub-Department</label>
               <input id="manualLinkSubDepartment" name="sub_department" required placeholder="Ship Clerk" list="subDepartmentOptionsList" />
             </div>
+
             <div class="field">
               <label>Link Name</label>
               <input name="link_name" required placeholder="SSP" />
             </div>
+
             <div class="field">
               <label>URL</label>
               <input name="url" required placeholder="https://example.com" />
             </div>
+
             <div class="field">
               <label>Image URL Optional</label>
               <input name="image_url" placeholder="https://image-link.com/photo.jpg" />
             </div>
+
             <div class="field">
               <label>Department Image URL Optional</label>
               <input name="department_image_url" placeholder="https://image-link.com/department.jpg" />
             </div>
+
             <div class="field">
               <label>Color Optional</label>
               <input name="color" placeholder="#2563eb or blue" />
             </div>
+
             <div class="field">
               <label>Sort Order</label>
               <input name="sort_order" type="number" value="0" />
             </div>
           </div>
-          <div class="row-actions"><button class="btn primary" type="submit">Save Link</button></div>
+
+          <div class="row-actions">
+            <button class="btn primary" type="submit">Save Link</button>
+          </div>
+
           <div class="msg" id="manualLinkMsg"></div>
         </form>
       </div>
@@ -1274,13 +1392,21 @@ Ship Dock,Ship Clerk,New Tool,https://example.com,https://image.com/pic.jpg,,blu
 
         <div class="search-row">
           <input id="manageSearch" placeholder="Search items..." />
+
           <select id="manageType">
             <option value="links">Links</option>
             <option value="departments">Departments</option>
             <option value="sub_departments">Sub-Departments</option>
           </select>
-          <select id="manageDepartmentFilter"><option value="">Select Department</option></select>
-          <select id="manageSubFilter"><option value="">All Sub-Depts</option></select>
+
+          <select id="manageDepartmentFilter">
+            <option value="">Select Department</option>
+          </select>
+
+          <select id="manageSubFilter">
+            <option value="">All Sub-Depts</option>
+          </select>
+
           <button class="btn" id="btnManageSearch" type="button">Search</button>
         </div>
 
@@ -1304,7 +1430,11 @@ Ship Dock,Ship Clerk,New Tool,https://example.com,https://image.com/pic.jpg,,blu
               <input name="image_url" required placeholder="https://image-link.com/photo.jpg" />
             </div>
           </div>
-          <div class="row-actions"><button class="btn primary" type="submit">Save Gallery Image</button></div>
+
+          <div class="row-actions">
+            <button class="btn primary" type="submit">Save Gallery Image</button>
+          </div>
+
           <div class="msg" id="galleryMsg"></div>
         </form>
       </div>
@@ -1316,6 +1446,7 @@ Ship Dock,Ship Clerk,New Tool,https://example.com,https://image.com/pic.jpg,,blu
             <p>Existing gallery images available for public request forms.</p>
           </div>
         </div>
+
         <div id="galleryList"></div>
       </div>
     </section>
@@ -1324,8 +1455,8 @@ Ship Dock,Ship Clerk,New Tool,https://example.com,https://image.com/pic.jpg,,blu
       <div class="card">
         <div class="card-title">
           <div>
-            <h3>Settings / Script</h3>
-            <p>Save your Tampermonkey script download/install URL. Public Links page will show the Script button from this setting.</p>
+            <h3>Settings / Script Links</h3>
+            <p>Save both download links. Public index page Script button will show 2 options from these settings.</p>
           </div>
           <span class="settings-pill" id="settingsStatusText">Not loaded</span>
         </div>
@@ -1333,24 +1464,27 @@ Ship Dock,Ship Clerk,New Tool,https://example.com,https://image.com/pic.jpg,,blu
         <form id="settingsForm">
           <div class="form-grid">
             <div class="field full">
-              <label>Tampermonkey Script Download URL</label>
-              <input id="settingScriptUrl" name="script_url" placeholder="https://your-site.com/ranvexsi-rv.user.js" />
+              <label>RANVEXSI UI Script Link</label>
+              <input id="settingRanvexsiScriptUrl" name="ranvexsi_ui_script_url" placeholder="Google Drive link or .user.js direct link" />
             </div>
 
             <div class="field full">
-              <label>Setting Key</label>
-              <input value="tampermonkey_script_url" readonly />
+              <label>All Amazon Scripts Pack Link</label>
+              <input id="settingAmazonScriptsPackUrl" name="amazon_scripts_pack_url" placeholder="Google Drive ZIP/folder link" />
             </div>
           </div>
 
           <p class="mini">
-            Best setup: host your <b>.user.js</b> file on Netlify/GitHub, paste that URL here, then users can install/update from one button.
+            Public page will show one <b>Script</b> button with two choices:
+            <b>RANVEXSI UI Script</b> and <b>All Amazon Scripts</b>.
           </p>
 
           <div class="row-actions">
-            <button class="btn" id="btnOpenScriptUrl" type="button">Open Script URL</button>
-            <button class="btn" id="btnCopyScriptUrl" type="button">Copy Script URL</button>
-            <button class="btn primary" type="submit">Save Script URL</button>
+            <button class="btn" id="btnOpenRanvexsiScriptUrl" type="button">Open RANVEXSI Link</button>
+            <button class="btn" id="btnCopyRanvexsiScriptUrl" type="button">Copy RANVEXSI Link</button>
+            <button class="btn" id="btnOpenAmazonScriptsPackUrl" type="button">Open Amazon Pack</button>
+            <button class="btn" id="btnCopyAmazonScriptsPackUrl" type="button">Copy Amazon Pack</button>
+            <button class="btn primary" type="submit">Save Script Links</button>
           </div>
 
           <div class="msg" id="settingsMsg"></div>
@@ -1372,13 +1506,43 @@ Ship Dock,Ship Clerk,New Tool,https://example.com,https://image.com/pic.jpg,,blu
         </div>
 
         <div class="export-grid">
-          <div class="export-card"><h4>Departments</h4><p>All department records.</p><button class="btn primary btn-export" data-export="departments" type="button">Export Departments</button></div>
-          <div class="export-card"><h4>Sub-Departments</h4><p>All sub-department records.</p><button class="btn primary btn-export" data-export="sub_departments" type="button">Export Sub-Depts</button></div>
-          <div class="export-card"><h4>Links</h4><p>All public links with department and sub-department.</p><button class="btn primary btn-export" data-export="links" type="button">Export Links</button></div>
-          <div class="export-card"><h4>Requests</h4><p>Pending, approved, and rejected user requests.</p><button class="btn primary btn-export" data-export="requests" type="button">Export Requests</button></div>
-          <div class="export-card"><h4>Reports</h4><p>Broken and updated link reports.</p><button class="btn primary btn-export" data-export="reports" type="button">Export Reports</button></div>
-          <div class="export-card"><h4>Gallery</h4><p>Reusable gallery image URLs.</p><button class="btn primary btn-export" data-export="gallery" type="button">Export Gallery</button></div>
+          <div class="export-card">
+            <h4>Departments</h4>
+            <p>All department records.</p>
+            <button class="btn primary btn-export" data-export="departments" type="button">Export Departments</button>
+          </div>
+
+          <div class="export-card">
+            <h4>Sub-Departments</h4>
+            <p>All sub-department records.</p>
+            <button class="btn primary btn-export" data-export="sub_departments" type="button">Export Sub-Depts</button>
+          </div>
+
+          <div class="export-card">
+            <h4>Links</h4>
+            <p>All public links with department and sub-department.</p>
+            <button class="btn primary btn-export" data-export="links" type="button">Export Links</button>
+          </div>
+
+          <div class="export-card">
+            <h4>Requests</h4>
+            <p>Pending, approved, and rejected user requests.</p>
+            <button class="btn primary btn-export" data-export="requests" type="button">Export Requests</button>
+          </div>
+
+          <div class="export-card">
+            <h4>Reports</h4>
+            <p>Broken and updated link reports.</p>
+            <button class="btn primary btn-export" data-export="reports" type="button">Export Reports</button>
+          </div>
+
+          <div class="export-card">
+            <h4>Gallery</h4>
+            <p>Reusable gallery image URLs.</p>
+            <button class="btn primary btn-export" data-export="gallery" type="button">Export Gallery</button>
+          </div>
         </div>
+
         <div class="msg" id="exportMsg"></div>
       </div>
     </section>
@@ -1391,6 +1555,7 @@ Ship Dock,Ship Clerk,New Tool,https://example.com,https://image.com/pic.jpg,,blu
             <p>Recently approved and rejected requests.</p>
           </div>
         </div>
+
         <div id="historyList"></div>
       </div>
     </section>
@@ -1420,6 +1585,7 @@ Ship Dock,Ship Clerk,New Tool,https://example.com,https://image.com/pic.jpg,,blu
             <label>Department Photo</label>
             <input id="editDepartmentImageUrl" name="image_url" placeholder="Paste image URL or choose from gallery below" />
             <div class="image-preview hidden" id="editDepartmentPreview"></div>
+
             <div class="gallery-picker-wrap">
               <div class="gallery-picker-head">
                 <b>Choose from Gallery</b>
@@ -1489,6 +1655,7 @@ Ship Dock,Ship Clerk,New Tool,https://example.com,https://image.com/pic.jpg,,blu
             <label>Link Photo</label>
             <input id="editLinkImageUrl" name="image_url" placeholder="Paste image URL or choose from gallery below" />
             <div class="image-preview hidden" id="editLinkPreview"></div>
+
             <div class="gallery-picker-wrap">
               <div class="gallery-picker-head">
                 <b>Choose from Gallery</b>
@@ -1534,7 +1701,10 @@ const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
 const LINKS_TABLE = "ranvexsi_links";
 const SETTINGS_TABLE = "ranvexsi_settings";
-const SCRIPT_SETTING_KEY = "tampermonkey_script_url";
+
+const LEGACY_SCRIPT_SETTING_KEY = "tampermonkey_script_url";
+const RANVEXSI_SCRIPT_SETTING_KEY = "ranvexsi_ui_script_url";
+const AMAZON_PACK_SETTING_KEY = "amazon_scripts_pack_url";
 
 const els = {
   dbDot: document.getElementById("dbDot"),
@@ -1594,11 +1764,14 @@ const els = {
   galleryList: document.getElementById("galleryList"),
 
   settingsForm: document.getElementById("settingsForm"),
-  settingScriptUrl: document.getElementById("settingScriptUrl"),
+  settingRanvexsiScriptUrl: document.getElementById("settingRanvexsiScriptUrl"),
+  settingAmazonScriptsPackUrl: document.getElementById("settingAmazonScriptsPackUrl"),
   settingsMsg: document.getElementById("settingsMsg"),
   settingsStatusText: document.getElementById("settingsStatusText"),
-  btnCopyScriptUrl: document.getElementById("btnCopyScriptUrl"),
-  btnOpenScriptUrl: document.getElementById("btnOpenScriptUrl"),
+  btnCopyRanvexsiScriptUrl: document.getElementById("btnCopyRanvexsiScriptUrl"),
+  btnOpenRanvexsiScriptUrl: document.getElementById("btnOpenRanvexsiScriptUrl"),
+  btnCopyAmazonScriptsPackUrl: document.getElementById("btnCopyAmazonScriptsPackUrl"),
+  btnOpenAmazonScriptsPackUrl: document.getElementById("btnOpenAmazonScriptsPackUrl"),
 
   exportMsg: document.getElementById("exportMsg"),
   btnExportAll: document.getElementById("btnExportAll"),
@@ -1809,14 +1982,18 @@ async function unlock(password){
 
 async function refreshAll(){
   if(!ADMIN_PASSWORD) return;
+
   try{
     setStatus("", "Loading");
+
     const stats = await getStats(ADMIN_PASSWORD);
     renderStats(stats);
+
     await Promise.all([loadDepartmentOptions(), loadGalleryRows()]);
     populateFilterDropdowns();
 
     const tab = activeTab();
+
     if(tab === "requests") await loadRequests();
     if(tab === "manage") await loadManage();
     if(tab === "reports") await loadReports();
@@ -1847,8 +2024,15 @@ function renderStats(stats){
 ========================================================= */
 async function loadDepartmentOptions(){
   try{
-    cachedDepartments = await rpc("rv_admin_list_departments_v2", { p_password: ADMIN_PASSWORD, p_search:"" });
-    cachedSubDepartments = await rpc("rv_admin_list_sub_departments_v2", { p_password: ADMIN_PASSWORD, p_search:"" });
+    cachedDepartments = await rpc("rv_admin_list_departments_v2", {
+      p_password: ADMIN_PASSWORD,
+      p_search:""
+    });
+
+    cachedSubDepartments = await rpc("rv_admin_list_sub_departments_v2", {
+      p_password: ADMIN_PASSWORD,
+      p_search:""
+    });
 
     els.departmentOptionsList.innerHTML = (cachedDepartments || [])
       .map(d => `<option value="${esc(d.department)}"></option>`)
@@ -1868,11 +2052,15 @@ async function loadGalleryRows(){
     });
 
     const seen = new Set();
+
     cachedGallery = (rows || []).filter(r => {
       const url = String(r.image_url || "").trim();
       if(!url) return false;
+
       const key = url.toLowerCase();
+
       if(seen.has(key)) return false;
+
       seen.add(key);
       return true;
     });
@@ -1887,8 +2075,11 @@ function populateFilterDropdowns(){
     (cachedDepartments || []).map(d => `<option value="${esc(d.department)}">${esc(d.department)}</option>`).join("");
 
   if(els.reportDepartmentFilter) els.reportDepartmentFilter.innerHTML = departmentOptions;
-  if(els.manageDepartmentFilter) els.manageDepartmentFilter.innerHTML = `<option value="">Select Department</option>` +
-    (cachedDepartments || []).map(d => `<option value="${esc(d.department)}">${esc(d.department)}</option>`).join("");
+
+  if(els.manageDepartmentFilter){
+    els.manageDepartmentFilter.innerHTML = `<option value="">Select Department</option>` +
+      (cachedDepartments || []).map(d => `<option value="${esc(d.department)}">${esc(d.department)}</option>`).join("");
+  }
 
   updateReportSubFilter();
   updateManageSubFilter();
@@ -1897,6 +2088,7 @@ function populateFilterDropdowns(){
 
 function subOptionsForDepartment(dep, includeAllLabel="All Sub-Depts"){
   const selected = String(dep || "").trim().toLowerCase();
+
   const subs = (cachedSubDepartments || [])
     .filter(s => !selected || String(s.department || "").trim().toLowerCase() === selected)
     .map(s => s.sub_department)
@@ -1909,6 +2101,7 @@ function subOptionsForDepartment(dep, includeAllLabel="All Sub-Depts"){
 
 function subOptionsOnlyForDepartment(dep){
   const selected = String(dep || "").trim().toLowerCase();
+
   const subs = (cachedSubDepartments || [])
     .filter(s => !selected || String(s.department || "").trim().toLowerCase() === selected)
     .map(s => s.sub_department)
@@ -1949,9 +2142,11 @@ function renderGalleryPicker(container, input, preview){
   }
 
   const current = String(input.value || "").trim().toLowerCase();
+
   container.innerHTML = cachedGallery.map(g => {
     const url = String(g.image_url || "").trim();
     const active = current && current === url.toLowerCase();
+
     return `
       <button class="gallery-pick ${active ? "active" : ""}" type="button" data-url="${esc(url)}" title="Choose this image">
         <img src="${esc(url)}" alt="">
@@ -2101,9 +2296,21 @@ async function approveRequest(card){
     p_sort_order: Number(card.querySelector(".rq-sort").value || 0)
   };
 
-  if(!payload.p_department){ alert("Department is required."); return; }
-  if(type !== "department" && !payload.p_sub_department){ alert("Sub-department is required."); return; }
-  if(type === "link" && (!payload.p_link_name || !payload.p_url)){ alert("Link name and URL are required."); return; }
+  if(!payload.p_department){
+    alert("Department is required.");
+    return;
+  }
+
+  if(type !== "department" && !payload.p_sub_department){
+    alert("Sub-department is required.");
+    return;
+  }
+
+  if(type === "link" && (!payload.p_link_name || !payload.p_url)){
+    alert("Link name and URL are required.");
+    return;
+  }
+
   if(!confirm(`Approve this ${prettyType(type)} request?`)) return;
 
   try{
@@ -2118,6 +2325,7 @@ async function approveRequest(card){
 async function rejectRequest(card){
   const id = card.dataset.id;
   const note = card.querySelector(".rq-admin-note").value.trim() || prompt("Reason/note for rejection?") || "";
+
   if(!confirm("Reject this request?")) return;
 
   try{
@@ -2126,6 +2334,7 @@ async function rejectRequest(card){
       p_request_id: id,
       p_admin_note: note
     });
+
     await refreshAll();
   }catch(err){
     console.error(err);
@@ -2163,6 +2372,7 @@ async function loadReports(){
 function reportCard(r){
   const suggested = r.suggested_url || "";
   const linkId = r.link_id || r.linkId || r.linkID || "";
+
   return `
     <div
       class="listbar report-row"
@@ -2184,10 +2394,12 @@ function reportCard(r){
           ${timeAgo(r.created_at)}
         </p>
       </div>
+
       <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end;">
         <span class="report-reason">${prettyReason(r.reason)}</span>
         <span class="badge ${esc(r.status)}">${esc(r.status)}</span>
       </div>
+
       <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
         ${r.url ? `<a class="btn small" href="${esc(safeUrl(r.url))}" target="_blank" rel="noopener">Open</a>` : ""}
         ${suggested ? `<button class="btn small btn-copy-suggested" type="button">Copy Suggested</button>` : ""}
@@ -2201,6 +2413,7 @@ function reportCard(r){
 
 async function updateReportStatus(row, status){
   const note = status === "ignored" ? (prompt("Admin note optional:") || "") : "";
+
   try{
     await rpc("rv_admin_update_link_report_status_v2", {
       p_password: ADMIN_PASSWORD,
@@ -2208,6 +2421,7 @@ async function updateReportStatus(row, status){
       p_status: status,
       p_admin_note: note
     });
+
     await refreshAll();
     await loadReports();
   }catch(err){
@@ -2274,6 +2488,7 @@ async function applySuggestedUrl(row){
 async function addDepartment(e){
   e.preventDefault();
   clearMsg(els.departmentMsg);
+
   const f = getFormData(els.departmentForm);
 
   try{
@@ -2284,9 +2499,12 @@ async function addDepartment(e){
       p_color: f.color || null,
       p_sort_order: Number(f.sort_order || 0)
     });
+
     setMsg(els.departmentMsg, "ok", "Department saved successfully.");
+
     els.departmentForm.reset();
     els.departmentForm.querySelector('[name="sort_order"]').value = "0";
+
     await refreshAll();
   }catch(err){
     console.error(err);
@@ -2297,6 +2515,7 @@ async function addDepartment(e){
 async function addSubDepartment(e){
   e.preventDefault();
   clearMsg(els.subDepartmentMsg);
+
   const f = getFormData(els.subDepartmentForm);
 
   try{
@@ -2307,9 +2526,12 @@ async function addSubDepartment(e){
       p_color: f.color || null,
       p_sort_order: Number(f.sort_order || 0)
     });
+
     setMsg(els.subDepartmentMsg, "ok", "Sub-department saved successfully.");
+
     els.subDepartmentForm.reset();
     els.subDepartmentForm.querySelector('[name="sort_order"]').value = "0";
+
     await refreshAll();
   }catch(err){
     console.error(err);
@@ -2320,6 +2542,7 @@ async function addSubDepartment(e){
 async function addManualLink(e){
   e.preventDefault();
   clearMsg(els.manualLinkMsg);
+
   const f = getFormData(els.manualLinkForm);
 
   try{
@@ -2334,10 +2557,14 @@ async function addManualLink(e){
       p_color: f.color || null,
       p_sort_order: Number(f.sort_order || 0)
     });
+
     setMsg(els.manualLinkMsg, "ok", "Link saved successfully.");
+
     els.manualLinkForm.reset();
     els.manualLinkForm.querySelector('[name="sort_order"]').value = "0";
+
     updateManualSubDepartmentOptions();
+
     await refreshAll();
   }catch(err){
     console.error(err);
@@ -2357,6 +2584,7 @@ function parseCSV(text){
   for(let i=0;i<text.length;i++){
     const ch = text[i];
     const next = text[i+1];
+
     if(ch === '"' && inQuotes && next === '"'){
       cell += '"';
       i++;
@@ -2368,7 +2596,11 @@ function parseCSV(text){
     }else if((ch === "\n" || ch === "\r") && !inQuotes){
       if(ch === "\r" && next === "\n") i++;
       row.push(cell.trim());
-      if(row.some(v => v !== "")) rows.push(row);
+
+      if(row.some(v => v !== "")){
+        rows.push(row);
+      }
+
       row = [];
       cell = "";
     }else{
@@ -2377,7 +2609,11 @@ function parseCSV(text){
   }
 
   row.push(cell.trim());
-  if(row.some(v => v !== "")) rows.push(row);
+
+  if(row.some(v => v !== "")){
+    rows.push(row);
+  }
+
   return rows;
 }
 
@@ -2387,9 +2623,15 @@ function cleanHeader(h){
 
 function mapBulkRows(){
   const text = els.bulkText.value.trim();
+
   if(!text) return [];
+
   const rows = parseCSV(text);
-  if(rows.length < 2) throw new Error("Please paste headers and at least one data row.");
+
+  if(rows.length < 2){
+    throw new Error("Please paste headers and at least one data row.");
+  }
+
   const headers = rows[0].map(cleanHeader);
 
   function idx(...names){
@@ -2409,6 +2651,7 @@ function mapBulkRows(){
   };
 
   const out = [];
+
   rows.slice(1).forEach((r) => {
     const obj = {
       department: map.department >= 0 ? r[map.department] : "",
@@ -2420,29 +2663,51 @@ function mapBulkRows(){
       color: map.color >= 0 ? r[map.color] : "",
       sort_order: map.sort_order >= 0 ? Number(r[map.sort_order] || 0) : 0
     };
-    if(obj.department && obj.sub_department && obj.link_name && obj.url) out.push(obj);
+
+    if(obj.department && obj.sub_department && obj.link_name && obj.url){
+      out.push(obj);
+    }
   });
+
   return out;
 }
 
 function previewBulk(){
   clearMsg(els.bulkMsg);
+
   try{
     bulkRows = mapBulkRows();
-    if(!bulkRows.length) throw new Error("No valid rows found. Required: department, sub_department, link_name, url.");
+
+    if(!bulkRows.length){
+      throw new Error("No valid rows found. Required: department, sub_department, link_name, url.");
+    }
 
     const previewRows = bulkRows.slice(0, 30);
+
     els.bulkPreview.classList.remove("hidden");
     els.bulkPreview.innerHTML = `
       <table>
-        <thead><tr><th>Department</th><th>Sub</th><th>Name</th><th>URL</th></tr></thead>
+        <thead>
+          <tr>
+            <th>Department</th>
+            <th>Sub</th>
+            <th>Name</th>
+            <th>URL</th>
+          </tr>
+        </thead>
         <tbody>
           ${previewRows.map(r => `
-            <tr><td>${esc(r.department)}</td><td>${esc(r.sub_department)}</td><td>${esc(r.link_name)}</td><td>${esc(r.url)}</td></tr>
+            <tr>
+              <td>${esc(r.department)}</td>
+              <td>${esc(r.sub_department)}</td>
+              <td>${esc(r.link_name)}</td>
+              <td>${esc(r.url)}</td>
+            </tr>
           `).join("")}
         </tbody>
       </table>
     `;
+
     setMsg(els.bulkMsg, "ok", `${bulkRows.length} valid rows ready to import.`);
   }catch(err){
     bulkRows = [];
@@ -2453,9 +2718,11 @@ function previewBulk(){
 
 async function importBulk(){
   clearMsg(els.bulkMsg);
+
   try{
     if(!bulkRows.length) previewBulk();
     if(!bulkRows.length) return;
+
     if(!confirm(`Import ${bulkRows.length} approved links?`)) return;
 
     const result = await rpc("rv_admin_bulk_add_links_v2", {
@@ -2464,9 +2731,11 @@ async function importBulk(){
     });
 
     setMsg(els.bulkMsg, "ok", `Imported ${result || bulkRows.length} links successfully.`);
+
     els.bulkText.value = "";
     bulkRows = [];
     els.bulkPreview.classList.add("hidden");
+
     await refreshAll();
   }catch(err){
     console.error(err);
@@ -2486,11 +2755,21 @@ async function loadManage(){
     let rows = [];
 
     if(type === "departments"){
-      rows = await rpc("rv_admin_list_departments_v2", { p_password: ADMIN_PASSWORD, p_search: search });
+      rows = await rpc("rv_admin_list_departments_v2", {
+        p_password: ADMIN_PASSWORD,
+        p_search: search
+      });
     }else if(type === "sub_departments"){
-      rows = await rpc("rv_admin_list_sub_departments_v2", { p_password: ADMIN_PASSWORD, p_search: search });
+      rows = await rpc("rv_admin_list_sub_departments_v2", {
+        p_password: ADMIN_PASSWORD,
+        p_search: search
+      });
     }else{
-      rows = await rpc("rv_admin_list_links_v2", { p_password: ADMIN_PASSWORD, p_search: search });
+      rows = await rpc("rv_admin_list_links_v2", {
+        p_password: ADMIN_PASSWORD,
+        p_search: search
+      });
+
       const dep = els.manageDepartmentFilter.value.trim().toLowerCase();
       const sub = els.manageSubFilter.value.trim().toLowerCase();
 
@@ -2531,7 +2810,10 @@ function manageRow(type, r){
         data-image-url="${esc(r.image_url || "")}"
         data-color="${esc(r.color || "")}"
         data-sort-order="${esc(r.sort_order ?? 0)}">
-        <div><h4>${esc(r.department)}</h4><p>${Number(r.total_links || 0)} links • ${Number(r.sub_count || 0)} sub-departments</p></div>
+        <div>
+          <h4>${esc(r.department)}</h4>
+          <p>${Number(r.total_links || 0)} links • ${Number(r.sub_count || 0)} sub-departments</p>
+        </div>
         <button class="btn small btn-edit-department" type="button">Edit</button>
         <button class="btn red small btn-hide-item" type="button">Hide</button>
       </div>
@@ -2541,7 +2823,10 @@ function manageRow(type, r){
   if(type === "sub_departments"){
     return `
       <div class="listbar" data-type="sub_departments" data-id="${esc(r.id)}">
-        <div><h4>${esc(r.sub_department)}</h4><p>${esc(r.department)} • ${Number(r.total_links || 0)} links</p></div>
+        <div>
+          <h4>${esc(r.sub_department)}</h4>
+          <p>${esc(r.department)} • ${Number(r.total_links || 0)} links</p>
+        </div>
         <span class="badge approved">Active</span>
         <button class="btn red small btn-hide-item" type="button">Hide</button>
       </div>
@@ -2560,7 +2845,10 @@ function manageRow(type, r){
       data-department-image-url="${esc(r.department_image_url || "")}"
       data-color="${esc(r.color || "")}"
       data-sort-order="${esc(r.sort_order ?? 0)}">
-      <div><h4>${esc(r.link_name)}</h4><p>${esc(r.department)} / ${esc(r.sub_department)}<br>${esc(r.url)}</p></div>
+      <div>
+        <h4>${esc(r.link_name)}</h4>
+        <p>${esc(r.department)} / ${esc(r.sub_department)}<br>${esc(r.url)}</p>
+      </div>
       <a class="btn small" href="${esc(safeUrl(r.url))}" target="_blank" rel="noopener">Open</a>
       <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;">
         <button class="btn small btn-edit-link" type="button">Edit</button>
@@ -2572,6 +2860,7 @@ function manageRow(type, r){
 
 async function hideItem(type, id){
   const label = type === "departments" ? "department and its links" : type === "sub_departments" ? "sub-department and its links" : "link";
+
   if(!confirm(`Hide this ${label}?`)) return;
 
   try{
@@ -2587,7 +2876,11 @@ async function hideItem(type, id){
         ? "p_sub_department_id"
         : "p_link_id";
 
-    await rpc(fn, { p_password: ADMIN_PASSWORD, [argName]: id });
+    await rpc(fn, {
+      p_password: ADMIN_PASSWORD,
+      [argName]: id
+    });
+
     await refreshAll();
     await loadManage();
   }catch(err){
@@ -2601,17 +2894,20 @@ async function hideItem(type, id){
 ========================================================= */
 function updatePreview(container, url){
   const clean = String(url || "").trim();
+
   if(!clean){
     container.classList.add("hidden");
     container.innerHTML = "";
     return;
   }
+
   container.classList.remove("hidden");
   container.innerHTML = `<img src="${esc(clean)}" alt="">`;
 }
 
 async function openEditDepartment(bar){
   clearMsg(els.editDepartmentMsg);
+
   els.editDepartmentId.value = bar.dataset.id || "";
   els.editDepartmentName.value = bar.dataset.department || "";
   els.editDepartmentImageUrl.value = bar.dataset.imageUrl || "";
@@ -2619,9 +2915,13 @@ async function openEditDepartment(bar){
   els.editDepartmentSortOrder.value = bar.dataset.sortOrder || "0";
 
   updatePreview(els.editDepartmentPreview, els.editDepartmentImageUrl.value);
+
   await loadGalleryRows();
+
   renderGalleryPicker(els.editDepartmentGalleryPicker, els.editDepartmentImageUrl, els.editDepartmentPreview);
+
   els.editDepartmentModal.classList.add("show");
+
   setTimeout(() => els.editDepartmentName.focus(), 60);
 }
 
@@ -2644,8 +2944,13 @@ async function saveEditDepartment(e){
     });
 
     setMsg(els.editDepartmentMsg, "ok", "Department updated successfully.");
+
     await refreshAll();
-    if(activeTab() === "manage") await loadManage();
+
+    if(activeTab() === "manage"){
+      await loadManage();
+    }
+
     setTimeout(() => closeEditDepartment(), 650);
   }catch(err){
     console.error(err);
@@ -2655,6 +2960,7 @@ async function saveEditDepartment(e){
 
 async function openEditLink(bar){
   clearMsg(els.editLinkMsg);
+
   els.editLinkId.value = bar.dataset.id || "";
   els.editLinkDepartment.value = bar.dataset.department || "";
   els.editLinkSubDepartment.value = bar.dataset.subDepartment || "";
@@ -2667,9 +2973,13 @@ async function openEditLink(bar){
 
   updateManualSubDepartmentOptions();
   updatePreview(els.editLinkPreview, els.editLinkImageUrl.value);
+
   await loadGalleryRows();
+
   renderGalleryPicker(els.editLinkGalleryPicker, els.editLinkImageUrl, els.editLinkPreview);
+
   els.editLinkModal.classList.add("show");
+
   setTimeout(() => els.editLinkName.focus(), 60);
 }
 
@@ -2696,8 +3006,13 @@ async function saveEditLink(e){
     });
 
     setMsg(els.editLinkMsg, "ok", "Link updated successfully.");
+
     await refreshAll();
-    if(activeTab() === "manage") await loadManage();
+
+    if(activeTab() === "manage"){
+      await loadManage();
+    }
+
     setTimeout(() => closeEditLink(), 650);
   }catch(err){
     console.error(err);
@@ -2711,6 +3026,7 @@ async function saveEditLink(e){
 async function addGalleryImage(e){
   e.preventDefault();
   clearMsg(els.galleryMsg);
+
   const f = getFormData(els.galleryForm);
 
   try{
@@ -2720,7 +3036,9 @@ async function addGalleryImage(e){
     });
 
     setMsg(els.galleryMsg, "ok", "Gallery image saved.");
+
     els.galleryForm.reset();
+
     await refreshAll();
     await loadGallery();
   }catch(err){
@@ -2734,6 +3052,7 @@ async function loadGallery(){
 
   try{
     await loadGalleryRows();
+
     const rows = cachedGallery;
 
     if(!rows || rows.length === 0){
@@ -2762,11 +3081,13 @@ async function loadGallery(){
 
 async function hideGalleryImage(id){
   if(!confirm("Hide this gallery image?")) return;
+
   try{
     await rpc("rv_admin_deactivate_gallery_image_v2", {
       p_password: ADMIN_PASSWORD,
       p_gallery_id: id
     });
+
     await refreshAll();
     await loadGallery();
   }catch(err){
@@ -2776,7 +3097,7 @@ async function hideGalleryImage(id){
 }
 
 /* =========================================================
-   Settings / Script
+   Settings / Script Links
 ========================================================= */
 function getSettingValue(row){
   return String(
@@ -2803,42 +3124,93 @@ function getSettingKey(row){
   ).trim().toLowerCase();
 }
 
+function findSettingValue(rows, keys){
+  const wanted = keys.map(k => String(k || "").trim().toLowerCase());
+
+  const found = (rows || []).find(row => {
+    const key = getSettingKey(row);
+    return wanted.includes(key);
+  });
+
+  return found ? getSettingValue(found) : "";
+}
+
 async function loadSettings(){
   clearMsg(els.settingsMsg);
   els.settingsStatusText.textContent = "Loading";
 
   try{
-    let scriptUrl = "";
+    let rows = [];
 
     try{
-      const rows = await rpc("rv_admin_get_settings_v2", {
+      rows = await rpc("rv_admin_get_settings_v2", {
         p_password: ADMIN_PASSWORD
       });
-
-      const found = (rows || []).find(row => getSettingKey(row) === SCRIPT_SETTING_KEY);
-      scriptUrl = found ? getSettingValue(found) : "";
     }catch(rpcErr){
       const { data, error } = await db
         .from(SETTINGS_TABLE)
         .select("*")
         .limit(100);
 
-      if(error) throw rpcErr;
+      if(error){
+        throw rpcErr;
+      }
 
-      const found = (data || []).find(row => {
-        const key = getSettingKey(row);
-        return key === SCRIPT_SETTING_KEY || key.includes("tampermonkey") || key.includes("script");
-      });
-
-      scriptUrl = found ? getSettingValue(found) : "";
+      rows = data || [];
     }
 
-    els.settingScriptUrl.value = scriptUrl || "";
-    els.settingsStatusText.textContent = scriptUrl ? "Script URL saved" : "No script URL";
+    const ranvexsiUrl = findSettingValue(rows, [
+      RANVEXSI_SCRIPT_SETTING_KEY,
+      LEGACY_SCRIPT_SETTING_KEY
+    ]);
+
+    const amazonPackUrl = findSettingValue(rows, [
+      AMAZON_PACK_SETTING_KEY
+    ]);
+
+    els.settingRanvexsiScriptUrl.value = ranvexsiUrl || "";
+    els.settingAmazonScriptsPackUrl.value = amazonPackUrl || "";
+
+    if(ranvexsiUrl && amazonPackUrl){
+      els.settingsStatusText.textContent = "Both links saved";
+    }else if(ranvexsiUrl || amazonPackUrl){
+      els.settingsStatusText.textContent = "1 link saved";
+    }else{
+      els.settingsStatusText.textContent = "No links saved";
+    }
   }catch(err){
     console.error(err);
     els.settingsStatusText.textContent = "Settings error";
-    setMsg(els.settingsMsg, "bad", `${esc(err.message || err)}<br><br>If this fails, create admin SQL function <b>rv_admin_get_settings_v2</b> and <b>rv_admin_upsert_setting_v2</b>, or allow admin-safe access to <b>ranvexsi_settings</b>.`);
+    setMsg(
+      els.settingsMsg,
+      "bad",
+      `${esc(err.message || err)}<br><br>If this fails, create admin SQL function <b>rv_admin_get_settings_v2</b> and <b>rv_admin_upsert_setting_v2</b>, or allow admin-safe access to <b>ranvexsi_settings</b>.`
+    );
+  }
+}
+
+async function upsertSetting(settingKey, settingValue){
+  try{
+    await rpc("rv_admin_upsert_setting_v2", {
+      p_password: ADMIN_PASSWORD,
+      p_setting_key: settingKey,
+      p_setting_value: settingValue || ""
+    });
+  }catch(rpcErr){
+    const { error } = await db
+      .from(SETTINGS_TABLE)
+      .upsert(
+        {
+          setting_key: settingKey,
+          setting_value: settingValue || null,
+          updated_at: new Date().toISOString()
+        },
+        { onConflict:"setting_key" }
+      );
+
+    if(error){
+      throw rpcErr;
+    }
   }
 }
 
@@ -2846,69 +3218,90 @@ async function saveSettings(e){
   e.preventDefault();
   clearMsg(els.settingsMsg);
 
-  const scriptUrl = safeUrl(els.settingScriptUrl.value.trim());
+  const ranvexsiUrlRaw = els.settingRanvexsiScriptUrl.value.trim();
+  const amazonPackUrlRaw = els.settingAmazonScriptsPackUrl.value.trim();
 
-  if(!scriptUrl){
-    setMsg(els.settingsMsg, "bad", "Script URL is required.");
+  const ranvexsiUrl = ranvexsiUrlRaw ? safeUrl(ranvexsiUrlRaw) : "";
+  const amazonPackUrl = amazonPackUrlRaw ? safeUrl(amazonPackUrlRaw) : "";
+
+  if(!ranvexsiUrl && !amazonPackUrl){
+    setMsg(els.settingsMsg, "bad", "Please add at least one script link.");
     return;
   }
 
   try{
-    try{
-      await rpc("rv_admin_upsert_setting_v2", {
-        p_password: ADMIN_PASSWORD,
-        p_setting_key: SCRIPT_SETTING_KEY,
-        p_setting_value: scriptUrl
-      });
-    }catch(rpcErr){
-      const { error } = await db
-        .from(SETTINGS_TABLE)
-        .upsert(
-          {
-            setting_key: SCRIPT_SETTING_KEY,
-            setting_value: scriptUrl,
-            updated_at: new Date().toISOString()
-          },
-          { onConflict:"setting_key" }
-        );
+    await upsertSetting(RANVEXSI_SCRIPT_SETTING_KEY, ranvexsiUrl);
+    await upsertSetting(AMAZON_PACK_SETTING_KEY, amazonPackUrl);
 
-      if(error) throw rpcErr;
+    /*
+      Keep old key updated too, so old links.html/index.html versions
+      still show the RANVEXSI script button.
+    */
+    if(ranvexsiUrl){
+      await upsertSetting(LEGACY_SCRIPT_SETTING_KEY, ranvexsiUrl);
     }
 
-    els.settingScriptUrl.value = scriptUrl;
-    els.settingsStatusText.textContent = "Script URL saved";
-    setMsg(els.settingsMsg, "ok", "Tampermonkey script URL saved successfully.");
+    els.settingRanvexsiScriptUrl.value = ranvexsiUrl;
+    els.settingAmazonScriptsPackUrl.value = amazonPackUrl;
+
+    if(ranvexsiUrl && amazonPackUrl){
+      els.settingsStatusText.textContent = "Both links saved";
+    }else{
+      els.settingsStatusText.textContent = "1 link saved";
+    }
+
+    setMsg(els.settingsMsg, "ok", "Script links saved successfully.");
   }catch(err){
     console.error(err);
-    setMsg(els.settingsMsg, "bad", `${esc(err.message || err)}<br><br>If save fails, you need SQL function <b>rv_admin_upsert_setting_v2</b> or an upsert policy for <b>ranvexsi_settings</b>.`);
+    setMsg(
+      els.settingsMsg,
+      "bad",
+      `${esc(err.message || err)}<br><br>If save fails, you need SQL function <b>rv_admin_upsert_setting_v2</b> or an upsert policy for <b>ranvexsi_settings</b>.`
+    );
   }
 }
 
-async function copyScriptUrl(){
-  const url = els.settingScriptUrl.value.trim();
+async function copyTextValue(value, label){
+  const url = String(value || "").trim();
 
   if(!url){
-    alert("No script URL to copy.");
+    alert(`No ${label} URL to copy.`);
     return;
   }
 
   try{
     await navigator.clipboard.writeText(url);
-    setMsg(els.settingsMsg, "ok", "Script URL copied.");
+    setMsg(els.settingsMsg, "ok", `${label} URL copied.`);
   }catch{
     alert("Could not copy URL.");
   }
 }
 
-function openScriptUrl(){
-  const url = els.settingScriptUrl.value.trim();
+function openTextValue(value, label){
+  const url = String(value || "").trim();
 
   if(!url){
-    alert("No script URL saved.");
+    alert(`No ${label} URL saved.`);
     return;
   }
 
   window.open(safeUrl(url), "_blank", "noopener,noreferrer");
+}
+
+function copyRanvexsiScriptUrl(){
+  copyTextValue(els.settingRanvexsiScriptUrl.value, "RANVEXSI script");
+}
+
+function openRanvexsiScriptUrl(){
+  openTextValue(els.settingRanvexsiScriptUrl.value, "RANVEXSI script");
+}
+
+function copyAmazonScriptsPackUrl(){
+  copyTextValue(els.settingAmazonScriptsPackUrl.value, "Amazon script pack");
+}
+
+function openAmazonScriptsPackUrl(){
+  openTextValue(els.settingAmazonScriptsPackUrl.value, "Amazon script pack");
 }
 
 /* =========================================================
@@ -2928,8 +3321,15 @@ async function exportData(type){
 
   try{
     const info = map[type];
-    if(!info) throw new Error("Invalid export type.");
-    const rows = await rpc(info.fn, { p_password: ADMIN_PASSWORD });
+
+    if(!info){
+      throw new Error("Invalid export type.");
+    }
+
+    const rows = await rpc(info.fn, {
+      p_password: ADMIN_PASSWORD
+    });
+
     downloadCSV(info.file, rows || []);
     setMsg(els.exportMsg, "ok", `Exported ${info.file} successfully.`);
   }catch(err){
@@ -2962,7 +3362,9 @@ async function exportAllData(){
     const skipped = [];
 
     for(const item of allExports){
-      const rows = await rpc(item.fn, { p_password: ADMIN_PASSWORD });
+      const rows = await rpc(item.fn, {
+        p_password: ADMIN_PASSWORD
+      });
 
       if(rows && rows.length){
         downloadCSV(item.file, rows);
@@ -2980,7 +3382,12 @@ async function exportAllData(){
     }
 
     const skippedText = skippedCount ? `<br>Skipped empty: ${esc(skipped.join(", "))}` : "";
-    setMsg(els.exportMsg, "ok", `Exported ${exportedCount} CSV file${exportedCount > 1 ? "s" : ""} successfully.${skippedText}`);
+
+    setMsg(
+      els.exportMsg,
+      "ok",
+      `Exported ${exportedCount} CSV file${exportedCount > 1 ? "s" : ""} successfully.${skippedText}`
+    );
   }catch(err){
     console.error(err);
     setMsg(els.exportMsg, "bad", esc(err.message || err));
@@ -3052,9 +3459,15 @@ els.btnQuickExport.addEventListener("click", () => switchTab("export"));
 
 els.requestTypeFilters.addEventListener("click", (e) => {
   const btn = e.target.closest(".filter-pill");
+
   if(!btn) return;
+
   requestTypeFilter = btn.dataset.requestType || "all";
-  els.requestTypeFilters.querySelectorAll(".filter-pill").forEach(b => b.classList.toggle("active", b === btn));
+
+  els.requestTypeFilters.querySelectorAll(".filter-pill").forEach(b => {
+    b.classList.toggle("active", b === btn);
+  });
+
   loadRequests();
 });
 
@@ -3067,6 +3480,7 @@ els.manualLinkDepartment.addEventListener("input", () => {
 
   const currentSub = els.manualLinkSubDepartment.value.trim().toLowerCase();
   const selectedDep = els.manualLinkDepartment.value.trim().toLowerCase();
+
   const validSubs = (cachedSubDepartments || [])
     .filter(s => String(s.department || "").trim().toLowerCase() === selectedDep)
     .map(s => String(s.sub_department || "").trim().toLowerCase());
@@ -3080,49 +3494,69 @@ els.btnPreviewBulk.addEventListener("click", previewBulk);
 els.btnImportBulk.addEventListener("click", importBulk);
 
 els.btnManageSearch.addEventListener("click", loadManage);
+
 els.manageType.addEventListener("change", () => {
   updateManageFilterVisibility();
   loadManage();
 });
+
 els.manageDepartmentFilter.addEventListener("change", () => {
   updateManageSubFilter();
   loadManage();
 });
+
 els.manageSubFilter.addEventListener("change", loadManage);
+
 els.manageSearch.addEventListener("keydown", (e) => {
-  if(e.key === "Enter") loadManage();
+  if(e.key === "Enter"){
+    loadManage();
+  }
 });
 
 els.reportStatusFilter.addEventListener("change", loadReports);
+
 els.reportDepartmentFilter.addEventListener("change", () => {
   updateReportSubFilter();
   loadReports();
 });
+
 els.reportSubFilter.addEventListener("change", loadReports);
 els.btnReportSearch.addEventListener("click", loadReports);
 
 els.galleryForm.addEventListener("submit", addGalleryImage);
+
 els.settingsForm.addEventListener("submit", saveSettings);
-els.btnCopyScriptUrl.addEventListener("click", copyScriptUrl);
-els.btnOpenScriptUrl.addEventListener("click", openScriptUrl);
+els.btnCopyRanvexsiScriptUrl.addEventListener("click", copyRanvexsiScriptUrl);
+els.btnOpenRanvexsiScriptUrl.addEventListener("click", openRanvexsiScriptUrl);
+els.btnCopyAmazonScriptsPackUrl.addEventListener("click", copyAmazonScriptsPackUrl);
+els.btnOpenAmazonScriptsPackUrl.addEventListener("click", openAmazonScriptsPackUrl);
 
 els.requestsList.addEventListener("click", async (e) => {
   const approve = e.target.closest(".btn-approve");
   const reject = e.target.closest(".btn-reject");
-  if(approve) await approveRequest(approve.closest(".request-card"));
-  if(reject) await rejectRequest(reject.closest(".request-card"));
+
+  if(approve){
+    await approveRequest(approve.closest(".request-card"));
+  }
+
+  if(reject){
+    await rejectRequest(reject.closest(".request-card"));
+  }
 });
 
 els.reportsList.addEventListener("click", async (e) => {
   const row = e.target.closest(".report-row");
+
   if(!row) return;
 
   if(e.target.closest(".btn-copy-suggested")){
     const url = row.dataset.suggested || "";
+
     if(url){
       await navigator.clipboard.writeText(url);
       alert("Suggested URL copied.");
     }
+
     return;
   }
 
@@ -3146,8 +3580,16 @@ els.manageList.addEventListener("click", async (e) => {
   const editLink = e.target.closest(".btn-edit-link");
   const hideBtn = e.target.closest(".btn-hide-item");
 
-  if(editDept){ await openEditDepartment(editDept.closest(".listbar")); return; }
-  if(editLink){ await openEditLink(editLink.closest(".listbar")); return; }
+  if(editDept){
+    await openEditDepartment(editDept.closest(".listbar"));
+    return;
+  }
+
+  if(editLink){
+    await openEditLink(editLink.closest(".listbar"));
+    return;
+  }
+
   if(hideBtn){
     const bar = hideBtn.closest(".listbar");
     await hideItem(bar.dataset.type, bar.dataset.id);
@@ -3156,7 +3598,9 @@ els.manageList.addEventListener("click", async (e) => {
 
 els.galleryList.addEventListener("click", async (e) => {
   const btn = e.target.closest(".btn-hide-gallery");
+
   if(!btn) return;
+
   const card = btn.closest(".admin-gallery-card");
   await hideGalleryImage(card.dataset.id);
 });
@@ -3168,10 +3612,13 @@ document.querySelectorAll(".btn-export").forEach(btn => {
 els.btnExportAll.addEventListener("click", exportAllData);
 
 let searchTimer = null;
+
 els.globalSearch.addEventListener("input", () => {
   clearTimeout(searchTimer);
+
   searchTimer = setTimeout(() => {
     const tab = activeTab();
+
     if(tab === "requests") loadRequests();
     if(tab === "manage") loadManage();
     if(tab === "reports") loadReports();
@@ -3184,24 +3631,29 @@ els.globalSearch.addEventListener("input", () => {
 els.closeEditDepartmentModal.addEventListener("click", closeEditDepartment);
 els.cancelEditDepartment.addEventListener("click", closeEditDepartment);
 els.editDepartmentForm.addEventListener("submit", saveEditDepartment);
+
 els.editDepartmentImageUrl.addEventListener("input", () => {
   updatePreview(els.editDepartmentPreview, els.editDepartmentImageUrl.value);
   renderGalleryPicker(els.editDepartmentGalleryPicker, els.editDepartmentImageUrl, els.editDepartmentPreview);
 });
+
 els.refreshDepartmentGalleryPicker.addEventListener("click", refreshGalleryPickers);
 
 els.closeEditLinkModal.addEventListener("click", closeEditLink);
 els.cancelEditLink.addEventListener("click", closeEditLink);
 els.editLinkForm.addEventListener("submit", saveEditLink);
+
 els.editLinkImageUrl.addEventListener("input", () => {
   updatePreview(els.editLinkPreview, els.editLinkImageUrl.value);
   renderGalleryPicker(els.editLinkGalleryPicker, els.editLinkImageUrl, els.editLinkPreview);
 });
+
 els.editLinkDepartment.addEventListener("input", () => {
   updateManualSubDepartmentOptions();
 
   const currentSub = els.editLinkSubDepartment.value.trim().toLowerCase();
   const selectedDep = els.editLinkDepartment.value.trim().toLowerCase();
+
   const validSubs = (cachedSubDepartments || [])
     .filter(s => String(s.department || "").trim().toLowerCase() === selectedDep)
     .map(s => String(s.sub_department || "").trim().toLowerCase());
@@ -3210,19 +3662,29 @@ els.editLinkDepartment.addEventListener("input", () => {
     els.editLinkSubDepartment.value = "";
   }
 });
+
 els.refreshLinkGalleryPicker.addEventListener("click", refreshGalleryPickers);
 
 els.editDepartmentModal.addEventListener("click", (e) => {
-  if(e.target === els.editDepartmentModal) closeEditDepartment();
+  if(e.target === els.editDepartmentModal){
+    closeEditDepartment();
+  }
 });
 
 els.editLinkModal.addEventListener("click", (e) => {
-  if(e.target === els.editLinkModal) closeEditLink();
+  if(e.target === els.editLinkModal){
+    closeEditLink();
+  }
 });
 
 document.addEventListener("keydown", (e) => {
-  if(e.key === "Escape" && els.editDepartmentModal.classList.contains("show")) closeEditDepartment();
-  if(e.key === "Escape" && els.editLinkModal.classList.contains("show")) closeEditLink();
+  if(e.key === "Escape" && els.editDepartmentModal.classList.contains("show")){
+    closeEditDepartment();
+  }
+
+  if(e.key === "Escape" && els.editLinkModal.classList.contains("show")){
+    closeEditLink();
+  }
 });
 
 updateManageFilterVisibility();
