@@ -318,6 +318,12 @@
     box-shadow:0 14px 28px rgba(37,99,235,.28);
   }
 
+  .script-wrap{
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+  }
+
   .script-btn{
     height:32px;
     border:0;
@@ -346,6 +352,82 @@
     width:17px;
     height:17px;
     flex:0 0 auto;
+  }
+
+  .script-menu{
+    position:absolute;
+    right:0;
+    top:calc(100% + 8px);
+    width:278px;
+    display:none;
+    padding:8px;
+    border:1px solid var(--line);
+    border-radius:18px;
+    background:rgba(255,255,255,.96);
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+    box-shadow:var(--shadow-lg);
+    z-index:90;
+  }
+
+  body.dark .script-menu{
+    background:rgba(17,24,39,.96);
+  }
+
+  .script-menu.show{
+    display:block;
+  }
+
+  .script-option{
+    width:100%;
+    min-height:58px;
+    border-radius:14px;
+    padding:10px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    color:var(--ink);
+    transition:.16s ease;
+  }
+
+  .script-option:hover{
+    background:var(--surface-3);
+    transform:translateY(-1px);
+  }
+
+  .script-option-icon{
+    width:36px;
+    height:36px;
+    border-radius:14px;
+    display:grid;
+    place-items:center;
+    color:#fff;
+    flex:0 0 auto;
+    font-size:17px;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    box-shadow:0 10px 22px rgba(37,99,235,.22);
+  }
+
+  .script-option-icon.pack{
+    background:linear-gradient(135deg,#16a34a,#15803d);
+    box-shadow:0 10px 22px rgba(22,163,74,.22);
+  }
+
+  .script-option strong{
+    display:block;
+    font-size:.82rem;
+    line-height:1.15;
+    font-weight:950;
+    letter-spacing:-.025em;
+  }
+
+  .script-option small{
+    display:block;
+    margin-top:4px;
+    color:var(--muted);
+    font-size:.70rem;
+    line-height:1.25;
+    font-weight:800;
   }
 
   /* =========================
@@ -943,6 +1025,13 @@
     #subGrid{
       grid-template-columns:repeat(2,minmax(0,1fr));
     }
+
+    .script-menu{
+      position:fixed;
+      top:64px;
+      right:12px;
+      width:calc(100vw - 24px);
+    }
   }
 </style>
 </head>
@@ -976,22 +1065,42 @@
 
         <a class="top-link-btn" id="btnRequestTop" href="request.html">+ Request</a>
 
-        <a class="script-btn hidden" id="btnScriptTop" href="#" target="_blank" rel="noopener" title="Install Tampermonkey Script">
-          <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
-            <circle cx="16" cy="16" r="14" fill="rgba(255,255,255,.18)"/>
-            <path d="M8.3 15.3c-1.9-.6-3.3.5-3.3 2.2 0 1.8 1.4 3.2 3.3 3.2h.6" stroke="white" stroke-width="2" stroke-linecap="round"/>
-            <path d="M23.7 15.3c1.9-.6 3.3.5 3.3 2.2 0 1.8-1.4 3.2-3.3 3.2h-.6" stroke="white" stroke-width="2" stroke-linecap="round"/>
-            <path d="M9.2 15.4c0-4.2 2.7-7.1 6.8-7.1s6.8 2.9 6.8 7.1v2.1c0 4.1-2.7 6.9-6.8 6.9s-6.8-2.8-6.8-6.9v-2.1Z" fill="white"/>
-            <path d="M11.3 15.3c.6-2.6 2.3-4.1 4.7-4.1s4.1 1.5 4.7 4.1c-.9-.6-1.8-.9-2.8-.9-.9 0-1.5.3-1.9.9-.4-.6-1-.9-1.9-.9-1 0-1.9.3-2.8.9Z" fill="#7c4a20"/>
-            <path d="M11.4 17.3c.9-1.3 1.9-1.9 3-1.9.8 0 1.3.3 1.6.9.3-.6.8-.9 1.6-.9 1.1 0 2.1.6 3 1.9v1.1c0 2.7-1.7 4.5-4.6 4.5s-4.6-1.8-4.6-4.5v-1.1Z" fill="#ffd89a"/>
-            <circle cx="13.7" cy="17.5" r="1" fill="#111827"/>
-            <circle cx="18.3" cy="17.5" r="1" fill="#111827"/>
-            <path d="M14.2 20.3c1.1.9 2.5.9 3.6 0" stroke="#111827" stroke-width="1.4" stroke-linecap="round"/>
-            <path d="M11.6 26.2h8.6" stroke="white" stroke-width="2" stroke-linecap="round"/>
-            <path d="M23.6 22.4v5.2m0 0l-2-2m2 2l2-2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span>Script</span>
-        </a>
+        <div class="script-wrap hidden" id="scriptWrap">
+          <button class="script-btn" id="btnScriptTop" type="button" title="Download Scripts">
+            <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
+              <circle cx="16" cy="16" r="14" fill="rgba(255,255,255,.18)"/>
+              <path d="M8.3 15.3c-1.9-.6-3.3.5-3.3 2.2 0 1.8 1.4 3.2 3.3 3.2h.6" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              <path d="M23.7 15.3c1.9-.6 3.3.5 3.3 2.2 0 1.8-1.4 3.2-3.3 3.2h-.6" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              <path d="M9.2 15.4c0-4.2 2.7-7.1 6.8-7.1s6.8 2.9 6.8 7.1v2.1c0 4.1-2.7 6.9-6.8 6.9s-6.8-2.8-6.8-6.9v-2.1Z" fill="white"/>
+              <path d="M11.3 15.3c.6-2.6 2.3-4.1 4.7-4.1s4.1 1.5 4.7 4.1c-.9-.6-1.8-.9-2.8-.9-.9 0-1.5.3-1.9.9-.4-.6-1-.9-1.9-.9-1 0-1.9.3-2.8.9Z" fill="#7c4a20"/>
+              <path d="M11.4 17.3c.9-1.3 1.9-1.9 3-1.9.8 0 1.3.3 1.6.9.3-.6.8-.9 1.6-.9 1.1 0 2.1.6 3 1.9v1.1c0 2.7-1.7 4.5-4.6 4.5s-4.6-1.8-4.6-4.5v-1.1Z" fill="#ffd89a"/>
+              <circle cx="13.7" cy="17.5" r="1" fill="#111827"/>
+              <circle cx="18.3" cy="17.5" r="1" fill="#111827"/>
+              <path d="M14.2 20.3c1.1.9 2.5.9 3.6 0" stroke="#111827" stroke-width="1.4" stroke-linecap="round"/>
+              <path d="M11.6 26.2h8.6" stroke="white" stroke-width="2" stroke-linecap="round"/>
+              <path d="M23.6 22.4v5.2m0 0l-2-2m2 2l2-2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>Script</span>
+          </button>
+
+          <div class="script-menu" id="scriptMenu">
+            <a class="script-option hidden" id="btnRanvexsiScript" href="#" target="_blank" rel="noopener">
+              <span class="script-option-icon">🐵</span>
+              <span>
+                <strong>RANVEXSI UI Script</strong>
+                <small>Download floating RV button script</small>
+              </span>
+            </a>
+
+            <a class="script-option hidden" id="btnAmazonScripts" href="#" target="_blank" rel="noopener">
+              <span class="script-option-icon pack">📦</span>
+              <span>
+                <strong>All Amazon Scripts</strong>
+                <small>Download full Amazon script pack</small>
+              </span>
+            </a>
+          </div>
+        </div>
 
         <button class="iconbtn" id="btnRefresh" title="Reload">↻</button>
         <button class="iconbtn" id="btnTheme" title="Light/Dark">🌗</button>
@@ -1046,15 +1155,16 @@ const GALLERY_TABLE = "ranvexsi_media_gallery";
 const VOTES_TABLE = "ranvexsi_department_votes";
 
 /*
-  Admin panel can save the Tampermonkey script link in this table later.
-  Supported row examples:
-  1) setting_key = "tampermonkey_script_url", setting_value = "https://..."
-  2) key = "script_url", value = "https://..."
-  3) name = "tampermonkey", url = "https://..."
-  If table does not exist yet, Script button stays hidden.
+  Direct script links.
+  You can paste Google Drive links here if you want.
+  Or save these keys in ranvexsi_settings:
+  1) ranvexsi_ui_script_url
+  2) amazon_scripts_pack_url
 */
 const SETTINGS_TABLE = "ranvexsi_settings";
 const SCRIPT_DOWNLOAD_URL = "";
+const RANVEXSI_UI_SCRIPT_URL = "";
+const AMAZON_SCRIPTS_PACK_URL = "";
 
 const STORAGE_BUCKET = "media";
 
@@ -1073,7 +1183,11 @@ const els = {
   btnBack: document.getElementById("btnBack"),
   btnOpenAllLinks: document.getElementById("btnOpenAllLinks"),
   btnRequestTop: document.getElementById("btnRequestTop"),
+  scriptWrap: document.getElementById("scriptWrap"),
   btnScriptTop: document.getElementById("btnScriptTop"),
+  scriptMenu: document.getElementById("scriptMenu"),
+  btnRanvexsiScript: document.getElementById("btnRanvexsiScript"),
+  btnAmazonScripts: document.getElementById("btnAmazonScripts"),
   btnRefresh: document.getElementById("btnRefresh"),
   btnTheme: document.getElementById("btnTheme"),
   btnMedia: document.getElementById("btnMedia"),
@@ -1311,7 +1425,7 @@ function toggleMedia(){
 }
 
 /* =========================================================
-   Script Link
+   Script Link Options
 ========================================================= */
 
 function getRowKey(row){
@@ -1338,39 +1452,70 @@ function getRowValue(row){
   );
 }
 
-function isScriptSettingKey(key){
+function isRanvexsiScriptSettingKey(key){
   if(!key) return false;
 
   return (
+    key === "ranvexsi_ui_script_url" ||
+    key === "ranvexsi_script_url" ||
     key === "tampermonkey_script_url" ||
     key === "tampermonkey_url" ||
     key === "script_url" ||
     key === "userscript_url" ||
-    key.includes("tampermonkey") ||
-    key.includes("script")
+    (key.includes("ranvexsi") && key.includes("script"))
   );
 }
 
-function showScriptButton(url){
+function isAmazonScriptsSettingKey(key){
+  if(!key) return false;
+
+  return (
+    key === "amazon_scripts_pack_url" ||
+    key === "amazon_script_pack_url" ||
+    key === "all_amazon_scripts_url" ||
+    key === "amazon_scripts_url" ||
+    key === "amazon_pack_url" ||
+    (key.includes("amazon") && key.includes("script"))
+  );
+}
+
+function closeScriptMenu(){
+  els.scriptMenu.classList.remove("show");
+}
+
+function toggleScriptMenu(){
+  els.scriptMenu.classList.toggle("show");
+}
+
+function setScriptOption(el, url){
   const clean = String(url || "").trim();
 
   if(!clean || clean === "#"){
-    els.btnScriptTop.classList.add("hidden");
-    els.btnScriptTop.href = "#";
-    return;
+    el.classList.add("hidden");
+    el.href = "#";
+    return false;
   }
 
-  els.btnScriptTop.href = safeUrl(clean);
-  els.btnScriptTop.classList.remove("hidden");
+  el.href = safeUrl(clean);
+  el.classList.remove("hidden");
+  return true;
+}
+
+function showScriptOptions(ranvexsiUrl, amazonUrl){
+  const hasRanvexsi = setScriptOption(els.btnRanvexsiScript, ranvexsiUrl);
+  const hasAmazon = setScriptOption(els.btnAmazonScripts, amazonUrl);
+  const hasAny = hasRanvexsi || hasAmazon;
+
+  els.scriptWrap.classList.toggle("hidden", !hasAny);
+
+  if(!hasAny){
+    closeScriptMenu();
+  }
 }
 
 async function loadScriptLink(){
-  let scriptUrl = String(SCRIPT_DOWNLOAD_URL || "").trim();
-
-  if(scriptUrl){
-    showScriptButton(scriptUrl);
-    return;
-  }
+  let ranvexsiUrl = firstGood(RANVEXSI_UI_SCRIPT_URL, SCRIPT_DOWNLOAD_URL);
+  let amazonUrl = firstGood(AMAZON_SCRIPTS_PACK_URL);
 
   try{
     const { data, error } = await db
@@ -1382,20 +1527,34 @@ async function loadScriptLink(){
 
     const rows = Array.isArray(data) ? data : [];
 
-    const found = rows.find(row => {
-      const key = getRowKey(row);
-      const value = getRowValue(row);
-      return isScriptSettingKey(key) && value;
-    });
+    if(!ranvexsiUrl){
+      const foundRanvexsi = rows.find(row => {
+        const key = getRowKey(row);
+        const value = getRowValue(row);
+        return isRanvexsiScriptSettingKey(key) && value;
+      });
 
-    if(found){
-      scriptUrl = getRowValue(found);
+      if(foundRanvexsi){
+        ranvexsiUrl = getRowValue(foundRanvexsi);
+      }
     }
 
-    showScriptButton(scriptUrl);
+    if(!amazonUrl){
+      const foundAmazon = rows.find(row => {
+        const key = getRowKey(row);
+        const value = getRowValue(row);
+        return isAmazonScriptsSettingKey(key) && value;
+      });
+
+      if(foundAmazon){
+        amazonUrl = getRowValue(foundAmazon);
+      }
+    }
+
+    showScriptOptions(ranvexsiUrl, amazonUrl);
   }catch(err){
-    console.warn("Script settings table not ready. Script button hidden:", err.message || err);
-    showScriptButton("");
+    console.warn("Script settings table not ready. Using fallback script links only:", err.message || err);
+    showScriptOptions(ranvexsiUrl, amazonUrl);
   }
 }
 
@@ -2137,6 +2296,26 @@ els.gridCount.addEventListener("change", () => {
 
 els.btnMedia.addEventListener("click", toggleMedia);
 
+els.btnScriptTop.addEventListener("click", (event) => {
+  event.preventDefault();
+  event.stopPropagation();
+  toggleScriptMenu();
+});
+
+els.scriptMenu.addEventListener("click", (event) => {
+  event.stopPropagation();
+
+  if(event.target.closest("a")){
+    closeScriptMenu();
+  }
+});
+
+document.addEventListener("click", (event) => {
+  if(els.scriptWrap && !els.scriptWrap.contains(event.target)){
+    closeScriptMenu();
+  }
+});
+
 let searchTimer = null;
 
 els.search.addEventListener("input", () => {
@@ -2152,8 +2331,12 @@ els.search.addEventListener("input", () => {
 });
 
 document.addEventListener("keydown", (event) => {
-  if(event.key === "Escape" && currentMode === "subdepartments"){
-    goHome();
+  if(event.key === "Escape"){
+    closeScriptMenu();
+
+    if(currentMode === "subdepartments"){
+      goHome();
+    }
   }
 });
 
