@@ -2,554 +2,2795 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=1280, initial-scale=1.0"/>
-<title>RANVEXSI UI — Compact (Back Button fixed)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RANVEXSI UI — Supabase</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
   :root{
-    /* Light Theme */
-    --bg: #e9edf5;
-    --ink: #101423;
-    --muted:#6d7387;
-    --card:#f8faff;
-    --line:#cfd7e7;
-    --accent:#3a6cf4;
-    --accent-ink:#ffffff;
+    --bg:#eef3fb;
+    --bg-2:#e7edf8;
+    --surface:#ffffff;
+    --surface-2:#f7faff;
+    --surface-3:#eef5ff;
+    --ink:#111827;
+    --muted:#6b7280;
+    --muted-2:#94a3b8;
+    --line:rgba(15,23,42,.10);
+    --line-strong:rgba(15,23,42,.16);
+    --accent:#2563eb;
+    --accent-2:#7c3aed;
+    --accent-soft:rgba(37,99,235,.10);
+    --green:#16a34a;
+    --red:#dc2626;
+    --gold:#d97706;
 
-    /* Layout */
-    --round:12px;
-    --shadow:0 6px 18px rgba(16,19,36,0.06);
-    --grid-gap:16px;
-    --card-min:300px;
-    --ratio:1.777;
-    --density:1;
-    --media-display:block;
+    --shadow-sm:0 6px 16px rgba(15,23,42,.06);
+    --shadow-md:0 14px 34px rgba(15,23,42,.10);
+    --shadow-lg:0 24px 60px rgba(15,23,42,.14);
 
-    /* Images */
-    --img-opacity:.88;
-    --img-veil:rgba(0,0,0,.06);
-    --overlay-end:.70;
-  }
-  .dark{
-    --bg:#0f1220;
-    --ink:#eaf1ff;
-    --muted:#9aa6c8;
-    --card:#141a2c;
-    --line:#2a3452;
-    --accent:#5b83ff;
-    --accent-ink:#0b1020;
-    --shadow:0 8px 24px rgba(0,0,0,.22);
-
-    --img-opacity:.55;
-    --img-veil:rgba(0,0,0,0);
-    --overlay-end:.72;
+    --radius:18px;
+    --radius-sm:14px;
+    --max:1360px;
   }
 
-  *{box-sizing:border-box}
-  html,body{height:100%}
+  body.dark{
+    --bg:#080d19;
+    --bg-2:#0c1222;
+    --surface:#111827;
+    --surface-2:#151f33;
+    --surface-3:#1b2942;
+    --ink:#eef5ff;
+    --muted:#a9b7d0;
+    --muted-2:#7486a5;
+    --line:rgba(255,255,255,.10);
+    --line-strong:rgba(255,255,255,.16);
+    --accent:#60a5fa;
+    --accent-2:#a78bfa;
+    --accent-soft:rgba(96,165,250,.12);
+    --shadow-sm:0 8px 18px rgba(0,0,0,.22);
+    --shadow-md:0 18px 42px rgba(0,0,0,.32);
+    --shadow-lg:0 30px 70px rgba(0,0,0,.42);
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{height:100%;scroll-behavior:smooth}
   body{
-    margin:0;
-    font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    min-height:100%;
+    font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
     color:var(--ink);
-    background:var(--bg);
+    background:
+      radial-gradient(circle at top left, rgba(37,99,235,.12), transparent 34%),
+      radial-gradient(circle at top right, rgba(124,58,237,.10), transparent 32%),
+      linear-gradient(180deg,var(--bg),var(--bg-2));
     overflow-x:hidden;
   }
 
-  /* ================= Header (compact) ================= */
-  .header{
-    position:sticky; top:0; z-index:30;
-    display:flex; align-items:center; gap:8px;
-    padding:6px 10px; height:48px;
-    background:var(--card); border-bottom:1px solid var(--line); box-shadow:var(--shadow);
-  }
-  .brand{display:flex; align-items:center; gap:8px}
-  .logo{
-    width:28px; height:28px; border-radius:8px;
-    background:var(--accent); color:var(--accent-ink);
-    display:grid; place-items:center; font-weight:800; font-size:0.9rem; letter-spacing:-.2px;
-  }
-  .title{font-weight:800; font-size:.92rem; line-height:1}
-  .grow{flex:1}
+  button,input,select,textarea{font:inherit}
+  button{-webkit-tap-highlight-color:transparent}
+  a{color:inherit}
+  textarea{resize:vertical}
 
-  /* Back button (tiny) */
+  /* =========================
+     Header
+  ========================= */
+  .app-header{
+    position:sticky;
+    top:0;
+    z-index:50;
+    border-bottom:1px solid var(--line);
+    background:rgba(255,255,255,.82);
+    backdrop-filter:blur(22px);
+    -webkit-backdrop-filter:blur(22px);
+    box-shadow:0 8px 30px rgba(15,23,42,.06);
+  }
+
+  body.dark .app-header{
+    background:rgba(17,24,39,.82);
+    box-shadow:0 8px 34px rgba(0,0,0,.22);
+  }
+
+  .header-inner{
+    width:min(var(--max),100%);
+    margin:0 auto;
+    min-height:66px;
+    padding:10px 20px;
+    display:grid;
+    grid-template-columns:auto minmax(280px,1fr) auto;
+    align-items:center;
+    gap:16px;
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    min-width:220px;
+  }
+
   .backbtn{
-    width:28px; height:28px; display:grid; place-items:center;
-    border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--ink);
-    cursor:pointer; position:relative; padding:0;
+    width:38px;
+    height:38px;
+    border:1px solid var(--line);
+    border-radius:13px;
+    background:var(--surface);
+    color:var(--ink);
+    cursor:pointer;
+    box-shadow:var(--shadow-sm);
+    display:grid;
+    place-items:center;
+    font-size:18px;
+    transition:.18s ease;
   }
-  .backbtn:hover{ filter:brightness(0.98) }
-  .backbtn[data-tip]:hover::after{
-    content:attr(data-tip); position:absolute; bottom:-30px; left:50%; transform:translateX(-50%);
-    background:#111; color:#fff; font-size:.75rem; padding:4px 6px; border-radius:6px; white-space:nowrap;
-  }
-  .backbtn.hidden{ display:none; }
 
-  /* search compact */
-  .search{
-    position:relative; width:520px; max-width:45vw; transform:scale(var(--density));
+  .backbtn:hover{
+    transform:translateY(-1px);
+    box-shadow:var(--shadow-md);
+    border-color:rgba(37,99,235,.28);
   }
-  .search input{
-    height:32px; width:100%;
-    padding:0 10px 0 32px; border-radius:8px;
-    border:1px solid var(--line); background:#ffffff; outline:none; color:#111; font-size:.92rem;
-  }
-  .dark .search input{ background:#0f1426; color:var(--ink); }
-  .search svg{position:absolute; left:8px; top:50%; transform:translateY(-50%); opacity:.65}
-  ::placeholder{ color:#6b7280 } .dark ::placeholder{ color:#b6c2e0 }
 
-  /* icon buttons */
-  .actions{display:flex; align-items:center; gap:6px}
+  .backbtn.hidden{display:none}
+
+  .logo{
+    width:42px;
+    height:42px;
+    border-radius:15px;
+    display:grid;
+    place-items:center;
+    color:white;
+    font-weight:900;
+    letter-spacing:-.7px;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    box-shadow:0 14px 34px rgba(37,99,235,.28);
+  }
+
+  .brand-text{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    line-height:1.05;
+  }
+
+  .brand-title{
+    font-size:1.03rem;
+    font-weight:900;
+    letter-spacing:-.04em;
+  }
+
+  .brand-sub{
+    font-size:.72rem;
+    color:var(--muted);
+    font-weight:700;
+  }
+
+  .search-wrap{
+    position:relative;
+    width:100%;
+    max-width:660px;
+    justify-self:center;
+  }
+
+  .search-wrap svg{
+    position:absolute;
+    left:14px;
+    top:50%;
+    transform:translateY(-50%);
+    color:var(--muted);
+    pointer-events:none;
+  }
+
+  .search-wrap input{
+    width:100%;
+    height:42px;
+    border:1px solid var(--line);
+    background:rgba(255,255,255,.88);
+    color:var(--ink);
+    outline:none;
+    border-radius:15px;
+    padding:0 16px 0 44px;
+    font-size:.93rem;
+    font-weight:650;
+    box-shadow:var(--shadow-sm);
+    transition:.18s ease;
+  }
+
+  body.dark .search-wrap input{
+    background:rgba(15,23,42,.74);
+  }
+
+  .search-wrap input:focus{
+    border-color:rgba(37,99,235,.55);
+    box-shadow:0 0 0 4px var(--accent-soft), var(--shadow-sm);
+  }
+
+  .header-actions{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:8px;
+    min-width:290px;
+  }
+
+  .status-pill{
+    height:36px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    border:1px solid var(--line);
+    border-radius:999px;
+    background:var(--surface);
+    padding:0 11px;
+    color:var(--muted);
+    font-weight:800;
+    font-size:.77rem;
+    box-shadow:var(--shadow-sm);
+    white-space:nowrap;
+  }
+
+  .dot{
+    width:8px;
+    height:8px;
+    border-radius:999px;
+    background:var(--muted-2);
+  }
+
+  .dot.ok{background:var(--green);box-shadow:0 0 0 4px rgba(22,163,74,.12)}
+  .dot.bad{background:var(--red);box-shadow:0 0 0 4px rgba(220,38,38,.12)}
+
   .iconbtn{
-    width:32px; height:32px; display:grid; place-items:center;
-    border-radius:8px; border:1px solid var(--line); background:var(--card); color:var(--ink);
-    cursor:pointer; position:relative;
-  }
-  .iconbtn:hover{ filter:brightness(0.98) }
-  .badge{
-    height:28px; padding:0 8px; border-radius:999px;
-    border:1px solid var(--line); background:var(--card); display:flex; align-items:center; gap:6px; font-size:.86rem;
-  }
-  .iconbtn[data-tip]:hover::after{
-    content:attr(data-tip); position:absolute; bottom:-30px; left:50%; transform:translateX(-50%);
-    background:#111; color:#fff; font-size:.75rem; padding:4px 6px; border-radius:6px; white-space:nowrap;
-  }
-
-  /* ================= Main ================= */
-  .wrap{ max-width:1280px; margin:12px auto 18px; padding:0 12px }
-
-  /* crumbs */
-  .toolbar{ display:flex; align-items:center; gap:10px; margin:8px 0 }
-  .crumbs{ font-size:.92rem; color:var(--muted) }
-  .crumbs b{ color:var(--ink) }
-
-  /* settings */
-  .settings{
-    border:1px solid var(--line); border-radius:10px; background:var(--card);
-    box-shadow:var(--shadow); padding:8px; margin-bottom:12px;
-  }
-  .settings.hidden{ display:none }
-  .controls{display:flex; align-items:center; gap:8px; flex-wrap:wrap}
-  .chip, .btn, select, .range{
-    height:32px; padding:0 8px; border-radius:8px; border:1px solid var(--line);
-    background:var(--card); color:var(--ink); font-weight:600; cursor:pointer; font-size:.9rem;
-  }
-  .range{ width:140px; padding:0 }
-
-  /* ================= Grid ================= */
-  .grid{
-    display:grid; gap:var(--grid-gap);
-    grid-template-columns: repeat( auto-fit, minmax(var(--card-min), 1fr) );
+    width:36px;
+    height:36px;
+    border:1px solid var(--line);
+    border-radius:13px;
+    background:var(--surface);
+    color:var(--ink);
+    display:grid;
+    place-items:center;
+    cursor:pointer;
+    box-shadow:var(--shadow-sm);
+    transition:.18s ease;
+    font-size:16px;
   }
 
-  /* Cards */
-  .card, .link{
-    position:relative; border:1px solid var(--line); border-radius:var(--round);
-    background:var(--card); box-shadow:var(--shadow);
-    aspect-ratio: var(--ratio);
-    overflow:hidden; cursor:pointer;
+  .iconbtn:hover{
+    transform:translateY(-1px);
+    box-shadow:var(--shadow-md);
+    border-color:rgba(37,99,235,.28);
   }
-  .card .img, .link .img{
-    position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
-    display:var(--media-display); opacity:var(--img-opacity);
-    filter:none;
+
+  .addtopbtn{
+    height:36px;
+    border:0;
+    border-radius:13px;
+    padding:0 13px;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    cursor:pointer;
+    color:white;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    box-shadow:0 10px 22px rgba(37,99,235,.22);
+    font-size:.82rem;
+    font-weight:950;
+    white-space:nowrap;
+    transition:.18s ease;
   }
-  .card .veil, .link .veil{
-    position:absolute; inset:0; background:var(--img-veil); pointer-events:none;
+
+  .addtopbtn:hover{
+    transform:translateY(-1px);
+    box-shadow:0 14px 28px rgba(37,99,235,.28);
   }
-  .card .overlay, .link .overlay{
-    position:absolute; inset:0; pointer-events:none;
-    background: linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,var(--overlay-end)) 100%);
+
+  .steps-pill{
+    height:36px;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    border:1px solid var(--line);
+    border-radius:13px;
+    background:var(--surface);
+    padding:0 10px;
+    color:var(--muted);
+    font-weight:800;
+    font-size:.77rem;
+    box-shadow:var(--shadow-sm);
+    white-space:nowrap;
   }
-  .card .label, .link .label{
-    position:absolute; left:12px; right:12px; bottom:10px; z-index:1;
-    display:flex; justify-content:space-between; align-items:center;
-    font-weight:800; font-size:calc(.98rem * var(--density));
-    text-shadow:0 1px 6px rgba(0,0,0,.35);
+
+
+
+  /* =========================
+     Vote + Report UI
+  ========================= */
+  .vote-btn{
+    position:absolute;
+    z-index:6;
+    top:8px;
+    left:8px;
+    height:24px;
+    min-width:50px;
+    border:1px solid rgba(255,255,255,.24);
+    border-radius:999px;
+    background:rgba(0,0,0,.38);
     color:#fff;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:4px;
+    padding:0 8px;
+    font-size:.66rem;
+    font-weight:900;
+    line-height:1;
+    cursor:pointer;
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+    box-shadow:0 6px 14px rgba(0,0,0,.16);
+    transition:.18s ease;
   }
-  .pill{ font-size:.78rem; padding:4px 8px; border-radius:999px; background:rgba(255,255,255,.16); color:#fff }
+
+  .vote-btn:hover{
+    transform:translateY(-1px);
+    background:rgba(0,0,0,.52);
+    border-color:rgba(255,255,255,.34);
+  }
+
+  .vote-btn.voted{
+    background:rgba(0,0,0,.38);
+    border-color:rgba(255,255,255,.24);
+  }
+
+  .vote-btn.voted:hover{
+    background:rgba(0,0,0,.52);
+    border-color:rgba(255,255,255,.34);
+  }
+
+  .vote-btn:disabled{
+    opacity:.72;
+    cursor:wait;
+  }
+
+  .link-actions-top{
+    position:absolute;
+    z-index:7;
+    top:10px;
+    right:10px;
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:7px;
+  }
+
+  .report-btn{
+    height:30px;
+    border:1px solid rgba(255,255,255,.28);
+    border-radius:999px;
+    background:rgba(0,0,0,.46);
+    color:#fff;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    padding:0 10px;
+    font-size:.72rem;
+    font-weight:950;
+    cursor:pointer;
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+    box-shadow:0 8px 20px rgba(0,0,0,.18);
+    transition:.18s ease;
+  }
+
+  .report-btn:hover{
+    transform:translateY(-1px);
+    background:rgba(220,38,38,.84);
+  }
+
+  .link{
+    outline:none;
+  }
+
+  .link:focus-visible{
+    box-shadow:0 0 0 4px var(--accent-soft), var(--shadow-lg);
+    border-color:rgba(37,99,235,.55);
+  }
+
+  .report-summary{
+    border:1px solid var(--line);
+    border-radius:18px;
+    background:var(--surface-2);
+    padding:13px;
+    margin-bottom:14px;
+  }
+
+  .report-summary b{
+    display:block;
+    font-weight:950;
+    letter-spacing:-.03em;
+  }
+
+  .report-summary span{
+    display:block;
+    margin-top:5px;
+    color:var(--muted);
+    font-size:.82rem;
+    font-weight:750;
+    word-break:break-all;
+  }
+
+  /* =========================
+     Main
+  ========================= */
+  .page{
+    width:min(var(--max),100%);
+    margin:0 auto;
+    padding:20px;
+  }
+
+  .hero-row{
+    display:grid;
+    grid-template-columns:1fr auto;
+    align-items:end;
+    gap:18px;
+    margin-bottom:14px;
+  }
+
+  .crumbs{
+    color:var(--muted);
+    font-weight:800;
+    font-size:.86rem;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    flex-wrap:wrap;
+  }
+
+  .crumbs b{color:var(--ink)}
+
+  .page-title{
+    margin-top:5px;
+    font-size:clamp(1.55rem,2.1vw,2.2rem);
+    letter-spacing:-.06em;
+    line-height:1.02;
+    font-weight:950;
+  }
+
+  .page-note{
+    margin-top:7px;
+    color:var(--muted);
+    font-weight:650;
+    max-width:760px;
+    font-size:.92rem;
+    line-height:1.45;
+  }
+
+  .quick-stats{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    justify-content:flex-end;
+  }
+
+  .stat-card{
+    min-width:108px;
+    border:1px solid var(--line);
+    border-radius:16px;
+    background:rgba(255,255,255,.74);
+    backdrop-filter:blur(16px);
+    padding:10px 12px;
+    box-shadow:var(--shadow-sm);
+  }
+
+  body.dark .stat-card{background:rgba(17,24,39,.68)}
+
+  .stat-label{
+    font-size:.66rem;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:var(--muted);
+    font-weight:900;
+  }
+
+  .stat-value{
+    margin-top:3px;
+    font-size:1.08rem;
+    letter-spacing:-.04em;
+    font-weight:950;
+  }
+
+  /* =========================
+     Settings
+  ========================= */
+  .settings{
+    border:1px solid var(--line);
+    border-radius:18px;
+    background:rgba(255,255,255,.74);
+    backdrop-filter:blur(18px);
+    padding:11px;
+    margin:14px 0 18px;
+    box-shadow:var(--shadow-sm);
+  }
+
+  body.dark .settings{background:rgba(17,24,39,.68)}
+  .settings.hidden{display:none}
+
+  .controls{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .chip,
+  .btn,
+  select{
+    height:36px;
+    border:1px solid var(--line);
+    border-radius:13px;
+    background:var(--surface);
+    color:var(--ink);
+    padding:0 11px;
+    font-size:.84rem;
+    font-weight:850;
+    box-shadow:var(--shadow-sm);
+  }
+
+  .chip{
+    display:flex;
+    align-items:center;
+    gap:7px;
+  }
+
+  select{
+    cursor:pointer;
+    outline:none;
+  }
+
+  .btn{
+    cursor:pointer;
+    transition:.18s ease;
+  }
+
+  .btn:hover{
+    transform:translateY(-1px);
+    box-shadow:var(--shadow-md);
+  }
+
+  /* =========================
+     Grid
+  ========================= */
+  .grid{
+    display:grid;
+    gap:18px;
+  }
+
+  #depGrid{grid-template-columns:repeat(4,1fr)}
+  #subGrid{grid-template-columns:repeat(5,1fr)}
+  #linkGrid{grid-template-columns:repeat(4,1fr)}
+
+  @media (max-width:1200px){
+    #depGrid{grid-template-columns:repeat(3,1fr)}
+    #subGrid{grid-template-columns:repeat(4,1fr)}
+    #linkGrid{grid-template-columns:repeat(3,1fr)}
+  }
+
+  @media (max-width:820px){
+    #depGrid,
+    #subGrid,
+    #linkGrid{
+      grid-template-columns:repeat(2,1fr);
+      gap:12px;
+    }
+  }
+
+  /* =========================
+     Cards
+  ========================= */
+  .card,
+  .link,
+  .add-card{
+    position:relative;
+    min-height:220px;
+    aspect-ratio:4/3;
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    background:var(--surface);
+    overflow:hidden;
+    cursor:pointer;
+    text-decoration:none;
+    box-shadow:var(--shadow-sm);
+    transform:translateZ(0);
+    transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  }
+
+  .card:hover,
+  .link:hover,
+  .add-card:hover{
+    transform:translateY(-4px);
+    box-shadow:var(--shadow-lg);
+    border-color:rgba(37,99,235,.34);
+  }
+
+  .card:active,
+  .link:active,
+  .add-card:active{
+    transform:translateY(-1px) scale(.993);
+  }
+
+  .img{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+    opacity:.92;
+    transform:scale(1.01);
+    transition:transform .28s ease, opacity .18s ease;
+  }
+
+  body.dark .img{opacity:.64}
+
+  .card:hover .img,
+  .link:hover .img{
+    transform:scale(1.045);
+  }
+
+  .veil{
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(circle at top left, rgba(37,99,235,.16), transparent 42%),
+      linear-gradient(180deg, rgba(0,0,0,.03), rgba(0,0,0,.10));
+    pointer-events:none;
+  }
+
+  body.dark .veil{
+    background:
+      radial-gradient(circle at top left, rgba(96,165,250,.18), transparent 42%),
+      linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.22));
+  }
+
+  .overlay{
+    position:absolute;
+    inset:0;
+    background:linear-gradient(180deg, rgba(0,0,0,.03) 10%, rgba(0,0,0,.20) 55%, rgba(0,0,0,.76) 100%);
+    pointer-events:none;
+  }
+
+  .label{
+    position:absolute;
+    z-index:2;
+    left:14px;
+    right:14px;
+    bottom:12px;
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:10px;
+    color:white;
+  }
+
+  .label-main{min-width:0}
+
+  .label-title{
+    display:block;
+    font-size:1rem;
+    line-height:1.1;
+    font-weight:950;
+    letter-spacing:-.035em;
+    text-shadow:0 2px 10px rgba(0,0,0,.42);
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+
+  .label-sub{
+    margin-top:4px;
+    display:block;
+    font-size:.76rem;
+    color:rgba(255,255,255,.82);
+    font-weight:800;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    text-shadow:0 2px 8px rgba(0,0,0,.38);
+  }
+
+  .pill{
+    flex:0 0 auto;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    height:26px;
+    padding:0 10px;
+    border-radius:999px;
+    background:rgba(255,255,255,.18);
+    border:1px solid rgba(255,255,255,.22);
+    color:white;
+    font-size:.72rem;
+    font-weight:950;
+    backdrop-filter:blur(10px);
+    box-shadow:0 6px 18px rgba(0,0,0,.15);
+  }
 
   .subchip{
-    display:flex; align-items:center; justify-content:center; text-align:center;
-    border:1px solid var(--line); border-radius:10px; background:var(--card);
-    min-height:120px; font-weight:700; cursor:pointer; aspect-ratio:1.1; padding:10px;
-    box-shadow:var(--shadow);
+    min-height:128px;
+    border:1px solid var(--line);
+    border-radius:18px;
+    background:
+      linear-gradient(135deg, rgba(37,99,235,.10), rgba(124,58,237,.08)),
+      var(--surface);
+    box-shadow:var(--shadow-sm);
+    padding:16px;
+    cursor:pointer;
+    transition:.18s ease;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    gap:14px;
   }
 
-  a.link{ color:inherit; text-decoration:none }
-  .hidden{ display:none !important }
+  .subchip:hover{
+    transform:translateY(-4px);
+    border-color:rgba(37,99,235,.35);
+    box-shadow:var(--shadow-md);
+  }
+
+  .sub-top{
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    align-items:flex-start;
+  }
+
+  .sub-icon{
+    width:38px;
+    height:38px;
+    border-radius:14px;
+    display:grid;
+    place-items:center;
+    color:white;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    box-shadow:0 12px 24px rgba(37,99,235,.22);
+    font-size:18px;
+  }
+
+  .sub-count{
+    height:28px;
+    min-width:34px;
+    padding:0 9px;
+    border-radius:999px;
+    display:grid;
+    place-items:center;
+    background:var(--surface);
+    border:1px solid var(--line);
+    color:var(--muted);
+    font-weight:950;
+    font-size:.76rem;
+  }
+
+  .sub-title{
+    font-weight:950;
+    letter-spacing:-.04em;
+    line-height:1.12;
+    font-size:1.03rem;
+  }
+
+  .sub-desc{
+    color:var(--muted);
+    font-size:.78rem;
+    font-weight:700;
+    margin-top:5px;
+  }
+
+  .pending-card{
+    outline:2px solid rgba(217,119,6,.26);
+    outline-offset:-2px;
+  }
+
+  .pending-ribbon{
+    position:absolute;
+    top:10px;
+    right:10px;
+    z-index:4;
+    height:26px;
+    padding:0 10px;
+    border-radius:999px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(217,119,6,.92);
+    color:#fff;
+    font-size:.7rem;
+    font-weight:950;
+    box-shadow:0 8px 18px rgba(0,0,0,.20);
+    backdrop-filter:blur(10px);
+  }
+
+  .pending-note{
+    color:var(--yellow);
+    font-size:.76rem;
+    font-weight:900;
+    margin-top:5px;
+  }
+
+  .add-card{
+    border-style:dashed;
+    border-width:2px;
+    border-color:rgba(37,99,235,.30);
+    background:
+      radial-gradient(circle at top left, rgba(37,99,235,.14), transparent 45%),
+      linear-gradient(135deg, rgba(37,99,235,.06), rgba(124,58,237,.08)),
+      var(--surface);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:18px;
+  }
+
+  .add-content{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+  }
+
+  .add-plus{
+    width:54px;
+    height:54px;
+    border-radius:19px;
+    display:grid;
+    place-items:center;
+    color:white;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    box-shadow:0 16px 34px rgba(37,99,235,.26);
+    font-size:30px;
+    line-height:1;
+    font-weight:900;
+  }
+
+  .add-title{
+    font-weight:950;
+    letter-spacing:-.04em;
+    font-size:1.08rem;
+  }
+
+  .add-desc{
+    color:var(--muted);
+    font-weight:750;
+    font-size:.82rem;
+    line-height:1.35;
+    max-width:230px;
+  }
+
+  .empty{
+    grid-column:1/-1;
+    border:1px dashed var(--line-strong);
+    border-radius:20px;
+    background:rgba(255,255,255,.70);
+    padding:30px 18px;
+    text-align:center;
+    color:var(--muted);
+    box-shadow:var(--shadow-sm);
+    font-weight:800;
+    line-height:1.5;
+  }
+
+  body.dark .empty{background:rgba(17,24,39,.62)}
+  .empty strong{color:var(--ink);font-size:1.05rem}
+  .hidden{display:none!important}
+
+  .sortable-ghost{opacity:.45}
+  .sortable-chosen{transform:scale(.985)}
+
+  /* =========================
+     Modal
+  ========================= */
+  .modal-backdrop{
+    position:fixed;
+    inset:0;
+    background:rgba(2,6,23,.58);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    z-index:100;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+
+  .modal-backdrop.show{display:flex}
+
+  .modal{
+    width:min(820px,100%);
+    max-height:min(92vh,880px);
+    overflow:auto;
+    border:1px solid var(--line);
+    border-radius:24px;
+    background:var(--surface);
+    color:var(--ink);
+    box-shadow:0 30px 90px rgba(0,0,0,.34);
+  }
+
+  .modal-head{
+    position:sticky;
+    top:0;
+    z-index:2;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:16px;
+    padding:18px 18px 14px;
+    border-bottom:1px solid var(--line);
+    background:var(--surface);
+  }
+
+  .modal-title{
+    font-size:1.25rem;
+    font-weight:950;
+    letter-spacing:-.05em;
+  }
+
+  .modal-sub{
+    margin-top:5px;
+    color:var(--muted);
+    font-weight:700;
+    font-size:.88rem;
+    line-height:1.4;
+  }
+
+  .close-btn{
+    width:38px;
+    height:38px;
+    border-radius:14px;
+    border:1px solid var(--line);
+    background:var(--surface-2);
+    color:var(--ink);
+    cursor:pointer;
+    font-weight:950;
+    font-size:18px;
+  }
+
+  .modal-body{
+    padding:18px;
+  }
+
+  .form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+
+  .field{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+  }
+
+  .field.full{grid-column:1/-1}
+
+  .field label{
+    font-size:.78rem;
+    font-weight:900;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:.06em;
+  }
+
+  .field input,
+  .field select,
+  .field textarea{
+    width:100%;
+    min-height:42px;
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:var(--surface-2);
+    color:var(--ink);
+    outline:none;
+    padding:10px 12px;
+    font-weight:700;
+    box-shadow:none;
+  }
+
+  .field textarea{min-height:84px}
+
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus{
+    border-color:rgba(37,99,235,.55);
+    box-shadow:0 0 0 4px var(--accent-soft);
+  }
+
+  .photo-options{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:12px;
+  }
+
+  .photo-mode{
+    border:1px solid var(--line);
+    border-radius:999px;
+    background:var(--surface-2);
+    color:var(--ink);
+    padding:9px 12px;
+    font-weight:900;
+    cursor:pointer;
+    font-size:.82rem;
+  }
+
+  .photo-mode.active{
+    color:white;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    border-color:transparent;
+  }
+
+  .gallery-grid{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:10px;
+    max-height:270px;
+    overflow:auto;
+    padding:4px;
+  }
+
+  .gallery-item{
+    position:relative;
+    aspect-ratio:1.25;
+    border:2px solid transparent;
+    border-radius:14px;
+    overflow:hidden;
+    background:var(--surface-2);
+    cursor:pointer;
+    box-shadow:var(--shadow-sm);
+  }
+
+  .gallery-item.selected{
+    border-color:var(--accent);
+    box-shadow:0 0 0 4px var(--accent-soft), var(--shadow-sm);
+  }
+
+  .gallery-item img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+  .gallery-check{
+    position:absolute;
+    right:7px;
+    top:7px;
+    width:24px;
+    height:24px;
+    border-radius:999px;
+    background:rgba(0,0,0,.62);
+    color:#fff;
+    display:none;
+    place-items:center;
+    font-size:13px;
+    font-weight:950;
+  }
+
+  .gallery-item.selected .gallery-check{display:grid}
+
+  .mini-note{
+    color:var(--muted);
+    font-size:.82rem;
+    font-weight:750;
+    line-height:1.45;
+    margin-top:8px;
+  }
+
+  .modal-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    padding:14px 18px 18px;
+    border-top:1px solid var(--line);
+  }
+
+  .primary-btn,
+  .secondary-btn{
+    min-height:42px;
+    border-radius:14px;
+    padding:0 16px;
+    font-weight:950;
+    cursor:pointer;
+    border:1px solid var(--line);
+  }
+
+  .secondary-btn{
+    background:var(--surface-2);
+    color:var(--ink);
+  }
+
+  .primary-btn{
+    border:0;
+    color:white;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    box-shadow:0 12px 24px rgba(37,99,235,.22);
+  }
+
+  .primary-btn:disabled{
+    opacity:.55;
+    cursor:not-allowed;
+  }
+
+  .request-msg{
+    margin-top:14px;
+    border-radius:16px;
+    padding:13px;
+    font-weight:850;
+    font-size:.9rem;
+    line-height:1.4;
+    display:none;
+  }
+
+  .request-msg.ok{
+    display:block;
+    background:rgba(22,163,74,.10);
+    color:var(--green);
+    border:1px solid rgba(22,163,74,.24);
+  }
+
+  .request-msg.bad{
+    display:block;
+    background:rgba(220,38,38,.10);
+    color:var(--red);
+    border:1px solid rgba(220,38,38,.24);
+  }
+
+  /* =========================
+     Responsive
+  ========================= */
+  @media (max-width:980px){
+    .header-inner{
+      grid-template-columns:1fr auto;
+      gap:10px;
+      padding:10px 14px;
+    }
+
+    .brand{min-width:0}
+    .brand-sub{display:none}
+
+    .search-wrap{
+      grid-column:1 / -1;
+      grid-row:2;
+      max-width:none;
+    }
+
+    .header-actions{
+      min-width:0;
+      gap:7px;
+    }
+
+    .status-pill,
+    .steps-pill{display:none}
+
+    .addtopbtn{
+      height:36px;
+      padding:0 11px;
+      font-size:.78rem;
+    }
+
+    .page{padding:16px 14px 26px}
+
+    .hero-row{
+      grid-template-columns:1fr;
+      align-items:start;
+    }
+
+    .quick-stats{justify-content:flex-start}
+
+    .stat-card{
+      min-width:calc(33.333% - 7px);
+      flex:1;
+    }
+
+    .card,
+    .link,
+    .add-card{
+      min-height:156px;
+      border-radius:17px;
+      aspect-ratio:1.05;
+    }
+
+    .label{
+      left:11px;
+      right:11px;
+      bottom:10px;
+      align-items:flex-start;
+      flex-direction:column;
+      gap:7px;
+    }
+
+    .label-title{
+      font-size:.88rem;
+      white-space:normal;
+      display:-webkit-box;
+      -webkit-line-clamp:2;
+      -webkit-box-orient:vertical;
+    }
+
+    .label-sub{display:none}
+
+    .pill{
+      height:24px;
+      font-size:.68rem;
+      padding:0 8px;
+    }
+
+    .subchip{
+      min-height:116px;
+      border-radius:17px;
+      padding:14px;
+    }
+
+    .form-grid{grid-template-columns:1fr}
+    .gallery-grid{grid-template-columns:repeat(3,1fr)}
+  }
+
+  @media (max-width:520px){
+    .logo{width:38px;height:38px;border-radius:14px}
+    .brand-title{font-size:.95rem}
+    .iconbtn{width:36px;height:36px;border-radius:13px}
+    .page-title{font-size:1.45rem}
+    .page-note{font-size:.88rem}
+
+    #depGrid,
+    #subGrid,
+    #linkGrid{
+      grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+
+    .stat-card{
+      min-width:calc(33.333% - 6px);
+      padding:9px 10px;
+    }
+
+    .stat-label{font-size:.58rem}
+    .stat-value{font-size:.95rem}
+
+    .modal-backdrop{padding:10px}
+    .modal{border-radius:20px}
+    .modal-head{padding:15px}
+    .modal-body{padding:15px}
+    .modal-actions{padding:12px 15px 15px;flex-direction:column}
+    .primary-btn,.secondary-btn{width:100%}
+    .gallery-grid{grid-template-columns:repeat(2,1fr)}
+  }
 </style>
 </head>
+
 <body>
-  <div class="header">
-    <div class="brand">
-      <!-- Back button next to logo; hidden on Home -->
-      <button id="btnBack" class="backbtn hidden" data-tip="Back">←</button>
-      <div class="logo">RV</div>
-      <div class="title">RANVEXSI UI</div>
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand">
+        <button id="btnBack" class="backbtn hidden" title="Back">←</button>
+        <div class="logo">RV</div>
+        <div class="brand-text">
+          <div class="brand-title">RANVEXSI UI</div>
+          <div class="brand-sub">Supabase workplace links</div>
+        </div>
+      </div>
+
+      <div class="search-wrap" title="Search departments, sub-departments, or links">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+          <path d="M21 21l-4.3-4.3M10.8 18.2a7.4 7.4 0 1 1 0-14.8 7.4 7.4 0 0 1 0 14.8Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        <input id="search" placeholder="Search departments, sub-departments, or links..." autocomplete="off" />
+      </div>
+
+      <div class="header-actions">
+        <div class="status-pill" id="dbStatus" title="Supabase status">
+          <span class="dot" id="dbDot"></span>
+          <span id="dbText">Connecting</span>
+        </div>
+        <button class="addtopbtn" id="btnAddLinkTop" title="Add New Link">+ Link</button>
+        <button class="iconbtn" id="btnSettings" title="Settings">⚙️</button>
+        <button class="iconbtn" id="btnRefresh" title="Reload">↻</button>
+        <button class="iconbtn" id="btnClear" title="Clear saved order">🧹</button>
+        <button class="iconbtn" id="btnTheme" title="Light/Dark">🌗</button>
+        <div class="steps-pill" title="Today visits/clicks | Total views">
+          Today <span id="steps">0</span> | Total <span id="stepsTotal">0</span>
+        </div>
+      </div>
     </div>
+  </header>
 
-    <div class="grow"></div>
+  <main class="page" id="wrap">
+    <section class="hero-row">
+      <div>
+        <div class="crumbs" id="crumbs">Home</div>
+        <h1 class="page-title" id="pageTitle">Departments</h1>
+        <p class="page-note" id="pageNote">
+          Browse your departments, open sub-departments, and launch important tools quickly.
+        </p>
+      </div>
 
-    <div class="search" title="Search departments, subs or links">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.3-4.3M10.8 18.2a7.4 7.4 0 1 1 0-14.8 7.4 7.4 0 0 1 0 14.8Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-      <input id="search" placeholder="Search departments, sub-departments, or links..." autocomplete="off" />
-    </div>
+      <div class="quick-stats">
+        <div class="stat-card">
+          <div class="stat-label">Departments</div>
+          <div class="stat-value" id="statDepartments">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Sub-Depts</div>
+          <div class="stat-value" id="statSubs">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Links</div>
+          <div class="stat-value" id="statLinks">0</div>
+        </div>
+      </div>
+    </section>
 
-    <div class="actions">
-      <button class="iconbtn" id="btnSettings" data-tip="Settings">⚙️</button>
-      <button class="iconbtn" id="btnRefresh" data-tip="Reload">↻</button>
-      <button class="iconbtn" id="btnClear" data-tip="Clear Order">🧹</button>
-      <button class="iconbtn" id="btnTheme" data-tip="Light/Dark">🌗</button>
-      <div class="badge" title="Steps | Total">👣 <span id="steps">0</span> | 📊 <span id="stepsTotal">0</span></div>
-    </div>
-  </div>
-
-  <div class="wrap" id="wrap">
-    <div class="toolbar">
-      <div class="crumbs" id="crumbs">Home</div>
-      <div class="grow"></div>
-    </div>
-
-    <div id="settings" class="settings">
+    <section id="settings" class="settings hidden">
       <div class="controls">
         <label class="chip">View
-          <select id="viewMode" style="margin-left:6px">
+          <select id="viewMode">
             <option value="departments">Departments</option>
-            <option value="subpage">Sub-Departments (Full)</option>
+            <option value="subpage">Sub-Departments</option>
             <option value="links">Links</option>
           </select>
         </label>
 
         <label class="chip">Sub
-          <select id="subFilter" style="margin-left:6px" disabled>
+          <select id="subFilter" disabled>
             <option value="__all__">All</option>
           </select>
         </label>
 
         <button class="btn" id="btnSort">Enable Sort</button>
 
-        <label class="chip">Cols
-          <input id="cols" type="range" class="range" min="0" max="6" step="1" value="0" />
-        </label>
-
         <label class="chip">Density
-          <select id="density" style="margin-left:6px">
-            <option value="1">Comfort</option>
-            <option value="0.9">Compact</option>
-            <option value="1.1">Cozy</option>
-          </select>
-        </label>
-
-        <label class="chip">Ratio
-          <select id="ratio" style="margin-left:6px">
-            <option value="1.777">16:9</option>
-            <option value="1.333">4:3</option>
-            <option value="1">1:1</option>
+          <select id="density">
+            <option value="comfort">Comfort</option>
+            <option value="compact">Compact</option>
+            <option value="large">Large</option>
           </select>
         </label>
 
         <label class="chip">Images
-          <select id="media" style="margin-left:6px">
+          <select id="media">
             <option value="on">On</option>
             <option value="off">Off</option>
           </select>
         </label>
       </div>
-    </div>
+    </section>
 
-    <div id="depGrid" class="grid" aria-label="Departments grid"></div>
-    <div id="subGrid" class="grid hidden" aria-label="Sub-departments grid"></div>
-    <div id="linkGrid" class="grid hidden" aria-label="Links grid"></div>
+    <section id="depGrid" class="grid" aria-label="Departments grid"></section>
+    <section id="subGrid" class="grid hidden" aria-label="Sub-departments grid"></section>
+    <section id="linkGrid" class="grid hidden" aria-label="Links grid"></section>
+  </main>
+
+  <!-- Add New Link Request Modal -->
+  <div class="modal-backdrop" id="requestModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="requestTitle">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title" id="requestTitle">Add New Link Request</div>
+          <div class="modal-sub">
+            Submit a new link request. It will show as pending until admin approval.
+          </div>
+        </div>
+        <button class="close-btn" id="closeRequestModal" type="button">×</button>
+      </div>
+
+      <form id="requestForm">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="field">
+              <label>Department</label>
+              <input id="reqDepartment" name="department" readonly />
+            </div>
+
+            <div class="field">
+              <label>Sub-Department</label>
+              <select id="reqSubDepartment" name="sub_department"></select>
+            </div>
+
+            <div class="field">
+              <label>Link Name</label>
+              <input id="reqLinkName" name="link_name" placeholder="Example: Shift Metrics" required />
+            </div>
+
+            <div class="field">
+              <label>Link URL</label>
+              <input id="reqUrl" name="url" placeholder="https://example.com" required />
+            </div>
+
+            <div class="field">
+              <label>Your Name Optional</label>
+              <input id="reqName" name="requested_by_name" placeholder="Your name" />
+            </div>
+
+            <div class="field">
+              <label>Your Email Optional</label>
+              <input id="reqEmail" name="requested_by_email" placeholder="name@example.com" type="email" />
+            </div>
+
+            <div class="field full">
+              <label>Photo Option</label>
+
+              <div class="photo-options">
+                <button class="photo-mode active" data-mode="gallery" type="button">Choose Existing Photo</button>
+                <button class="photo-mode" data-mode="url" type="button">Paste Image URL</button>
+                <button class="photo-mode" data-mode="none" type="button">No Photo</button>
+              </div>
+
+              <div id="galleryPanel">
+                <div class="gallery-grid" id="galleryGrid"></div>
+                <div class="mini-note">
+                  Existing photos are reused from the gallery, so Supabase storage will not fill up.
+                </div>
+              </div>
+
+              <div id="urlPhotoPanel" class="hidden">
+                <input id="reqImageUrl" name="image_url" placeholder="https://image-link.com/photo.jpg" />
+                <div class="mini-note">
+                  Paste an external image URL only. Public upload is disabled for now.
+                </div>
+              </div>
+            </div>
+
+            <div class="field full">
+              <label>Note Optional</label>
+              <textarea id="reqNote" name="note" placeholder="Any note for admin?"></textarea>
+            </div>
+          </div>
+
+          <div id="requestMsg" class="request-msg"></div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="secondary-btn" id="cancelRequest" type="button">Cancel</button>
+          <button class="primary-btn" id="submitRequest" type="submit">Submit for Approval</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Add New Department Request Modal -->
+  <div class="modal-backdrop" id="departmentModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="departmentRequestTitle">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title" id="departmentRequestTitle">Add New Department</div>
+          <div class="modal-sub">
+            Choose an existing gallery image or paste an image URL. The department will work locally right away and wait for admin approval.
+          </div>
+        </div>
+        <button class="close-btn" id="closeDepartmentModal" type="button">×</button>
+      </div>
+
+      <form id="departmentForm">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="field full">
+              <label>Department Name</label>
+              <input id="depReqDepartmentName" name="department" placeholder="Example: Ship Dock" required />
+            </div>
+
+            <div class="field">
+              <label>Your Name Optional</label>
+              <input id="depReqName" name="requested_by_name" placeholder="Your name" />
+            </div>
+
+            <div class="field">
+              <label>Your Email Optional</label>
+              <input id="depReqEmail" name="requested_by_email" placeholder="name@example.com" type="email" />
+            </div>
+
+            <div class="field full">
+              <label>Photo Option</label>
+
+              <div class="photo-options">
+                <button class="dept-photo-mode active" data-mode="gallery" type="button">Choose Existing Photo</button>
+                <button class="dept-photo-mode" data-mode="url" type="button">Paste Image URL</button>
+                <button class="dept-photo-mode" data-mode="none" type="button">No Photo</button>
+              </div>
+
+              <div id="depGalleryPanel">
+                <div class="gallery-grid" id="depGalleryGrid"></div>
+                <div class="mini-note">
+                  Existing gallery images are shown below. Select one to use for the new department.
+                </div>
+              </div>
+
+              <div id="depUrlPhotoPanel" class="hidden">
+                <input id="depReqImageUrl" name="image_url" placeholder="https://image-link.com/photo.jpg" />
+                <div class="mini-note">
+                  Paste an external image URL only. Public upload is disabled for now.
+                </div>
+              </div>
+            </div>
+
+            <div class="field full">
+              <label>Note Optional</label>
+              <textarea id="departmentMsgNote" name="note" placeholder="Any note for admin?"></textarea>
+            </div>
+          </div>
+
+          <div id="departmentMsg" class="request-msg"></div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="secondary-btn" id="cancelDepartmentRequest" type="button">Cancel</button>
+          <button class="primary-btn" id="submitDepartmentRequest" type="submit">Submit Department</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Link Report Modal -->
+  <div class="modal-backdrop" id="reportModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title" id="reportTitle">Report Link</div>
+          <div class="modal-sub">
+            Tell admin if this link is broken or needs to be updated.
+          </div>
+        </div>
+        <button class="close-btn" id="closeReportModal" type="button">×</button>
+      </div>
+
+      <form id="reportForm">
+        <div class="modal-body">
+          <div class="report-summary">
+            <b id="reportSummaryName">Selected Link</b>
+            <span id="reportSummaryUrl"></span>
+          </div>
+
+          <div class="form-grid">
+            <div class="field full">
+              <label>Reason</label>
+              <select id="reportReason" name="reason" required>
+                <option value="broken">Link is broken</option>
+                <option value="updated">Link is updated / new URL needed</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div class="field full">
+              <label>Correct / Updated Link Optional</label>
+              <input id="reportSuggestedUrl" name="suggested_url" placeholder="https://new-link.com" />
+            </div>
+
+            <div class="field full">
+              <label>Note Optional</label>
+              <textarea id="reportNote" name="note" placeholder="Example: This link opens old page, correct link is above."></textarea>
+            </div>
+          </div>
+
+          <div id="reportMsg" class="request-msg"></div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="secondary-btn" id="cancelReport" type="button">Cancel</button>
+          <button class="primary-btn" id="submitReport" type="submit">Submit Report</button>
+        </div>
+      </form>
+    </div>
   </div>
 
 <script>
-/* ===== Config ===== */
-const sheetURL = "https://script.google.com/macros/s/AKfycbwnjvDjGQNtpVkxySJj6GaObo6l1ecfUg3NXzvF7G5MX7H4S5Qo92jhUM8_eOTO2MeXUQ/exec";
+/* =========================================================
+   Supabase Config
+========================================================= */
+const SUPABASE_URL = "https://qpplbqodulenhccfzrjv.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_ph2JpBSdGl-dIqvx9F6__g_Oo4r96Y_";
 
-/* ===== State/Refs ===== */
+const SUPABASE_TABLE = "ranvexsi_links";
+const DEPT_TABLE = "ranvexsi_departments";
+const SUB_TABLE = "ranvexsi_sub_departments";
+const REQUEST_TABLE = "ranvexsi_requests";
+const GALLERY_TABLE = "ranvexsi_media_gallery";
+const STORAGE_BUCKET = "media";
+
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+/* =========================================================
+   Refs / State
+========================================================= */
 const els = {
-  search: document.getElementById('search'),
-  depGrid: document.getElementById('depGrid'),
-  subGrid: document.getElementById('subGrid'),
-  linkGrid: document.getElementById('linkGrid'),
-  crumbs: document.getElementById('crumbs'),
-  viewMode: document.getElementById('viewMode'),
-  subFilter: document.getElementById('subFilter'),
-  btnSort: document.getElementById('btnSort'),
-  btnRefresh: document.getElementById('btnRefresh'),
-  btnClear: document.getElementById('btnClear'),
-  btnTheme: document.getElementById('btnTheme'),
-  btnSettings: document.getElementById('btnSettings'),
-  btnBack: document.getElementById('btnBack'),
-  cols: document.getElementById('cols'),
-  density: document.getElementById('density'),
-  ratio: document.getElementById('ratio'),
-  media: document.getElementById('media'),
-  steps: document.getElementById('steps'),
-  stepsTotal: document.getElementById('stepsTotal'),
-  settings: document.getElementById('settings'),
-  wrap: document.getElementById('wrap')
+  search: document.getElementById("search"),
+  depGrid: document.getElementById("depGrid"),
+  subGrid: document.getElementById("subGrid"),
+  linkGrid: document.getElementById("linkGrid"),
+  crumbs: document.getElementById("crumbs"),
+  pageTitle: document.getElementById("pageTitle"),
+  pageNote: document.getElementById("pageNote"),
+  viewMode: document.getElementById("viewMode"),
+  subFilter: document.getElementById("subFilter"),
+  btnSort: document.getElementById("btnSort"),
+  btnRefresh: document.getElementById("btnRefresh"),
+  btnClear: document.getElementById("btnClear"),
+  btnTheme: document.getElementById("btnTheme"),
+  btnSettings: document.getElementById("btnSettings"),
+  btnAddLinkTop: document.getElementById("btnAddLinkTop"),
+  btnBack: document.getElementById("btnBack"),
+  density: document.getElementById("density"),
+  media: document.getElementById("media"),
+  settings: document.getElementById("settings"),
+  steps: document.getElementById("steps"),
+  stepsTotal: document.getElementById("stepsTotal"),
+  dbDot: document.getElementById("dbDot"),
+  dbText: document.getElementById("dbText"),
+  statDepartments: document.getElementById("statDepartments"),
+  statSubs: document.getElementById("statSubs"),
+  statLinks: document.getElementById("statLinks"),
+
+  requestModal: document.getElementById("requestModal"),
+  closeRequestModal: document.getElementById("closeRequestModal"),
+  requestForm: document.getElementById("requestForm"),
+  cancelRequest: document.getElementById("cancelRequest"),
+  submitRequest: document.getElementById("submitRequest"),
+  requestMsg: document.getElementById("requestMsg"),
+
+  reqDepartment: document.getElementById("reqDepartment"),
+  reqSubDepartment: document.getElementById("reqSubDepartment"),
+  reqLinkName: document.getElementById("reqLinkName"),
+  reqUrl: document.getElementById("reqUrl"),
+  reqName: document.getElementById("reqName"),
+  reqEmail: document.getElementById("reqEmail"),
+  reqImageUrl: document.getElementById("reqImageUrl"),
+  reqNote: document.getElementById("reqNote"),
+  galleryGrid: document.getElementById("galleryGrid"),
+  galleryPanel: document.getElementById("galleryPanel"),
+  urlPhotoPanel: document.getElementById("urlPhotoPanel"),
+
+  departmentModal: document.getElementById("departmentModal"),
+  closeDepartmentModal: document.getElementById("closeDepartmentModal"),
+  departmentForm: document.getElementById("departmentForm"),
+  cancelDepartmentRequest: document.getElementById("cancelDepartmentRequest"),
+  submitDepartmentRequest: document.getElementById("submitDepartmentRequest"),
+  departmentMsg: document.getElementById("departmentMsg"),
+  depReqDepartmentName: document.getElementById("depReqDepartmentName"),
+  depReqName: document.getElementById("depReqName"),
+  depReqEmail: document.getElementById("depReqEmail"),
+  depReqImageUrl: document.getElementById("depReqImageUrl"),
+  depReqNote: document.getElementById("departmentMsgNote"),
+  depGalleryGrid: document.getElementById("depGalleryGrid"),
+  depGalleryPanel: document.getElementById("depGalleryPanel"),
+  depUrlPhotoPanel: document.getElementById("depUrlPhotoPanel"),
+
+  reportModal: document.getElementById("reportModal"),
+  closeReportModal: document.getElementById("closeReportModal"),
+  cancelReport: document.getElementById("cancelReport"),
+  reportForm: document.getElementById("reportForm"),
+  submitReport: document.getElementById("submitReport"),
+  reportMsg: document.getElementById("reportMsg"),
+  reportSummaryName: document.getElementById("reportSummaryName"),
+  reportSummaryUrl: document.getElementById("reportSummaryUrl"),
+  reportReason: document.getElementById("reportReason"),
+  reportSuggestedUrl: document.getElementById("reportSuggestedUrl"),
+  reportNote: document.getElementById("reportNote")
 };
 
 let rawRows = [];
-let departmentsData = [];   // [{dep, subs:[], imageUrl}]
+let departmentRows = [];
+let subDepartmentRows = [];
+let localRequests = [];
+let departmentsData = [];
+let galleryImages = [];
 let currentDep = null;
 let currentSub = "__all__";
 let sorting = false;
 let depSortable = null;
 let linkSortable = null;
+let realtimeChannel = null;
+let realtimeReloadTimer = null;
+let voteCounts = {};
+let votedDepartments = new Set();
+let currentReportLink = null;
+let requestPhotoMode = "gallery";
+let selectedGalleryImage = null;
+let departmentPhotoMode = "gallery";
+let selectedDepartmentGalleryImage = null;
+let dailyStepCount = 0;
+let totalViewCount = 0;
+let analyticsReady = false;
 
-/* ===== Local Storage Keys ===== */
 const LS = {
-  DEPT_ORDER: "rv_dept_order",
-  LINK_ORDER: (dep, sub) => `rv_link_order_${dep}__${sub}`,
-  STEPS: "rv_steps_total",
-  GRID: "rv_grid_prefs_backfix",
   THEME: "rv_theme",
-  SETTINGS_OPEN: "rv_settings_open",
-  SETTINGS_OPEN_NONDEP: "rv_settings_open_nd"
+  STEPS: "rv_steps_total",
+  SETTINGS_OPEN: "rv_settings_open_index",
+  DEPT_ORDER: "rv_dept_order_index",
+  LINK_ORDER: (dep, sub) => `rv_link_order_index_${dep}__${sub}`,
+  DENSITY: "rv_density_index",
+  MEDIA: "rv_media_index",
+  LOCAL_REQUESTS: "rv_local_pending_requests_v1",
+  VISITOR_KEY: "rv_visitor_key_v1"
 };
 
-/* ===== Steps ===== */
+/* =========================================================
+   Helpers
+========================================================= */
+function esc(v){
+  return String(v ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function getVisitorKey(){
+  let key = localStorage.getItem(LS.VISITOR_KEY);
+  if(!key){
+    const cryptoKey = (window.crypto && window.crypto.randomUUID)
+      ? window.crypto.randomUUID()
+      : `rv_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    key = cryptoKey;
+    localStorage.setItem(LS.VISITOR_KEY, key);
+  }
+  return key;
+}
+
+const VISITOR_KEY = getVisitorKey();
+
+function safeUrl(url){
+  const u = String(url || "").trim();
+  if(!u || u === "#") return "#";
+  if(u.startsWith("http://") || u.startsWith("https://") || u.startsWith("mailto:") || u.startsWith("tel:")) return u;
+  return "https://" + u;
+}
+
+function getPublicImage(path){
+  const p = String(path || "").trim();
+  if(!p || p === "null" || p === "undefined") return "";
+  const { data } = db.storage.from(STORAGE_BUCKET).getPublicUrl(p);
+  return data?.publicUrl || "";
+}
+
+function firstGood(...values){
+  for(const v of values){
+    const s = String(v || "").trim();
+    if(s && s !== "null" && s !== "undefined") return s;
+  }
+  return "";
+}
+
+function imageFromRow(row){
+  return firstGood(row.ImageURL, row.image_url, getPublicImage(row.ImagePath || row.image_path));
+}
+
+function departmentImageFromRow(row){
+  return firstGood(
+    row.DIURL,
+    row.department_image_url,
+    getPublicImage(row.DepartmentImagePath || row.department_image_path),
+    row.ImageURL,
+    row.image_url,
+    getPublicImage(row.ImagePath || row.image_path)
+  );
+}
+
+function fallbackImage(text){
+  return `https://source.unsplash.com/1200x800/?workspace,office,${encodeURIComponent(text || "tools")}`;
+}
+
+function setDbStatus(type, text){
+  els.dbText.textContent = text;
+  els.dbDot.classList.remove("ok","bad");
+  if(type === "ok") els.dbDot.classList.add("ok");
+  if(type === "bad") els.dbDot.classList.add("bad");
+}
+
+function countLinksInSub(dep, sub){
+  return rawRows.filter(r => r.Department === dep && r.SubDepartment === sub).length;
+}
+
+function allSubsCount(){
+  return departmentsData.reduce((sum, d) => sum + (d.subs?.length || 0), 0);
+}
+
+function showMessage(type, message){
+  els.requestMsg.className = `request-msg ${type}`;
+  els.requestMsg.innerHTML = message;
+}
+
+function makeTempId(type){
+  return `${type}_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+}
+
+function getLocalRequests(){
+  try{
+    const rows = JSON.parse(localStorage.getItem(LS.LOCAL_REQUESTS) || "[]");
+    return Array.isArray(rows) ? rows : [];
+  }catch{
+    return [];
+  }
+}
+
+function setLocalRequests(rows){
+  localStorage.setItem(LS.LOCAL_REQUESTS, JSON.stringify(rows));
+}
+
+function saveLocalRequest(req){
+  const rows = getLocalRequests();
+  rows.unshift(req);
+  setLocalRequests(rows);
+  localRequests = rows;
+}
+
+function updateLocalRequest(tempId, patch){
+  const rows = getLocalRequests().map(r => r.client_temp_id === tempId ? {...r, ...patch} : r);
+  setLocalRequests(rows);
+  localRequests = rows;
+}
+
+function localRequestsFor(type){
+  return localRequests.filter(r => r.request_type === type && r.status !== "rejected");
+}
+
+function alreadyHasDepartment(name){
+  const n = String(name || "").trim().toLowerCase();
+  return departmentsData.some(d => d.dep.toLowerCase() === n);
+}
+
+function alreadyHasSubDepartment(dep, sub){
+  const d = departmentsData.find(x => x.dep.toLowerCase() === String(dep || "").toLowerCase());
+  if(!d) return false;
+  return d.subs.some(s => s.toLowerCase() === String(sub || "").toLowerCase());
+}
+
+async function submitGenericRequest(req){
+  const payload = {
+    request_type: req.request_type,
+    client_temp_id: req.client_temp_id || null,
+    department: req.department || null,
+    sub_department: req.sub_department || null,
+    link_name: req.link_name || null,
+    url: req.url || null,
+    image_url: req.image_url || null,
+    department_image_url: req.department_image_url || null,
+    color: req.color || null,
+    note: req.note || null,
+    requested_by_name: req.requested_by_name || null,
+    requested_by_email: req.requested_by_email || null,
+    status: "pending"
+  };
+
+  const { error } = await db.from(REQUEST_TABLE).insert(payload);
+  if(error) throw error;
+  updateLocalRequest(req.client_temp_id, { submitted:true });
+}
+
+async function syncLocalRequestsWithAdmin(){
+  const rows = getLocalRequests();
+  const pendingIds = rows
+    .filter(r => r.client_temp_id && r.submitted !== false)
+    .map(r => r.client_temp_id);
+
+  if(!pendingIds.length){
+    localRequests = rows;
+    return;
+  }
+
+  try{
+    const { data, error } = await db.rpc("rv_public_request_statuses", {
+      p_client_ids: pendingIds
+    });
+
+    if(error) throw error;
+
+    const statusMap = new Map((data || []).map(x => [x.client_temp_id, x.status]));
+
+    // If admin approved/rejected, remove local temporary item.
+    // Approved item will now load permanently from Supabase tables.
+    // Rejected item should disappear from this browser too.
+    const cleaned = rows.filter(r => {
+      const status = statusMap.get(r.client_temp_id);
+      return !(status === "approved" || status === "rejected");
+    });
+
+    if(cleaned.length !== rows.length){
+      setLocalRequests(cleaned);
+    }
+
+    localRequests = cleaned;
+  }catch(err){
+    console.warn("Could not sync local pending requests:", err.message || err);
+    localRequests = rows;
+  }
+}
+
+function refreshLocalAndRender(){
+  localRequests = getLocalRequests();
+  buildMaps();
+  render();
+}
+
+
+/* =========================================================
+   Votes + Reports
+========================================================= */
+function voteKey(dep){
+  return String(dep || "").trim().toLowerCase();
+}
+
+function voteCountFor(dep){
+  return Number(voteCounts[voteKey(dep)] || 0);
+}
+
+function hasVotedFor(dep){
+  return votedDepartments.has(voteKey(dep));
+}
+
+async function loadVoteData(){
+  voteCounts = {};
+  votedDepartments = new Set();
+
+  try{
+    const { data, error } = await db.rpc("rv_public_department_vote_counts");
+    if(error) throw error;
+
+    (data || []).forEach(row => {
+      voteCounts[voteKey(row.department)] = Number(row.total_votes || 0);
+    });
+  }catch(err){
+    console.warn("Could not load department vote counts:", err.message || err);
+  }
+
+  try{
+    const { data, error } = await db.rpc("rv_public_department_vote_statuses", {
+      p_voter_key:VISITOR_KEY
+    });
+    if(error) throw error;
+
+    (data || []).forEach(row => {
+      votedDepartments.add(voteKey(row.department));
+    });
+  }catch(err){
+    console.warn("Could not load user vote statuses:", err.message || err);
+  }
+}
+
+async function voteForDepartment(dep, btn){
+  if(!dep) return;
+
+  if(btn){
+    btn.disabled = true;
+    btn.innerHTML = "...";
+  }
+
+  try{
+    const { data, error } = await db.rpc("rv_public_vote_department", {
+      p_department:dep,
+      p_voter_key:VISITOR_KEY
+    });
+    if(error) throw error;
+
+    const row = Array.isArray(data) ? data[0] : data;
+    voteCounts[voteKey(dep)] = Number(row?.total_votes || voteCountFor(dep));
+    votedDepartments.add(voteKey(dep));
+    renderDepartments();
+    step();
+  }catch(err){
+    console.error(err);
+    alert(err.message || "Could not save vote.");
+    renderDepartments();
+  }
+}
+
+function showReportMessage(type, message){
+  els.reportMsg.className = `request-msg ${type}`;
+  els.reportMsg.innerHTML = message;
+}
+
+function openReportModal(link){
+  if(!link) return;
+
+  currentReportLink = link;
+  els.reportForm.reset();
+  els.reportMsg.className = "request-msg";
+  els.reportMsg.innerHTML = "";
+  els.reportSummaryName.textContent = link.name || "Selected Link";
+  els.reportSummaryUrl.textContent = link.url || "";
+  els.reportReason.value = "broken";
+  els.reportModal.classList.add("show");
+  setTimeout(() => els.reportReason.focus(), 60);
+}
+
+function closeReportModal(){
+  els.reportModal.classList.remove("show");
+  currentReportLink = null;
+}
+
+async function submitLinkReport(e){
+  e.preventDefault();
+
+  if(!currentReportLink){
+    showReportMessage("bad", "No link selected.");
+    return;
+  }
+
+  const reason = els.reportReason.value;
+  const suggested = els.reportSuggestedUrl.value.trim();
+  const note = els.reportNote.value.trim();
+
+  if(reason === "updated" && suggested && !/^https?:\/\//i.test(suggested)){
+    showReportMessage("bad", "Updated link should start with http:// or https://");
+    return;
+  }
+
+  els.submitReport.disabled = true;
+  els.submitReport.textContent = "Submitting...";
+  els.reportMsg.className = "request-msg";
+  els.reportMsg.innerHTML = "";
+
+  try{
+    const { error } = await db.rpc("rv_public_report_link", {
+      p_link_id:currentReportLink.id || null,
+      p_department:currentReportLink.department || currentDep || "",
+      p_sub_department:currentReportLink.sub || "",
+      p_link_name:currentReportLink.name || "",
+      p_url:currentReportLink.url || "",
+      p_reason:reason,
+      p_suggested_url:suggested || null,
+      p_note:note || null,
+      p_reporter_key:VISITOR_KEY
+    });
+
+    if(error) throw error;
+
+    showReportMessage("ok", "Report sent to admin. Thank you for helping keep links clean.");
+    step();
+    setTimeout(() => closeReportModal(), 850);
+  }catch(err){
+    console.error(err);
+    showReportMessage("bad", esc(err.message || "Could not submit report."));
+  }finally{
+    els.submitReport.disabled = false;
+    els.submitReport.textContent = "Submit Report";
+  }
+}
+
+/* =========================================================
+   Steps / Theme / Prefs
+========================================================= */
 let sessionSteps = 0;
+
+function updateCounterUI(){
+  els.steps.textContent = dailyStepCount;
+  els.stepsTotal.textContent = totalViewCount;
+}
+
+async function trackVisit(){
+  try{
+    const { data, error } = await db.rpc("rv_track_visit");
+    if(error) throw error;
+
+    dailyStepCount = Number(data?.daily_steps || 0);
+    totalViewCount = Number(data?.total_views || 0);
+    analyticsReady = true;
+    updateCounterUI();
+  }catch(err){
+    console.warn("Supabase analytics not ready, using local fallback:", err.message || err);
+    dailyStepCount = Number(localStorage.getItem("rv_daily_steps_fallback") || 0);
+    totalViewCount = Number(localStorage.getItem(LS.STEPS) || 0) + 1;
+    localStorage.setItem(LS.STEPS, String(totalViewCount));
+    updateCounterUI();
+  }
+}
+
+async function saveStepToSupabase(n=1){
+  try{
+    const { data, error } = await db.rpc("rv_track_step", { p_amount: n });
+    if(error) throw error;
+
+    dailyStepCount = Number(data?.daily_steps || dailyStepCount);
+    totalViewCount = Number(data?.total_views || totalViewCount);
+    updateCounterUI();
+  }catch(err){
+    console.warn("Could not save step to Supabase:", err.message || err);
+  }
+}
+
 function step(n=1){
   sessionSteps += n;
-  els.steps.textContent = sessionSteps;
-  const t = Number(localStorage.getItem(LS.STEPS) || 0) + n;
-  localStorage.setItem(LS.STEPS, String(t));
-  els.stepsTotal.textContent = t;
+  dailyStepCount += n;
+  localStorage.setItem("rv_daily_steps_fallback", String(dailyStepCount));
+  updateCounterUI();
+
+  if(analyticsReady){
+    saveStepToSupabase(n);
+  }
 }
-(function initSteps(){
+
+function initSteps(){
   els.steps.textContent = "0";
-  els.stepsTotal.textContent = Number(localStorage.getItem(LS.STEPS) || 0);
-  step(1); // load
-})();
+  els.stepsTotal.textContent = "0";
+  trackVisit();
+}
 
-/* ===== Theme ===== */
-/* Default to DARK unless user saved choice */
-(function initTheme(){
+function initTheme(){
   let saved = localStorage.getItem(LS.THEME);
-  if(!saved){ saved = "dark"; localStorage.setItem(LS.THEME, saved); }
-  document.body.classList.toggle('dark', saved === "dark");
-})();
-els.btnTheme.addEventListener('click', ()=>{
-  const dark = !document.body.classList.contains('dark');
-  document.body.classList.toggle('dark', dark);
+  if(!saved){
+    saved = "light";
+    localStorage.setItem(LS.THEME, saved);
+  }
+  document.body.classList.toggle("dark", saved === "dark");
+}
+
+function toggleTheme(){
+  const dark = !document.body.classList.contains("dark");
+  document.body.classList.toggle("dark", dark);
   localStorage.setItem(LS.THEME, dark ? "dark" : "light");
-});
+}
 
-/* ===== Settings Panel Toggle ===== */
-function setSettingsOpen(open){
-  els.settings.classList.toggle('hidden', !open);
+function initPrefs(){
+  const density = localStorage.getItem(LS.DENSITY) || "comfort";
+  const media = localStorage.getItem(LS.MEDIA) || "on";
+  els.density.value = density;
+  els.media.value = media;
+  applyDensity(density);
+  applyMedia(media);
 }
-document.getElementById('btnSettings').addEventListener('click', ()=>{
-  const open = els.settings.classList.contains('hidden');
-  const mode = els.viewMode.value || "departments";
-  setSettingsOpen(open);
-  if(mode === "departments") localStorage.setItem(LS.SETTINGS_OPEN, open ? "1" : "0");
-  else localStorage.setItem(LS.SETTINGS_OPEN_NONDEP, open ? "1" : "0");
-});
 
-/* ===== Grid prefs ===== */
-function cssVar(name){
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-}
-function setCardMin(px){
-  document.documentElement.style.setProperty('--card-min', px + 'px');
-}
-function computeCardMinForCols(n){
-  const wrap = els.wrap.clientWidth;
-  const gap = parseInt(cssVar('--grid-gap') || '16', 10);
-  if(n <= 1) return Math.max(240, Math.floor(wrap));
-  const totalGap = (n - 1) * gap;
-  return Math.max(240, Math.floor((wrap - totalGap) / n));
-}
-function applyPrefs(p){
-  document.documentElement.style.setProperty('--density', p.density || "1");
-  els.density.value = p.density || "1";
-  document.documentElement.style.setProperty('--ratio', p.ratio || "1.777");
-  els.ratio.value = p.ratio || "1.777";
-  if((p.media || "on") === "off"){
-    document.documentElement.style.setProperty('--media-display', 'none');
-    document.documentElement.style.setProperty('--img-opacity', '0');
-    els.media.value = "off";
+function applyDensity(value){
+  const root = document.documentElement;
+  if(value === "compact"){
+    root.style.setProperty("--radius", "16px");
+  }else if(value === "large"){
+    root.style.setProperty("--radius", "22px");
   }else{
-    document.documentElement.style.setProperty('--media-display', 'block');
-    els.media.value = "on";
+    root.style.setProperty("--radius", "18px");
   }
-  const cols = Number(p.cols || 0);
-  els.cols.value = cols;
-  if(cols === 0) setCardMin(300);
-  else setCardMin(computeCardMinForCols(cols));
 }
-function readPrefs(){
-  try{ return JSON.parse(localStorage.getItem(LS.GRID) || "{}"); }catch{ return {} }
+
+function applyMedia(value){
+  document.querySelectorAll(".img").forEach(img => {
+    img.style.display = value === "off" ? "none" : "block";
+  });
 }
-function savePrefs(p){ localStorage.setItem(LS.GRID, JSON.stringify(p)); }
-applyPrefs(readPrefs());
 
-/* Controls */
-els.cols.addEventListener('input', ()=>{
-  const prefs = readPrefs(); prefs.cols = Number(els.cols.value);
-  savePrefs(prefs); applyPrefs(prefs);
-});
-els.density.addEventListener('change', ()=>{
-  const prefs = readPrefs(); prefs.density = els.density.value; savePrefs(prefs); applyPrefs(prefs);
-});
-els.ratio.addEventListener('change', ()=>{
-  const prefs = readPrefs(); prefs.ratio = els.ratio.value; savePrefs(prefs); applyPrefs(prefs);
-});
-els.media.addEventListener('change', ()=>{
-  const prefs = readPrefs(); prefs.media = els.media.value; savePrefs(prefs); applyPrefs(prefs);
-});
-window.addEventListener('resize', ()=>{
-  const prefs = readPrefs();
-  if(Number(prefs.cols || 0) > 0){
-    setCardMin(computeCardMinForCols(Number(prefs.cols)));
-  }
-});
+/* =========================================================
+   Load Data
+========================================================= */
+function normalizeDepartment(row){
+  return {
+    ID: row.id || "",
+    Department: String(row.department ?? row.Department ?? "").trim(),
+    ImageURL: String(row.image_url ?? row.ImageURL ?? "").trim(),
+    ImagePath: String(row.image_path ?? row.ImagePath ?? "").trim(),
+    Color: String(row.color ?? row.Color ?? "").trim(),
+    SortOrder: Number(row.sort_order ?? row.SortOrder ?? 0),
+    IsActive: row.is_active ?? row.IsActive ?? true
+  };
+}
 
-/* ===== Data load ===== */
+function normalizeSubDepartment(row){
+  return {
+    ID: row.id || "",
+    Department: String(row.department ?? row.Department ?? "").trim(),
+    SubDepartment: String(row.sub_department ?? row.SubDepartment ?? "").trim(),
+    SortOrder: Number(row.sort_order ?? row.SortOrder ?? 0),
+    IsActive: row.is_active ?? row.IsActive ?? true
+  };
+}
+
+function normalizeRow(row){
+  return {
+    ID: row.id || row.ID || null,
+    Department: String(row.department ?? row.Department ?? "").trim(),
+    SubDepartment: String(row.sub_department ?? row.SubDepartment ?? "").trim(),
+    DIURL: String(row.department_image_url ?? row.DIURL ?? "").trim(),
+    LinkName: String(row.link_name ?? row.LinkName ?? "Unnamed").trim(),
+    URL: String(row.url ?? row.URL ?? "#").trim(),
+    Color: String(row.color ?? row.Color ?? "").trim(),
+    ImageURL: String(row.image_url ?? row.ImageURL ?? "").trim(),
+    ImagePath: String(row.image_path ?? row.ImagePath ?? "").trim(),
+    DepartmentImagePath: String(row.department_image_path ?? row.DepartmentImagePath ?? "").trim(),
+    SortOrder: Number(row.sort_order ?? row.SortOrder ?? 0),
+    IsActive: row.is_active ?? row.IsActive ?? true
+  };
+}
+
 async function loadData(){
+  setDbStatus("", "Loading");
+
   try{
-    const res = await fetch(sheetURL, { cache:"no-store" });
-    rawRows = await res.json();
+    const { data, error } = await db
+      .from(SUPABASE_TABLE)
+      .select("*")
+      .eq("is_active", true)
+      .order("department", { ascending:true })
+      .order("sub_department", { ascending:true })
+      .order("sort_order", { ascending:true })
+      .order("link_name", { ascending:true });
+
+    if(error) throw error;
+
+    rawRows = (data || [])
+      .map(normalizeRow)
+      .filter(row => row.Department && row.LinkName);
+
+    try{
+      const { data: depData, error: depError } = await db
+        .from(DEPT_TABLE)
+        .select("*")
+        .eq("is_active", true)
+        .order("sort_order", { ascending:true })
+        .order("department", { ascending:true });
+
+      if(depError) throw depError;
+      departmentRows = (depData || []).map(normalizeDepartment).filter(d => d.Department);
+    }catch(depErr){
+      console.warn("Department table not available yet. Using link departments only:", depErr.message || depErr);
+      departmentRows = [];
+    }
+
+    try{
+      const { data: subData, error: subError } = await db
+        .from(SUB_TABLE)
+        .select("*")
+        .eq("is_active", true)
+        .order("sort_order", { ascending:true })
+        .order("sub_department", { ascending:true });
+
+      if(subError) throw subError;
+      subDepartmentRows = (subData || []).map(normalizeSubDepartment).filter(s => s.Department && s.SubDepartment);
+    }catch(subErr){
+      console.warn("Sub-department table not available yet. Using link sub-departments only:", subErr.message || subErr);
+      subDepartmentRows = [];
+    }
+
+    localRequests = getLocalRequests();
+    await syncLocalRequestsWithAdmin();
+
     buildMaps();
-    render();                 // render once
+    await Promise.all([loadGallery(), loadVoteData()]);
+    render();
+    setDbStatus("ok", `${rawRows.length} links`);
   }catch(e){
     console.error(e);
-    els.depGrid.innerHTML = `<div class="chip">Failed to load data.</div>`;
+    setDbStatus("bad", "DB error");
+    showOnly("depGrid");
+    els.depGrid.innerHTML = `
+      <div class="empty">
+        <strong>Failed to load Supabase data.</strong><br>
+        ${esc(e.message || e)}<br><br>
+        Check table name, columns, and RLS SELECT policy.
+      </div>
+    `;
   }
 }
+
 function buildMaps(){
   const map = {};
-  rawRows.forEach(row=>{
-    const dep = row.Department?.trim();
-    if(!dep) return;
-    const sub = row.SubDepartment?.trim();
-    const di = row.DIURL?.trim();
 
-    if(!map[dep]) map[dep] = { dep, subs:[], imageUrl: di || "" };
-    else if(!map[dep].imageUrl && di) map[dep].imageUrl = di;
+  function ensureDep(dep, imageUrl="", sortOrder=999999, pending=false){
+    if(!dep) return null;
+    if(!map[dep]){
+      map[dep] = {
+        dep,
+        subs:[],
+        imageUrl:imageUrl || "",
+        totalLinks:0,
+        sortOrder:Number(sortOrder || 999999),
+        pending:!!pending,
+        pendingSubs:new Set()
+      };
+    }
+    if(imageUrl && !map[dep].imageUrl) map[dep].imageUrl = imageUrl;
+    if(pending) map[dep].pending = true;
+    return map[dep];
+  }
 
-    if(sub && !map[dep].subs.includes(sub)) map[dep].subs.push(sub);
+  function addSub(dep, sub, pending=false){
+    const d = ensureDep(dep, "", 999999, false);
+    if(!d || !sub) return;
+    if(!d.subs.includes(sub)) d.subs.push(sub);
+    if(pending) d.pendingSubs.add(sub);
+  }
+
+  // Permanent departments created from admin panel.
+  departmentRows.forEach(row => {
+    const depImg = firstGood(row.ImageURL, getPublicImage(row.ImagePath));
+    ensureDep(row.Department, depImg, row.SortOrder || 0, false);
   });
-  departmentsData = Object.values(map).map(x=>({
-    ...x,
-    imageUrl: x.imageUrl || `https://source.unsplash.com/1200x800/?workspace,${encodeURIComponent(x.dep)}`
-  })).sort((a,b)=>a.dep.localeCompare(b.dep));
+
+  // Permanent empty sub-departments created from admin panel if table exists.
+  subDepartmentRows.forEach(row => {
+    ensureDep(row.Department, "", row.SortOrder || 0, false);
+    addSub(row.Department, row.SubDepartment, false);
+  });
+
+  // Permanent links still create departments/sub-departments automatically.
+  rawRows.forEach(row => {
+    const dep = row.Department;
+    const sub = row.SubDepartment;
+    const depImg = departmentImageFromRow(row);
+    const d = ensureDep(dep, depImg, 999999, false);
+
+    if(d && depImg && !d.imageUrl) d.imageUrl = depImg;
+    if(sub) addSub(dep, sub, false);
+
+    if(d) d.totalLinks++;
+  });
+
+  // Local pending Department/Sub/Link requests appear immediately on this browser.
+  localRequestsFor("department").forEach(req => {
+    ensureDep(
+      req.department,
+      firstGood(req.department_image_url, req.image_url),
+      999998,
+      true
+    );
+  });
+
+  localRequestsFor("sub_department").forEach(req => {
+    ensureDep(req.department, "", 999998, false);
+    addSub(req.department, req.sub_department, true);
+  });
+
+  localRequestsFor("link").forEach(req => {
+    const d = ensureDep(req.department, "", 999998, false);
+    addSub(req.department, req.sub_department || "General", true);
+    if(d) d.totalLinks++;
+  });
+
+  departmentsData = Object.values(map).map(d => ({
+    ...d,
+    subs: d.subs.sort((a,b) => a.localeCompare(b)),
+    pendingSubs:[...d.pendingSubs],
+    imageUrl: d.imageUrl || fallbackImage(d.dep)
+  })).sort((a,b) => (a.sortOrder - b.sortOrder) || a.dep.localeCompare(b.dep));
+
+  updateStats();
 }
 
-/* ===== Orders ===== */
-function getDeptOrder(){
-  try{ return JSON.parse(localStorage.getItem(LS.DEPT_ORDER) || "[]"); }catch{ return [] }
+function updateStats(){
+  els.statDepartments.textContent = departmentsData.length;
+  els.statSubs.textContent = allSubsCount();
+  els.statLinks.textContent = rawRows.length;
 }
+
+/* =========================================================
+   Gallery
+========================================================= */
+function fallbackGalleryFromLinks(){
+  const seen = new Set();
+  const items = [];
+
+  rawRows.forEach(row => {
+    const url = firstGood(imageFromRow(row), departmentImageFromRow(row));
+    if(!url || seen.has(url)) return;
+    seen.add(url);
+
+    items.push({
+      id:"",
+      title: row.LinkName || row.Department || "Existing image",
+      category: row.Department || "",
+      url
+    });
+  });
+
+  return items.slice(0, 100);
+}
+
+async function loadGallery(){
+  const fallback = fallbackGalleryFromLinks();
+
+  try{
+    const { data, error } = await db
+      .from(GALLERY_TABLE)
+      .select("id,title,category,image_url,image_path,is_active")
+      .eq("is_active", true)
+      .order("created_at", { ascending:false })
+      .limit(120);
+
+    if(error) throw error;
+
+    const fromTable = (data || []).map(item => {
+      const url = firstGood(item.image_url, getPublicImage(item.image_path));
+      return {
+        id:item.id || "",
+        title:item.title || "Gallery image",
+        category:item.category || "",
+        url
+      };
+    }).filter(x => x.url);
+
+    const merged = [];
+    const seen = new Set();
+
+    [...fromTable, ...fallback].forEach(item => {
+      if(!item.url || seen.has(item.url)) return;
+      seen.add(item.url);
+      merged.push(item);
+    });
+
+    galleryImages = merged;
+  }catch(e){
+    console.warn("Gallery table not available, using existing link images:", e.message || e);
+    galleryImages = fallback;
+  }
+
+  selectedGalleryImage = galleryImages[0] || null;
+}
+
+function renderGallery(){
+  els.galleryGrid.innerHTML = "";
+
+  if(!galleryImages.length){
+    els.galleryGrid.innerHTML = `
+      <div class="empty" style="grid-column:1/-1;padding:18px">
+        <strong>No gallery images yet.</strong><br>
+        You can paste an image URL or admin can add gallery images later.
+      </div>
+    `;
+    return;
+  }
+
+  galleryImages.forEach((item, index) => {
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "gallery-item" + ((selectedGalleryImage && selectedGalleryImage.url === item.url) ? " selected" : "");
+    card.title = item.title || "Gallery image";
+    card.innerHTML = `
+      <img src="${esc(item.url)}" alt="${esc(item.title || "Gallery image")}" loading="lazy">
+      <span class="gallery-check">✓</span>
+    `;
+
+    card.addEventListener("click", () => {
+      selectedGalleryImage = item;
+      renderGallery();
+    });
+
+    els.galleryGrid.appendChild(card);
+  });
+}
+
+function setPhotoMode(mode){
+  requestPhotoMode = mode;
+
+  document.querySelectorAll(".photo-mode").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.mode === mode);
+  });
+
+  els.galleryPanel.classList.toggle("hidden", mode !== "gallery");
+  els.urlPhotoPanel.classList.toggle("hidden", mode !== "url");
+}
+
+function renderDepartmentGallery(){
+  els.depGalleryGrid.innerHTML = "";
+
+  if(!galleryImages.length){
+    els.depGalleryGrid.innerHTML = `
+      <div class="empty" style="grid-column:1/-1;padding:18px">
+        <strong>No gallery images yet.</strong><br>
+        You can paste an image URL or admin can add gallery images later.
+      </div>
+    `;
+    return;
+  }
+
+  galleryImages.forEach((item) => {
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "gallery-item" + ((selectedDepartmentGalleryImage && selectedDepartmentGalleryImage.url === item.url) ? " selected" : "");
+    card.title = item.title || "Gallery image";
+    card.innerHTML = `
+      <img src="${esc(item.url)}" alt="${esc(item.title || "Gallery image")}" loading="lazy">
+      <span class="gallery-check">✓</span>
+    `;
+
+    card.addEventListener("click", () => {
+      selectedDepartmentGalleryImage = item;
+      renderDepartmentGallery();
+    });
+
+    els.depGalleryGrid.appendChild(card);
+  });
+}
+
+function setDepartmentPhotoMode(mode){
+  departmentPhotoMode = mode;
+
+  document.querySelectorAll(".dept-photo-mode").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.mode === mode);
+  });
+
+  els.depGalleryPanel.classList.toggle("hidden", mode !== "gallery");
+  els.depUrlPhotoPanel.classList.toggle("hidden", mode !== "url");
+}
+
+function openDepartmentModal(){
+  els.departmentForm.reset();
+  els.departmentMsg.className = "request-msg";
+  els.departmentMsg.innerHTML = "";
+
+  departmentPhotoMode = "gallery";
+  selectedDepartmentGalleryImage = selectedDepartmentGalleryImage || galleryImages[0] || null;
+  setDepartmentPhotoMode("gallery");
+  renderDepartmentGallery();
+
+  els.departmentModal.classList.add("show");
+  setTimeout(() => els.depReqDepartmentName.focus(), 60);
+}
+
+function closeDepartmentModal(){
+  els.departmentModal.classList.remove("show");
+}
+
+async function submitDepartmentRequestHandler(e){
+  e.preventDefault();
+
+  const department = els.depReqDepartmentName.value.trim();
+  const requested_by_name = els.depReqName.value.trim();
+  const requested_by_email = els.depReqEmail.value.trim();
+  const note = els.depReqNote.value.trim();
+
+  if(!department){
+    els.departmentMsg.className = "request-msg bad";
+    els.departmentMsg.innerHTML = "Please enter a department name.";
+    return;
+  }
+
+  if(alreadyHasDepartment(department)){
+    els.departmentMsg.className = "request-msg bad";
+    els.departmentMsg.innerHTML = "This department already exists on this page/device.";
+    return;
+  }
+
+  let image_url = "";
+  if(departmentPhotoMode === "gallery"){
+    image_url = selectedDepartmentGalleryImage?.url || "";
+  }else if(departmentPhotoMode === "url"){
+    image_url = els.depReqImageUrl.value.trim();
+  }
+
+  els.submitDepartmentRequest.disabled = true;
+  els.submitDepartmentRequest.textContent = "Submitting...";
+  els.departmentMsg.className = "request-msg";
+  els.departmentMsg.innerHTML = "";
+
+  const req = {
+    client_temp_id:makeTempId("department"),
+    request_type:"department",
+    department,
+    department_image_url:image_url || "",
+    image_url:image_url || "",
+    color:"",
+    note:note || "Department request from public page",
+    requested_by_name:requested_by_name || "",
+    requested_by_email:requested_by_email || "",
+    status:"pending",
+    submitted:false,
+    created_at:new Date().toISOString()
+  };
+
+  saveLocalRequest(req);
+  currentDep = department;
+  currentSub = "__all__";
+  els.viewMode.value = "subpage";
+  refreshLocalAndRender();
+
+  try{
+    await submitGenericRequest(req);
+    els.departmentMsg.className = "request-msg ok";
+    els.departmentMsg.innerHTML = "Saved locally and sent for admin approval.";
+    setTimeout(() => closeDepartmentModal(), 700);
+  }catch(err){
+    console.error(err);
+    els.departmentMsg.className = "request-msg bad";
+    els.departmentMsg.innerHTML = `Saved locally, but could not send to admin.<br>${esc(err.message || err)}`;
+  }finally{
+    els.submitDepartmentRequest.disabled = false;
+    els.submitDepartmentRequest.textContent = "Submit Department";
+  }
+}
+
+/* =========================================================
+   Local Sort Orders
+========================================================= */
+function getDeptOrder(){
+  try{return JSON.parse(localStorage.getItem(LS.DEPT_ORDER) || "[]")}catch{return []}
+}
+
 function setDeptOrder(ids){
   localStorage.setItem(LS.DEPT_ORDER, JSON.stringify(ids));
 }
+
 function getLinkOrder(dep, sub){
-  try{ return JSON.parse(localStorage.getItem(LS.LINK_ORDER(dep, sub)) || "[]"); }catch{ return [] }
-}
-function setLinkOrder(dep, sub, arr){
-  localStorage.setItem(LS.LINK_ORDER(dep, sub), JSON.stringify(arr));
+  try{return JSON.parse(localStorage.getItem(LS.LINK_ORDER(dep, sub)) || "[]")}catch{return []}
 }
 
-/* ===== Back button logic ===== */
-function updateBackVisibility(){
-  const mode = els.viewMode.value || "departments";
-  const show = (mode === "subpage" || mode === "links");
-  els.btnBack.classList.toggle('hidden', !show);
+function setLinkOrder(dep, sub, ids){
+  localStorage.setItem(LS.LINK_ORDER(dep, sub), JSON.stringify(ids));
 }
+
+/* =========================================================
+   Routing / Views
+========================================================= */
+function showOnly(which){
+  els.depGrid.classList.toggle("hidden", which !== "depGrid");
+  els.subGrid.classList.toggle("hidden", which !== "subGrid");
+  els.linkGrid.classList.toggle("hidden", which !== "linkGrid");
+}
+
+function updateBackVisibility(){
+  const mode = els.viewMode.value;
+  els.btnBack.classList.toggle("hidden", mode === "departments");
+}
+
 function goBack(){
-  const mode = els.viewMode.value || "departments";
+  const mode = els.viewMode.value;
+
   if(mode === "links"){
-    els.viewMode.value = "subpage";               // Links → Sub-Departments
+    els.viewMode.value = "subpage";
   }else if(mode === "subpage"){
-    els.viewMode.value = "departments";           // Sub-Departments → Home
+    els.viewMode.value = "departments";
     currentDep = null;
     currentSub = "__all__";
   }
-  render();                                       // always route through render()
+
+  render();
   step();
 }
-els.btnBack.addEventListener('click', goBack);
 
-/* ===== Views ===== */
-function render(){
-  const mode = els.viewMode.value || "departments";
+function updateTitleAndCrumbs(){
+  const mode = els.viewMode.value;
 
-  // settings visibility
-  if(mode === "departments"){
-    setSettingsOpen(false);
-    localStorage.setItem(LS.SETTINGS_OPEN, "0");
-  }else{
-    const saved = localStorage.getItem(LS.SETTINGS_OPEN_NONDEP);
-    setSettingsOpen(saved !== "0");
+  if(mode === "departments" || !currentDep){
+    els.crumbs.innerHTML = "Home";
+    els.pageTitle.textContent = "Departments";
+    els.pageNote.textContent = "Browse your departments, open sub-departments, and launch important tools quickly.";
+    return;
   }
+
+  if(mode === "subpage"){
+    els.crumbs.innerHTML = `<b>${esc(currentDep)}</b> / Sub-departments`;
+    els.pageTitle.textContent = currentDep;
+    els.pageNote.textContent = "Choose a sub-department to see the tools and links inside.";
+    return;
+  }
+
+  const subTxt = currentSub === "__all__" ? "All Links" : currentSub;
+  els.crumbs.innerHTML = `<b>${esc(currentDep)}</b> / ${esc(subTxt)}`;
+  els.pageTitle.textContent = subTxt;
+  els.pageNote.textContent = "Open tools in a new tab. Use Add New Link to send a request for admin approval.";
+}
+
+function render(){
+  const mode = els.viewMode.value;
+
+  const settingsSaved = localStorage.getItem(LS.SETTINGS_OPEN);
+  els.settings.classList.toggle("hidden", settingsSaved !== "1");
 
   if(mode === "departments") renderDepartments();
   else if(mode === "subpage") renderSubPage();
   else renderLinks();
 
-  updateCrumbs();
-  updateBackVisibility();                          // ensure button visibility after every render
+  updateTitleAndCrumbs();
+  updateBackVisibility();
+  updateTopAddButton();
+  applyMedia(els.media.value);
 }
 
-/* Departments */
+function updateTopAddButton(){
+  const mode = els.viewMode.value;
+  if(mode === "departments"){
+    els.btnAddLinkTop.textContent = "+ Dept";
+    els.btnAddLinkTop.title = "Add New Department";
+  }else if(mode === "subpage"){
+    els.btnAddLinkTop.textContent = "+ Sub";
+    els.btnAddLinkTop.title = "Add New Sub-Department";
+  }else{
+    els.btnAddLinkTop.textContent = "+ Link";
+    els.btnAddLinkTop.title = "Add New Link";
+  }
+}
+
+/* =========================================================
+   Render Departments
+========================================================= */
 function renderDepartments(){
-  showOnly('depGrid');
+  showOnly("depGrid");
 
   const q = els.search.value.trim().toLowerCase();
   const order = getDeptOrder();
-  const base = q
-    ? departmentsData.filter(({dep, subs})=> dep.toLowerCase().includes(q) || subs.some(s=>s.toLowerCase().includes(q)))
-    : [
-        ...order.map(id => departmentsData.find(d=>d.dep===id)).filter(Boolean),
-        ...departmentsData.filter(d=>!order.includes(d.dep))
-      ];
+
+  let data = departmentsData;
+
+  if(q){
+    data = data.filter(d =>
+      d.dep.toLowerCase().includes(q) ||
+      d.subs.some(s => s.toLowerCase().includes(q))
+    );
+  }else{
+    data = [
+      ...order.map(name => departmentsData.find(d => d.dep === name)).filter(Boolean),
+      ...departmentsData.filter(d => !order.includes(d.dep))
+    ];
+  }
 
   els.depGrid.innerHTML = "";
-  base.forEach(({dep, subs, imageUrl})=>{
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.setAttribute('data-id', dep);
+
+  if(data.length === 0){
+    els.depGrid.innerHTML = `<div class="empty"><strong>No departments found.</strong><br>You can add a new department request below.</div>`;
+    els.depGrid.appendChild(addDepartmentCard());
+    return;
+  }
+
+  data.forEach(d => {
+    const card = document.createElement("div");
+    card.className = "card" + (d.pending ? " pending-card" : "");
+    card.dataset.id = d.dep;
+    const votes = voteCountFor(d.dep);
+    const alreadyVoted = hasVotedFor(d.dep);
+
     card.innerHTML = `
-      <img class="img" loading="lazy" decoding="async" src="${imageUrl}" alt="${dep}" width="1200" height="675">
+      <img class="img" loading="lazy" decoding="async" src="${esc(d.imageUrl)}" alt="${esc(d.dep)}">
       <div class="veil"></div>
       <div class="overlay"></div>
+      <button class="vote-btn ${alreadyVoted ? "voted" : ""}" type="button" title="${alreadyVoted ? "Vote counted" : "Vote for this department"}">
+        👍 <span>${votes}</span>
+      </button>
+      ${d.pending ? `<div class="pending-ribbon">Pending</div>` : ``}
       <div class="label">
-        <span>${dep}</span>
-        <span class="pill">Subs: ${subs.length}</span>
+        <div class="label-main">
+          <span class="label-title">${esc(d.dep)}</span>
+          <span class="label-sub">${d.pending ? "Waiting for admin approval" : `${d.totalLinks} links inside`}</span>
+        </div>
+        <span class="pill">${d.pending ? "Pending" : `${d.subs.length} subs`}</span>
       </div>
     `;
-    card.addEventListener('click', ()=>{
-      currentDep = dep;
+
+    card.querySelector(".vote-btn").addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      voteForDepartment(d.dep, e.currentTarget);
+    });
+
+    card.addEventListener("click", () => {
+      currentDep = d.dep;
       currentSub = "__all__";
       els.viewMode.value = "subpage";
-      render();                                    // FIX: go through render(), not direct sub-render
+      render();
       step();
     });
+
     els.depGrid.appendChild(card);
   });
 
-  if(depSortable){ depSortable.destroy(); depSortable=null; }
+  // Add New Department request card stays at the end of home page
+  els.depGrid.appendChild(addDepartmentCard());
+
+  if(depSortable){
+    depSortable.destroy();
+    depSortable = null;
+  }
+
   if(sorting){
     depSortable = Sortable.create(els.depGrid, {
-      animation:120,
-      onEnd: ()=>{
-        const ids = [...els.depGrid.children].map(el=>el.getAttribute('data-id'));
-        setDeptOrder(ids); step();
+      animation:140,
+      onEnd:() => {
+        const ids = [...els.depGrid.children].map(el => el.dataset.id).filter(Boolean);
+        setDeptOrder(ids);
+        step();
       }
     });
   }
 }
 
-/* Sub-departments */
+/* =========================================================
+   Render Sub Departments
+========================================================= */
 function renderSubPage(){
-  showOnly('subGrid');
+  showOnly("subGrid");
 
   if(!currentDep){
     els.viewMode.value = "departments";
@@ -557,56 +2798,200 @@ function renderSubPage(){
     return;
   }
 
-  const depObj = departmentsData.find(d=>d.dep===currentDep);
+  const depObj = departmentsData.find(d => d.dep === currentDep);
   const subs = depObj?.subs || [];
 
   els.subFilter.disabled = false;
-  els.subFilter.innerHTML = `<option value="__all__">All</option>` + subs.map(s=>`<option value="${s}">${s}</option>`).join('');
+  els.subFilter.innerHTML = `<option value="__all__">All</option>` + subs.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join("");
   els.subFilter.value = "__all__";
 
   const q = els.search.value.trim().toLowerCase();
-  const filtered = q ? subs.filter(s=>s.toLowerCase().includes(q)) : subs;
+  const filtered = q ? subs.filter(s => s.toLowerCase().includes(q)) : subs;
 
   els.subGrid.innerHTML = "";
+
   if(filtered.length === 0){
-    els.subGrid.innerHTML = `<div class="chip" style="grid-column:1/-1">No sub-departments match.</div>`;
+    els.subGrid.innerHTML = `<div class="empty"><strong>No sub-departments yet.</strong><br>Add a sub-department request below. It will work locally right away.</div>`;
+    els.subGrid.appendChild(addSubDepartmentCard());
     return;
   }
 
-  filtered.forEach(s=>{
-    const chip = document.createElement('div');
-    chip.className = 'subchip';
-    chip.textContent = s;
-    chip.addEventListener('click', ()=>{
-      currentSub = s;
-      els.subFilter.value = s;
+  filtered.forEach(sub => {
+    const isPendingSub = depObj?.pendingSubs?.includes(sub);
+    const chip = document.createElement("div");
+    chip.className = "subchip" + (isPendingSub ? " pending-card" : "");
+    chip.innerHTML = `
+      <div class="sub-top">
+        <div class="sub-icon">↗</div>
+        <div class="sub-count">${countLinksInSub(currentDep, sub)}</div>
+      </div>
+      ${isPendingSub ? `<div class="pending-ribbon">Pending</div>` : ``}
+      <div>
+        <div class="sub-title">${esc(sub)}</div>
+        <div class="sub-desc">${isPendingSub ? "Waiting for admin approval" : "Open links and tools"}</div>
+      </div>
+    `;
+
+    chip.addEventListener("click", () => {
+      currentSub = sub;
+      els.subFilter.value = sub;
       els.viewMode.value = "links";
-      render();                                    // FIX: go through render()
+      render();
       step();
     });
+
     els.subGrid.appendChild(chip);
   });
+
+  // Add New Sub-Department request card stays at the end of sub-department view
+  els.subGrid.appendChild(addSubDepartmentCard());
 }
 
-/* Links */
+/* =========================================================
+   Render Links
+========================================================= */
 function linksFor(dep, sub){
-  const lowerDep = dep?.toLowerCase();
-  const lowerSub = sub?.toLowerCase();
-  const rows = rawRows.filter(r=>{
-    const rDep = r.Department?.toLowerCase().trim();
-    const rSub = r.SubDepartment?.toLowerCase().trim();
-    if(rDep !== lowerDep) return false;
-    if(sub==="__all__") return true;
-    return rSub === lowerSub;
-  });
-  return rows.map(r=>({
-    name: r.LinkName?.trim() || "Unnamed",
-    url : r.URL?.trim() || "#",
-    image: r.ImageURL?.trim() || ""
-  }));
+  const lowerDep = String(dep || "").toLowerCase();
+  const lowerSub = String(sub || "").toLowerCase();
+
+  const permanent = rawRows
+    .filter(row => {
+      const rowDep = row.Department.toLowerCase();
+      const rowSub = row.SubDepartment.toLowerCase();
+      if(rowDep !== lowerDep) return false;
+      if(sub === "__all__") return true;
+      return rowSub === lowerSub;
+    })
+    .map(row => ({
+      id: row.ID || null,
+      department: row.Department || dep || "",
+      name: row.LinkName || "Unnamed",
+      url: safeUrl(row.URL),
+      image: imageFromRow(row) || fallbackImage(row.LinkName),
+      sub: row.SubDepartment || "",
+      sort: Number(row.SortOrder || 0),
+      pending:false
+    }));
+
+  const pending = localRequestsFor("link")
+    .filter(req => {
+      const rowDep = String(req.department || "").toLowerCase();
+      const rowSub = String(req.sub_department || "General").toLowerCase();
+      if(rowDep !== lowerDep) return false;
+      if(sub === "__all__") return true;
+      return rowSub === lowerSub;
+    })
+    .map(req => ({
+      id:null,
+      department:req.department || dep || "",
+      name: req.link_name || "Pending Link",
+      url: safeUrl(req.url),
+      image: req.image_url || fallbackImage(req.link_name || "Pending Link"),
+      sub: req.sub_department || "General",
+      sort: -1,
+      pending:true,
+      client_temp_id:req.client_temp_id
+    }));
+
+  return [...pending, ...permanent]
+    .sort((a,b) => (a.sort - b.sort) || a.name.localeCompare(b.name));
 }
+
+function addDepartmentCard(){
+  const card = document.createElement("button");
+  card.type = "button";
+  card.className = "add-card";
+  card.innerHTML = `
+    <div class="add-content">
+      <div class="add-plus">+</div>
+      <div class="add-title">Add Department</div>
+      <div class="add-desc">Create it locally now. Admin approval makes it permanent.</div>
+    </div>
+  `;
+
+  card.addEventListener("click", () => requestNewDepartment());
+  return card;
+}
+
+function addSubDepartmentCard(){
+  const card = document.createElement("button");
+  card.type = "button";
+  card.className = "add-card";
+  card.innerHTML = `
+    <div class="add-content">
+      <div class="add-plus">+</div>
+      <div class="add-title">Add Sub-Department</div>
+      <div class="add-desc">Use it immediately here. Admin approval makes it permanent.</div>
+    </div>
+  `;
+
+  card.addEventListener("click", () => requestNewSubDepartment());
+  return card;
+}
+
+async function requestNewDepartment(){
+  openDepartmentModal();
+}
+
+async function requestNewSubDepartment(){
+  if(!currentDep){
+    alert("Open a department first.");
+    return;
+  }
+
+  const name = prompt(`New sub-department under "${currentDep}"?`);
+  if(!name || !name.trim()) return;
+
+  const sub_department = name.trim();
+
+  if(alreadyHasSubDepartment(currentDep, sub_department)){
+    alert("This sub-department already exists on this device/page.");
+    return;
+  }
+
+  const req = {
+    client_temp_id:makeTempId("sub_department"),
+    request_type:"sub_department",
+    department:currentDep,
+    sub_department,
+    note:"Sub-department request from public page",
+    status:"pending",
+    submitted:false,
+    created_at:new Date().toISOString()
+  };
+
+  saveLocalRequest(req);
+  currentSub = sub_department;
+  els.viewMode.value = "links";
+  refreshLocalAndRender();
+
+  try{
+    await submitGenericRequest(req);
+    alert("Sub-department added locally and sent for admin approval.");
+  }catch(err){
+    console.error(err);
+    alert("Sub-department added locally, but admin request failed. Check Supabase request policy.");
+  }
+}
+
+function addNewLinkCard(){
+  const card = document.createElement("button");
+  card.type = "button";
+  card.className = "add-card";
+  card.innerHTML = `
+    <div class="add-content">
+      <div class="add-plus">+</div>
+      <div class="add-title">Add New Link</div>
+      <div class="add-desc">Send a request. Admin will approve it before it appears here.</div>
+    </div>
+  `;
+
+  card.addEventListener("click", () => openRequestModal());
+  return card;
+}
+
 function renderLinks(){
-  showOnly('linkGrid');
+  showOnly("linkGrid");
 
   if(!currentDep){
     els.viewMode.value = "departments";
@@ -615,100 +3000,407 @@ function renderLinks(){
   }
 
   if(els.subFilter.disabled){
-    const depObj = departmentsData.find(d=>d.dep===currentDep);
+    const depObj = departmentsData.find(d => d.dep === currentDep);
     const subs = depObj?.subs || [];
     els.subFilter.disabled = false;
-    els.subFilter.innerHTML = `<option value="__all__">All</option>` + subs.map(s=>`<option value="${s}">${s}</option>`).join('');
+    els.subFilter.innerHTML = `<option value="__all__">All</option>` + subs.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join("");
   }
+
   els.subFilter.value = currentSub;
 
   let data = linksFor(currentDep, currentSub);
   const q = els.search.value.trim().toLowerCase();
+
   if(q){
-    data = data.filter(l => l.name.toLowerCase().includes(q) || l.url.toLowerCase().includes(q));
+    data = data.filter(l =>
+      l.name.toLowerCase().includes(q) ||
+      l.url.toLowerCase().includes(q) ||
+      l.sub.toLowerCase().includes(q)
+    );
   }
 
   const order = getLinkOrder(currentDep, currentSub);
   const sorted = [
-    ...order.map(n => data.find(l=>l.name===n)).filter(Boolean),
+    ...order.map(name => data.find(l => l.name === name)).filter(Boolean),
     ...data.filter(l => !order.includes(l.name))
   ];
 
   els.linkGrid.innerHTML = "";
+
   if(sorted.length === 0){
-    els.linkGrid.innerHTML = `<div class="chip" style="grid-column:1/-1">No links found.</div>`;
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.innerHTML = `<strong>No links found.</strong><br>You can submit a new link request using the Add New Link card below.`;
+    els.linkGrid.appendChild(empty);
   }else{
-    sorted.forEach(l=>{
-      const item = document.createElement('a');
-      item.className = 'link';
-      item.setAttribute('data-name', l.name);
-      item.href = l.url;
-      item.target = "_blank";
-      item.rel="noopener";
-      const img = l.image ? `<img class="img" loading="lazy" decoding="async" src="${l.image}" alt="" width="1200" height="675">` : '';
-      item.innerHTML = `${img}<div class="veil"></div><div class="overlay"></div><div class="label">${l.name}</div>`;
-      item.addEventListener('click', ()=> step());
+    sorted.forEach(l => {
+      const item = document.createElement("div");
+      item.className = "link" + (l.pending ? " pending-card" : "");
+      item.dataset.name = l.name;
+      item.setAttribute("role", "link");
+      item.setAttribute("tabindex", "0");
+      item.setAttribute("aria-label", `Open ${l.name}`);
+
+      item.innerHTML = `
+        <img class="img" loading="lazy" decoding="async" src="${esc(l.image)}" alt="${esc(l.name)}">
+        <div class="veil"></div>
+        <div class="overlay"></div>
+        ${!l.pending ? `
+          <div class="link-actions-top">
+            <button class="report-btn" type="button" title="Report this link">⚑ Report</button>
+          </div>
+        ` : ``}
+        ${l.pending ? `<div class="pending-ribbon">Pending</div>` : ``}
+        <div class="label">
+          <div class="label-main">
+            <span class="label-title">${esc(l.name)}</span>
+            <span class="label-sub">${l.pending ? "Local now • waiting for admin" : esc(l.sub || currentDep)}</span>
+          </div>
+          <span class="pill">${l.pending ? "Pending" : "Open"}</span>
+        </div>
+      `;
+
+      const openLink = () => {
+        if(!l.url || l.url === "#") return;
+        window.open(l.url, "_blank", "noopener,noreferrer");
+        step();
+      };
+
+      item.addEventListener("click", (e) => {
+        if(e.target.closest("button")) return;
+        openLink();
+      });
+
+      item.addEventListener("keydown", (e) => {
+        if(e.key === "Enter" || e.key === " "){
+          e.preventDefault();
+          openLink();
+        }
+      });
+
+      const reportBtn = item.querySelector(".report-btn");
+      if(reportBtn){
+        reportBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openReportModal(l);
+        });
+      }
+
       els.linkGrid.appendChild(item);
     });
   }
 
-  if(linkSortable){ linkSortable.destroy(); linkSortable=null; }
+  // Add New Link card stays at the end of the links grid
+  els.linkGrid.appendChild(addNewLinkCard());
+
+  if(linkSortable){
+    linkSortable.destroy();
+    linkSortable = null;
+  }
+
   if(sorting){
     linkSortable = Sortable.create(els.linkGrid, {
-      animation:120,
-      onEnd: ()=>{
-        const names = [...els.linkGrid.children].map(el=>el.getAttribute('data-name'));
-        setLinkOrder(currentDep, currentSub, names); step();
+      animation:140,
+      filter: ".add-card,.empty",
+      onEnd:() => {
+        const names = [...els.linkGrid.children].map(el => el.dataset.name).filter(Boolean);
+        setLinkOrder(currentDep, currentSub, names);
+        step();
       }
     });
   }
 }
 
-/* ===== Helpers ===== */
-function showOnly(which){
-  els.depGrid.classList.toggle('hidden', which!=='depGrid');
-  els.subGrid.classList.toggle('hidden', which!=='subGrid');
-  els.linkGrid.classList.toggle('hidden', which!=='linkGrid');
+/* =========================================================
+   Request Modal
+========================================================= */
+function openRequestModal(){
+  if(!currentDep){
+    const firstDep = departmentsData[0];
+    if(!firstDep){
+      alert("No departments available yet.");
+      return;
+    }
+    currentDep = firstDep.dep;
+    currentSub = firstDep.subs[0] || "__all__";
+    els.viewMode.value = currentSub === "__all__" ? "subpage" : "links";
+    render();
+  }
+
+  const depObj = departmentsData.find(d => d.dep === currentDep);
+  const subs = depObj?.subs || [];
+
+  els.requestForm.reset();
+  els.requestMsg.className = "request-msg";
+  els.requestMsg.innerHTML = "";
+
+  els.reqDepartment.value = currentDep;
+
+  const subOptions = subs.length ? subs : ["General"];
+  els.reqSubDepartment.innerHTML = subOptions.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join("");
+
+  if(currentSub && currentSub !== "__all__" && subOptions.includes(currentSub)){
+    els.reqSubDepartment.value = currentSub;
+  }else if(subOptions[0]){
+    els.reqSubDepartment.value = subOptions[0];
+  }
+
+  requestPhotoMode = "gallery";
+  selectedGalleryImage = selectedGalleryImage || galleryImages[0] || null;
+  setPhotoMode("gallery");
+  renderGallery();
+
+  els.requestModal.classList.add("show");
+  setTimeout(() => els.reqLinkName.focus(), 50);
 }
-function updateCrumbs(){
-  const mode = els.viewMode?.value || "departments";
-  if(mode === "departments" || !currentDep){
-    els.crumbs.textContent = "Home";
-  }else if(mode === "subpage"){
-    els.crumbs.innerHTML = `<b>${currentDep}</b> / Sub-departments`;
-  }else{
-    const subTxt = currentSub==="__all__" ? "All" : currentSub;
-    els.crumbs.innerHTML = `<b>${currentDep}</b> / ${subTxt}`;
+
+function closeRequestModal(){
+  els.requestModal.classList.remove("show");
+}
+
+async function submitLinkRequest(e){
+  e.preventDefault();
+
+  const department = els.reqDepartment.value.trim();
+  const sub_department = els.reqSubDepartment.value.trim();
+  const link_name = els.reqLinkName.value.trim();
+  const url = safeUrl(els.reqUrl.value.trim());
+  const requested_by_name = els.reqName.value.trim();
+  const requested_by_email = els.reqEmail.value.trim();
+  const note = els.reqNote.value.trim();
+
+  let image_url = "";
+
+  if(requestPhotoMode === "gallery"){
+    image_url = selectedGalleryImage?.url || "";
+  }else if(requestPhotoMode === "url"){
+    image_url = els.reqImageUrl.value.trim();
+  }
+
+  if(!department || !sub_department || !link_name || !url || url === "#"){
+    showMessage("bad", "Please fill department, sub-department, link name, and valid URL.");
+    return;
+  }
+
+  els.submitRequest.disabled = true;
+  els.submitRequest.textContent = "Submitting...";
+  showMessage("", "");
+
+  const req = {
+    client_temp_id:makeTempId("link"),
+    request_type:"link",
+    department,
+    sub_department,
+    link_name,
+    url,
+    image_url:image_url || "",
+    note:note || "",
+    requested_by_name:requested_by_name || "",
+    requested_by_email:requested_by_email || "",
+    status:"pending",
+    submitted:false,
+    created_at:new Date().toISOString()
+  };
+
+  // Save locally first so user can use it right away on this browser.
+  saveLocalRequest(req);
+  currentDep = department;
+  currentSub = sub_department;
+  els.viewMode.value = "links";
+  refreshLocalAndRender();
+
+  try{
+    await submitGenericRequest(req);
+
+    showMessage(
+      "ok",
+      "Saved locally and sent for admin approval. You can use it now on this browser. It becomes permanent after admin approval."
+    );
+
+    els.reqLinkName.value = "";
+    els.reqUrl.value = "";
+    els.reqImageUrl.value = "";
+    els.reqNote.value = "";
+
+    step();
+  }catch(err){
+    console.error(err);
+    showMessage(
+      "bad",
+      `Saved locally, but could not send to admin.<br>${esc(err.message || err)}<br><br>Check ranvexsi_requests insert policy.`
+    );
+  }finally{
+    els.submitRequest.disabled = false;
+    els.submitRequest.textContent = "Submit for Approval";
   }
 }
 
-/* ===== Sorting/Refresh/Clear ===== */
-els.viewMode.addEventListener('change', ()=>{ render(); step(); });
-els.subFilter.addEventListener('change', ()=>{
-  currentSub = els.subFilter.value;
-  els.viewMode.value = "links";
-  render();                                        // FIX: go through render()
+/* =========================================================
+   Realtime
+========================================================= */
+function scheduleRealtimeReload(){
+  clearTimeout(realtimeReloadTimer);
+  realtimeReloadTimer = setTimeout(() => loadData(), 350);
+}
+
+function setupRealtime(){
+  try{
+    if(realtimeChannel){
+      db.removeChannel(realtimeChannel);
+      realtimeChannel = null;
+    }
+
+    const tables = [
+      SUPABASE_TABLE,
+      DEPT_TABLE,
+      SUB_TABLE,
+      REQUEST_TABLE,
+      GALLERY_TABLE,
+      "ranvexsi_department_votes"
+    ];
+
+    let channel = db.channel("ranvexsi-ui-live-votes-reports");
+
+    tables.forEach(tableName => {
+      channel = channel.on(
+        "postgres_changes",
+        { event:"*", schema:"public", table:tableName },
+        scheduleRealtimeReload
+      );
+    });
+
+    realtimeChannel = channel.subscribe();
+  }catch(e){
+    console.warn("Realtime not started:", e);
+  }
+}
+
+/* =========================================================
+   Events
+========================================================= */
+els.btnTheme.addEventListener("click", toggleTheme);
+
+els.btnAddLinkTop.addEventListener("click", () => {
+  const mode = els.viewMode.value;
+  if(mode === "departments") requestNewDepartment();
+  else if(mode === "subpage") requestNewSubDepartment();
+  else openRequestModal();
   step();
 });
-els.btnSort.addEventListener('click', ()=>{
+
+els.btnSettings.addEventListener("click", () => {
+  const open = els.settings.classList.contains("hidden");
+  els.settings.classList.toggle("hidden", !open);
+  localStorage.setItem(LS.SETTINGS_OPEN, open ? "1" : "0");
+});
+
+els.btnBack.addEventListener("click", goBack);
+
+els.btnRefresh.addEventListener("click", () => {
+  loadData();
+  step();
+});
+
+els.btnClear.addEventListener("click", () => {
+  localStorage.removeItem(LS.DEPT_ORDER);
+  Object.keys(localStorage).forEach(k => {
+    if(k.startsWith("rv_link_order_index_")) localStorage.removeItem(k);
+  });
+  render();
+  step();
+});
+
+els.btnSort.addEventListener("click", () => {
   sorting = !sorting;
   els.btnSort.textContent = sorting ? "Disable Sort" : "Enable Sort";
   render();
+  step();
 });
-els.btnRefresh.addEventListener('click', ()=>{ loadData(); step(); });
-els.btnClear.addEventListener('click', ()=>{
-  localStorage.removeItem(LS.DEPT_ORDER);
-  Object.keys(localStorage).forEach(k=>{ if(k.startsWith('rv_link_order_')) localStorage.removeItem(k); });
+
+els.viewMode.addEventListener("change", () => {
+  if(els.viewMode.value === "departments"){
+    currentDep = null;
+    currentSub = "__all__";
+  }
+  render();
+  step();
+});
+
+els.subFilter.addEventListener("change", () => {
+  currentSub = els.subFilter.value;
+  els.viewMode.value = "links";
+  render();
+  step();
+});
+
+els.density.addEventListener("change", () => {
+  localStorage.setItem(LS.DENSITY, els.density.value);
+  applyDensity(els.density.value);
   render();
 });
 
-/* search debounce */
-let t; els.search.addEventListener('input', ()=>{
-  clearTimeout(t); t = setTimeout(()=>{ render(); }, 220);
+els.media.addEventListener("change", () => {
+  localStorage.setItem(LS.MEDIA, els.media.value);
+  applyMedia(els.media.value);
 });
 
-/* ===== Init ===== */
+document.querySelectorAll(".photo-mode").forEach(btn => {
+  btn.addEventListener("click", () => setPhotoMode(btn.dataset.mode));
+});
+
+document.querySelectorAll(".dept-photo-mode").forEach(btn => {
+  btn.addEventListener("click", () => setDepartmentPhotoMode(btn.dataset.mode));
+});
+
+els.closeRequestModal.addEventListener("click", closeRequestModal);
+els.cancelRequest.addEventListener("click", closeRequestModal);
+els.requestForm.addEventListener("submit", submitLinkRequest);
+
+els.closeDepartmentModal.addEventListener("click", closeDepartmentModal);
+els.cancelDepartmentRequest.addEventListener("click", closeDepartmentModal);
+els.departmentForm.addEventListener("submit", submitDepartmentRequestHandler);
+
+els.closeReportModal.addEventListener("click", closeReportModal);
+els.cancelReport.addEventListener("click", closeReportModal);
+els.reportForm.addEventListener("submit", submitLinkReport);
+
+els.requestModal.addEventListener("click", (e) => {
+  if(e.target === els.requestModal) closeRequestModal();
+});
+
+els.departmentModal.addEventListener("click", (e) => {
+  if(e.target === els.departmentModal) closeDepartmentModal();
+});
+
+els.reportModal.addEventListener("click", (e) => {
+  if(e.target === els.reportModal) closeReportModal();
+});
+
+document.addEventListener("keydown", (e) => {
+  if(e.key === "Escape" && els.requestModal.classList.contains("show")){
+    closeRequestModal();
+  }
+  if(e.key === "Escape" && els.departmentModal.classList.contains("show")){
+    closeDepartmentModal();
+  }
+  if(e.key === "Escape" && els.reportModal.classList.contains("show")){
+    closeReportModal();
+  }
+});
+
+let searchTimer = null;
+els.search.addEventListener("input", () => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => render(), 160);
+});
+
+/* =========================================================
+   Init
+========================================================= */
+initSteps();
+initTheme();
+initPrefs();
 loadData();
+setupRealtime();
 </script>
-</body>
-</html>
