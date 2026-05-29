@@ -555,6 +555,10 @@
     background:linear-gradient(135deg,#16a34a,#15803d);
   }
 
+  .main-btn.dark-btn{
+    background:linear-gradient(135deg,#0f172a,#334155);
+  }
+
   .main-btn:hover{
     transform:translateY(-1px);
     box-shadow:var(--shadow);
@@ -913,6 +917,10 @@
     .barcode-grid{
       grid-template-columns:repeat(2,minmax(0,1fr));
     }
+
+    .top-btn span{
+      display:none;
+    }
   }
 
   @media(max-width:560px){
@@ -1027,6 +1035,7 @@
           <span>Code 128 Ready</span>
         </div>
 
+        <button class="top-btn green" id="btnPasteGenerateTop" type="button">Paste + Generate</button>
         <button class="top-btn primary" id="btnGenerateTop" type="button">Generate</button>
         <button class="top-btn green" id="btnPrintTop" type="button">Print</button>
         <button class="iconbtn" id="btnTheme" title="Light/Dark">🌗</button>
@@ -1123,6 +1132,8 @@ TSX123456791"></textarea>
           </label>
 
           <div class="btn-grid">
+            <button class="main-btn green" id="btnPaste" type="button">Paste Clipboard</button>
+            <button class="main-btn dark-btn" id="btnPasteGenerate" type="button">Paste + Generate</button>
             <button class="main-btn" id="btnGenerate" type="button">Generate</button>
             <button class="main-btn secondary" id="btnSample" type="button">Sample</button>
             <button class="main-btn green" id="btnPrint" type="button">Print Sheet</button>
@@ -1178,7 +1189,7 @@ TSX123456791"></textarea>
       </div>
 
       <div class="scan-body">
-        <div class="scan-barcode-box">
+        <div class="scan-barcode-box" id="scanBarcodeBox">
           <svg id="scanSvg"></svg>
         </div>
       </div>
@@ -1222,6 +1233,9 @@ const els = {
 
   btnBack:document.getElementById("btnBack"),
   btnTheme:document.getElementById("btnTheme"),
+  btnPaste:document.getElementById("btnPaste"),
+  btnPasteGenerate:document.getElementById("btnPasteGenerate"),
+  btnPasteGenerateTop:document.getElementById("btnPasteGenerateTop"),
   btnGenerate:document.getElementById("btnGenerate"),
   btnGenerateTop:document.getElementById("btnGenerateTop"),
   btnSample:document.getElementById("btnSample"),
@@ -1235,7 +1249,7 @@ const els = {
   scanModal:document.getElementById("scanModal"),
   scanTitle:document.getElementById("scanTitle"),
   scanSub:document.getElementById("scanSub"),
-  scanSvg:document.getElementById("scanSvg"),
+  scanBarcodeBox:document.getElementById("scanBarcodeBox"),
   btnCloseScan:document.getElementById("btnCloseScan"),
   btnPrev:document.getElementById("btnPrev"),
   btnNext:document.getElementById("btnNext"),
@@ -1277,6 +1291,37 @@ function copyText(text){
   }).catch(() => {
     setNotice("bad", "Could not copy.");
   });
+}
+
+async function pasteClipboard(autoGenerate=false){
+  clearNotice();
+
+  try{
+    if(!navigator.clipboard || !navigator.clipboard.readText){
+      els.inputData.focus();
+      setNotice("bad", "Browser blocked auto paste. Click inside the box and press Ctrl+V.");
+      return;
+    }
+
+    const text = await navigator.clipboard.readText();
+
+    if(!String(text || "").trim()){
+      setNotice("bad", "Clipboard is empty.");
+      return;
+    }
+
+    els.inputData.value = String(text).trim();
+
+    setNotice("ok", "Clipboard data pasted.");
+
+    if(autoGenerate){
+      generateBarcodes();
+    }
+  }catch(err){
+    console.error(err);
+    els.inputData.focus();
+    setNotice("bad", "Clipboard permission blocked. Click inside the box and press Ctrl+V.");
+  }
 }
 
 function parseInput(){
@@ -1479,15 +1524,20 @@ function openScan(index){
   els.scanTitle.textContent = item.value;
   els.scanSub.textContent = `${currentScanIndex + 1} of ${shownItems.length} · Large scan mode`;
 
-  els.scanSvg.innerHTML = "";
+  els.scanBarcodeBox.innerHTML = `<svg id="scanSvg"></svg>`;
+  const scanSvg = document.getElementById("scanSvg");
 
   els.scanModal.classList.add("show");
 
   setTimeout(() => {
     try{
-      JsBarcode(els.scanSvg, item.value, getOptions(true));
+      JsBarcode(scanSvg, item.value, getOptions(true));
     }catch(err){
-      els.scanSvg.outerHTML = `<div style="color:#dc2626;font-weight:900;">Failed to generate large barcode.</div>`;
+      els.scanBarcodeBox.innerHTML = `
+        <div style="color:#dc2626;font-weight:900;text-align:center;padding:18px;">
+          Failed to generate large barcode.
+        </div>
+      `;
     }
   }, 40);
 }
@@ -1625,6 +1675,10 @@ function goBack(){
 els.btnBack.addEventListener("click", goBack);
 els.btnTheme.addEventListener("click", toggleTheme);
 
+els.btnPaste.addEventListener("click", () => pasteClipboard(false));
+els.btnPasteGenerate.addEventListener("click", () => pasteClipboard(true));
+els.btnPasteGenerateTop.addEventListener("click", () => pasteClipboard(true));
+
 els.btnGenerate.addEventListener("click", generateBarcodes);
 els.btnGenerateTop.addEventListener("click", generateBarcodes);
 
@@ -1663,6 +1717,7 @@ els.search.addEventListener("input", () => {
 });
 
 els.btnCloseScan.addEventListener("click", closeScan);
+
 els.scanModal.addEventListener("click", event => {
   if(event.target === els.scanModal) closeScan();
 });
