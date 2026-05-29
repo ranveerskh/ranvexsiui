@@ -126,7 +126,7 @@
     min-height:58px;
     padding:8px 10px;
     display:grid;
-    grid-template-columns:auto minmax(260px,520px) auto;
+    grid-template-columns:auto minmax(320px,680px) auto;
     gap:12px;
     align-items:center;
   }
@@ -222,6 +222,44 @@
   .search-wrap input:focus{
     border-color:rgba(37,99,235,.55);
     box-shadow:0 0 0 4px var(--soft);
+  }
+
+
+  .search-tools{
+    width:100%;
+    max-width:680px;
+    justify-self:center;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+
+  .search-tools .search-wrap{
+    flex:1;
+    max-width:none;
+    justify-self:stretch;
+  }
+
+  .barcode-top-btn{
+    height:36px;
+    border:0;
+    border-radius:14px;
+    padding:0 13px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    font-size:.74rem;
+    font-weight:950;
+    white-space:nowrap;
+    background:linear-gradient(135deg,#0f172a,#334155);
+    box-shadow:0 5px 14px rgba(15,23,42,.14);
+    transition:.16s ease;
+  }
+
+  .barcode-top-btn:hover{
+    transform:translateY(-1px);
+    box-shadow:var(--shadow);
   }
 
   .header-actions{
@@ -1003,9 +1041,13 @@
       min-width:0;
     }
 
-    .search-wrap{
+    .search-tools{
       grid-column:1/-1;
       grid-row:2;
+      max-width:none;
+    }
+
+    .search-tools .search-wrap{
       max-width:none;
     }
 
@@ -1133,9 +1175,13 @@
         </div>
       </div>
 
-      <div class="search-wrap">
-        <span>⌕</span>
-        <input id="search" placeholder="Search links..." autocomplete="off" />
+      <div class="search-tools">
+        <div class="search-wrap">
+          <span>⌕</span>
+          <input id="search" placeholder="Search links..." autocomplete="off" />
+        </div>
+
+        <button class="barcode-top-btn" id="btnBarcodeGenerator" type="button" title="Generate Barcode from copied data">Generate Barcodes</button>
       </div>
 
       <div class="header-actions">
@@ -1568,6 +1614,26 @@ function getAccentClass(row){
   }
 
   return "accent-default";
+}
+
+
+
+async function openBarcodeGenerator(){
+  let copiedText = "";
+
+  try{
+    if(navigator.clipboard && navigator.clipboard.readText){
+      copiedText = await navigator.clipboard.readText();
+    }
+  }catch(err){
+    console.warn("Clipboard read blocked:", err);
+  }
+
+  if(String(copiedText || "").trim()){
+    localStorage.setItem("rv_barcode_autogen_payload_v1", String(copiedText).trim());
+  }
+
+  window.open("barcode.html?autogen=1", "_blank", "noopener,noreferrer");
 }
 
 /* =========================================================
@@ -2209,6 +2275,8 @@ async function copyPageLink(){
 /* =========================================================
    Events
 ========================================================= */
+
+document.getElementById("btnBarcodeGenerator")?.addEventListener("click", openBarcodeGenerator);
 
 els.btnBack.addEventListener("click", goBack);
 
