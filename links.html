@@ -13,46 +13,43 @@
 <style>
   :root{
     --bg:#eef3fb;
-    --bg-2:#e7edf8;
+    --bg2:#e7edf8;
     --surface:#ffffff;
-    --surface-2:#f7faff;
-    --surface-3:#eef5ff;
-    --ink:#111827;
-    --muted:#6b7280;
-    --muted-2:#94a3b8;
+    --surface2:#f7faff;
+    --surface3:#eef5ff;
+    --ink:#101827;
+    --muted:#64748b;
+    --muted2:#94a3b8;
     --line:rgba(15,23,42,.10);
-    --line-strong:rgba(15,23,42,.16);
+    --line2:rgba(15,23,42,.16);
     --accent:#2563eb;
-    --accent-2:#7c3aed;
-    --accent-soft:rgba(37,99,235,.10);
+    --accent2:#7c3aed;
     --green:#16a34a;
     --red:#dc2626;
     --gold:#d97706;
-    --shadow-sm:0 6px 16px rgba(15,23,42,.06);
-    --shadow-md:0 14px 34px rgba(15,23,42,.10);
-    --shadow-lg:0 24px 60px rgba(15,23,42,.14);
-    --radius:18px;
+    --soft:rgba(37,99,235,.10);
+    --shadow:0 6px 18px rgba(15,23,42,.08);
+    --shadow2:0 12px 30px rgba(15,23,42,.12);
     --max:1360px;
-    --grid-cols:4;
+    --grid-cols:6;
   }
 
   body.dark{
     --bg:#080d19;
-    --bg-2:#0c1222;
-    --surface:#111827;
-    --surface-2:#151f33;
-    --surface-3:#1b2942;
+    --bg2:#0c1222;
+    --surface:#101827;
+    --surface2:#151f33;
+    --surface3:#1b2942;
     --ink:#eef5ff;
     --muted:#a9b7d0;
-    --muted-2:#7486a5;
+    --muted2:#7486a5;
     --line:rgba(255,255,255,.10);
-    --line-strong:rgba(255,255,255,.16);
+    --line2:rgba(255,255,255,.16);
     --accent:#60a5fa;
-    --accent-2:#a78bfa;
-    --accent-soft:rgba(96,165,250,.12);
-    --shadow-sm:0 8px 18px rgba(0,0,0,.22);
-    --shadow-md:0 18px 42px rgba(0,0,0,.32);
-    --shadow-lg:0 30px 70px rgba(0,0,0,.42);
+    --accent2:#a78bfa;
+    --soft:rgba(96,165,250,.13);
+    --shadow:0 7px 18px rgba(0,0,0,.24);
+    --shadow2:0 14px 32px rgba(0,0,0,.34);
   }
 
   *{
@@ -71,9 +68,9 @@
     font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
     color:var(--ink);
     background:
-      radial-gradient(circle at top left, rgba(37,99,235,.12), transparent 34%),
-      radial-gradient(circle at top right, rgba(124,58,237,.10), transparent 32%),
-      linear-gradient(180deg,var(--bg),var(--bg-2));
+      radial-gradient(circle at top left, rgba(37,99,235,.11), transparent 32%),
+      radial-gradient(circle at top right, rgba(124,58,237,.10), transparent 30%),
+      linear-gradient(180deg,var(--bg),var(--bg2));
     overflow-x:hidden;
   }
 
@@ -85,6 +82,7 @@
   }
 
   button{
+    cursor:pointer;
     -webkit-tap-highlight-color:transparent;
   }
 
@@ -110,15 +108,12 @@
     top:0;
     z-index:50;
     border-bottom:1px solid var(--line);
-    background:rgba(255,255,255,.84);
-    backdrop-filter:blur(22px);
-    -webkit-backdrop-filter:blur(22px);
-    box-shadow:0 8px 30px rgba(15,23,42,.06);
+    background:var(--surface);
+    box-shadow:0 3px 12px rgba(15,23,42,.08);
   }
 
   body.dark .app-header{
-    background:rgba(17,24,39,.84);
-    box-shadow:0 8px 34px rgba(0,0,0,.22);
+    box-shadow:0 4px 16px rgba(0,0,0,.28);
   }
 
   .header-inner{
@@ -127,16 +122,16 @@
     min-height:58px;
     padding:8px 18px;
     display:grid;
-    grid-template-columns:auto minmax(190px,420px) auto;
-    align-items:center;
+    grid-template-columns:auto minmax(220px,420px) auto;
     gap:12px;
+    align-items:center;
   }
 
   .brand{
     display:flex;
     align-items:center;
     gap:10px;
-    min-width:230px;
+    min-width:260px;
   }
 
   .backbtn{
@@ -144,20 +139,18 @@
     height:34px;
     border:1px solid var(--line);
     border-radius:12px;
-    background:var(--surface);
+    background:var(--surface2);
     color:var(--ink);
-    cursor:pointer;
-    box-shadow:var(--shadow-sm);
     display:grid;
     place-items:center;
     font-size:17px;
-    transition:.18s ease;
+    font-weight:950;
+    box-shadow:0 3px 10px rgba(15,23,42,.05);
   }
 
   .backbtn:hover{
     transform:translateY(-1px);
-    box-shadow:var(--shadow-md);
-    border-color:rgba(37,99,235,.28);
+    box-shadow:var(--shadow);
   }
 
   .logo{
@@ -166,11 +159,11 @@
     border-radius:14px;
     display:grid;
     place-items:center;
-    color:white;
+    color:#fff;
     font-weight:950;
     letter-spacing:-.06em;
-    background:linear-gradient(135deg,var(--accent),var(--accent-2));
-    box-shadow:0 14px 34px rgba(37,99,235,.28);
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    box-shadow:0 10px 24px rgba(37,99,235,.24);
   }
 
   .brand-text{
@@ -190,47 +183,41 @@
     font-size:.60rem;
     color:var(--muted);
     font-weight:750;
-    letter-spacing:.01em;
   }
 
   .search-wrap{
     position:relative;
     width:100%;
-    max-width:390px;
+    max-width:420px;
     justify-self:center;
   }
 
-  .search-wrap svg{
+  .search-wrap span{
     position:absolute;
     left:13px;
     top:50%;
     transform:translateY(-50%);
     color:var(--muted);
-    pointer-events:none;
+    font-weight:950;
   }
 
   .search-wrap input{
     width:100%;
     height:36px;
     border:1px solid var(--line);
-    background:rgba(255,255,255,.88);
+    background:var(--surface2);
     color:var(--ink);
     outline:none;
     border-radius:14px;
-    padding:0 14px 0 40px;
+    padding:0 14px 0 39px;
     font-size:.84rem;
-    font-weight:750;
-    box-shadow:var(--shadow-sm);
-    transition:.18s ease;
-  }
-
-  body.dark .search-wrap input{
-    background:rgba(15,23,42,.74);
+    font-weight:800;
+    box-shadow:0 3px 10px rgba(15,23,42,.04);
   }
 
   .search-wrap input:focus{
     border-color:rgba(37,99,235,.55);
-    box-shadow:0 0 0 4px var(--accent-soft), var(--shadow-sm);
+    box-shadow:0 0 0 4px var(--soft);
   }
 
   .header-actions{
@@ -241,19 +228,19 @@
     min-width:0;
   }
 
-  .status-pill{
+  .status-pill,
+  .views-pill{
     height:32px;
     display:flex;
     align-items:center;
     gap:7px;
     border:1px solid var(--line);
     border-radius:999px;
-    background:var(--surface);
+    background:var(--surface2);
     padding:0 10px;
     color:var(--muted);
-    font-weight:850;
+    font-weight:900;
     font-size:.70rem;
-    box-shadow:var(--shadow-sm);
     white-space:nowrap;
   }
 
@@ -261,7 +248,7 @@
     width:8px;
     height:8px;
     border-radius:999px;
-    background:var(--muted-2);
+    background:var(--muted2);
   }
 
   .dot.ok{
@@ -274,144 +261,121 @@
     box-shadow:0 0 0 4px rgba(220,38,38,.12);
   }
 
-  .iconbtn{
-    width:32px;
+  .iconbtn,
+  .top-link-btn,
+  .script-btn{
     height:32px;
     border:1px solid var(--line);
     border-radius:12px;
-    background:var(--surface);
+    background:var(--surface2);
     color:var(--ink);
-    display:grid;
-    place-items:center;
-    cursor:pointer;
-    box-shadow:var(--shadow-sm);
-    transition:.18s ease;
-    font-size:14px;
-  }
-
-  .iconbtn:hover{
-    transform:translateY(-1px);
-    box-shadow:var(--shadow-md);
-    border-color:rgba(37,99,235,.28);
-  }
-
-  .top-link-btn{
-    height:32px;
-    border:0;
-    border-radius:12px;
-    padding:0 11px;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    gap:6px;
-    cursor:pointer;
-    color:white;
-    background:linear-gradient(135deg,var(--accent),var(--accent-2));
-    box-shadow:0 10px 22px rgba(37,99,235,.22);
-    font-size:.75rem;
-    font-weight:950;
-    white-space:nowrap;
-    transition:.18s ease;
-  }
-
-  .top-link-btn:hover{
-    transform:translateY(-1px);
-    box-shadow:0 14px 28px rgba(37,99,235,.28);
-  }
-
-  .script-menu{
-    position:relative;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-  }
-
-  .script-btn{
-    height:32px;
-    border:0;
-    border-radius:12px;
-    padding:0 11px;
     display:inline-flex;
     align-items:center;
     justify-content:center;
     gap:7px;
-    cursor:pointer;
-    color:white;
-    background:linear-gradient(135deg,#16a34a,#15803d);
-    box-shadow:0 10px 22px rgba(22,163,74,.22);
-    font-size:.75rem;
+    padding:0 11px;
+    font-size:.74rem;
     font-weight:950;
+    box-shadow:0 3px 10px rgba(15,23,42,.05);
+    transition:.16s ease;
     white-space:nowrap;
-    transition:.18s ease;
   }
 
+  .iconbtn{
+    width:32px;
+    padding:0;
+    font-size:14px;
+  }
+
+  .top-link-btn{
+    border:0;
+    color:#fff;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+  }
+
+  .script-btn{
+    border:0;
+    color:#fff;
+    background:linear-gradient(135deg,#16a34a,#15803d);
+  }
+
+  .iconbtn:hover,
+  .top-link-btn:hover,
   .script-btn:hover{
     transform:translateY(-1px);
-    box-shadow:0 14px 28px rgba(22,163,74,.28);
+    box-shadow:var(--shadow);
   }
 
-  .script-btn svg{
-    width:17px;
-    height:17px;
-    flex:0 0 auto;
+  .script-wrap{
+    position:relative;
+    display:inline-flex;
+    align-items:center;
   }
 
-  .script-dropdown{
+  .script-menu{
     position:absolute;
-    top:calc(100% + 9px);
     right:0;
-    width:240px;
-    border:1px solid var(--line);
-    border-radius:16px;
-    background:rgba(255,255,255,.94);
-    backdrop-filter:blur(18px);
-    -webkit-backdrop-filter:blur(18px);
-    box-shadow:var(--shadow-lg);
-    padding:8px;
+    top:calc(100% + 8px);
+    width:270px;
     display:none;
-    z-index:80;
+    padding:8px;
+    border:1px solid var(--line);
+    border-radius:17px;
+    background:var(--surface);
+    box-shadow:var(--shadow2);
+    z-index:90;
   }
 
-  body.dark .script-dropdown{
-    background:rgba(17,24,39,.94);
-  }
-
-  .script-menu.open .script-dropdown{
+  .script-menu.show{
     display:block;
   }
 
   .script-option{
     width:100%;
-    min-height:42px;
-    border-radius:12px;
+    min-height:52px;
+    border-radius:13px;
+    padding:10px;
     display:flex;
     align-items:center;
-    justify-content:space-between;
     gap:10px;
-    padding:9px 10px;
     color:var(--ink);
-    font-size:.78rem;
-    font-weight:950;
-    text-decoration:none;
     transition:.16s ease;
   }
 
   .script-option:hover{
-    background:var(--surface-3);
-    transform:translateY(-1px);
+    background:var(--surface3);
+  }
+
+  .script-option-icon{
+    width:34px;
+    height:34px;
+    border-radius:13px;
+    display:grid;
+    place-items:center;
+    color:#fff;
+    flex:0 0 auto;
+    font-size:16px;
+    font-weight:950;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+  }
+
+  .script-option-icon.pack{
+    background:linear-gradient(135deg,#16a34a,#15803d);
+  }
+
+  .script-option strong{
+    display:block;
+    font-size:.80rem;
+    line-height:1.15;
+    font-weight:950;
   }
 
   .script-option small{
     display:block;
-    margin-top:2px;
+    margin-top:3px;
     color:var(--muted);
-    font-size:.66rem;
+    font-size:.68rem;
     font-weight:800;
-  }
-
-  .script-option .arrow{
-    color:var(--muted);
-    font-weight:950;
   }
 
   /* =========================
@@ -421,12 +385,12 @@
   .page{
     width:min(var(--max),100%);
     margin:0 auto;
-    padding:16px 18px 28px;
+    padding:16px 18px 30px;
   }
 
   .titlebar{
     display:flex;
-    align-items:center;
+    align-items:flex-start;
     justify-content:space-between;
     gap:12px;
     margin-bottom:14px;
@@ -434,36 +398,28 @@
 
   .title-left{
     min-width:0;
-    display:flex;
-    align-items:baseline;
-    gap:10px;
-    flex-wrap:wrap;
+  }
+
+  .breadcrumb{
+    color:var(--muted);
+    font-size:.76rem;
+    font-weight:850;
+    margin-bottom:5px;
   }
 
   .page-title{
     font-size:clamp(1.42rem,2vw,2rem);
     letter-spacing:-.06em;
-    line-height:1.02;
+    line-height:1.04;
     font-weight:950;
   }
 
-  .title-meta{
-    display:inline-flex;
-    align-items:center;
-    gap:5px;
-    min-height:26px;
-    border:1px solid var(--line);
-    border-radius:999px;
-    background:rgba(255,255,255,.68);
+  .page-subtitle{
+    margin-top:5px;
     color:var(--muted);
-    padding:0 10px;
-    font-size:.72rem;
-    font-weight:850;
-    box-shadow:var(--shadow-sm);
-  }
-
-  body.dark .title-meta{
-    background:rgba(17,24,39,.60);
+    font-size:.82rem;
+    font-weight:750;
+    line-height:1.4;
   }
 
   .title-actions{
@@ -474,32 +430,9 @@
     flex-wrap:wrap;
   }
 
+  .mini-pill,
+  .mini-btn,
   .mini-control{
-    height:32px;
-    display:inline-flex;
-    align-items:center;
-    gap:7px;
-    border:1px solid var(--line);
-    border-radius:999px;
-    background:var(--surface);
-    color:var(--muted);
-    padding:0 10px;
-    font-size:.73rem;
-    font-weight:900;
-    box-shadow:var(--shadow-sm);
-    white-space:nowrap;
-  }
-
-  .mini-control select{
-    border:0;
-    outline:0;
-    background:transparent;
-    color:var(--ink);
-    font-weight:950;
-    cursor:pointer;
-  }
-
-  .mini-btn{
     min-height:32px;
     border:1px solid var(--line);
     border-radius:999px;
@@ -512,21 +445,32 @@
     gap:6px;
     font-size:.73rem;
     font-weight:950;
-    box-shadow:var(--shadow-sm);
-    cursor:pointer;
-    transition:.18s ease;
+    box-shadow:0 3px 10px rgba(15,23,42,.05);
     white-space:nowrap;
+  }
+
+  .mini-pill{
+    color:var(--muted);
+    background:var(--surface2);
+  }
+
+  .mini-control{
+    color:var(--muted);
+    background:var(--surface2);
+  }
+
+  .mini-control select{
+    border:0;
+    outline:0;
+    background:transparent;
+    color:var(--ink);
+    font-weight:950;
+    cursor:pointer;
   }
 
   .mini-btn:hover{
     transform:translateY(-1px);
-    box-shadow:var(--shadow-md);
-  }
-
-  .mini-btn.active{
-    border-color:rgba(22,163,74,.30);
-    color:#fff;
-    background:linear-gradient(135deg,#16a34a,#15803d);
+    box-shadow:var(--shadow);
   }
 
   /* =========================
@@ -536,212 +480,157 @@
   .links-grid{
     display:grid;
     grid-template-columns:repeat(var(--grid-cols),minmax(0,1fr));
-    gap:16px;
+    gap:12px;
   }
 
   .link-card{
     position:relative;
-    min-height:188px;
-    aspect-ratio:4/3;
+    min-height:110px;
     border:1px solid var(--line);
-    border-radius:var(--radius);
+    border-radius:17px;
     background:
-      radial-gradient(circle at top left, rgba(37,99,235,.16), transparent 44%),
-      linear-gradient(135deg, rgba(37,99,235,.12), rgba(124,58,237,.10)),
+      linear-gradient(135deg, rgba(37,99,235,.08), rgba(124,58,237,.06)),
       var(--surface);
+    box-shadow:0 4px 12px rgba(15,23,42,.06);
+    padding:13px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    gap:12px;
     overflow:hidden;
-    cursor:pointer;
-    text-decoration:none;
-    box-shadow:var(--shadow-sm);
-    transform:translateZ(0);
-    transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    transition:.16s ease;
+    contain:layout paint;
+    content-visibility:auto;
+    contain-intrinsic-size:110px 180px;
+  }
+
+  .link-card::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:0;
+    bottom:0;
+    width:4px;
+    background:linear-gradient(180deg,var(--accent),var(--accent2));
+    opacity:.86;
   }
 
   .link-card:hover{
-    transform:translateY(-3px);
-    box-shadow:var(--shadow-lg);
-    border-color:rgba(37,99,235,.34);
-  }
-
-  .link-card:active{
-    transform:translateY(-1px) scale(.993);
+    transform:translateY(-2px);
+    border-color:rgba(37,99,235,.35);
+    box-shadow:var(--shadow);
   }
 
   .link-card:focus-visible{
     outline:none;
-    border-color:rgba(37,99,235,.55);
-    box-shadow:0 0 0 4px var(--accent-soft), var(--shadow-lg);
+    border-color:rgba(37,99,235,.60);
+    box-shadow:0 0 0 4px var(--soft), var(--shadow);
   }
 
-  .link-img{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    display:block;
-    opacity:.90;
-    transform:scale(1.01);
-    transition:transform .28s ease, opacity .18s ease;
+  .link-top{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:9px;
   }
 
-  body.dark .link-img{
-    opacity:.64;
-  }
-
-  body.no-images .link-img{
-    display:none!important;
-  }
-
-  .link-card:hover .link-img{
-    transform:scale(1.04);
-  }
-
-  .veil{
-    position:absolute;
-    inset:0;
-    background:
-      radial-gradient(circle at top left, rgba(37,99,235,.16), transparent 42%),
-      linear-gradient(180deg, rgba(0,0,0,.03), rgba(0,0,0,.10));
-    pointer-events:none;
-  }
-
-  body.dark .veil{
-    background:
-      radial-gradient(circle at top left, rgba(96,165,250,.18), transparent 42%),
-      linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.22));
-  }
-
-  .overlay{
-    position:absolute;
-    inset:0;
-    background:linear-gradient(180deg, rgba(0,0,0,.03) 6%, rgba(0,0,0,.16) 52%, rgba(0,0,0,.80) 100%);
-    pointer-events:none;
-  }
-
-  body.no-images .overlay{
-    background:linear-gradient(180deg, rgba(0,0,0,.03), rgba(0,0,0,.28));
-  }
-
-  .pending-ribbon{
-    position:absolute;
-    top:10px;
-    left:10px;
-    z-index:4;
-    height:24px;
-    padding:0 9px;
-    border-radius:999px;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    background:rgba(217,119,6,.92);
+  .link-icon{
+    width:31px;
+    height:31px;
+    border-radius:12px;
+    display:grid;
+    place-items:center;
     color:#fff;
-    font-size:.66rem;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    font-size:.76rem;
     font-weight:950;
-    box-shadow:0 8px 18px rgba(0,0,0,.20);
-    backdrop-filter:blur(10px);
+    flex:0 0 auto;
   }
 
   .report-btn{
-    position:absolute;
-    top:10px;
-    right:10px;
-    z-index:8;
-    width:30px;
-    height:30px;
+    width:28px;
+    height:28px;
+    border:1px solid var(--line);
     border-radius:999px;
-    border:1px solid rgba(255,255,255,.30);
-    background:rgba(255,255,255,.20);
-    color:#fff;
+    background:var(--surface2);
+    color:var(--muted);
     display:grid;
     place-items:center;
-    cursor:pointer;
-    backdrop-filter:blur(12px);
-    box-shadow:0 8px 18px rgba(0,0,0,.18);
-    transition:.16s ease;
+    font-size:.78rem;
     font-weight:950;
-    font-size:.9rem;
+    flex:0 0 auto;
   }
 
   .report-btn:hover{
-    background:rgba(220,38,38,.86);
-    border-color:rgba(255,255,255,.38);
-    transform:translateY(-1px);
+    background:rgba(220,38,38,.10);
+    border-color:rgba(220,38,38,.24);
+    color:var(--red);
   }
 
-  .label{
-    position:absolute;
-    z-index:2;
-    left:13px;
-    right:13px;
-    bottom:12px;
-    display:flex;
-    align-items:flex-end;
-    justify-content:space-between;
-    gap:10px;
-    color:white;
-  }
-
-  .label-main{
-    min-width:0;
-  }
-
-  .label-title{
-    display:block;
-    font-size:.98rem;
-    line-height:1.1;
+  .link-name{
+    font-size:.89rem;
+    line-height:1.15;
     font-weight:950;
     letter-spacing:-.035em;
-    text-shadow:0 2px 10px rgba(0,0,0,.42);
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
+    word-break:break-word;
   }
 
-  .label-sub{
-    margin-top:4px;
-    display:block;
-    font-size:.70rem;
-    color:rgba(255,255,255,.80);
-    font-weight:800;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-    text-shadow:0 2px 8px rgba(0,0,0,.38);
+  .link-meta{
+    margin-top:5px;
+    color:var(--muted);
+    font-size:.66rem;
+    line-height:1.3;
+    font-weight:850;
+    word-break:break-word;
   }
 
-  .pill{
-    flex:0 0 auto;
+  .link-bottom{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+  }
+
+  .open-pill{
+    height:25px;
+    border-radius:999px;
+    padding:0 9px;
     display:inline-flex;
     align-items:center;
-    gap:6px;
-    height:25px;
-    padding:0 9px;
-    border-radius:999px;
-    background:rgba(255,255,255,.18);
-    border:1px solid rgba(255,255,255,.22);
-    color:white;
-    font-size:.69rem;
+    justify-content:center;
+    gap:5px;
+    background:var(--surface2);
+    color:var(--ink);
+    border:1px solid var(--line);
+    font-size:.66rem;
     font-weight:950;
-    backdrop-filter:blur(10px);
-    box-shadow:0 6px 18px rgba(0,0,0,.15);
+  }
+
+  .pending-pill{
+    height:25px;
+    border-radius:999px;
+    padding:0 9px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(217,119,6,.12);
+    color:var(--gold);
+    border:1px solid rgba(217,119,6,.20);
+    font-size:.66rem;
+    font-weight:950;
   }
 
   .empty{
     grid-column:1/-1;
-    border:1px dashed var(--line-strong);
+    border:1px dashed var(--line2);
     border-radius:20px;
-    background:rgba(255,255,255,.70);
-    padding:30px 18px;
+    background:var(--surface);
+    padding:26px 18px;
     text-align:center;
     color:var(--muted);
-    box-shadow:var(--shadow-sm);
+    box-shadow:var(--shadow);
     font-weight:800;
     line-height:1.5;
-  }
-
-  body.dark .empty{
-    background:rgba(17,24,39,.62);
   }
 
   .empty strong{
@@ -752,15 +641,13 @@
   }
 
   /* =========================
-     Modal
+     Report Modal
   ========================= */
 
   .modal-backdrop{
     position:fixed;
     inset:0;
-    background:rgba(2,6,23,.58);
-    backdrop-filter:blur(10px);
-    -webkit-backdrop-filter:blur(10px);
+    background:rgba(2,6,23,.66);
     z-index:100;
     display:none;
     align-items:center;
@@ -815,9 +702,8 @@
     height:38px;
     border-radius:14px;
     border:1px solid var(--line);
-    background:var(--surface-2);
+    background:var(--surface2);
     color:var(--ink);
-    cursor:pointer;
     font-weight:950;
     font-size:18px;
   }
@@ -857,12 +743,11 @@
     min-height:42px;
     border:1px solid var(--line);
     border-radius:14px;
-    background:var(--surface-2);
+    background:var(--surface2);
     color:var(--ink);
     outline:none;
     padding:10px 12px;
     font-weight:750;
-    box-shadow:none;
   }
 
   .field textarea{
@@ -873,7 +758,7 @@
   .field select:focus,
   .field textarea:focus{
     border-color:rgba(37,99,235,.55);
-    box-shadow:0 0 0 4px var(--accent-soft);
+    box-shadow:0 0 0 4px var(--soft);
   }
 
   .msg{
@@ -919,14 +804,14 @@
   }
 
   .secondary-btn{
-    background:var(--surface-2);
+    background:var(--surface2);
     color:var(--ink);
   }
 
   .primary-btn{
     border:0;
-    color:white;
-    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    color:#fff;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
     box-shadow:0 12px 24px rgba(37,99,235,.22);
   }
 
@@ -936,16 +821,138 @@
   }
 
   /* =========================
+     PA Lock Modal
+  ========================= */
+
+  .pa-lock-backdrop{
+    position:fixed;
+    inset:0;
+    z-index:200;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+    background:rgba(2,6,23,.68);
+  }
+
+  .pa-lock-backdrop.show{
+    display:flex;
+  }
+
+  .pa-lock-box{
+    width:min(420px,100%);
+    border:1px solid var(--line);
+    border-radius:24px;
+    background:var(--surface);
+    color:var(--ink);
+    box-shadow:0 28px 80px rgba(0,0,0,.38);
+    padding:20px;
+  }
+
+  .pa-lock-title{
+    font-size:1.25rem;
+    font-weight:950;
+    letter-spacing:-.05em;
+    margin-bottom:6px;
+  }
+
+  .pa-lock-sub{
+    color:var(--muted);
+    font-size:.86rem;
+    font-weight:750;
+    line-height:1.4;
+    margin-bottom:16px;
+  }
+
+  .pa-user-box{
+    border:1px solid var(--line);
+    border-radius:16px;
+    background:var(--surface2);
+    padding:12px;
+    margin-bottom:12px;
+  }
+
+  .pa-user-label{
+    color:var(--muted);
+    font-size:.68rem;
+    font-weight:950;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    margin-bottom:5px;
+  }
+
+  .pa-user-name{
+    font-size:.95rem;
+    font-weight:950;
+  }
+
+  .pa-lock-box input{
+    width:100%;
+    height:44px;
+    border:1px solid var(--line);
+    border-radius:15px;
+    background:var(--surface2);
+    color:var(--ink);
+    outline:none;
+    padding:0 13px;
+    font-weight:850;
+  }
+
+  .pa-lock-box input:focus{
+    border-color:rgba(37,99,235,.55);
+    box-shadow:0 0 0 4px var(--soft);
+  }
+
+  .pa-lock-msg{
+    min-height:22px;
+    margin-top:10px;
+    color:var(--red);
+    font-size:.78rem;
+    font-weight:850;
+  }
+
+  .pa-lock-actions{
+    display:flex;
+    gap:10px;
+    margin-top:14px;
+  }
+
+  .pa-lock-actions button{
+    flex:1;
+    min-height:42px;
+    border-radius:14px;
+    font-weight:950;
+    border:1px solid var(--line);
+  }
+
+  .pa-cancel-btn{
+    background:var(--surface2);
+    color:var(--ink);
+  }
+
+  .pa-unlock-btn{
+    border:0!important;
+    color:#fff;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+  }
+
+  /* =========================
      Responsive
   ========================= */
 
-  @media (max-width:1180px){
+  @media(max-width:1280px){
     .links-grid{
-      grid-template-columns:repeat(3,minmax(0,1fr));
+      grid-template-columns:repeat(min(var(--grid-cols), 5), minmax(0,1fr));
     }
   }
 
-  @media (max-width:980px){
+  @media(max-width:1080px){
+    .links-grid{
+      grid-template-columns:repeat(4,minmax(0,1fr));
+    }
+  }
+
+  @media(max-width:900px){
     .header-inner{
       grid-template-columns:1fr auto;
       gap:9px;
@@ -957,25 +964,37 @@
     }
 
     .search-wrap{
-      grid-column:1 / -1;
+      grid-column:1/-1;
       grid-row:2;
       max-width:none;
     }
 
-    .header-actions{
-      min-width:0;
-      gap:6px;
-    }
-
-    .status-pill{
+    .status-pill,
+    .views-pill{
       display:none;
     }
 
-    .top-link-btn,
-    .script-btn{
-      height:32px;
-      padding:0 10px;
-      font-size:.73rem;
+    .page{
+      padding:14px 14px 28px;
+    }
+
+    .titlebar{
+      flex-direction:column;
+    }
+
+    .title-actions{
+      justify-content:flex-start;
+    }
+
+    .links-grid{
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:11px;
+    }
+
+    .link-card{
+      min-height:105px;
+      border-radius:16px;
+      padding:12px;
     }
 
     .script-btn span{
@@ -983,73 +1002,15 @@
     }
 
     .script-btn{
-      width:34px;
+      width:32px;
       padding:0;
-      border-radius:12px;
     }
 
-    .script-dropdown{
-      right:-52px;
-      width:230px;
-    }
-
-    .page{
-      padding:14px 14px 26px;
-    }
-
-    .titlebar{
-      align-items:flex-start;
-      flex-direction:column;
-      gap:10px;
-    }
-
-    .title-actions{
-      width:100%;
-      justify-content:flex-start;
-    }
-
-    .links-grid{
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:12px;
-    }
-
-    .link-card{
-      min-height:152px;
-      border-radius:17px;
-      aspect-ratio:1.05;
-    }
-
-    .label{
-      left:11px;
-      right:11px;
-      bottom:10px;
-      align-items:flex-start;
-      flex-direction:column;
-      gap:7px;
-    }
-
-    .label-title{
-      font-size:.86rem;
-      white-space:normal;
-      display:-webkit-box;
-      -webkit-line-clamp:2;
-      -webkit-box-orient:vertical;
-    }
-
-    .label-sub{
-      display:none;
-    }
-
-    .pill{
-      height:23px;
-      font-size:.66rem;
-      padding:0 8px;
-    }
-
-    .report-btn{
-      width:28px;
-      height:28px;
-      font-size:.82rem;
+    .script-menu{
+      position:fixed;
+      right:12px;
+      top:64px;
+      width:calc(100vw - 24px);
     }
 
     .form-grid{
@@ -1057,7 +1018,7 @@
     }
   }
 
-  @media (max-width:520px){
+  @media(max-width:520px){
     .logo{
       width:36px;
       height:36px;
@@ -1072,46 +1033,44 @@
       font-size:.56rem;
     }
 
-    .iconbtn{
-      width:32px;
-      height:32px;
-      border-radius:12px;
+    .top-link-btn{
+      padding:0 9px;
+      font-size:.70rem;
     }
 
     .page-title{
       font-size:1.34rem;
     }
 
-    .mini-control,
-    .mini-btn{
-      height:31px;
-      min-height:31px;
-      font-size:.70rem;
-      padding:0 9px;
+    .links-grid{
+      grid-template-columns:repeat(2,minmax(0,1fr));
     }
 
-    .title-actions{
-      gap:7px;
+    .link-name{
+      font-size:.82rem;
     }
 
-    .modal-backdrop{
+    .link-meta{
+      display:none;
+    }
+
+    .modal-backdrop,
+    .pa-lock-backdrop{
       padding:10px;
     }
 
-    .modal{
+    .modal,
+    .pa-lock-box{
       border-radius:20px;
     }
 
-    .modal-head{
-      padding:15px;
-    }
-
+    .modal-head,
     .modal-body{
       padding:15px;
     }
 
-    .modal-actions{
-      padding:12px 15px 15px;
+    .modal-actions,
+    .pa-lock-actions{
       flex-direction:column;
     }
 
@@ -1137,60 +1096,49 @@
         </div>
       </div>
 
-      <div class="search-wrap" title="Search links">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
-          <path d="M21 21l-4.3-4.3M10.8 18.2a7.4 7.4 0 1 1 0-14.8 7.4 7.4 0 0 1 0 14.8Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>
+      <div class="search-wrap">
+        <span>⌕</span>
         <input id="search" placeholder="Search links..." autocomplete="off" />
       </div>
 
       <div class="header-actions">
-        <div class="status-pill" id="dbStatus" title="Supabase status">
+        <div class="status-pill" title="Supabase status">
           <span class="dot" id="dbDot"></span>
           <span id="dbText">Connecting</span>
         </div>
 
         <a class="top-link-btn" id="btnRequestTop" href="request.html">+ Request</a>
 
-        <div class="script-menu hidden" id="scriptMenu">
-          <button class="script-btn" id="btnScriptTop" type="button" title="Download scripts">
-            <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
-              <circle cx="16" cy="16" r="14" fill="rgba(255,255,255,.18)"/>
-              <path d="M8.3 15.3c-1.9-.6-3.3.5-3.3 2.2 0 1.8 1.4 3.2 3.3 3.2h.6" stroke="white" stroke-width="2" stroke-linecap="round"/>
-              <path d="M23.7 15.3c1.9-.6 3.3.5 3.3 2.2 0 1.8-1.4 3.2-3.3 3.2h-.6" stroke="white" stroke-width="2" stroke-linecap="round"/>
-              <path d="M9.2 15.4c0-4.2 2.7-7.1 6.8-7.1s6.8 2.9 6.8 7.1v2.1c0 4.1-2.7 6.9-6.8 6.9s-6.8-2.8-6.8-6.9v-2.1Z" fill="white"/>
-              <path d="M11.3 15.3c.6-2.6 2.3-4.1 4.7-4.1s4.1 1.5 4.7 4.1c-.9-.6-1.8-.9-2.8-.9-.9 0-1.5.3-1.9.9-.4-.6-1-.9-1.9-.9-1 0-1.9.3-2.8.9Z" fill="#7c4a20"/>
-              <path d="M11.4 17.3c.9-1.3 1.9-1.9 3-1.9.8 0 1.3.3 1.6.9.3-.6.8-.9 1.6-.9 1.1 0 2.1.6 3 1.9v1.1c0 2.7-1.7 4.5-4.6 4.5s-4.6-1.8-4.6-4.5v-1.1Z" fill="#ffd89a"/>
-              <circle cx="13.7" cy="17.5" r="1" fill="#111827"/>
-              <circle cx="18.3" cy="17.5" r="1" fill="#111827"/>
-              <path d="M14.2 20.3c1.1.9 2.5.9 3.6 0" stroke="#111827" stroke-width="1.4" stroke-linecap="round"/>
-              <path d="M11.6 26.2h8.6" stroke="white" stroke-width="2" stroke-linecap="round"/>
-              <path d="M23.6 22.4v5.2m0 0l-2-2m2 2l2-2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+        <div class="script-wrap hidden" id="scriptWrap">
+          <button class="script-btn" id="btnScriptTop" type="button" title="Download Scripts">
             <span>Script</span>
           </button>
 
-          <div class="script-dropdown" id="scriptDropdown">
-            <a class="script-option hidden" id="scriptRanvexsiLink" href="#" target="_blank" rel="noopener">
+          <div class="script-menu" id="scriptMenu">
+            <a class="script-option hidden" id="btnRanvexsiScript" href="#" target="_blank" rel="noopener">
+              <span class="script-option-icon">RV</span>
               <span>
-                RANVEXSI UI Script
-                <small>Tampermonkey floating links</small>
+                <strong>RANVEXSI UI Script</strong>
+                <small>Tampermonkey floating button</small>
               </span>
-              <span class="arrow">↗</span>
             </a>
 
-            <a class="script-option hidden" id="scriptAmazonPackLink" href="#" target="_blank" rel="noopener">
+            <a class="script-option hidden" id="btnAmazonScripts" href="#" target="_blank" rel="noopener">
+              <span class="script-option-icon pack">📦</span>
               <span>
-                All Amazon Scripts
+                <strong>All Amazon Scripts</strong>
                 <small>Download full script pack</small>
               </span>
-              <span class="arrow">↗</span>
             </a>
           </div>
         </div>
 
         <button class="iconbtn" id="btnRefresh" title="Reload">↻</button>
         <button class="iconbtn" id="btnTheme" title="Light/Dark">🌗</button>
+
+        <div class="views-pill" title="Today / Total">
+          👣 <span id="viewsToday">0</span> / <span id="viewsTotal">0</span>
+        </div>
       </div>
     </div>
   </header>
@@ -1198,23 +1146,25 @@
   <main class="page">
     <section class="titlebar">
       <div class="title-left">
+        <div class="breadcrumb" id="breadcrumb">Department / Sub-department</div>
         <h1 class="page-title" id="pageTitle">Links</h1>
-        <span class="title-meta" id="titleMeta">0 shown</span>
+        <p class="page-subtitle" id="pageSubtitle">Text-only boxes for smoother workplace laptop scrolling.</p>
       </div>
 
       <div class="title-actions">
+        <span class="mini-pill" id="titleMeta">0 shown</span>
+
         <button class="mini-btn" id="btnCopyPage" type="button">Copy Page</button>
 
         <label class="mini-control">
           Grid
           <select id="gridCount">
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
+            <option value="4">4x</option>
+            <option value="5">5x</option>
+            <option value="6">6x</option>
+            <option value="7">7x</option>
           </select>
         </label>
-
-        <button class="mini-btn active" id="btnMedia" type="button">Images On</button>
       </div>
     </section>
 
@@ -1278,6 +1228,30 @@
     </div>
   </div>
 
+  <!-- Process Assistant Password Gate -->
+  <div class="pa-lock-backdrop" id="paLockModal">
+    <div class="pa-lock-box">
+      <div class="pa-lock-title">Process Assistant Access</div>
+      <div class="pa-lock-sub">
+        This area is protected. Enter today’s password to continue.
+      </div>
+
+      <div class="pa-user-box">
+        <div class="pa-user-label">Username</div>
+        <div class="pa-user-name">YXU1Admin</div>
+      </div>
+
+      <input id="paPasswordInput" type="password" placeholder="Enter password" autocomplete="current-password" />
+
+      <div class="pa-lock-msg" id="paLockMsg"></div>
+
+      <div class="pa-lock-actions">
+        <button class="pa-cancel-btn" id="paCancelBtn" type="button">Cancel</button>
+        <button class="pa-unlock-btn" id="paUnlockBtn" type="button">Unlock</button>
+      </div>
+    </div>
+  </div>
+
 <script>
 /* =========================================================
    Supabase Config
@@ -1286,18 +1260,9 @@
 const SUPABASE_URL = "https://qpplbqodulenhccfzrjv.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_ph2JpBSdGl-dIqvx9F6__g_Oo4r96Y_";
 
-const SUPABASE_TABLE = "ranvexsi_links";
-const REQUEST_TABLE = "ranvexsi_requests";
-const REPORTS_TABLE = "ranvexsi_link_reports";
+const LINKS_TABLE = "ranvexsi_links";
 const SETTINGS_TABLE = "ranvexsi_settings";
-const STORAGE_BUCKET = "media";
-
-const SCRIPT_DOWNLOAD_URL = "";
-const AMAZON_SCRIPTS_PACK_URL = "";
-
-const LEGACY_SCRIPT_SETTING_KEY = "tampermonkey_script_url";
-const RANVEXSI_SCRIPT_SETTING_KEY = "ranvexsi_ui_script_url";
-const AMAZON_PACK_SETTING_KEY = "amazon_scripts_pack_url";
+const REQUEST_TABLE = "ranvexsi_requests";
 
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
@@ -1308,25 +1273,27 @@ const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 const els = {
   search: document.getElementById("search"),
   linksGrid: document.getElementById("linksGrid"),
+  breadcrumb: document.getElementById("breadcrumb"),
   pageTitle: document.getElementById("pageTitle"),
+  pageSubtitle: document.getElementById("pageSubtitle"),
   titleMeta: document.getElementById("titleMeta"),
   btnBack: document.getElementById("btnBack"),
   btnRequestTop: document.getElementById("btnRequestTop"),
-  scriptMenu: document.getElementById("scriptMenu"),
+  scriptWrap: document.getElementById("scriptWrap"),
   btnScriptTop: document.getElementById("btnScriptTop"),
-  scriptDropdown: document.getElementById("scriptDropdown"),
-  scriptRanvexsiLink: document.getElementById("scriptRanvexsiLink"),
-  scriptAmazonPackLink: document.getElementById("scriptAmazonPackLink"),
+  scriptMenu: document.getElementById("scriptMenu"),
+  btnRanvexsiScript: document.getElementById("btnRanvexsiScript"),
+  btnAmazonScripts: document.getElementById("btnAmazonScripts"),
   btnRefresh: document.getElementById("btnRefresh"),
   btnTheme: document.getElementById("btnTheme"),
   btnCopyPage: document.getElementById("btnCopyPage"),
-  btnMedia: document.getElementById("btnMedia"),
   gridCount: document.getElementById("gridCount"),
   dbDot: document.getElementById("dbDot"),
   dbText: document.getElementById("dbText"),
+  viewsToday: document.getElementById("viewsToday"),
+  viewsTotal: document.getElementById("viewsTotal"),
 
   reportModal: document.getElementById("reportModal"),
-  reportTitle: document.getElementById("reportTitle"),
   closeReportModal: document.getElementById("closeReportModal"),
   cancelReport: document.getElementById("cancelReport"),
   reportForm: document.getElementById("reportForm"),
@@ -1337,23 +1304,35 @@ const els = {
   reportNote: document.getElementById("reportNote"),
   reportMsg: document.getElementById("reportMsg"),
   submitReport: document.getElementById("submitReport"),
-  reportSub: document.getElementById("reportSub")
+  reportSub: document.getElementById("reportSub"),
+
+  paLockModal: document.getElementById("paLockModal"),
+  paPasswordInput: document.getElementById("paPasswordInput"),
+  paLockMsg: document.getElementById("paLockMsg"),
+  paCancelBtn: document.getElementById("paCancelBtn"),
+  paUnlockBtn: document.getElementById("paUnlockBtn")
 };
 
 let currentDep = "";
-let currentSub = "__all__";
+let currentSub = "";
 let rawRows = [];
-let localRequests = [];
 let shownRows = [];
+let localRequests = [];
 let selectedReportLink = null;
-let realtimeChannels = [];
+let paPendingAction = null;
 
 const LS = {
   THEME: "rv_theme",
-  GRID: "rv_grid_links",
-  MEDIA: "rv_media_links",
+  GRID: "rv_links_grid_light_v1",
   LOCAL_REQUESTS: "rv_local_pending_requests_v1",
-  REPORTER_KEY: "rv_reporter_key_v1"
+  REPORTER_KEY: "rv_reporter_key_v1",
+  PA_UNLOCKED_DATE: "rv_pa_unlocked_date_v1",
+  LOCAL_DAILY_VIEWS: "rv_daily_views_fallback",
+  LOCAL_TOTAL_VIEWS: "rv_total_views_fallback"
+};
+
+const PA_ACCESS = {
+  PASSWORD_HASH: "80ed0c5a40fb1ad015c97cb20678c5c4192bcc1c576ed73180199a7649f8e88f"
 };
 
 /* =========================================================
@@ -1388,17 +1367,6 @@ function safeUrl(url){
   return "https://" + u;
 }
 
-function getPublicImage(path){
-  const p = String(path || "").trim();
-
-  if(!p || p === "null" || p === "undefined"){
-    return "";
-  }
-
-  const { data } = db.storage.from(STORAGE_BUCKET).getPublicUrl(p);
-  return data?.publicUrl || "";
-}
-
 function firstGood(...values){
   for(const v of values){
     const s = String(v || "").trim();
@@ -1409,47 +1377,6 @@ function firstGood(...values){
   }
 
   return "";
-}
-
-function imageFromRow(row){
-  return firstGood(
-    row.ImageURL,
-    row.image_url,
-    getPublicImage(row.ImagePath || row.image_path)
-  );
-}
-
-function fallbackImage(text){
-  return `https://source.unsplash.com/900x650/?warehouse,tool,workplace,${encodeURIComponent(text || "link")}`;
-}
-
-function normalizeRow(row){
-  return {
-    ID: row.id || "",
-    Department: String(row.department ?? row.Department ?? "").trim(),
-    SubDepartment: String(row.sub_department ?? row.SubDepartment ?? "").trim(),
-    LinkName: String(row.link_name ?? row.LinkName ?? "Unnamed").trim(),
-    URL: String(row.url ?? row.URL ?? "#").trim(),
-    ImageURL: String(row.image_url ?? row.ImageURL ?? "").trim(),
-    ImagePath: String(row.image_path ?? row.ImagePath ?? "").trim(),
-    SortOrder: Number(row.sort_order ?? row.SortOrder ?? 0),
-    IsActive: row.is_active ?? row.IsActive ?? true,
-    Pending:false,
-    ClientTempId:""
-  };
-}
-
-function setDbStatus(type, text){
-  els.dbText.textContent = text;
-  els.dbDot.classList.remove("ok","bad");
-
-  if(type === "ok"){
-    els.dbDot.classList.add("ok");
-  }
-
-  if(type === "bad"){
-    els.dbDot.classList.add("bad");
-  }
 }
 
 function getParam(name, fallback=""){
@@ -1469,27 +1396,30 @@ function buildUrl(page, params){
   return url.pathname.split("/").pop() + url.search;
 }
 
-function makeReporterKey(){
-  const existing = localStorage.getItem(LS.REPORTER_KEY);
+function setDbStatus(type, text){
+  els.dbText.textContent = text;
+  els.dbDot.classList.remove("ok","bad");
 
-  if(existing){
-    return existing;
-  }
-
-  let key = "";
-
-  if(window.crypto && crypto.randomUUID){
-    key = crypto.randomUUID();
-  }else{
-    key = "rv_reporter_" + Date.now() + "_" + Math.random().toString(36).slice(2);
-  }
-
-  localStorage.setItem(LS.REPORTER_KEY, key);
-  return key;
+  if(type === "ok") els.dbDot.classList.add("ok");
+  if(type === "bad") els.dbDot.classList.add("bad");
 }
 
-function getReporterKey(){
-  return makeReporterKey();
+function setMsg(type, message){
+  els.reportMsg.className = `msg ${type}`;
+  els.reportMsg.innerHTML = message;
+}
+
+function clearMsg(){
+  els.reportMsg.className = "msg";
+  els.reportMsg.innerHTML = "";
+}
+
+function todayKey(){
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
 }
 
 function getLocalRequests(){
@@ -1505,33 +1435,48 @@ function localLinkRequests(){
   return localRequests.filter(r => r.request_type === "link" && r.status !== "rejected");
 }
 
-function showMsg(type, message){
-  els.reportMsg.className = `msg ${type}`;
-  els.reportMsg.innerHTML = message;
-}
+function getInitials(name){
+  const words = String(name || "RV")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
 
-function clearMsg(){
-  els.reportMsg.className = "msg";
-  els.reportMsg.innerHTML = "";
-}
+  if(words.length === 0) return "RV";
 
-function updateTitleMeta(){
-  const pending = shownRows.filter(r => r.Pending).length;
-  const countText = `${shownRows.length} shown`;
-
-  if(pending > 0){
-    els.titleMeta.textContent = `${countText} · ${pending} pending`;
-  }else{
-    els.titleMeta.textContent = countText;
+  if(words.length === 1){
+    return words[0].slice(0,2).toUpperCase();
   }
+
+  return (words[0][0] + words[1][0]).toUpperCase();
 }
 
-function getSubText(){
-  return currentSub === "__all__" ? "All Links" : currentSub;
+function isProcessAssistantName(value){
+  return String(value || "").trim().toLowerCase() === "process assistant";
+}
+
+function needsPaPassword(dep, sub){
+  return isProcessAssistantName(dep) || isProcessAssistantName(sub);
+}
+
+function makeReporterKey(){
+  const existing = localStorage.getItem(LS.REPORTER_KEY);
+
+  if(existing) return existing;
+
+  const key = crypto.randomUUID
+    ? crypto.randomUUID()
+    : "rv_reporter_" + Date.now() + "_" + Math.random().toString(36).slice(2);
+
+  localStorage.setItem(LS.REPORTER_KEY, key);
+  return key;
+}
+
+function getReporterKey(){
+  return makeReporterKey();
 }
 
 /* =========================================================
-   Theme / Prefs
+   Theme / Grid
 ========================================================= */
 
 function initTheme(){
@@ -1551,137 +1496,99 @@ function toggleTheme(){
   localStorage.setItem(LS.THEME, dark ? "dark" : "light");
 }
 
-function initPrefs(){
-  const grid = localStorage.getItem(LS.GRID) || "4";
-  const media = localStorage.getItem(LS.MEDIA) || "on";
-
-  els.gridCount.value = ["3","4","5"].includes(grid) ? grid : "4";
-
-  applyGrid(els.gridCount.value);
-  applyMedia(media);
+function initGrid(){
+  const grid = localStorage.getItem(LS.GRID) || "6";
+  applyGrid(grid);
 }
 
 function applyGrid(value){
-  const count = ["3","4","5"].includes(String(value)) ? String(value) : "4";
+  const count = ["4","5","6","7"].includes(String(value)) ? String(value) : "6";
 
   document.documentElement.style.setProperty("--grid-cols", count);
   localStorage.setItem(LS.GRID, count);
   els.gridCount.value = count;
 }
 
-function applyMedia(value){
-  const on = value !== "off";
+/* =========================================================
+   Password Gate
+========================================================= */
 
-  document.body.classList.toggle("no-images", !on);
-  els.btnMedia.textContent = on ? "Images On" : "Images Off";
-  els.btnMedia.classList.toggle("active", on);
-
-  localStorage.setItem(LS.MEDIA, on ? "on" : "off");
+function isPaUnlockedToday(){
+  return localStorage.getItem(LS.PA_UNLOCKED_DATE) === todayKey();
 }
 
-function toggleMedia(){
-  const current = localStorage.getItem(LS.MEDIA) || "on";
-  applyMedia(current === "on" ? "off" : "on");
+async function sha256Text(text){
+  const data = new TextEncoder().encode(String(text || ""));
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+
+  return [...new Uint8Array(hashBuffer)]
+    .map(b => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function openPaLock(action){
+  if(isPaUnlockedToday()){
+    action();
+    return;
+  }
+
+  paPendingAction = action;
+
+  els.paPasswordInput.value = "";
+  els.paLockMsg.textContent = "";
+  els.paLockModal.classList.add("show");
+
+  setTimeout(() => els.paPasswordInput.focus(), 80);
+}
+
+function closePaLock(){
+  els.paLockModal.classList.remove("show");
+  els.paLockMsg.textContent = "";
+  paPendingAction = null;
+}
+
+async function submitPaPassword(){
+  const entered = els.paPasswordInput.value.trim();
+
+  if(!entered){
+    els.paLockMsg.textContent = "Please enter password.";
+    return;
+  }
+
+  const hash = await sha256Text(entered);
+
+  if(hash === PA_ACCESS.PASSWORD_HASH){
+    localStorage.setItem(LS.PA_UNLOCKED_DATE, todayKey());
+
+    const action = paPendingAction;
+    closePaLock();
+
+    if(typeof action === "function"){
+      action();
+    }
+  }else{
+    els.paLockMsg.textContent = "Wrong password. Hint: sorter cam";
+    els.paPasswordInput.select();
+  }
 }
 
 /* =========================================================
-   Script Links
+   Normalize
 ========================================================= */
 
-function getRowKey(row){
-  return String(
-    row.setting_key ??
-    row.key ??
-    row.name ??
-    row.setting ??
-    row.slug ??
-    row.title ??
-    ""
-  ).trim().toLowerCase();
-}
-
-function getRowValue(row){
-  return firstGood(
-    row.setting_value,
-    row.value,
-    row.url,
-    row.script_url,
-    row.download_url,
-    row.link,
-    row.href
-  );
-}
-
-function findSettingValue(rows, keys){
-  const wanted = keys.map(k => String(k || "").trim().toLowerCase());
-
-  const found = (rows || []).find(row => {
-    const key = getRowKey(row);
-    return wanted.includes(key);
-  });
-
-  return found ? getRowValue(found) : "";
-}
-
-function showScriptLinks(ranvexsiUrl, amazonPackUrl){
-  const rv = String(ranvexsiUrl || "").trim();
-  const amz = String(amazonPackUrl || "").trim();
-
-  els.scriptRanvexsiLink.classList.toggle("hidden", !rv);
-  els.scriptAmazonPackLink.classList.toggle("hidden", !amz);
-
-  els.scriptRanvexsiLink.href = rv ? safeUrl(rv) : "#";
-  els.scriptAmazonPackLink.href = amz ? safeUrl(amz) : "#";
-
-  if(rv || amz){
-    els.scriptMenu.classList.remove("hidden");
-  }else{
-    els.scriptMenu.classList.add("hidden");
-    els.scriptMenu.classList.remove("open");
-  }
-}
-
-async function loadScriptLink(){
-  let ranvexsiUrl = String(SCRIPT_DOWNLOAD_URL || "").trim();
-  let amazonPackUrl = String(AMAZON_SCRIPTS_PACK_URL || "").trim();
-
-  try{
-    const { data, error } = await db
-      .from(SETTINGS_TABLE)
-      .select("*")
-      .limit(100);
-
-    if(error){
-      throw error;
-    }
-
-    const rows = Array.isArray(data) ? data : [];
-
-    const dbRanvexsiUrl = findSettingValue(rows, [
-      RANVEXSI_SCRIPT_SETTING_KEY,
-      LEGACY_SCRIPT_SETTING_KEY
-    ]);
-
-    const dbAmazonPackUrl = findSettingValue(rows, [
-      AMAZON_PACK_SETTING_KEY
-    ]);
-
-    ranvexsiUrl = firstGood(dbRanvexsiUrl, ranvexsiUrl);
-    amazonPackUrl = firstGood(dbAmazonPackUrl, amazonPackUrl);
-
-    showScriptLinks(ranvexsiUrl, amazonPackUrl);
-  }catch(err){
-    console.warn("Script settings table not ready. Using fallback links if available:", err.message || err);
-    showScriptLinks(ranvexsiUrl, amazonPackUrl);
-  }
-}
-
-function toggleScriptMenu(){
-  els.scriptMenu.classList.toggle("open");
-}
-
-function closeScriptMenu(){
-  els.scriptMenu.classList.remove("open");
+function normalizeRow(row){
+  return {
+    ID: row.id || "",
+    Department: String(row.department ?? row.Department ?? "").trim(),
+    SubDepartment: String(row.sub_department ?? row.SubDepartment ?? "").trim(),
+    LinkName: String(row.link_name ?? row.LinkName ?? "Unnamed").trim(),
+    URL: String(row.url ?? row.URL ?? "#").trim(),
+    Color: String(row.color ?? row.Color ?? "").trim(),
+    SortOrder: Number(row.sort_order ?? row.SortOrder ?? 0),
+    IsActive: row.is_active ?? row.IsActive ?? true,
+    Pending:false,
+    ClientTempId:""
+  };
 }
 
 /* =========================================================
@@ -1693,7 +1600,7 @@ async function loadData(){
 
   try{
     let query = db
-      .from(SUPABASE_TABLE)
+      .from(LINKS_TABLE)
       .select("*")
       .eq("is_active", true)
       .order("sort_order", { ascending:true })
@@ -1703,19 +1610,17 @@ async function loadData(){
       query = query.eq("department", currentDep);
     }
 
-    if(currentSub && currentSub !== "__all__"){
+    if(currentSub){
       query = query.eq("sub_department", currentSub);
     }
 
     const { data, error } = await query;
 
-    if(error){
-      throw error;
-    }
+    if(error) throw error;
 
     rawRows = (data || [])
       .map(normalizeRow)
-      .filter(row => row.Department && row.LinkName);
+      .filter(row => row.Department && row.SubDepartment && row.LinkName);
 
     localRequests = getLocalRequests();
 
@@ -1738,9 +1643,8 @@ async function loadData(){
 function getPendingRows(){
   return localLinkRequests()
     .filter(req => {
-      const depOk = !currentDep || String(req.department || "").toLowerCase() === currentDep.toLowerCase();
-      const sub = String(req.sub_department || "General").trim();
-      const subOk = currentSub === "__all__" || sub.toLowerCase() === currentSub.toLowerCase();
+      const depOk = String(req.department || "").toLowerCase() === currentDep.toLowerCase();
+      const subOk = String(req.sub_department || "General").toLowerCase() === currentSub.toLowerCase();
 
       return depOk && subOk;
     })
@@ -1750,8 +1654,7 @@ function getPendingRows(){
       SubDepartment:req.sub_department || "General",
       LinkName:req.link_name || "Pending Link",
       URL:safeUrl(req.url || "#"),
-      ImageURL:req.image_url || "",
-      ImagePath:"",
+      Color:req.color || "",
       SortOrder:-1,
       IsActive:true,
       Pending:true,
@@ -1782,24 +1685,189 @@ function filterRows(){
 }
 
 /* =========================================================
+   Script Links
+========================================================= */
+
+function getRowKey(row){
+  return String(
+    row.setting_key ??
+    row.key ??
+    row.name ??
+    row.setting ??
+    row.slug ??
+    row.title ??
+    ""
+  ).trim().toLowerCase();
+}
+
+function getRowValue(row){
+  return firstGood(
+    row.setting_value,
+    row.value,
+    row.url,
+    row.script_url,
+    row.download_url,
+    row.link,
+    row.href
+  );
+}
+
+function isRanvexsiScriptSettingKey(key){
+  if(!key) return false;
+
+  return (
+    key === "ranvexsi_ui_script_url" ||
+    key === "ranvexsi_script_url" ||
+    key === "tampermonkey_script_url" ||
+    key === "tampermonkey_url" ||
+    key === "script_url" ||
+    key === "userscript_url" ||
+    (key.includes("ranvexsi") && key.includes("script"))
+  );
+}
+
+function isAmazonScriptsSettingKey(key){
+  if(!key) return false;
+
+  return (
+    key === "amazon_scripts_pack_url" ||
+    key === "amazon_script_pack_url" ||
+    key === "all_amazon_scripts_url" ||
+    key === "amazon_scripts_url" ||
+    key === "amazon_pack_url" ||
+    (key.includes("amazon") && key.includes("script"))
+  );
+}
+
+function setScriptOption(el, url){
+  const clean = String(url || "").trim();
+
+  if(!clean || clean === "#"){
+    el.classList.add("hidden");
+    el.href = "#";
+    return false;
+  }
+
+  el.href = safeUrl(clean);
+  el.classList.remove("hidden");
+  return true;
+}
+
+function showScriptOptions(ranvexsiUrl, amazonUrl){
+  const hasRanvexsi = setScriptOption(els.btnRanvexsiScript, ranvexsiUrl);
+  const hasAmazon = setScriptOption(els.btnAmazonScripts, amazonUrl);
+  const hasAny = hasRanvexsi || hasAmazon;
+
+  els.scriptWrap.classList.toggle("hidden", !hasAny);
+
+  if(!hasAny){
+    els.scriptMenu.classList.remove("show");
+  }
+}
+
+async function loadScriptLink(){
+  let ranvexsiUrl = "";
+  let amazonUrl = "";
+
+  try{
+    const { data, error } = await db
+      .from(SETTINGS_TABLE)
+      .select("*")
+      .limit(100);
+
+    if(error) throw error;
+
+    const rows = Array.isArray(data) ? data : [];
+
+    const foundRanvexsi = rows.find(row => {
+      const key = getRowKey(row);
+      return isRanvexsiScriptSettingKey(key) && getRowValue(row);
+    });
+
+    const foundAmazon = rows.find(row => {
+      const key = getRowKey(row);
+      return isAmazonScriptsSettingKey(key) && getRowValue(row);
+    });
+
+    if(foundRanvexsi){
+      ranvexsiUrl = getRowValue(foundRanvexsi);
+    }
+
+    if(foundAmazon){
+      amazonUrl = getRowValue(foundAmazon);
+    }
+
+    showScriptOptions(ranvexsiUrl, amazonUrl);
+  }catch(err){
+    console.warn("Script settings unavailable:", err.message || err);
+    showScriptOptions("", "");
+  }
+}
+
+/* =========================================================
+   Views / Steps
+========================================================= */
+
+function updateViewUI(today, total){
+  els.viewsToday.textContent = String(today || 0);
+  els.viewsTotal.textContent = String(total || 0);
+}
+
+async function trackVisit(){
+  try{
+    const { data, error } = await db.rpc("rv_track_visit");
+    if(error) throw error;
+
+    const today = Number(data?.daily_steps || data?.daily_views || 0);
+    const total = Number(data?.total_views || 0);
+
+    updateViewUI(today, total);
+  }catch(err){
+    console.warn("Supabase step tracking unavailable. Using local fallback:", err.message || err);
+
+    const key = todayKey();
+    const saved = JSON.parse(localStorage.getItem(LS.LOCAL_DAILY_VIEWS) || "{}");
+
+    if(saved.date !== key){
+      saved.date = key;
+      saved.count = 0;
+    }
+
+    saved.count = Number(saved.count || 0) + 1;
+
+    const total = Number(localStorage.getItem(LS.LOCAL_TOTAL_VIEWS) || 0) + 1;
+
+    localStorage.setItem(LS.LOCAL_DAILY_VIEWS, JSON.stringify(saved));
+    localStorage.setItem(LS.LOCAL_TOTAL_VIEWS, String(total));
+
+    updateViewUI(saved.count, total);
+  }
+}
+
+/* =========================================================
    Render
 ========================================================= */
 
 function updatePageInfo(){
-  const depText = currentDep || "All Departments";
-  const subText = getSubText();
-
-  els.pageTitle.textContent = subText;
+  els.breadcrumb.textContent = `${currentDep || "Department"} / ${currentSub || "Sub-department"}`;
+  els.pageTitle.textContent = currentSub || "Links";
+  els.pageSubtitle.textContent = currentDep
+    ? `${currentDep} links. Text-only boxes for faster scrolling.`
+    : "Text-only boxes for faster scrolling.";
 
   els.btnRequestTop.href = buildUrl("request.html", {
-    dep: currentDep,
-    sub: currentSub === "__all__" ? "" : currentSub
+    dep:currentDep,
+    sub:currentSub
   });
+}
 
-  if(currentDep){
-    els.titleMeta.textContent = `${depText} · 0 shown`;
+function updateTitleMeta(){
+  const pending = shownRows.filter(r => r.Pending).length;
+
+  if(pending > 0){
+    els.titleMeta.textContent = `${shownRows.length} shown · ${pending} pending`;
   }else{
-    els.titleMeta.textContent = "0 shown";
+    els.titleMeta.textContent = `${shownRows.length} shown`;
   }
 }
 
@@ -1814,14 +1882,13 @@ function render(){
     els.linksGrid.innerHTML = `
       <div class="empty">
         <strong>No links found.</strong>
-        Try another search or submit a request for this department/sub-department.
+        Try another search or submit a request for this sub-department.
       </div>
     `;
     return;
   }
 
   rows.forEach(row => {
-    const image = firstGood(imageFromRow(row), fallbackImage(row.LinkName));
     const url = safeUrl(row.URL);
     const card = document.createElement("article");
 
@@ -1834,20 +1901,18 @@ function render(){
     card.setAttribute("aria-label", `Open ${row.LinkName}`);
 
     card.innerHTML = `
-      <img class="link-img" src="${esc(image)}" alt="${esc(row.LinkName)}" loading="lazy" decoding="async">
-      <div class="veil"></div>
-      <div class="overlay"></div>
+      <div class="link-top">
+        <div class="link-icon">${esc(getInitials(row.LinkName))}</div>
+        <button class="report-btn" type="button" title="Report this link" aria-label="Report ${esc(row.LinkName)}">!</button>
+      </div>
 
-      ${row.Pending ? `<span class="pending-ribbon">Pending</span>` : ``}
+      <div>
+        <div class="link-name">${esc(row.LinkName)}</div>
+        <div class="link-meta">${esc(row.Department)} / ${esc(row.SubDepartment)}</div>
+      </div>
 
-      <button class="report-btn" type="button" title="Report this link" aria-label="Report ${esc(row.LinkName)}">!</button>
-
-      <div class="label">
-        <div class="label-main">
-          <span class="label-title">${esc(row.LinkName)}</span>
-          <span class="label-sub">${esc(row.Department)}${row.SubDepartment ? " / " + esc(row.SubDepartment) : ""}</span>
-        </div>
-        <span class="pill">${row.Pending ? "Pending" : "Open"}</span>
+      <div class="link-bottom">
+        ${row.Pending ? `<span class="pending-pill">Pending</span>` : `<span class="open-pill">Open ↗</span>`}
       </div>
     `;
 
@@ -1924,7 +1989,6 @@ function openReportModal(row){
 
   const url = safeUrl(row.URL);
 
-  els.reportTitle.textContent = "Report Link";
   els.reportSub.textContent = `${row.Department}${row.SubDepartment ? " / " + row.SubDepartment : ""}`;
   els.reportLinkName.value = row.LinkName || "";
   els.reportCurrentUrl.value = url || "";
@@ -1943,7 +2007,7 @@ async function submitReport(event){
   event.preventDefault();
 
   if(!selectedReportLink){
-    showMsg("bad", "No link selected.");
+    setMsg("bad", "No link selected.");
     return;
   }
 
@@ -1954,7 +2018,7 @@ async function submitReport(event){
   const note = els.reportNote.value.trim();
 
   if(reason === "updated" && suggestedUrl && !/^https?:\/\//i.test(suggestedUrl)){
-    showMsg("bad", "Updated link should start with http:// or https://");
+    setMsg("bad", "Updated link should start with http:// or https://");
     return;
   }
 
@@ -1963,29 +2027,27 @@ async function submitReport(event){
 
   try{
     const { error } = await db.rpc("rv_public_report_link", {
-      p_link_id: selectedReportLink.ID || null,
-      p_department: selectedReportLink.Department || currentDep || "",
-      p_sub_department: selectedReportLink.SubDepartment || "",
-      p_link_name: selectedReportLink.LinkName || "",
-      p_url: safeUrl(selectedReportLink.URL || ""),
-      p_reason: reason,
-      p_suggested_url: suggestedUrl || null,
-      p_note: note || null,
-      p_reporter_key: getReporterKey()
+      p_link_id:selectedReportLink.ID || null,
+      p_department:selectedReportLink.Department || currentDep || "",
+      p_sub_department:selectedReportLink.SubDepartment || currentSub || "",
+      p_link_name:selectedReportLink.LinkName || "",
+      p_url:safeUrl(selectedReportLink.URL || ""),
+      p_reason:reason,
+      p_suggested_url:suggestedUrl || null,
+      p_note:note || null,
+      p_reporter_key:getReporterKey()
     });
 
-    if(error){
-      throw error;
-    }
+    if(error) throw error;
 
-    showMsg("ok", "Report submitted. Admin will review it.");
+    setMsg("ok", "Report submitted. Admin will review it.");
 
     setTimeout(() => {
       closeReportModal();
     }, 900);
   }catch(err){
     console.error(err);
-    showMsg("bad", esc(err.message || err));
+    setMsg("bad", esc(err.message || err));
   }finally{
     els.submitReport.disabled = false;
     els.submitReport.textContent = "Submit Report";
@@ -1997,7 +2059,8 @@ async function submitReport(event){
 ========================================================= */
 
 function goBack(){
-  window.location.href = "index.html";
+  const url = buildUrl("index.html", {});
+  window.location.href = url;
 }
 
 async function copyPageLink(){
@@ -2012,50 +2075,6 @@ async function copyPageLink(){
   }catch{
     alert("Could not copy link.");
   }
-}
-
-/* =========================================================
-   Realtime
-========================================================= */
-
-function setupRealtime(){
-  realtimeChannels.forEach(ch => {
-    try{
-      db.removeChannel(ch);
-    }catch{}
-  });
-
-  realtimeChannels = [];
-
-  const tables = [
-    SUPABASE_TABLE,
-    REQUEST_TABLE,
-    REPORTS_TABLE,
-    SETTINGS_TABLE
-  ];
-
-  tables.forEach(table => {
-    try{
-      const channel = db
-        .channel(`rv-links-live-${table}`)
-        .on(
-          "postgres_changes",
-          { event:"*", schema:"public", table },
-          async () => {
-            if(table === SETTINGS_TABLE){
-              await loadScriptLink();
-            }else{
-              await loadData();
-            }
-          }
-        )
-        .subscribe();
-
-      realtimeChannels.push(channel);
-    }catch(e){
-      console.warn("Realtime not started for", table, e);
-    }
-  });
 }
 
 /* =========================================================
@@ -2076,20 +2095,23 @@ els.gridCount.addEventListener("change", () => {
   applyGrid(els.gridCount.value);
 });
 
-els.btnMedia.addEventListener("click", toggleMedia);
-
 els.btnScriptTop.addEventListener("click", (event) => {
+  event.preventDefault();
   event.stopPropagation();
-  toggleScriptMenu();
+  els.scriptMenu.classList.toggle("show");
 });
 
-els.scriptDropdown.addEventListener("click", () => {
-  closeScriptMenu();
+els.scriptMenu.addEventListener("click", (event) => {
+  event.stopPropagation();
+
+  if(event.target.closest("a")){
+    els.scriptMenu.classList.remove("show");
+  }
 });
 
 document.addEventListener("click", (event) => {
-  if(!els.scriptMenu.classList.contains("hidden") && !els.scriptMenu.contains(event.target)){
-    closeScriptMenu();
+  if(!els.scriptWrap.contains(event.target)){
+    els.scriptMenu.classList.remove("show");
   }
 });
 
@@ -2103,13 +2125,18 @@ els.reportModal.addEventListener("click", (event) => {
   }
 });
 
-document.addEventListener("keydown", (event) => {
-  if(event.key === "Escape" && els.reportModal.classList.contains("show")){
-    closeReportModal();
-  }
+els.paUnlockBtn.addEventListener("click", submitPaPassword);
+els.paCancelBtn.addEventListener("click", closePaLock);
 
-  if(event.key === "Escape"){
-    closeScriptMenu();
+els.paPasswordInput.addEventListener("keydown", (event) => {
+  if(event.key === "Enter"){
+    submitPaPassword();
+  }
+});
+
+els.paLockModal.addEventListener("click", (event) => {
+  if(event.target === els.paLockModal){
+    closePaLock();
   }
 });
 
@@ -2117,23 +2144,58 @@ let searchTimer = null;
 
 els.search.addEventListener("input", () => {
   clearTimeout(searchTimer);
-  searchTimer = setTimeout(render, 140);
+  searchTimer = setTimeout(render, 120);
+});
+
+document.addEventListener("keydown", (event) => {
+  if(event.key === "Escape"){
+    els.scriptMenu.classList.remove("show");
+
+    if(els.reportModal.classList.contains("show")){
+      closeReportModal();
+      return;
+    }
+
+    if(els.paLockModal.classList.contains("show")){
+      closePaLock();
+    }
+  }
 });
 
 /* =========================================================
    Init
 ========================================================= */
 
-async function init(){
-  currentDep = getParam("dep", "");
-  currentSub = getParam("sub", "__all__") || "__all__";
-
-  initTheme();
-  initPrefs();
-
+async function startPage(){
   await loadData();
   await loadScriptLink();
-  setupRealtime();
+}
+
+async function init(){
+  currentDep = getParam("dep", "");
+  currentSub = getParam("sub", "");
+
+  if(!currentDep || !currentSub || currentSub === "__all__"){
+    window.location.href = "index.html";
+    return;
+  }
+
+  initTheme();
+  initGrid();
+  trackVisit();
+
+  const protectedPage = needsPaPassword(currentDep, currentSub);
+
+  if(protectedPage){
+    openPaLock(startPage);
+  }else{
+    await startPage();
+  }
+
+  /*
+    Realtime is intentionally disabled for smoother Amazon/work laptop scrolling.
+    Use the Refresh button when admin changes data.
+  */
 }
 
 init();
