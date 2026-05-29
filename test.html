@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>RANVEXSI UI</title>
+<title>RANVEXSI UI — Links</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -30,8 +30,8 @@
     --soft:rgba(37,99,235,.10);
     --shadow:0 6px 18px rgba(15,23,42,.08);
     --shadow2:0 12px 30px rgba(15,23,42,.12);
-    --radius:18px;
     --max:1360px;
+    --grid-cols:6;
   }
 
   body.dark{
@@ -76,13 +76,18 @@
 
   button,
   input,
-  select{
+  select,
+  textarea{
     font:inherit;
   }
 
   button{
     cursor:pointer;
     -webkit-tap-highlight-color:transparent;
+  }
+
+  textarea{
+    resize:vertical;
   }
 
   a{
@@ -126,7 +131,26 @@
     display:flex;
     align-items:center;
     gap:10px;
-    min-width:230px;
+    min-width:260px;
+  }
+
+  .backbtn{
+    width:34px;
+    height:34px;
+    border:1px solid var(--line);
+    border-radius:12px;
+    background:var(--surface2);
+    color:var(--ink);
+    display:grid;
+    place-items:center;
+    font-size:17px;
+    font-weight:950;
+    box-shadow:0 3px 10px rgba(15,23,42,.05);
+  }
+
+  .backbtn:hover{
+    transform:translateY(-1px);
+    box-shadow:var(--shadow);
   }
 
   .logo{
@@ -263,8 +287,7 @@
     font-size:14px;
   }
 
-  .top-link-btn,
-  .script-btn.primary{
+  .top-link-btn{
     border:0;
     color:#fff;
     background:linear-gradient(135deg,var(--accent),var(--accent2));
@@ -332,6 +355,7 @@
     color:#fff;
     flex:0 0 auto;
     font-size:16px;
+    font-weight:950;
     background:linear-gradient(135deg,var(--accent),var(--accent2));
   }
 
@@ -376,6 +400,13 @@
     min-width:0;
   }
 
+  .breadcrumb{
+    color:var(--muted);
+    font-size:.76rem;
+    font-weight:850;
+    margin-bottom:5px;
+  }
+
   .page-title{
     font-size:clamp(1.42rem,2vw,2rem);
     letter-spacing:-.06em;
@@ -400,7 +431,8 @@
   }
 
   .mini-pill,
-  .mini-btn{
+  .mini-btn,
+  .mini-control{
     min-height:32px;
     border:1px solid var(--line);
     border-radius:999px;
@@ -422,10 +454,18 @@
     background:var(--surface2);
   }
 
-  .mini-btn.active{
-    border-color:rgba(22,163,74,.30);
-    color:#fff;
-    background:linear-gradient(135deg,#16a34a,#15803d);
+  .mini-control{
+    color:var(--muted);
+    background:var(--surface2);
+  }
+
+  .mini-control select{
+    border:0;
+    outline:0;
+    background:transparent;
+    color:var(--ink);
+    font-weight:950;
+    cursor:pointer;
   }
 
   .mini-btn:hover{
@@ -434,313 +474,150 @@
   }
 
   /* =========================
-     Departments
+     Links Grid
   ========================= */
 
-  .section-head{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-    margin:18px 0 11px;
-  }
-
-  .section-head h2{
-    font-size:1.04rem;
-    font-weight:950;
-    letter-spacing:-.04em;
-  }
-
-  .section-head p{
-    margin-top:3px;
-    color:var(--muted);
-    font-size:.78rem;
-    font-weight:750;
-  }
-
-  .grid{
+  .links-grid{
     display:grid;
-    gap:14px;
-  }
-
-  .department-grid{
-    grid-template-columns:repeat(4,minmax(0,1fr));
-  }
-
-  .sub-grid{
-    grid-template-columns:repeat(5,minmax(0,1fr));
-  }
-
-  .dept-card{
-    position:relative;
-    min-height:168px;
-    aspect-ratio:4/3;
-    border:1px solid var(--line);
-    border-radius:var(--radius);
-    background:
-      radial-gradient(circle at top left, rgba(37,99,235,.18), transparent 42%),
-      linear-gradient(135deg, rgba(37,99,235,.13), rgba(124,58,237,.10)),
-      var(--surface);
-    overflow:hidden;
-    box-shadow:var(--shadow);
-    transition:.16s ease;
-    contain:layout paint;
-    content-visibility:auto;
-    contain-intrinsic-size:170px 250px;
-  }
-
-  .dept-card:hover{
-    transform:translateY(-2px);
-    box-shadow:var(--shadow2);
-    border-color:rgba(37,99,235,.32);
-  }
-
-  .dept-card.active{
-    border-color:rgba(37,99,235,.75);
-    box-shadow:0 0 0 4px var(--soft), var(--shadow2);
-  }
-
-  .dept-img{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    display:block;
-    opacity:.88;
-  }
-
-  body.dark .dept-img{
-    opacity:.58;
-  }
-
-  body.no-images .dept-img{
-    display:none!important;
-  }
-
-  .dept-overlay{
-    position:absolute;
-    inset:0;
-    background:linear-gradient(180deg, rgba(0,0,0,.03) 10%, rgba(0,0,0,.15) 48%, rgba(0,0,0,.78) 100%);
-    pointer-events:none;
-  }
-
-  .dept-top{
-    position:absolute;
-    top:10px;
-    left:10px;
-    right:10px;
-    z-index:3;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:8px;
-  }
-
-  .vote-mini{
-    min-width:45px;
-    height:27px;
-    border-radius:999px;
-    border:1px solid rgba(255,255,255,.25);
-    background:rgba(15,23,42,.38);
-    color:#fff;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    gap:5px;
-    padding:0 9px;
-    font-size:.70rem;
-    font-weight:950;
-  }
-
-  .vote-mini:disabled{
-    opacity:.7;
-    cursor:wait;
-  }
-
-  .lock-mini,
-  .pending-mini{
-    height:25px;
-    border-radius:999px;
-    padding:0 9px;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    color:#fff;
-    font-size:.66rem;
-    font-weight:950;
-    background:rgba(217,119,6,.92);
-  }
-
-  .lock-mini{
-    background:rgba(15,23,42,.60);
-  }
-
-  .dept-label{
-    position:absolute;
-    z-index:2;
-    left:13px;
-    right:13px;
-    bottom:12px;
-    color:#fff;
-  }
-
-  .dept-title-row{
-    display:flex;
-    align-items:flex-end;
-    justify-content:space-between;
-    gap:10px;
-  }
-
-  .dept-title{
-    min-width:0;
-    font-size:.96rem;
-    line-height:1.1;
-    font-weight:950;
-    letter-spacing:-.035em;
-    text-shadow:0 2px 10px rgba(0,0,0,.44);
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-  }
-
-  .dept-count{
-    flex:0 0 auto;
-    height:24px;
-    border-radius:999px;
-    padding:0 8px;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    background:rgba(255,255,255,.17);
-    border:1px solid rgba(255,255,255,.18);
-    font-size:.66rem;
-    font-weight:950;
-  }
-
-  .dept-meta{
-    margin-top:5px;
-    color:rgba(255,255,255,.82);
-    font-size:.70rem;
-    font-weight:850;
-    text-shadow:0 2px 8px rgba(0,0,0,.38);
-  }
-
-  /* =========================
-     Selected / Sub departments
-  ========================= */
-
-  .selected-panel{
-    border:1px solid var(--line);
-    border-radius:22px;
-    background:var(--surface);
-    box-shadow:var(--shadow);
-    padding:15px;
-    margin-top:16px;
-  }
-
-  .selected-top{
-    display:flex;
-    align-items:flex-start;
-    justify-content:space-between;
+    grid-template-columns:repeat(var(--grid-cols),minmax(0,1fr));
     gap:12px;
-    margin-bottom:12px;
   }
 
-  .selected-title{
-    font-size:1.20rem;
-    font-weight:950;
-    letter-spacing:-.05em;
-    line-height:1.1;
-  }
-
-  .selected-sub{
-    margin-top:5px;
-    color:var(--muted);
-    font-size:.82rem;
-    font-weight:750;
-  }
-
-  .sub-card{
-    min-height:104px;
+  .link-card{
+    position:relative;
+    min-height:110px;
     border:1px solid var(--line);
     border-radius:17px;
     background:
-      linear-gradient(135deg, rgba(37,99,235,.09), rgba(124,58,237,.07)),
-      var(--surface2);
+      linear-gradient(135deg, rgba(37,99,235,.08), rgba(124,58,237,.06)),
+      var(--surface);
     box-shadow:0 4px 12px rgba(15,23,42,.06);
     padding:13px;
     display:flex;
     flex-direction:column;
     justify-content:space-between;
     gap:12px;
+    overflow:hidden;
     transition:.16s ease;
     contain:layout paint;
     content-visibility:auto;
-    contain-intrinsic-size:105px 190px;
+    contain-intrinsic-size:110px 180px;
   }
 
-  .sub-card:hover{
+  .link-card::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:0;
+    bottom:0;
+    width:4px;
+    background:linear-gradient(180deg,var(--accent),var(--accent2));
+    opacity:.86;
+  }
+
+  .link-card:hover{
     transform:translateY(-2px);
     border-color:rgba(37,99,235,.35);
     box-shadow:var(--shadow);
   }
 
-  .sub-card.locked{
-    background:
-      linear-gradient(135deg, rgba(217,119,6,.14), rgba(124,58,237,.06)),
-      var(--surface2);
+  .link-card:focus-visible{
+    outline:none;
+    border-color:rgba(37,99,235,.60);
+    box-shadow:0 0 0 4px var(--soft), var(--shadow);
   }
 
-  .sub-head{
+  .link-top{
     display:flex;
     align-items:flex-start;
     justify-content:space-between;
-    gap:10px;
+    gap:9px;
   }
 
-  .sub-icon{
-    width:34px;
-    height:34px;
-    border-radius:13px;
+  .link-icon{
+    width:31px;
+    height:31px;
+    border-radius:12px;
     display:grid;
     place-items:center;
     color:#fff;
     background:linear-gradient(135deg,var(--accent),var(--accent2));
-    font-size:15px;
+    font-size:.76rem;
     font-weight:950;
+    flex:0 0 auto;
   }
 
-  .sub-card.locked .sub-icon{
-    background:linear-gradient(135deg,#d97706,#f59e0b);
-  }
-
-  .sub-count{
-    height:25px;
-    min-width:32px;
-    padding:0 8px;
+  .report-btn{
+    width:28px;
+    height:28px;
+    border:1px solid var(--line);
     border-radius:999px;
+    background:var(--surface2);
+    color:var(--muted);
     display:grid;
     place-items:center;
-    background:var(--surface);
+    font-size:.78rem;
+    font-weight:950;
+    flex:0 0 auto;
+  }
+
+  .report-btn:hover{
+    background:rgba(220,38,38,.10);
+    border-color:rgba(220,38,38,.24);
+    color:var(--red);
+  }
+
+  .link-name{
+    font-size:.89rem;
+    line-height:1.15;
+    font-weight:950;
+    letter-spacing:-.035em;
+    word-break:break-word;
+  }
+
+  .link-meta{
+    margin-top:5px;
+    color:var(--muted);
+    font-size:.66rem;
+    line-height:1.3;
+    font-weight:850;
+    word-break:break-word;
+  }
+
+  .link-bottom{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+  }
+
+  .open-pill{
+    height:25px;
+    border-radius:999px;
+    padding:0 9px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:5px;
+    background:var(--surface2);
+    color:var(--ink);
     border:1px solid var(--line);
-    color:var(--muted);
+    font-size:.66rem;
     font-weight:950;
-    font-size:.70rem;
   }
 
-  .sub-title{
+  .pending-pill{
+    height:25px;
+    border-radius:999px;
+    padding:0 9px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(217,119,6,.12);
+    color:var(--gold);
+    border:1px solid rgba(217,119,6,.20);
+    font-size:.66rem;
     font-weight:950;
-    letter-spacing:-.04em;
-    line-height:1.12;
-    font-size:.92rem;
-  }
-
-  .sub-desc{
-    color:var(--muted);
-    font-size:.70rem;
-    font-weight:800;
-    margin-top:4px;
   }
 
   .empty{
@@ -764,7 +641,187 @@
   }
 
   /* =========================
-     Password Gate
+     Report Modal
+  ========================= */
+
+  .modal-backdrop{
+    position:fixed;
+    inset:0;
+    background:rgba(2,6,23,.66);
+    z-index:100;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+
+  .modal-backdrop.show{
+    display:flex;
+  }
+
+  .modal{
+    width:min(620px,100%);
+    max-height:min(92vh,780px);
+    overflow:auto;
+    border:1px solid var(--line);
+    border-radius:24px;
+    background:var(--surface);
+    color:var(--ink);
+    box-shadow:0 30px 90px rgba(0,0,0,.34);
+  }
+
+  .modal-head{
+    position:sticky;
+    top:0;
+    z-index:2;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:16px;
+    padding:18px 18px 14px;
+    border-bottom:1px solid var(--line);
+    background:var(--surface);
+  }
+
+  .modal-title{
+    font-size:1.18rem;
+    font-weight:950;
+    letter-spacing:-.05em;
+  }
+
+  .modal-sub{
+    margin-top:5px;
+    color:var(--muted);
+    font-weight:700;
+    font-size:.86rem;
+    line-height:1.4;
+  }
+
+  .close-btn{
+    width:38px;
+    height:38px;
+    border-radius:14px;
+    border:1px solid var(--line);
+    background:var(--surface2);
+    color:var(--ink);
+    font-weight:950;
+    font-size:18px;
+  }
+
+  .modal-body{
+    padding:18px;
+  }
+
+  .form-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+  }
+
+  .field{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+  }
+
+  .field.full{
+    grid-column:1/-1;
+  }
+
+  .field label{
+    font-size:.76rem;
+    font-weight:900;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:.06em;
+  }
+
+  .field input,
+  .field select,
+  .field textarea{
+    width:100%;
+    min-height:42px;
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:var(--surface2);
+    color:var(--ink);
+    outline:none;
+    padding:10px 12px;
+    font-weight:750;
+  }
+
+  .field textarea{
+    min-height:88px;
+  }
+
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus{
+    border-color:rgba(37,99,235,.55);
+    box-shadow:0 0 0 4px var(--soft);
+  }
+
+  .msg{
+    margin-top:14px;
+    border-radius:16px;
+    padding:13px;
+    font-weight:850;
+    font-size:.88rem;
+    line-height:1.4;
+    display:none;
+  }
+
+  .msg.ok{
+    display:block;
+    background:rgba(22,163,74,.10);
+    color:var(--green);
+    border:1px solid rgba(22,163,74,.24);
+  }
+
+  .msg.bad{
+    display:block;
+    background:rgba(220,38,38,.10);
+    color:var(--red);
+    border:1px solid rgba(220,38,38,.24);
+  }
+
+  .modal-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    padding:14px 18px 18px;
+    border-top:1px solid var(--line);
+  }
+
+  .primary-btn,
+  .secondary-btn{
+    min-height:42px;
+    border-radius:14px;
+    padding:0 16px;
+    font-weight:950;
+    cursor:pointer;
+    border:1px solid var(--line);
+  }
+
+  .secondary-btn{
+    background:var(--surface2);
+    color:var(--ink);
+  }
+
+  .primary-btn{
+    border:0;
+    color:#fff;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    box-shadow:0 12px 24px rgba(37,99,235,.22);
+  }
+
+  .primary-btn:disabled{
+    opacity:.55;
+    cursor:not-allowed;
+  }
+
+  /* =========================
+     PA Lock Modal
   ========================= */
 
   .pa-lock-backdrop{
@@ -883,12 +940,14 @@
      Responsive
   ========================= */
 
-  @media(max-width:1120px){
-    .department-grid{
-      grid-template-columns:repeat(3,minmax(0,1fr));
+  @media(max-width:1280px){
+    .links-grid{
+      grid-template-columns:repeat(min(var(--grid-cols), 5), minmax(0,1fr));
     }
+  }
 
-    .sub-grid{
+  @media(max-width:1080px){
+    .links-grid{
       grid-template-columns:repeat(4,minmax(0,1fr));
     }
   }
@@ -919,8 +978,7 @@
       padding:14px 14px 28px;
     }
 
-    .titlebar,
-    .selected-top{
+    .titlebar{
       flex-direction:column;
     }
 
@@ -928,27 +986,15 @@
       justify-content:flex-start;
     }
 
-    .department-grid,
-    .sub-grid{
+    .links-grid{
       grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:12px;
+      gap:11px;
     }
 
-    .dept-card{
-      min-height:145px;
-      border-radius:17px;
-    }
-
-    .dept-title{
-      white-space:normal;
-      display:-webkit-box;
-      -webkit-line-clamp:2;
-      -webkit-box-orient:vertical;
-      font-size:.86rem;
-    }
-
-    .sub-card{
-      min-height:100px;
+    .link-card{
+      min-height:105px;
+      border-radius:16px;
+      padding:12px;
     }
 
     .script-btn span{
@@ -965,6 +1011,10 @@
       right:12px;
       top:64px;
       width:calc(100vw - 24px);
+    }
+
+    .form-grid{
+      grid-template-columns:1fr;
     }
   }
 
@@ -992,27 +1042,41 @@
       font-size:1.34rem;
     }
 
-    .section-head{
-      align-items:flex-start;
-      flex-direction:column;
+    .links-grid{
+      grid-template-columns:repeat(2,minmax(0,1fr));
     }
 
-    .dept-card{
-      min-height:132px;
-      aspect-ratio:1.05;
+    .link-name{
+      font-size:.82rem;
     }
 
-    .dept-meta{
+    .link-meta{
       display:none;
     }
 
-    .pa-lock-box{
-      border-radius:20px;
-      padding:17px;
+    .modal-backdrop,
+    .pa-lock-backdrop{
+      padding:10px;
     }
 
+    .modal,
+    .pa-lock-box{
+      border-radius:20px;
+    }
+
+    .modal-head,
+    .modal-body{
+      padding:15px;
+    }
+
+    .modal-actions,
     .pa-lock-actions{
       flex-direction:column;
+    }
+
+    .primary-btn,
+    .secondary-btn{
+      width:100%;
     }
   }
 </style>
@@ -1022,6 +1086,8 @@
   <header class="app-header">
     <div class="header-inner">
       <div class="brand">
+        <button id="btnBack" class="backbtn" title="Back">←</button>
+
         <div class="logo">RV</div>
 
         <div class="brand-text">
@@ -1032,7 +1098,7 @@
 
       <div class="search-wrap">
         <span>⌕</span>
-        <input id="search" placeholder="Search departments..." autocomplete="off" />
+        <input id="search" placeholder="Search links..." autocomplete="off" />
       </div>
 
       <div class="header-actions">
@@ -1069,7 +1135,6 @@
 
         <button class="iconbtn" id="btnRefresh" title="Reload">↻</button>
         <button class="iconbtn" id="btnTheme" title="Light/Dark">🌗</button>
-        <button class="iconbtn" id="btnMedia" title="Images On/Off">🖼</button>
 
         <div class="views-pill" title="Today / Total">
           👣 <span id="viewsToday">0</span> / <span id="viewsTotal">0</span>
@@ -1081,40 +1146,87 @@
   <main class="page">
     <section class="titlebar">
       <div class="title-left">
-        <h1 class="page-title" id="pageTitle">Departments</h1>
-        <p class="page-subtitle" id="pageSubtitle">Choose a department, then open the sub-department you need.</p>
+        <div class="breadcrumb" id="breadcrumb">Department / Sub-department</div>
+        <h1 class="page-title" id="pageTitle">Links</h1>
+        <p class="page-subtitle" id="pageSubtitle">Text-only boxes for smoother workplace laptop scrolling.</p>
       </div>
 
       <div class="title-actions">
-        <span class="mini-pill" id="titleMeta">0 departments</span>
-        <button class="mini-btn active" id="btnMediaText" type="button">Images On</button>
+        <span class="mini-pill" id="titleMeta">0 shown</span>
+
+        <button class="mini-btn" id="btnCopyPage" type="button">Copy Page</button>
+
+        <label class="mini-control">
+          Grid
+          <select id="gridCount">
+            <option value="4">4x</option>
+            <option value="5">5x</option>
+            <option value="6">6x</option>
+            <option value="7">7x</option>
+          </select>
+        </label>
       </div>
     </section>
 
-    <section>
-      <div class="section-head">
-        <div>
-          <h2>Departments</h2>
-          <p>4-column lightweight dashboard cards.</p>
-        </div>
-      </div>
-
-      <div id="depGrid" class="grid department-grid" aria-label="Departments grid"></div>
-    </section>
-
-    <section class="selected-panel hidden" id="selectedPanel">
-      <div class="selected-top">
-        <div>
-          <div class="selected-title" id="selectedTitle">Department</div>
-          <div class="selected-sub" id="selectedSub">Open a sub-department below.</div>
-        </div>
-
-        <button class="mini-btn" id="btnClearDepartment" type="button">Clear Selection</button>
-      </div>
-
-      <div id="subGrid" class="grid sub-grid" aria-label="Sub-departments grid"></div>
-    </section>
+    <section id="linksGrid" class="links-grid" aria-label="Links grid"></section>
   </main>
+
+  <!-- Report Link Modal -->
+  <div class="modal-backdrop" id="reportModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="reportTitle">
+      <div class="modal-head">
+        <div>
+          <div class="modal-title" id="reportTitle">Report Link</div>
+          <div class="modal-sub" id="reportSub">
+            Tell admin what is wrong with this link.
+          </div>
+        </div>
+        <button class="close-btn" id="closeReportModal" type="button">×</button>
+      </div>
+
+      <form id="reportForm">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="field full">
+              <label>Link</label>
+              <input id="reportLinkName" readonly />
+            </div>
+
+            <div class="field full">
+              <label>Current URL</label>
+              <input id="reportCurrentUrl" readonly />
+            </div>
+
+            <div class="field full">
+              <label>Reason</label>
+              <select id="reportReason" required>
+                <option value="broken">Link is broken</option>
+                <option value="updated">Link is updated</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div class="field full">
+              <label>Correct / Updated Link Optional</label>
+              <input id="reportSuggestedUrl" placeholder="https://correct-link.com" />
+            </div>
+
+            <div class="field full">
+              <label>Note Optional</label>
+              <textarea id="reportNote" placeholder="Add any helpful details for admin..."></textarea>
+            </div>
+          </div>
+
+          <div class="msg" id="reportMsg"></div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="secondary-btn" id="cancelReport" type="button">Cancel</button>
+          <button class="primary-btn" id="submitReport" type="submit">Submit Report</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <!-- Process Assistant Password Gate -->
   <div class="pa-lock-backdrop" id="paLockModal">
@@ -1149,11 +1261,8 @@ const SUPABASE_URL = "https://qpplbqodulenhccfzrjv.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_ph2JpBSdGl-dIqvx9F6__g_Oo4r96Y_";
 
 const LINKS_TABLE = "ranvexsi_links";
-const DEPT_TABLE = "ranvexsi_departments";
-const SUB_TABLE = "ranvexsi_sub_departments";
 const SETTINGS_TABLE = "ranvexsi_settings";
-const VOTES_TABLE = "ranvexsi_department_votes";
-const STORAGE_BUCKET = "media";
+const REQUEST_TABLE = "ranvexsi_requests";
 
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
@@ -1163,15 +1272,12 @@ const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
 const els = {
   search: document.getElementById("search"),
-  depGrid: document.getElementById("depGrid"),
-  subGrid: document.getElementById("subGrid"),
-  selectedPanel: document.getElementById("selectedPanel"),
-  selectedTitle: document.getElementById("selectedTitle"),
-  selectedSub: document.getElementById("selectedSub"),
+  linksGrid: document.getElementById("linksGrid"),
+  breadcrumb: document.getElementById("breadcrumb"),
   pageTitle: document.getElementById("pageTitle"),
   pageSubtitle: document.getElementById("pageSubtitle"),
   titleMeta: document.getElementById("titleMeta"),
-  btnClearDepartment: document.getElementById("btnClearDepartment"),
+  btnBack: document.getElementById("btnBack"),
   btnRequestTop: document.getElementById("btnRequestTop"),
   scriptWrap: document.getElementById("scriptWrap"),
   btnScriptTop: document.getElementById("btnScriptTop"),
@@ -1180,12 +1286,26 @@ const els = {
   btnAmazonScripts: document.getElementById("btnAmazonScripts"),
   btnRefresh: document.getElementById("btnRefresh"),
   btnTheme: document.getElementById("btnTheme"),
-  btnMedia: document.getElementById("btnMedia"),
-  btnMediaText: document.getElementById("btnMediaText"),
+  btnCopyPage: document.getElementById("btnCopyPage"),
+  gridCount: document.getElementById("gridCount"),
   dbDot: document.getElementById("dbDot"),
   dbText: document.getElementById("dbText"),
   viewsToday: document.getElementById("viewsToday"),
   viewsTotal: document.getElementById("viewsTotal"),
+
+  reportModal: document.getElementById("reportModal"),
+  closeReportModal: document.getElementById("closeReportModal"),
+  cancelReport: document.getElementById("cancelReport"),
+  reportForm: document.getElementById("reportForm"),
+  reportLinkName: document.getElementById("reportLinkName"),
+  reportCurrentUrl: document.getElementById("reportCurrentUrl"),
+  reportReason: document.getElementById("reportReason"),
+  reportSuggestedUrl: document.getElementById("reportSuggestedUrl"),
+  reportNote: document.getElementById("reportNote"),
+  reportMsg: document.getElementById("reportMsg"),
+  submitReport: document.getElementById("submitReport"),
+  reportSub: document.getElementById("reportSub"),
+
   paLockModal: document.getElementById("paLockModal"),
   paPasswordInput: document.getElementById("paPasswordInput"),
   paLockMsg: document.getElementById("paLockMsg"),
@@ -1193,23 +1313,22 @@ const els = {
   paUnlockBtn: document.getElementById("paUnlockBtn")
 };
 
-let rawLinks = [];
-let departmentRows = [];
-let subDepartmentRows = [];
-let departmentsData = [];
 let currentDep = "";
-let voteCounts = {};
-let userVoteStatus = {};
+let currentSub = "";
+let rawRows = [];
+let shownRows = [];
+let localRequests = [];
+let selectedReportLink = null;
 let paPendingAction = null;
 
 const LS = {
   THEME: "rv_theme",
-  MEDIA: "rv_media_index_light_v1",
-  VOTER_KEY: "rv_voter_key_v1",
+  GRID: "rv_links_grid_light_v1",
+  LOCAL_REQUESTS: "rv_local_pending_requests_v1",
+  REPORTER_KEY: "rv_reporter_key_v1",
   PA_UNLOCKED_DATE: "rv_pa_unlocked_date_v1",
   LOCAL_DAILY_VIEWS: "rv_daily_views_fallback",
-  LOCAL_TOTAL_VIEWS: "rv_total_views_fallback",
-  LOCAL_REQUESTS: "rv_local_pending_requests_v1"
+  LOCAL_TOTAL_VIEWS: "rv_total_views_fallback"
 };
 
 const PA_ACCESS = {
@@ -1232,7 +1351,9 @@ function esc(v){
 function safeUrl(url){
   const u = String(url || "").trim();
 
-  if(!u || u === "#") return "#";
+  if(!u || u === "#"){
+    return "#";
+  }
 
   if(
     u.startsWith("http://") ||
@@ -1258,41 +1379,9 @@ function firstGood(...values){
   return "";
 }
 
-function getPublicImage(path){
-  const p = String(path || "").trim();
-
-  if(!p || p === "null" || p === "undefined") return "";
-  if(p.startsWith("http://") || p.startsWith("https://")) return p;
-
-  const { data } = db.storage.from(STORAGE_BUCKET).getPublicUrl(p);
-  return data?.publicUrl || "";
-}
-
-function departmentImageFromRow(row){
-  return firstGood(
-    row.ImageURL,
-    row.image_url,
-    getPublicImage(row.ImagePath || row.image_path),
-    row.DIURL,
-    row.department_image_url,
-    getPublicImage(row.DepartmentImagePath || row.department_image_path)
-  );
-}
-
-function linkDepartmentImage(row){
-  return firstGood(
-    row.department_image_url,
-    row.DIURL,
-    getPublicImage(row.department_image_path || row.DepartmentImagePath)
-  );
-}
-
-function setDbStatus(type, text){
-  els.dbText.textContent = text;
-  els.dbDot.classList.remove("ok","bad");
-
-  if(type === "ok") els.dbDot.classList.add("ok");
-  if(type === "bad") els.dbDot.classList.add("bad");
+function getParam(name, fallback=""){
+  const params = new URLSearchParams(window.location.search);
+  return String(params.get(name) || fallback).trim();
 }
 
 function buildUrl(page, params){
@@ -1307,37 +1396,22 @@ function buildUrl(page, params){
   return url.pathname.split("/").pop() + url.search;
 }
 
-function getLocalRequests(){
-  try{
-    const rows = JSON.parse(localStorage.getItem(LS.LOCAL_REQUESTS) || "[]");
-    return Array.isArray(rows) ? rows : [];
-  }catch{
-    return [];
-  }
+function setDbStatus(type, text){
+  els.dbText.textContent = text;
+  els.dbDot.classList.remove("ok","bad");
+
+  if(type === "ok") els.dbDot.classList.add("ok");
+  if(type === "bad") els.dbDot.classList.add("bad");
 }
 
-function localRequestsFor(type){
-  return getLocalRequests().filter(r => r.request_type === type && r.status !== "rejected");
+function setMsg(type, message){
+  els.reportMsg.className = `msg ${type}`;
+  els.reportMsg.innerHTML = message;
 }
 
-function countLinksInSub(dep, sub){
-  return rawLinks.filter(r => r.Department === dep && r.SubDepartment === sub).length;
-}
-
-function countAllLinksInDepartment(dep){
-  return rawLinks.filter(r => r.Department === dep).length;
-}
-
-function totalSubCount(){
-  return departmentsData.reduce((sum, d) => sum + (d.subs?.length || 0), 0);
-}
-
-function isProcessAssistantName(value){
-  return String(value || "").trim().toLowerCase() === "process assistant";
-}
-
-function needsPaPassword(dep, sub){
-  return isProcessAssistantName(dep) || isProcessAssistantName(sub);
+function clearMsg(){
+  els.reportMsg.className = "msg";
+  els.reportMsg.innerHTML = "";
 }
 
 function todayKey(){
@@ -1348,8 +1422,61 @@ function todayKey(){
   return `${y}-${m}-${day}`;
 }
 
+function getLocalRequests(){
+  try{
+    const rows = JSON.parse(localStorage.getItem(LS.LOCAL_REQUESTS) || "[]");
+    return Array.isArray(rows) ? rows : [];
+  }catch{
+    return [];
+  }
+}
+
+function localLinkRequests(){
+  return localRequests.filter(r => r.request_type === "link" && r.status !== "rejected");
+}
+
+function getInitials(name){
+  const words = String(name || "RV")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+
+  if(words.length === 0) return "RV";
+
+  if(words.length === 1){
+    return words[0].slice(0,2).toUpperCase();
+  }
+
+  return (words[0][0] + words[1][0]).toUpperCase();
+}
+
+function isProcessAssistantName(value){
+  return String(value || "").trim().toLowerCase() === "process assistant";
+}
+
+function needsPaPassword(dep, sub){
+  return isProcessAssistantName(dep) || isProcessAssistantName(sub);
+}
+
+function makeReporterKey(){
+  const existing = localStorage.getItem(LS.REPORTER_KEY);
+
+  if(existing) return existing;
+
+  const key = crypto.randomUUID
+    ? crypto.randomUUID()
+    : "rv_reporter_" + Date.now() + "_" + Math.random().toString(36).slice(2);
+
+  localStorage.setItem(LS.REPORTER_KEY, key);
+  return key;
+}
+
+function getReporterKey(){
+  return makeReporterKey();
+}
+
 /* =========================================================
-   Theme / Media
+   Theme / Grid
 ========================================================= */
 
 function initTheme(){
@@ -1369,24 +1496,17 @@ function toggleTheme(){
   localStorage.setItem(LS.THEME, dark ? "dark" : "light");
 }
 
-function initMedia(){
-  const saved = localStorage.getItem(LS.MEDIA) || "on";
-  applyMedia(saved);
+function initGrid(){
+  const grid = localStorage.getItem(LS.GRID) || "6";
+  applyGrid(grid);
 }
 
-function applyMedia(value){
-  const on = value !== "off";
+function applyGrid(value){
+  const count = ["4","5","6","7"].includes(String(value)) ? String(value) : "6";
 
-  document.body.classList.toggle("no-images", !on);
-  els.btnMediaText.textContent = on ? "Images On" : "Images Off";
-  els.btnMediaText.classList.toggle("active", on);
-
-  localStorage.setItem(LS.MEDIA, on ? "on" : "off");
-}
-
-function toggleMedia(){
-  const current = localStorage.getItem(LS.MEDIA) || "on";
-  applyMedia(current === "on" ? "off" : "on");
+  document.documentElement.style.setProperty("--grid-cols", count);
+  localStorage.setItem(LS.GRID, count);
+  els.gridCount.value = count;
 }
 
 /* =========================================================
@@ -1456,331 +1576,112 @@ async function submitPaPassword(){
    Normalize
 ========================================================= */
 
-function normalizeDepartment(row){
-  return {
-    ID: row.id || "",
-    Department: String(row.department ?? row.Department ?? "").trim(),
-    ImageURL: String(row.image_url ?? row.ImageURL ?? "").trim(),
-    ImagePath: String(row.image_path ?? row.ImagePath ?? "").trim(),
-    Color: String(row.color ?? row.Color ?? "").trim(),
-    SortOrder: Number(row.sort_order ?? row.SortOrder ?? 0),
-    IsActive: row.is_active ?? row.IsActive ?? true
-  };
-}
-
-function normalizeSubDepartment(row){
-  return {
-    ID: row.id || "",
-    Department: String(row.department ?? row.Department ?? "").trim(),
-    SubDepartment: String(row.sub_department ?? row.SubDepartment ?? "").trim(),
-    SortOrder: Number(row.sort_order ?? row.SortOrder ?? 0),
-    IsActive: row.is_active ?? row.IsActive ?? true
-  };
-}
-
-function normalizeLink(row){
+function normalizeRow(row){
   return {
     ID: row.id || "",
     Department: String(row.department ?? row.Department ?? "").trim(),
     SubDepartment: String(row.sub_department ?? row.SubDepartment ?? "").trim(),
     LinkName: String(row.link_name ?? row.LinkName ?? "Unnamed").trim(),
     URL: String(row.url ?? row.URL ?? "#").trim(),
-    ImageURL: String(row.image_url ?? row.ImageURL ?? "").trim(),
-    ImagePath: String(row.image_path ?? row.ImagePath ?? "").trim(),
-    DepartmentImageURL: String(row.department_image_url ?? row.DIURL ?? "").trim(),
-    DepartmentImagePath: String(row.department_image_path ?? row.DepartmentImagePath ?? "").trim(),
+    Color: String(row.color ?? row.Color ?? "").trim(),
     SortOrder: Number(row.sort_order ?? row.SortOrder ?? 0),
-    IsActive: row.is_active ?? row.IsActive ?? true
+    IsActive: row.is_active ?? row.IsActive ?? true,
+    Pending:false,
+    ClientTempId:""
   };
 }
 
 /* =========================================================
-   Data Loading
+   Data
 ========================================================= */
 
 async function loadData(){
   setDbStatus("", "Loading");
 
   try{
-    const { data: linksData, error: linksError } = await db
+    let query = db
       .from(LINKS_TABLE)
       .select("*")
       .eq("is_active", true)
-      .order("department", { ascending:true })
-      .order("sub_department", { ascending:true })
       .order("sort_order", { ascending:true })
       .order("link_name", { ascending:true });
 
-    if(linksError) throw linksError;
-
-    rawLinks = (linksData || [])
-      .map(normalizeLink)
-      .filter(row => row.Department && row.LinkName);
-
-    try{
-      const { data: depData, error: depError } = await db
-        .from(DEPT_TABLE)
-        .select("*")
-        .eq("is_active", true)
-        .order("sort_order", { ascending:true })
-        .order("department", { ascending:true });
-
-      if(depError) throw depError;
-
-      departmentRows = (depData || [])
-        .map(normalizeDepartment)
-        .filter(d => d.Department);
-    }catch(depErr){
-      console.warn("Department table unavailable. Using departments from links:", depErr.message || depErr);
-      departmentRows = [];
+    if(currentDep){
+      query = query.eq("department", currentDep);
     }
 
-    try{
-      const { data: subData, error: subError } = await db
-        .from(SUB_TABLE)
-        .select("*")
-        .eq("is_active", true)
-        .order("sort_order", { ascending:true })
-        .order("sub_department", { ascending:true });
-
-      if(subError) throw subError;
-
-      subDepartmentRows = (subData || [])
-        .map(normalizeSubDepartment)
-        .filter(s => s.Department && s.SubDepartment);
-    }catch(subErr){
-      console.warn("Sub-department table unavailable. Using sub-departments from links:", subErr.message || subErr);
-      subDepartmentRows = [];
+    if(currentSub){
+      query = query.eq("sub_department", currentSub);
     }
 
-    buildMaps();
-    await loadVoteCounts();
+    const { data, error } = await query;
+
+    if(error) throw error;
+
+    rawRows = (data || [])
+      .map(normalizeRow)
+      .filter(row => row.Department && row.SubDepartment && row.LinkName);
+
+    localRequests = getLocalRequests();
+
     render();
-
-    setDbStatus("ok", `${rawLinks.length} links`);
+    setDbStatus("ok", `${rawRows.length} links`);
   }catch(err){
     console.error(err);
     setDbStatus("bad", "DB error");
 
-    els.depGrid.innerHTML = `
+    els.linksGrid.innerHTML = `
       <div class="empty">
-        <strong>Failed to load Supabase data.</strong>
+        <strong>Failed to load links.</strong>
         ${esc(err.message || err)}<br><br>
-        Check table names, columns, and RLS SELECT policy.
+        Check Supabase table, columns, or RLS policy.
       </div>
     `;
   }
 }
 
-function buildMaps(){
-  const map = {};
+function getPendingRows(){
+  return localLinkRequests()
+    .filter(req => {
+      const depOk = String(req.department || "").toLowerCase() === currentDep.toLowerCase();
+      const subOk = String(req.sub_department || "General").toLowerCase() === currentSub.toLowerCase();
 
-  function ensureDep(dep, imageUrl="", sortOrder=999999, pending=false){
-    if(!dep) return null;
-
-    if(!map[dep]){
-      map[dep] = {
-        dep,
-        imageUrl:"",
-        sortOrder:Number(sortOrder || 999999),
-        totalLinks:0,
-        pending:!!pending,
-        subMap:new Map()
-      };
-    }
-
-    if(imageUrl && !map[dep].imageUrl){
-      map[dep].imageUrl = imageUrl;
-    }
-
-    if(Number(sortOrder) < map[dep].sortOrder){
-      map[dep].sortOrder = Number(sortOrder);
-    }
-
-    if(pending){
-      map[dep].pending = true;
-    }
-
-    return map[dep];
-  }
-
-  function addSub(dep, sub, sortOrder=999999, pending=false){
-    const d = ensureDep(dep);
-
-    if(!d || !sub) return;
-
-    const old = d.subMap.get(sub);
-
-    if(!old){
-      d.subMap.set(sub, {
-        name:sub,
-        sortOrder:Number(sortOrder || 999999),
-        pending:!!pending
-      });
-    }else{
-      old.sortOrder = Math.min(old.sortOrder, Number(sortOrder || 999999));
-      old.pending = old.pending || !!pending;
-    }
-  }
-
-  departmentRows.forEach(row => {
-    ensureDep(
-      row.Department,
-      firstGood(row.ImageURL, getPublicImage(row.ImagePath)),
-      row.SortOrder || 0,
-      false
-    );
-  });
-
-  subDepartmentRows.forEach(row => {
-    ensureDep(row.Department, "", 999999, false);
-    addSub(row.Department, row.SubDepartment, row.SortOrder || 0, false);
-  });
-
-  rawLinks.forEach(row => {
-    const depImage = firstGood(
-      row.DepartmentImageURL,
-      getPublicImage(row.DepartmentImagePath),
-      departmentImageFromRow(row),
-      linkDepartmentImage(row)
-    );
-
-    const d = ensureDep(row.Department, depImage, 999999, false);
-
-    if(d){
-      d.totalLinks++;
-    }
-
-    if(row.SubDepartment){
-      addSub(row.Department, row.SubDepartment, 999999, false);
-    }
-  });
-
-  localRequestsFor("department").forEach(req => {
-    ensureDep(
-      req.department,
-      firstGood(req.department_image_url, req.image_url),
-      999998,
-      true
-    );
-  });
-
-  localRequestsFor("sub_department").forEach(req => {
-    ensureDep(req.department, "", 999998, false);
-    addSub(req.department, req.sub_department, 999998, true);
-  });
-
-  localRequestsFor("link").forEach(req => {
-    const d = ensureDep(req.department, "", 999998, false);
-    addSub(req.department, req.sub_department || "General", 999998, true);
-
-    if(d){
-      d.totalLinks++;
-    }
-  });
-
-  departmentsData = Object.values(map)
-    .map(d => {
-      const subs = [...d.subMap.values()]
-        .sort((a,b) => (a.sortOrder - b.sortOrder) || a.name.localeCompare(b.name));
-
-      return {
-        ...d,
-        subs,
-        imageUrl:d.imageUrl || ""
-      };
+      return depOk && subOk;
     })
-    .sort((a,b) => (a.sortOrder - b.sortOrder) || a.dep.localeCompare(b.dep));
+    .map(req => ({
+      ID:"",
+      Department:req.department || "",
+      SubDepartment:req.sub_department || "General",
+      LinkName:req.link_name || "Pending Link",
+      URL:safeUrl(req.url || "#"),
+      Color:req.color || "",
+      SortOrder:-1,
+      IsActive:true,
+      Pending:true,
+      ClientTempId:req.client_temp_id || ""
+    }));
 }
 
-/* =========================================================
-   Votes
-========================================================= */
+function filterRows(){
+  const q = els.search.value.trim().toLowerCase();
+  const pendingRows = getPendingRows();
 
-function makeVoterKey(){
-  const existing = localStorage.getItem(LS.VOTER_KEY);
-  if(existing) return existing;
+  let rows = [...pendingRows, ...rawRows]
+    .sort((a,b) => (a.SortOrder - b.SortOrder) || a.LinkName.localeCompare(b.LinkName));
 
-  const key = crypto.randomUUID
-    ? crypto.randomUUID()
-    : "rv_" + Date.now() + "_" + Math.random().toString(36).slice(2);
-
-  localStorage.setItem(LS.VOTER_KEY, key);
-  return key;
-}
-
-function getVoterKey(){
-  return makeVoterKey();
-}
-
-async function loadVoteCounts(){
-  voteCounts = {};
-  userVoteStatus = {};
-
-  try{
-    const { data, error } = await db.rpc("rv_public_department_vote_counts");
-    if(error) throw error;
-
-    (data || []).forEach(row => {
-      voteCounts[row.department] = Number(row.total_votes || 0);
-    });
-  }catch(err){
-    console.warn("Vote counts unavailable:", err.message || err);
+  if(q){
+    rows = rows.filter(row =>
+      row.LinkName.toLowerCase().includes(q) ||
+      row.URL.toLowerCase().includes(q) ||
+      row.Department.toLowerCase().includes(q) ||
+      row.SubDepartment.toLowerCase().includes(q)
+    );
   }
 
-  try{
-    const { data, error } = await db.rpc("rv_public_department_vote_statuses", {
-      p_voter_key:getVoterKey()
-    });
+  shownRows = rows;
+  updateTitleMeta();
 
-    if(error) throw error;
-
-    (data || []).forEach(row => {
-      userVoteStatus[row.department] = !!row.has_voted;
-    });
-  }catch(err){
-    console.warn("Vote status unavailable:", err.message || err);
-  }
-}
-
-function getVoteCount(dep){
-  return Number(voteCounts[dep] || 0);
-}
-
-function hasVoted(dep){
-  return !!userVoteStatus[dep];
-}
-
-async function voteDepartment(dep, button){
-  if(!dep || !button) return;
-
-  button.disabled = true;
-  button.innerHTML = "...";
-
-  try{
-    const { data, error } = await db.rpc("rv_public_vote_department", {
-      p_department:dep,
-      p_voter_key:getVoterKey()
-    });
-
-    if(error) throw error;
-
-    const first = Array.isArray(data) ? data[0] : data;
-
-    if(first){
-      voteCounts[dep] = Number(first.total_votes || getVoteCount(dep));
-    }else{
-      voteCounts[dep] = getVoteCount(dep) + 1;
-    }
-
-    userVoteStatus[dep] = true;
-    renderDepartments();
-  }catch(err){
-    console.error(err);
-    alert("Could not save vote. Please try again.");
-    await loadVoteCounts();
-    renderDepartments();
-  }
+  return rows;
 }
 
 /* =========================================================
@@ -1947,245 +1848,251 @@ async function trackVisit(){
    Render
 ========================================================= */
 
-function render(){
-  updateTopInfo();
-  renderDepartments();
-  renderSubDepartments();
+function updatePageInfo(){
+  els.breadcrumb.textContent = `${currentDep || "Department"} / ${currentSub || "Sub-department"}`;
+  els.pageTitle.textContent = currentSub || "Links";
+  els.pageSubtitle.textContent = currentDep
+    ? `${currentDep} links. Text-only boxes for faster scrolling.`
+    : "Text-only boxes for faster scrolling.";
+
+  els.btnRequestTop.href = buildUrl("request.html", {
+    dep:currentDep,
+    sub:currentSub
+  });
 }
 
-function updateTopInfo(){
-  if(currentDep){
-    const depObj = departmentsData.find(d => d.dep === currentDep);
-    const subCount = depObj?.subs?.length || 0;
-    const linkCount = countAllLinksInDepartment(currentDep);
+function updateTitleMeta(){
+  const pending = shownRows.filter(r => r.Pending).length;
 
-    els.pageTitle.textContent = currentDep;
-    els.pageSubtitle.textContent = "Choose a sub-department to open its links.";
-    els.titleMeta.textContent = `${subCount} sub-depts · ${linkCount} links`;
-    els.search.placeholder = "Search sub-departments...";
-    els.btnRequestTop.href = buildUrl("request.html", { dep:currentDep });
+  if(pending > 0){
+    els.titleMeta.textContent = `${shownRows.length} shown · ${pending} pending`;
   }else{
-    els.pageTitle.textContent = "Departments";
-    els.pageSubtitle.textContent = "Choose a department, then open the sub-department you need.";
-    els.titleMeta.textContent = `${departmentsData.length} departments · ${totalSubCount()} sub-depts`;
-    els.search.placeholder = "Search departments...";
-    els.btnRequestTop.href = "request.html";
+    els.titleMeta.textContent = `${shownRows.length} shown`;
   }
 }
 
-function renderDepartments(){
-  const q = currentDep ? "" : els.search.value.trim().toLowerCase();
+function render(){
+  updatePageInfo();
 
-  let data = departmentsData;
+  const rows = filterRows();
 
-  if(q){
-    data = data.filter(d =>
-      d.dep.toLowerCase().includes(q) ||
-      d.subs.some(s => s.name.toLowerCase().includes(q))
-    );
-  }
+  els.linksGrid.innerHTML = "";
 
-  els.depGrid.innerHTML = "";
-
-  if(data.length === 0){
-    els.depGrid.innerHTML = `
+  if(rows.length === 0){
+    els.linksGrid.innerHTML = `
       <div class="empty">
-        <strong>No departments found.</strong>
-        Try another search or submit a request.
+        <strong>No links found.</strong>
+        Try another search or submit a request for this sub-department.
       </div>
     `;
     return;
   }
 
-  data.forEach(d => {
-    const votes = getVoteCount(d.dep);
-    const voted = hasVoted(d.dep);
-    const locked = needsPaPassword(d.dep, "");
-    const imageHtml = d.imageUrl
-      ? `<img class="dept-img" src="${esc(d.imageUrl)}" alt="${esc(d.dep)}" loading="lazy" decoding="async" onerror="this.remove()">`
-      : "";
-
+  rows.forEach(row => {
+    const url = safeUrl(row.URL);
     const card = document.createElement("article");
-    card.className = "dept-card" + (currentDep === d.dep ? " active" : "");
-    card.dataset.department = d.dep;
+
+    card.className = "link-card";
+    card.dataset.linkId = row.ID || "";
+    card.dataset.name = row.LinkName;
+    card.dataset.url = url;
     card.tabIndex = 0;
-    card.setAttribute("role", "button");
-    card.setAttribute("aria-label", `Open ${d.dep}`);
+    card.setAttribute("role", "link");
+    card.setAttribute("aria-label", `Open ${row.LinkName}`);
 
     card.innerHTML = `
-      ${imageHtml}
-      <div class="dept-overlay"></div>
-
-      <div class="dept-top">
-        <button class="vote-mini ${voted ? "voted" : ""}" type="button" title="Vote">
-          👍 <span>${votes}</span>
-        </button>
-
-        <div style="display:flex;gap:6px;">
-          ${locked ? `<span class="lock-mini">🔒</span>` : ``}
-          ${d.pending ? `<span class="pending-mini">Pending</span>` : ``}
-        </div>
+      <div class="link-top">
+        <div class="link-icon">${esc(getInitials(row.LinkName))}</div>
+        <button class="report-btn" type="button" title="Report this link" aria-label="Report ${esc(row.LinkName)}">!</button>
       </div>
 
-      <div class="dept-label">
-        <div class="dept-title-row">
-          <div class="dept-title">${esc(d.dep)}</div>
-          <div class="dept-count">${d.subs.length} subs</div>
-        </div>
-        <div class="dept-meta">${d.totalLinks} links available</div>
+      <div>
+        <div class="link-name">${esc(row.LinkName)}</div>
+        <div class="link-meta">${esc(row.Department)} / ${esc(row.SubDepartment)}</div>
+      </div>
+
+      <div class="link-bottom">
+        ${row.Pending ? `<span class="pending-pill">Pending</span>` : `<span class="open-pill">Open ↗</span>`}
       </div>
     `;
 
-    const openDepartment = () => {
-      const action = () => {
-        currentDep = d.dep;
-        els.search.value = "";
-        render();
-        els.selectedPanel.scrollIntoView({ behavior:"smooth", block:"start" });
-      };
-
-      if(needsPaPassword(d.dep, "")){
-        openPaLock(action);
-      }else{
-        action();
-      }
-    };
-
     card.addEventListener("click", (event) => {
-      if(event.target.closest("button")) return;
-      openDepartment();
+      if(event.target.closest("button")){
+        return;
+      }
+
+      openLink(row);
     });
 
     card.addEventListener("keydown", (event) => {
       if(event.key === "Enter" || event.key === " "){
         event.preventDefault();
-        openDepartment();
+        openLink(row);
       }
     });
 
-    const voteBtn = card.querySelector(".vote-mini");
+    const reportBtn = card.querySelector(".report-btn");
 
-    voteBtn.addEventListener("click", async (event) => {
-      event.stopPropagation();
+    reportBtn.addEventListener("click", (event) => {
       event.preventDefault();
-      await voteDepartment(d.dep, voteBtn);
+      event.stopPropagation();
+      openReportModal(row);
     });
 
-    els.depGrid.appendChild(card);
+    els.linksGrid.appendChild(card);
   });
 }
 
-function renderSubDepartments(){
-  if(!currentDep){
-    els.selectedPanel.classList.add("hidden");
-    els.subGrid.innerHTML = "";
+function openLink(row){
+  const url = safeUrl(row.URL);
+
+  if(!url || url === "#"){
+    alert("No valid link found.");
     return;
   }
 
-  const depObj = departmentsData.find(d => d.dep === currentDep);
+  saveRecentlyOpened(row);
+  window.open(url, "_blank", "noopener,noreferrer");
+}
 
-  if(!depObj){
-    currentDep = "";
-    els.selectedPanel.classList.add("hidden");
-    render();
-    return;
-  }
+function saveRecentlyOpened(row){
+  try{
+    const key = "rv_recent_opened_links_v1";
+    const old = JSON.parse(localStorage.getItem(key) || "[]");
 
-  els.selectedPanel.classList.remove("hidden");
-  els.selectedTitle.textContent = currentDep;
-  els.selectedSub.textContent = `${depObj.subs.length} sub-departments · ${countAllLinksInDepartment(currentDep)} links`;
-
-  const q = els.search.value.trim().toLowerCase();
-
-  let subs = depObj.subs || [];
-
-  if(q){
-    subs = subs.filter(s =>
-      s.name.toLowerCase().includes(q) ||
-      String(countLinksInSub(currentDep, s.name)).includes(q)
-    );
-  }
-
-  els.subGrid.innerHTML = "";
-
-  if(subs.length === 0){
-    els.subGrid.innerHTML = `
-      <div class="empty">
-        <strong>No sub-departments found.</strong>
-        Try another search or submit a request for this department.
-      </div>
-    `;
-    return;
-  }
-
-  subs.forEach(sub => {
-    const linkCount = countLinksInSub(currentDep, sub.name);
-    const locked = needsPaPassword(currentDep, sub.name);
-
-    const chip = document.createElement("article");
-    chip.className = "sub-card" + (locked ? " locked" : "");
-    chip.tabIndex = 0;
-    chip.setAttribute("role", "button");
-    chip.setAttribute("aria-label", `Open ${sub.name}`);
-
-    chip.innerHTML = `
-      <div class="sub-head">
-        <div class="sub-icon">${locked ? "🔒" : "↗"}</div>
-        <div class="sub-count">${linkCount}</div>
-      </div>
-
-      <div>
-        <div class="sub-title">${esc(sub.name)}</div>
-        <div class="sub-desc">${locked ? "Password required" : "Open links"}</div>
-      </div>
-    `;
-
-    const openSubDepartment = () => {
-      const action = () => {
-        window.location.href = buildUrl("links.html", {
-          dep:currentDep,
-          sub:sub.name
-        });
-      };
-
-      if(needsPaPassword(currentDep, sub.name)){
-        openPaLock(action);
-      }else{
-        action();
-      }
+    const item = {
+      name:row.LinkName,
+      url:safeUrl(row.URL),
+      department:row.Department,
+      sub_department:row.SubDepartment,
+      opened_at:new Date().toISOString()
     };
 
-    chip.addEventListener("click", openSubDepartment);
+    const next = [
+      item,
+      ...old.filter(x => x.url !== item.url)
+    ].slice(0, 50);
 
-    chip.addEventListener("keydown", (event) => {
-      if(event.key === "Enter" || event.key === " "){
-        event.preventDefault();
-        openSubDepartment();
-      }
+    localStorage.setItem(key, JSON.stringify(next));
+  }catch{}
+}
+
+/* =========================================================
+   Report Modal
+========================================================= */
+
+function openReportModal(row){
+  selectedReportLink = row;
+  clearMsg();
+
+  els.reportForm.reset();
+
+  const url = safeUrl(row.URL);
+
+  els.reportSub.textContent = `${row.Department}${row.SubDepartment ? " / " + row.SubDepartment : ""}`;
+  els.reportLinkName.value = row.LinkName || "";
+  els.reportCurrentUrl.value = url || "";
+  els.reportReason.value = "broken";
+
+  els.reportModal.classList.add("show");
+  setTimeout(() => els.reportReason.focus(), 50);
+}
+
+function closeReportModal(){
+  els.reportModal.classList.remove("show");
+  selectedReportLink = null;
+}
+
+async function submitReport(event){
+  event.preventDefault();
+
+  if(!selectedReportLink){
+    setMsg("bad", "No link selected.");
+    return;
+  }
+
+  clearMsg();
+
+  const reason = els.reportReason.value;
+  const suggestedUrl = els.reportSuggestedUrl.value.trim();
+  const note = els.reportNote.value.trim();
+
+  if(reason === "updated" && suggestedUrl && !/^https?:\/\//i.test(suggestedUrl)){
+    setMsg("bad", "Updated link should start with http:// or https://");
+    return;
+  }
+
+  els.submitReport.disabled = true;
+  els.submitReport.textContent = "Submitting...";
+
+  try{
+    const { error } = await db.rpc("rv_public_report_link", {
+      p_link_id:selectedReportLink.ID || null,
+      p_department:selectedReportLink.Department || currentDep || "",
+      p_sub_department:selectedReportLink.SubDepartment || currentSub || "",
+      p_link_name:selectedReportLink.LinkName || "",
+      p_url:safeUrl(selectedReportLink.URL || ""),
+      p_reason:reason,
+      p_suggested_url:suggestedUrl || null,
+      p_note:note || null,
+      p_reporter_key:getReporterKey()
     });
 
-    els.subGrid.appendChild(chip);
-  });
+    if(error) throw error;
+
+    setMsg("ok", "Report submitted. Admin will review it.");
+
+    setTimeout(() => {
+      closeReportModal();
+    }, 900);
+  }catch(err){
+    console.error(err);
+    setMsg("bad", esc(err.message || err));
+  }finally{
+    els.submitReport.disabled = false;
+    els.submitReport.textContent = "Submit Report";
+  }
+}
+
+/* =========================================================
+   Actions
+========================================================= */
+
+function goBack(){
+  const url = buildUrl("index.html", {});
+  window.location.href = url;
+}
+
+async function copyPageLink(){
+  try{
+    await navigator.clipboard.writeText(window.location.href);
+
+    els.btnCopyPage.textContent = "Copied";
+
+    setTimeout(() => {
+      els.btnCopyPage.textContent = "Copy Page";
+    }, 900);
+  }catch{
+    alert("Could not copy link.");
+  }
 }
 
 /* =========================================================
    Events
 ========================================================= */
 
-els.btnTheme.addEventListener("click", toggleTheme);
-els.btnMedia.addEventListener("click", toggleMedia);
-els.btnMediaText.addEventListener("click", toggleMedia);
+els.btnBack.addEventListener("click", goBack);
 
 els.btnRefresh.addEventListener("click", async () => {
   await loadData();
   await loadScriptLink();
 });
 
-els.btnClearDepartment.addEventListener("click", () => {
-  currentDep = "";
-  els.search.value = "";
-  render();
-  window.scrollTo({ top:0, behavior:"smooth" });
+els.btnTheme.addEventListener("click", toggleTheme);
+els.btnCopyPage.addEventListener("click", copyPageLink);
+
+els.gridCount.addEventListener("change", () => {
+  applyGrid(els.gridCount.value);
 });
 
 els.btnScriptTop.addEventListener("click", (event) => {
@@ -2208,6 +2115,16 @@ document.addEventListener("click", (event) => {
   }
 });
 
+els.closeReportModal.addEventListener("click", closeReportModal);
+els.cancelReport.addEventListener("click", closeReportModal);
+els.reportForm.addEventListener("submit", submitReport);
+
+els.reportModal.addEventListener("click", (event) => {
+  if(event.target === els.reportModal){
+    closeReportModal();
+  }
+});
+
 els.paUnlockBtn.addEventListener("click", submitPaPassword);
 els.paCancelBtn.addEventListener("click", closePaLock);
 
@@ -2227,31 +2144,20 @@ let searchTimer = null;
 
 els.search.addEventListener("input", () => {
   clearTimeout(searchTimer);
-
-  searchTimer = setTimeout(() => {
-    if(currentDep){
-      renderSubDepartments();
-      updateTopInfo();
-    }else{
-      renderDepartments();
-      updateTopInfo();
-    }
-  }, 120);
+  searchTimer = setTimeout(render, 120);
 });
 
 document.addEventListener("keydown", (event) => {
   if(event.key === "Escape"){
     els.scriptMenu.classList.remove("show");
 
-    if(els.paLockModal.classList.contains("show")){
-      closePaLock();
+    if(els.reportModal.classList.contains("show")){
+      closeReportModal();
       return;
     }
 
-    if(currentDep){
-      currentDep = "";
-      els.search.value = "";
-      render();
+    if(els.paLockModal.classList.contains("show")){
+      closePaLock();
     }
   }
 });
@@ -2260,13 +2166,31 @@ document.addEventListener("keydown", (event) => {
    Init
 ========================================================= */
 
-async function init(){
-  initTheme();
-  initMedia();
-  trackVisit();
-
+async function startPage(){
   await loadData();
   await loadScriptLink();
+}
+
+async function init(){
+  currentDep = getParam("dep", "");
+  currentSub = getParam("sub", "");
+
+  if(!currentDep || !currentSub || currentSub === "__all__"){
+    window.location.href = "index.html";
+    return;
+  }
+
+  initTheme();
+  initGrid();
+  trackVisit();
+
+  const protectedPage = needsPaPassword(currentDep, currentSub);
+
+  if(protectedPage){
+    openPaLock(startPage);
+  }else{
+    await startPage();
+  }
 
   /*
     Realtime is intentionally disabled for smoother Amazon/work laptop scrolling.
