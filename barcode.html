@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Bulk Code 128 Barcode Generator</title>
+
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+
+<style>
+  :root{
+    --bg:#f5f7fb;
+    --card:#ffffff;
+    --text:#121827;
+    --muted:#6b7280;
+    --line:#e5e7eb;
+    --primary:#111827;
+    --primary2:#2563eb;
+    --danger:#dc2626;
+    --shadow:0 14px 35px rgba(15,23,42,.08);
+  }
+
+  *{
+    box-sizing:border-box;
+  }
+
+  body{
+    margin:0;
+    font-family:Arial, Helvetica, sans-serif;
+    background:var(--bg);
+    color:var(--text);
+  }
+
+  .topbar{
+    position:sticky;
+    top:0;
+    z-index:10;
+    background:rgba(245,247,251,.92);
+    backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line);
+    padding:14px 18px;
+  }
+
+  .top-inner{
+    max-width:1300px;
+    margin:auto;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+  }
+
+  .brand{
+    display:flex;
+    flex-direction:column;
+    gap:3px;
+  }
+
+  .brand h1{
+    margin:0;
+    font-size:22px;
+    letter-spacing:-.5px;
+  }
+
+  .brand span{
+    font-size:13px;
+    color:var(--muted);
+  }
+
+  .top-actions{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    justify-content:flex-end;
+  }
+
+  button{
+    border:0;
+    border-radius:12px;
+    padding:11px 15px;
+    font-weight:800;
+    cursor:pointer;
+    background:var(--primary);
+    color:white;
+    box-shadow:0 8px 18px rgba(17,24,39,.12);
+  }
+
+  button.secondary{
+    background:white;
+    color:var(--text);
+    border:1px solid var(--line);
+  }
+
+  button.blue{
+    background:var(--primary2);
+  }
+
+  button.danger{
+    background:var(--danger);
+  }
+
+  .wrap{
+    max-width:1300px;
+    margin:18px auto;
+    padding:0 18px 40px;
+    display:grid;
+    grid-template-columns:360px 1fr;
+    gap:18px;
+  }
+
+  .panel{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:22px;
+    box-shadow:var(--shadow);
+    padding:18px;
+  }
+
+  .panel h2{
+    margin:0 0 10px;
+    font-size:18px;
+  }
+
+  .hint{
+    color:var(--muted);
+    font-size:13px;
+    line-height:1.45;
+    margin-bottom:12px;
+  }
+
+  textarea{
+    width:100%;
+    min-height:320px;
+    resize:vertical;
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:14px;
+    font-size:15px;
+    outline:none;
+    background:#fbfdff;
+  }
+
+  textarea:focus,
+  input:focus,
+  select:focus{
+    border-color:#93c5fd;
+    box-shadow:0 0 0 4px rgba(37,99,235,.12);
+  }
+
+  .controls{
+    margin-top:14px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+
+  .field{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+
+  .field label{
+    font-size:12px;
+    font-weight:800;
+    color:#374151;
+  }
+
+  input,
+  select{
+    width:100%;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:10px;
+    font-size:14px;
+    background:white;
+  }
+
+  .checkbox-row{
+    margin-top:12px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    color:#374151;
+    font-size:14px;
+  }
+
+  .checkbox-row input{
+    width:auto;
+  }
+
+  .btn-row{
+    margin-top:14px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+
+  .stats{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:14px;
+  }
+
+  .stat{
+    background:white;
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:10px 12px;
+    min-width:120px;
+  }
+
+  .stat strong{
+    display:block;
+    font-size:22px;
+  }
+
+  .stat span{
+    color:var(--muted);
+    font-size:12px;
+    font-weight:700;
+  }
+
+  .barcode-area{
+    min-height:400px;
+  }
+
+  .toolbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:14px;
+    flex-wrap:wrap;
+  }
+
+  .search{
+    max-width:320px;
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+    gap:14px;
+  }
+
+  .grid.cols-2{
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+  }
+
+  .grid.cols-3{
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+  }
+
+  .grid.cols-4{
+    grid-template-columns:repeat(4, minmax(0, 1fr));
+  }
+
+  .barcode-card{
+    background:white;
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:14px;
+    box-shadow:0 8px 22px rgba(15,23,42,.06);
+    overflow:hidden;
+  }
+
+  .barcode-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    margin-bottom:10px;
+  }
+
+  .barcode-title{
+    font-weight:900;
+    font-size:14px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+
+  .barcode-num{
+    color:var(--muted);
+    font-size:12px;
+    font-weight:800;
+  }
+
+  .barcode-box{
+    background:white;
+    border:1px dashed #d1d5db;
+    border-radius:14px;
+    padding:10px;
+    overflow:auto;
+    text-align:center;
+  }
+
+  svg{
+    max-width:100%;
+  }
+
+  .small-actions{
+    margin-top:10px;
+    display:flex;
+    gap:8px;
+  }
+
+  .small-actions button{
+    padding:8px 10px;
+    font-size:12px;
+    border-radius:10px;
+  }
+
+  .empty{
+    border:2px dashed #d1d5db;
+    border-radius:20px;
+    padding:50px 20px;
+    text-align:center;
+    color:var(--muted);
+    background:white;
+  }
+
+  .error{
+    margin-top:10px;
+    background:#fef2f2;
+    color:#991b1b;
+    border:1px solid #fecaca;
+    padding:10px;
+    border-radius:12px;
+    display:none;
+    font-size:13px;
+    line-height:1.4;
+  }
+
+  @media(max-width:950px){
+    .wrap{
+      grid-template-columns:1fr;
+    }
+
+    .grid,
+    .grid.cols-2,
+    .grid.cols-3,
+    .grid.cols-4{
+      grid-template-columns:1fr;
+    }
+  }
+
+  @media print{
+    body{
+      background:white;
+    }
+
+    .topbar,
+    .input-panel,
+    .toolbar,
+    .stats,
+    .small-actions{
+      display:none !important;
+    }
+
+    .wrap{
+      display:block;
+      max-width:none;
+      padding:0;
+      margin:0;
+    }
+
+    .panel{
+      border:0;
+      box-shadow:none;
+      padding:0;
+    }
+
+    .grid,
+    .grid.cols-2,
+    .grid.cols-3,
+    .grid.cols-4{
+      display:grid;
+      grid-template-columns:repeat(2, 1fr);
+      gap:10px;
+    }
+
+    .barcode-card{
+      break-inside:avoid;
+      page-break-inside:avoid;
+      border:1px solid #111;
+      box-shadow:none;
+      border-radius:8px;
+      padding:10px;
+    }
+
+    .barcode-box{
+      border:0;
+      padding:4px;
+    }
+  }
+</style>
+</head>
+
+<body>
+
+<header class="topbar">
+  <div class="top-inner">
+    <div class="brand">
+      <h1>Bulk Code 128 Barcode Generator</h1>
+      <span>Paste tote IDs → generate barcodes → scan with handheld scanner</span>
+    </div>
+
+    <div class="top-actions">
+      <button class="secondary" onclick="loadSample()">Sample</button>
+      <button class="blue" onclick="generateBarcodes()">Generate</button>
+      <button class="secondary" onclick="window.print()">Print Sheet</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="panel input-panel">
+    <h2>Paste Tote IDs</h2>
+    <div class="hint">
+      Paste one tote ID per line. It also accepts comma, tab, or semicolon separated values.
+      Spaces before/after IDs will be removed automatically.
+    </div>
+
+    <textarea id="inputData" placeholder="Example:
+TOTE123456789
+TOTE123456790
+TOTE123456791"></textarea>
+
+    <div class="controls">
+      <div class="field">
+        <label>Barcode Width</label>
+        <input id="barWidth" type="number" value="2" min="1" max="5" step="0.5">
+      </div>
+
+      <div class="field">
+        <label>Barcode Height</label>
+        <input id="barHeight" type="number" value="90" min="40" max="180">
+      </div>
+
+      <div class="field">
+        <label>Text Size</label>
+        <input id="fontSize" type="number" value="16" min="8" max="30">
+      </div>
+
+      <div class="field">
+        <label>Grid Columns</label>
+        <select id="columns" onchange="setColumns()">
+          <option value="2">2 Columns</option>
+          <option value="3" selected>3 Columns</option>
+          <option value="4">4 Columns</option>
+        </select>
+      </div>
+    </div>
+
+    <label class="checkbox-row">
+      <input id="removeDuplicates" type="checkbox" checked>
+      Remove duplicate tote IDs
+    </label>
+
+    <label class="checkbox-row">
+      <input id="showText" type="checkbox" checked>
+      Show readable tote ID under barcode
+    </label>
+
+    <div class="btn-row">
+      <button class="blue" onclick="generateBarcodes()">Generate</button>
+      <button class="danger" onclick="clearAll()">Clear</button>
+    </div>
+
+    <div id="errorBox" class="error"></div>
+  </section>
+
+  <section class="panel barcode-area">
+    <div class="stats">
+      <div class="stat">
+        <strong id="totalCount">0</strong>
+        <span>Total Barcodes</span>
+      </div>
+      <div class="stat">
+        <strong id="duplicateCount">0</strong>
+        <span>Duplicates Removed</span>
+      </div>
+      <div class="stat">
+        <strong>128</strong>
+        <span>Barcode Type</span>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <h2 style="margin:0;">Generated Barcodes</h2>
+      <input id="searchBox" class="search" type="text" placeholder="Search tote ID..." oninput="filterBarcodes()">
+    </div>
+
+    <div id="barcodeGrid" class="grid cols-3">
+      <div class="empty">
+        Paste tote IDs and click <b>Generate</b>.
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  const inputData = document.getElementById("inputData");
+  const barcodeGrid = document.getElementById("barcodeGrid");
+  const totalCount = document.getElementById("totalCount");
+  const duplicateCount = document.getElementById("duplicateCount");
+  const errorBox = document.getElementById("errorBox");
+
+  function parseInput(text){
+    const rawItems = text
+      .split(/[\n,;\t]+/g)
+      .map(item => item.trim())
+      .filter(Boolean);
+
+    const removeDupes = document.getElementById("removeDuplicates").checked;
+
+    if(!removeDupes){
+      return {
+        items: rawItems,
+        duplicates: 0
+      };
+    }
+
+    const seen = new Set();
+    const unique = [];
+    let duplicates = 0;
+
+    rawItems.forEach(item => {
+      const key = item.toUpperCase();
+      if(seen.has(key)){
+        duplicates++;
+      } else {
+        seen.add(key);
+        unique.push(item);
+      }
+    });
+
+    return {
+      items: unique,
+      duplicates
+    };
+  }
+
+  function generateBarcodes(){
+    errorBox.style.display = "none";
+    errorBox.textContent = "";
+
+    const parsed = parseInput(inputData.value);
+    const items = parsed.items;
+
+    totalCount.textContent = items.length;
+    duplicateCount.textContent = parsed.duplicates;
+
+    barcodeGrid.innerHTML = "";
+
+    if(items.length === 0){
+      barcodeGrid.innerHTML = `
+        <div class="empty">
+          Paste tote IDs and click <b>Generate</b>.
+        </div>
+      `;
+      return;
+    }
+
+    const width = Number(document.getElementById("barWidth").value) || 2;
+    const height = Number(document.getElementById("barHeight").value) || 90;
+    const fontSize = Number(document.getElementById("fontSize").value) || 16;
+    const showText = document.getElementById("showText").checked;
+
+    let failed = [];
+
+    items.forEach((value, index) => {
+      const safeId = "barcode_" + index;
+
+      const card = document.createElement("div");
+      card.className = "barcode-card";
+      card.dataset.value = value.toLowerCase();
+
+      card.innerHTML = `
+        <div class="barcode-head">
+          <div class="barcode-title" title="${escapeHtml(value)}">${escapeHtml(value)}</div>
+          <div class="barcode-num">#${index + 1}</div>
+        </div>
+
+        <div class="barcode-box">
+          <svg id="${safeId}"></svg>
+        </div>
+
+        <div class="small-actions">
+          <button class="secondary" onclick="copyText('${encodeURIComponent(value)}')">Copy ID</button>
+          <button class="secondary" onclick="downloadSvg('${safeId}', '${encodeURIComponent(value)}')">Download SVG</button>
+        </div>
+      `;
+
+      barcodeGrid.appendChild(card);
+
+      try{
+        JsBarcode("#" + safeId, value, {
+          format: "CODE128",
+          width: width,
+          height: height,
+          displayValue: showText,
+          fontSize: fontSize,
+          textMargin: 6,
+          margin: 14,
+          background: "#ffffff",
+          lineColor: "#000000"
+        });
+      }catch(err){
+        failed.push(value);
+        card.style.borderColor = "#dc2626";
+        card.querySelector(".barcode-box").innerHTML = `
+          <div style="color:#dc2626;font-weight:800;padding:20px;">
+            Failed to generate barcode
+          </div>
+        `;
+      }
+    });
+
+    if(failed.length > 0){
+      errorBox.style.display = "block";
+      errorBox.innerHTML = `
+        Some IDs could not be converted. Check for special symbols or unsupported characters:<br>
+        <b>${failed.map(escapeHtml).join(", ")}</b>
+      `;
+    }
+
+    setColumns();
+  }
+
+  function setColumns(){
+    const cols = document.getElementById("columns").value;
+    barcodeGrid.className = "grid cols-" + cols;
+  }
+
+  function filterBarcodes(){
+    const q = document.getElementById("searchBox").value.trim().toLowerCase();
+    document.querySelectorAll(".barcode-card").forEach(card => {
+      card.style.display = card.dataset.value.includes(q) ? "" : "none";
+    });
+  }
+
+  function clearAll(){
+    inputData.value = "";
+    barcodeGrid.innerHTML = `
+      <div class="empty">
+        Paste tote IDs and click <b>Generate</b>.
+      </div>
+    `;
+    totalCount.textContent = "0";
+    duplicateCount.textContent = "0";
+    errorBox.style.display = "none";
+  }
+
+  function loadSample(){
+    inputData.value = `TOTE123456789
+TOTE123456790
+TOTE123456791
+TOTE123456792
+TOTE123456793
+TOTE123456794
+TOTE123456795
+TOTE123456796
+TOTE123456797
+TOTE123456798`;
+    generateBarcodes();
+  }
+
+  function copyText(encodedValue){
+    const value = decodeURIComponent(encodedValue);
+    navigator.clipboard.writeText(value);
+  }
+
+  function downloadSvg(svgId, encodedName){
+    const svg = document.getElementById(svgId);
+    const name = decodeURIComponent(encodedName).replace(/[^a-z0-9_-]/gi, "_");
+
+    const serializer = new XMLSerializer();
+    const source = serializer.serializeToString(svg);
+
+    const blob = new Blob([source], {
+      type: "image/svg+xml;charset=utf-8"
+    });
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+
+    a.href = url;
+    a.download = name + ".svg";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    URL.revokeObjectURL(url);
+  }
+
+  function escapeHtml(str){
+    return String(str)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+</script>
+
+</body>
+</html>
