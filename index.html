@@ -31,7 +31,9 @@
     --shadow:0 6px 18px rgba(15,23,42,.08);
     --shadow2:0 12px 30px rgba(15,23,42,.12);
     --radius:18px;
-    --max:1360px;
+
+    /* 98% screen coverage */
+    --max:98vw;
   }
 
   body.dark{
@@ -103,11 +105,13 @@
     top:0;
     z-index:50;
     border-bottom:1px solid var(--line);
-    background:var(--surface);
+    background:rgba(255,255,255,.86);
+    backdrop-filter:blur(18px);
     box-shadow:0 3px 12px rgba(15,23,42,.08);
   }
 
   body.dark .app-header{
+    background:rgba(16,24,39,.86);
     box-shadow:0 4px 16px rgba(0,0,0,.28);
   }
 
@@ -115,9 +119,9 @@
     width:min(var(--max),100%);
     margin:0 auto;
     min-height:58px;
-    padding:8px 18px;
+    padding:8px 10px;
     display:grid;
-    grid-template-columns:auto minmax(220px,420px) auto;
+    grid-template-columns:auto minmax(260px,520px) auto;
     gap:12px;
     align-items:center;
   }
@@ -164,7 +168,7 @@
   .search-wrap{
     position:relative;
     width:100%;
-    max-width:420px;
+    max-width:520px;
     justify-self:center;
   }
 
@@ -361,15 +365,15 @@
   .page{
     width:min(var(--max),100%);
     margin:0 auto;
-    padding:16px 18px 30px;
+    padding:14px 10px 30px;
   }
 
   .titlebar{
     display:flex;
-    align-items:flex-start;
+    align-items:flex-end;
     justify-content:space-between;
     gap:12px;
-    margin-bottom:14px;
+    margin-bottom:12px;
   }
 
   .title-left{
@@ -377,9 +381,9 @@
   }
 
   .page-title{
-    font-size:clamp(1.42rem,2vw,2rem);
-    letter-spacing:-.06em;
-    line-height:1.04;
+    font-size:clamp(1.42rem,2vw,2.05rem);
+    letter-spacing:-.065em;
+    line-height:1.02;
     font-weight:950;
   }
 
@@ -400,7 +404,8 @@
   }
 
   .mini-pill,
-  .mini-btn{
+  .mini-btn,
+  .mini-control{
     min-height:32px;
     border:1px solid var(--line);
     border-radius:999px;
@@ -428,47 +433,36 @@
     background:linear-gradient(135deg,#16a34a,#15803d);
   }
 
+  .mini-control{
+    color:var(--muted);
+    background:var(--surface2);
+  }
+
+  .mini-control select{
+    border:0;
+    outline:0;
+    background:transparent;
+    color:var(--ink);
+    font-weight:950;
+    cursor:pointer;
+  }
+
   .mini-btn:hover{
     transform:translateY(-1px);
     box-shadow:var(--shadow);
   }
 
   /* =========================
-     Departments
+     Departments Grid
   ========================= */
-
-  .section-head{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-    margin:18px 0 11px;
-  }
-
-  .section-head h2{
-    font-size:1.04rem;
-    font-weight:950;
-    letter-spacing:-.04em;
-  }
-
-  .section-head p{
-    margin-top:3px;
-    color:var(--muted);
-    font-size:.78rem;
-    font-weight:750;
-  }
 
   .grid{
     display:grid;
-    gap:14px;
+    gap:12px;
   }
 
   .department-grid{
     grid-template-columns:repeat(4,minmax(0,1fr));
-  }
-
-  .sub-grid{
-    grid-template-columns:repeat(5,minmax(0,1fr));
   }
 
   .dept-card{
@@ -483,7 +477,7 @@
       var(--surface);
     overflow:hidden;
     box-shadow:var(--shadow);
-    transition:.16s ease;
+    transition:.18s ease;
     contain:layout paint;
     content-visibility:auto;
     contain-intrinsic-size:170px 250px;
@@ -495,9 +489,13 @@
     border-color:rgba(37,99,235,.32);
   }
 
-  .dept-card.active{
-    border-color:rgba(37,99,235,.75);
+  .dept-card.expanded{
+    grid-column:span 2;
+    min-height:330px;
+    aspect-ratio:auto;
+    border-color:rgba(37,99,235,.55);
     box-shadow:0 0 0 4px var(--soft), var(--shadow2);
+    content-visibility:visible;
   }
 
   .dept-img{
@@ -508,6 +506,7 @@
     object-fit:cover;
     display:block;
     opacity:.88;
+    transform:scale(1.01);
   }
 
   body.dark .dept-img{
@@ -521,8 +520,15 @@
   .dept-overlay{
     position:absolute;
     inset:0;
-    background:linear-gradient(180deg, rgba(0,0,0,.03) 10%, rgba(0,0,0,.15) 48%, rgba(0,0,0,.78) 100%);
+    background:linear-gradient(180deg, rgba(0,0,0,.03) 10%, rgba(0,0,0,.16) 48%, rgba(0,0,0,.80) 100%);
     pointer-events:none;
+    transition:.18s ease;
+  }
+
+  .dept-card.expanded .dept-overlay{
+    background:
+      radial-gradient(circle at top left, rgba(37,99,235,.24), transparent 35%),
+      linear-gradient(180deg, rgba(0,0,0,.15) 0%, rgba(0,0,0,.45) 42%, rgba(0,0,0,.86) 100%);
   }
 
   .dept-top{
@@ -530,7 +536,7 @@
     top:10px;
     left:10px;
     right:10px;
-    z-index:3;
+    z-index:5;
     display:flex;
     align-items:center;
     justify-content:space-between;
@@ -551,6 +557,11 @@
     padding:0 9px;
     font-size:.70rem;
     font-weight:950;
+  }
+
+  .vote-mini.voted{
+    background:rgba(22,163,74,.78);
+    border-color:rgba(255,255,255,.18);
   }
 
   .vote-mini:disabled{
@@ -576,13 +587,36 @@
     background:rgba(15,23,42,.60);
   }
 
+  .dept-close-btn{
+    width:27px;
+    height:27px;
+    border:1px solid rgba(255,255,255,.24);
+    border-radius:999px;
+    background:rgba(15,23,42,.44);
+    color:#fff;
+    display:grid;
+    place-items:center;
+    font-size:17px;
+    font-weight:950;
+  }
+
+  .dept-close-btn:hover{
+    background:rgba(220,38,38,.72);
+  }
+
   .dept-label{
     position:absolute;
-    z-index:2;
+    z-index:4;
     left:13px;
     right:13px;
     bottom:12px;
     color:#fff;
+    transition:.18s ease;
+  }
+
+  .dept-card.expanded .dept-label{
+    top:50px;
+    bottom:auto;
   }
 
   .dept-title-row{
@@ -594,14 +628,19 @@
 
   .dept-title{
     min-width:0;
-    font-size:.96rem;
+    font-size:1.02rem;
     line-height:1.1;
     font-weight:950;
-    letter-spacing:-.035em;
+    letter-spacing:-.04em;
     text-shadow:0 2px 10px rgba(0,0,0,.44);
     overflow:hidden;
     text-overflow:ellipsis;
     white-space:nowrap;
+  }
+
+  .dept-card.expanded .dept-title{
+    font-size:1.35rem;
+    white-space:normal;
   }
 
   .dept-count{
@@ -620,127 +659,136 @@
 
   .dept-meta{
     margin-top:5px;
-    color:rgba(255,255,255,.82);
+    color:rgba(255,255,255,.84);
     font-size:.70rem;
     font-weight:850;
     text-shadow:0 2px 8px rgba(0,0,0,.38);
   }
 
-  /* =========================
-     Selected / Sub departments
-  ========================= */
-
-  .selected-panel{
-    border:1px solid var(--line);
-    border-radius:22px;
-    background:var(--surface);
-    box-shadow:var(--shadow);
-    padding:15px;
-    margin-top:16px;
-  }
-
-  .selected-top{
-    display:flex;
-    align-items:flex-start;
-    justify-content:space-between;
-    gap:12px;
-    margin-bottom:12px;
-  }
-
-  .selected-title{
-    font-size:1.20rem;
+  .dept-expand-hint{
+    margin-top:7px;
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    height:24px;
+    border-radius:999px;
+    padding:0 9px;
+    background:rgba(255,255,255,.15);
+    border:1px solid rgba(255,255,255,.18);
+    font-size:.66rem;
     font-weight:950;
-    letter-spacing:-.05em;
-    line-height:1.1;
   }
 
-  .selected-sub{
-    margin-top:5px;
-    color:var(--muted);
-    font-size:.82rem;
-    font-weight:750;
+  .dept-card.expanded .dept-expand-hint{
+    display:none;
   }
 
-  .sub-card{
-    min-height:104px;
-    border:1px solid var(--line);
+  .dept-expanded-box{
+    position:absolute;
+    z-index:4;
+    left:12px;
+    right:12px;
+    bottom:12px;
+    top:124px;
+    display:none;
+    border:1px solid rgba(255,255,255,.17);
     border-radius:17px;
-    background:
-      linear-gradient(135deg, rgba(37,99,235,.09), rgba(124,58,237,.07)),
-      var(--surface2);
-    box-shadow:0 4px 12px rgba(15,23,42,.06);
-    padding:13px;
+    background:rgba(15,23,42,.36);
+    backdrop-filter:blur(14px);
+    box-shadow:0 12px 28px rgba(0,0,0,.20);
+    padding:10px;
+    overflow:hidden;
+  }
+
+  .dept-card.expanded .dept-expanded-box{
     display:flex;
     flex-direction:column;
-    justify-content:space-between;
-    gap:12px;
-    transition:.16s ease;
-    contain:layout paint;
-    content-visibility:auto;
-    contain-intrinsic-size:105px 190px;
+    gap:9px;
   }
 
-  .sub-card:hover{
-    transform:translateY(-2px);
-    border-color:rgba(37,99,235,.35);
-    box-shadow:var(--shadow);
-  }
-
-  .sub-card.locked{
-    background:
-      linear-gradient(135deg, rgba(217,119,6,.14), rgba(124,58,237,.06)),
-      var(--surface2);
-  }
-
-  .sub-head{
+  .expanded-mini-head{
     display:flex;
-    align-items:flex-start;
+    align-items:center;
     justify-content:space-between;
     gap:10px;
-  }
-
-  .sub-icon{
-    width:34px;
-    height:34px;
-    border-radius:13px;
-    display:grid;
-    place-items:center;
     color:#fff;
-    background:linear-gradient(135deg,var(--accent),var(--accent2));
-    font-size:15px;
+  }
+
+  .expanded-mini-head strong{
+    font-size:.76rem;
     font-weight:950;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    color:rgba(255,255,255,.82);
   }
 
-  .sub-card.locked .sub-icon{
-    background:linear-gradient(135deg,#d97706,#f59e0b);
+  .expanded-mini-head span{
+    font-size:.70rem;
+    font-weight:900;
+    color:rgba(255,255,255,.72);
   }
 
-  .sub-count{
-    height:25px;
-    min-width:32px;
-    padding:0 8px;
-    border-radius:999px;
+  .sub-inline-list{
     display:grid;
-    place-items:center;
-    background:var(--surface);
-    border:1px solid var(--line);
-    color:var(--muted);
-    font-weight:950;
-    font-size:.70rem;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+    overflow:auto;
+    padding-right:3px;
   }
 
-  .sub-title{
-    font-weight:950;
-    letter-spacing:-.04em;
-    line-height:1.12;
-    font-size:.92rem;
+  .sub-inline-list::-webkit-scrollbar{
+    width:6px;
   }
 
-  .sub-desc{
-    color:var(--muted);
-    font-size:.70rem;
-    font-weight:800;
-    margin-top:4px;
+  .sub-inline-list::-webkit-scrollbar-thumb{
+    background:rgba(255,255,255,.22);
+    border-radius:999px;
+  }
+
+  .sub-inline-btn{
+    min-height:48px;
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:14px;
+    background:rgba(255,255,255,.13);
+    color:#fff;
+    padding:8px 9px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    text-align:left;
+    transition:.16s ease;
+  }
+
+  .sub-inline-btn:hover{
+    background:rgba(255,255,255,.20);
+    transform:translateY(-1px);
+  }
+
+  .sub-inline-name{
+    min-width:0;
+    font-size:.86rem;
+    line-height:1.1;
+    font-weight:950;
+    letter-spacing:-.025em;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+
+  .sub-inline-meta{
+    flex:0 0 auto;
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    height:24px;
+    border-radius:999px;
+    padding:0 8px;
+    background:rgba(0,0,0,.20);
+    border:1px solid rgba(255,255,255,.13);
+    color:rgba(255,255,255,.82);
+    font-size:.66rem;
+    font-weight:950;
   }
 
   .empty{
@@ -888,8 +936,8 @@
       grid-template-columns:repeat(3,minmax(0,1fr));
     }
 
-    .sub-grid{
-      grid-template-columns:repeat(4,minmax(0,1fr));
+    .dept-card.expanded{
+      grid-column:span 2;
     }
   }
 
@@ -897,7 +945,7 @@
     .header-inner{
       grid-template-columns:1fr auto;
       gap:9px;
-      padding:8px 14px;
+      padding:8px 12px;
     }
 
     .brand{
@@ -916,22 +964,21 @@
     }
 
     .page{
-      padding:14px 14px 28px;
+      padding:14px 12px 28px;
     }
 
-    .titlebar,
-    .selected-top{
+    .titlebar{
       flex-direction:column;
+      align-items:flex-start;
     }
 
     .title-actions{
       justify-content:flex-start;
     }
 
-    .department-grid,
-    .sub-grid{
+    .department-grid{
       grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:12px;
+      gap:11px;
     }
 
     .dept-card{
@@ -939,16 +986,22 @@
       border-radius:17px;
     }
 
+    .dept-card.expanded{
+      grid-column:span 2;
+      min-height:330px;
+    }
+
     .dept-title{
       white-space:normal;
       display:-webkit-box;
       -webkit-line-clamp:2;
       -webkit-box-orient:vertical;
-      font-size:.86rem;
+      font-size:.88rem;
     }
 
-    .sub-card{
-      min-height:100px;
+    .dept-card.expanded .dept-title{
+      font-size:1.20rem;
+      display:block;
     }
 
     .script-btn span{
@@ -965,6 +1018,16 @@
       right:12px;
       top:64px;
       width:calc(100vw - 24px);
+    }
+  }
+
+  @media(max-width:620px){
+    .sub-inline-list{
+      grid-template-columns:1fr;
+    }
+
+    .dept-expanded-box{
+      top:118px;
     }
   }
 
@@ -989,12 +1052,7 @@
     }
 
     .page-title{
-      font-size:1.34rem;
-    }
-
-    .section-head{
-      align-items:flex-start;
-      flex-direction:column;
+      font-size:1.30rem;
     }
 
     .dept-card{
@@ -1002,8 +1060,16 @@
       aspect-ratio:1.05;
     }
 
+    .dept-card.expanded{
+      min-height:355px;
+    }
+
     .dept-meta{
       display:none;
+    }
+
+    .dept-card.expanded .dept-meta{
+      display:block;
     }
 
     .pa-lock-box{
@@ -1026,13 +1092,13 @@
 
         <div class="brand-text">
           <div class="brand-title">RANVEXSI UI</div>
-          <div class="brand-sub">by YXU1 AA Ranveer Singh</div>
+          <div class="brand-sub">by YXU1 PA Ranveer Singh</div>
         </div>
       </div>
 
       <div class="search-wrap">
         <span>⌕</span>
-        <input id="search" placeholder="Search departments..." autocomplete="off" />
+        <input id="search" placeholder="Search departments or sub-departments..." autocomplete="off" />
       </div>
 
       <div class="header-actions">
@@ -1082,37 +1148,27 @@
     <section class="titlebar">
       <div class="title-left">
         <h1 class="page-title" id="pageTitle">Departments</h1>
-        <p class="page-subtitle" id="pageSubtitle">Choose a department, then open the sub-department you need.</p>
+        <p class="page-subtitle" id="pageSubtitle">Choose department → sub-department → links.</p>
       </div>
 
       <div class="title-actions">
         <span class="mini-pill" id="titleMeta">0 departments</span>
+
+        <label class="mini-control">
+          Sort
+          <select id="sortMode">
+            <option value="az">A-Z</option>
+            <option value="za">Z-A</option>
+            <option value="custom">Custom</option>
+          </select>
+        </label>
+
         <button class="mini-btn active" id="btnMediaText" type="button">Images On</button>
       </div>
     </section>
 
     <section>
-      <div class="section-head">
-        <div>
-          <h2>Departments</h2>
-          <p>4-column lightweight dashboard cards.</p>
-        </div>
-      </div>
-
       <div id="depGrid" class="grid department-grid" aria-label="Departments grid"></div>
-    </section>
-
-    <section class="selected-panel hidden" id="selectedPanel">
-      <div class="selected-top">
-        <div>
-          <div class="selected-title" id="selectedTitle">Department</div>
-          <div class="selected-sub" id="selectedSub">Open a sub-department below.</div>
-        </div>
-
-        <button class="mini-btn" id="btnClearDepartment" type="button">Clear Selection</button>
-      </div>
-
-      <div id="subGrid" class="grid sub-grid" aria-label="Sub-departments grid"></div>
     </section>
   </main>
 
@@ -1152,7 +1208,6 @@ const LINKS_TABLE = "ranvexsi_links";
 const DEPT_TABLE = "ranvexsi_departments";
 const SUB_TABLE = "ranvexsi_sub_departments";
 const SETTINGS_TABLE = "ranvexsi_settings";
-const VOTES_TABLE = "ranvexsi_department_votes";
 const STORAGE_BUCKET = "media";
 
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
@@ -1164,14 +1219,10 @@ const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 const els = {
   search: document.getElementById("search"),
   depGrid: document.getElementById("depGrid"),
-  subGrid: document.getElementById("subGrid"),
-  selectedPanel: document.getElementById("selectedPanel"),
-  selectedTitle: document.getElementById("selectedTitle"),
-  selectedSub: document.getElementById("selectedSub"),
   pageTitle: document.getElementById("pageTitle"),
   pageSubtitle: document.getElementById("pageSubtitle"),
   titleMeta: document.getElementById("titleMeta"),
-  btnClearDepartment: document.getElementById("btnClearDepartment"),
+  sortMode: document.getElementById("sortMode"),
   btnRequestTop: document.getElementById("btnRequestTop"),
   scriptWrap: document.getElementById("scriptWrap"),
   btnScriptTop: document.getElementById("btnScriptTop"),
@@ -1205,6 +1256,7 @@ let paPendingAction = null;
 const LS = {
   THEME: "rv_theme",
   MEDIA: "rv_media_index_light_v1",
+  SORT: "rv_index_sort_v1",
   VOTER_KEY: "rv_voter_key_v1",
   PA_UNLOCKED_DATE: "rv_pa_unlocked_date_v1",
   LOCAL_DAILY_VIEWS: "rv_daily_views_fallback",
@@ -1320,12 +1372,25 @@ function localRequestsFor(type){
   return getLocalRequests().filter(r => r.request_type === type && r.status !== "rejected");
 }
 
+function pendingLinkCountInSub(dep, sub){
+  return localRequestsFor("link").filter(r =>
+    String(r.department || "").toLowerCase() === String(dep || "").toLowerCase() &&
+    String(r.sub_department || "General").toLowerCase() === String(sub || "").toLowerCase()
+  ).length;
+}
+
 function countLinksInSub(dep, sub){
-  return rawLinks.filter(r => r.Department === dep && r.SubDepartment === sub).length;
+  const savedCount = rawLinks.filter(r => r.Department === dep && r.SubDepartment === sub).length;
+  return savedCount + pendingLinkCountInSub(dep, sub);
 }
 
 function countAllLinksInDepartment(dep){
-  return rawLinks.filter(r => r.Department === dep).length;
+  const savedCount = rawLinks.filter(r => r.Department === dep).length;
+  const pendingCount = localRequestsFor("link").filter(r =>
+    String(r.department || "").toLowerCase() === String(dep || "").toLowerCase()
+  ).length;
+
+  return savedCount + pendingCount;
 }
 
 function totalSubCount(){
@@ -1348,8 +1413,44 @@ function todayKey(){
   return `${y}-${m}-${day}`;
 }
 
+function sortMode(){
+  return localStorage.getItem(LS.SORT) || "az";
+}
+
+function sortDepartments(list){
+  const mode = sortMode();
+
+  return [...list].sort((a,b) => {
+    if(mode === "za"){
+      return b.dep.localeCompare(a.dep, undefined, { sensitivity:"base" });
+    }
+
+    if(mode === "custom"){
+      return (a.sortOrder - b.sortOrder) || a.dep.localeCompare(b.dep, undefined, { sensitivity:"base" });
+    }
+
+    return a.dep.localeCompare(b.dep, undefined, { sensitivity:"base" });
+  });
+}
+
+function sortSubs(list){
+  const mode = sortMode();
+
+  return [...list].sort((a,b) => {
+    if(mode === "za"){
+      return b.name.localeCompare(a.name, undefined, { sensitivity:"base" });
+    }
+
+    if(mode === "custom"){
+      return (a.sortOrder - b.sortOrder) || a.name.localeCompare(b.name, undefined, { sensitivity:"base" });
+    }
+
+    return a.name.localeCompare(b.name, undefined, { sensitivity:"base" });
+  });
+}
+
 /* =========================================================
-   Theme / Media
+   Theme / Media / Sort
 ========================================================= */
 
 function initTheme(){
@@ -1387,6 +1488,21 @@ function applyMedia(value){
 function toggleMedia(){
   const current = localStorage.getItem(LS.MEDIA) || "on";
   applyMedia(current === "on" ? "off" : "on");
+}
+
+function initSort(){
+  const saved = localStorage.getItem(LS.SORT) || "az";
+  applySort(saved, false);
+}
+
+function applySort(value, shouldRender=true){
+  const mode = ["az","za","custom"].includes(String(value)) ? String(value) : "az";
+  localStorage.setItem(LS.SORT, mode);
+  els.sortMode.value = mode;
+
+  if(shouldRender){
+    render();
+  }
 }
 
 /* =========================================================
@@ -1681,16 +1797,14 @@ function buildMaps(){
 
   departmentsData = Object.values(map)
     .map(d => {
-      const subs = [...d.subMap.values()]
-        .sort((a,b) => (a.sortOrder - b.sortOrder) || a.name.localeCompare(b.name));
+      const subs = [...d.subMap.values()];
 
       return {
         ...d,
         subs,
         imageUrl:d.imageUrl || ""
       };
-    })
-    .sort((a,b) => (a.sortOrder - b.sortOrder) || a.dep.localeCompare(b.dep));
+    });
 }
 
 /* =========================================================
@@ -1950,40 +2064,59 @@ async function trackVisit(){
 function render(){
   updateTopInfo();
   renderDepartments();
-  renderSubDepartments();
 }
 
 function updateTopInfo(){
-  if(currentDep){
-    const depObj = departmentsData.find(d => d.dep === currentDep);
-    const subCount = depObj?.subs?.length || 0;
-    const linkCount = countAllLinksInDepartment(currentDep);
+  const totalDepartments = departmentsData.length;
+  const totalSubs = totalSubCount();
 
-    els.pageTitle.textContent = currentDep;
-    els.pageSubtitle.textContent = "Choose a sub-department to open its links.";
-    els.titleMeta.textContent = `${subCount} sub-depts · ${linkCount} links`;
-    els.search.placeholder = "Search sub-departments...";
-    els.btnRequestTop.href = buildUrl("request.html", { dep:currentDep });
-  }else{
-    els.pageTitle.textContent = "Departments";
-    els.pageSubtitle.textContent = "Choose a department, then open the sub-department you need.";
-    els.titleMeta.textContent = `${departmentsData.length} departments · ${totalSubCount()} sub-depts`;
-    els.search.placeholder = "Search departments...";
-    els.btnRequestTop.href = "request.html";
-  }
+  els.pageTitle.textContent = "Departments";
+  els.pageSubtitle.textContent = currentDep
+    ? `${currentDep} is open. Pick a sub-department from the same photo card.`
+    : "Choose department → sub-department → links.";
+
+  els.titleMeta.textContent = currentDep
+    ? `${totalDepartments} departments · ${totalSubs} sub-depts · ${currentDep} open`
+    : `${totalDepartments} departments · ${totalSubs} sub-depts`;
+
+  els.search.placeholder = "Search departments or sub-departments...";
+  els.btnRequestTop.href = currentDep ? buildUrl("request.html", { dep:currentDep }) : "request.html";
 }
 
-function renderDepartments(){
-  const q = currentDep ? "" : els.search.value.trim().toLowerCase();
+function getVisibleDepartments(){
+  const q = els.search.value.trim().toLowerCase();
 
   let data = departmentsData;
 
   if(q){
-    data = data.filter(d =>
-      d.dep.toLowerCase().includes(q) ||
-      d.subs.some(s => s.name.toLowerCase().includes(q))
+    data = data.filter(d => {
+      const depMatch = d.dep.toLowerCase().includes(q);
+      const subMatch = d.subs.some(s => s.name.toLowerCase().includes(q));
+      return depMatch || subMatch;
+    });
+  }
+
+  return sortDepartments(data);
+}
+
+function getVisibleSubsForDepartment(d){
+  const q = els.search.value.trim().toLowerCase();
+  const depMatches = q && d.dep.toLowerCase().includes(q);
+
+  let subs = d.subs || [];
+
+  if(q && !depMatches){
+    subs = subs.filter(s =>
+      s.name.toLowerCase().includes(q) ||
+      String(countLinksInSub(d.dep, s.name)).includes(q)
     );
   }
+
+  return sortSubs(subs);
+}
+
+function renderDepartments(){
+  const data = getVisibleDepartments();
 
   els.depGrid.innerHTML = "";
 
@@ -1998,19 +2131,42 @@ function renderDepartments(){
   }
 
   data.forEach(d => {
+    const isExpanded = currentDep === d.dep;
     const votes = getVoteCount(d.dep);
     const voted = hasVoted(d.dep);
     const locked = needsPaPassword(d.dep, "");
+    const linkCount = countAllLinksInDepartment(d.dep);
+    const visibleSubs = getVisibleSubsForDepartment(d);
+
     const imageHtml = d.imageUrl
       ? `<img class="dept-img" src="${esc(d.imageUrl)}" alt="${esc(d.dep)}" loading="lazy" decoding="async" onerror="this.remove()">`
       : "";
 
     const card = document.createElement("article");
-    card.className = "dept-card" + (currentDep === d.dep ? " active" : "");
+    card.className = "dept-card" + (isExpanded ? " expanded" : "");
     card.dataset.department = d.dep;
     card.tabIndex = 0;
     card.setAttribute("role", "button");
-    card.setAttribute("aria-label", `Open ${d.dep}`);
+    card.setAttribute("aria-label", isExpanded ? `${d.dep} expanded` : `Open ${d.dep}`);
+
+    const subButtonsHtml = visibleSubs.length
+      ? visibleSubs.map(sub => {
+          const subLinkCount = countLinksInSub(d.dep, sub.name);
+          const subLocked = needsPaPassword(d.dep, sub.name);
+
+          return `
+            <button class="sub-inline-btn" type="button" data-sub="${esc(sub.name)}">
+              <span class="sub-inline-name">${esc(sub.name)}</span>
+              <span class="sub-inline-meta">${subLocked ? "🔒 " : ""}${subLinkCount}</span>
+            </button>
+          `;
+        }).join("")
+      : `
+        <div class="empty" style="grid-column:1/-1;background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.18);box-shadow:none;">
+          <strong style="color:#fff;">No sub-departments found.</strong>
+          Try another search.
+        </div>
+      `;
 
     card.innerHTML = `
       ${imageHtml}
@@ -2021,9 +2177,10 @@ function renderDepartments(){
           👍 <span>${votes}</span>
         </button>
 
-        <div style="display:flex;gap:6px;">
+        <div style="display:flex;gap:6px;align-items:center;">
           ${locked ? `<span class="lock-mini">🔒</span>` : ``}
           ${d.pending ? `<span class="pending-mini">Pending</span>` : ``}
+          ${isExpanded ? `<button class="dept-close-btn" type="button" title="Close">×</button>` : ``}
         </div>
       </div>
 
@@ -2032,16 +2189,26 @@ function renderDepartments(){
           <div class="dept-title">${esc(d.dep)}</div>
           <div class="dept-count">${d.subs.length} subs</div>
         </div>
-        <div class="dept-meta">${d.totalLinks} links available</div>
+        <div class="dept-meta">${linkCount} links available</div>
+        <div class="dept-expand-hint">Open sub-depts ↗</div>
+      </div>
+
+      <div class="dept-expanded-box">
+        <div class="expanded-mini-head">
+          <strong>Sub-departments</strong>
+          <span>${visibleSubs.length} shown</span>
+        </div>
+
+        <div class="sub-inline-list">
+          ${subButtonsHtml}
+        </div>
       </div>
     `;
 
     const openDepartment = () => {
       const action = () => {
-        currentDep = d.dep;
-        els.search.value = "";
+        currentDep = currentDep === d.dep ? "" : d.dep;
         render();
-        els.selectedPanel.scrollIntoView({ behavior:"smooth", block:"start" });
       };
 
       if(needsPaPassword(d.dep, "")){
@@ -2053,6 +2220,7 @@ function renderDepartments(){
 
     card.addEventListener("click", (event) => {
       if(event.target.closest("button")) return;
+      if(event.target.closest(".dept-expanded-box")) return;
       openDepartment();
     });
 
@@ -2071,101 +2239,46 @@ function renderDepartments(){
       await voteDepartment(d.dep, voteBtn);
     });
 
+    const closeBtn = card.querySelector(".dept-close-btn");
+
+    if(closeBtn){
+      closeBtn.addEventListener("click", (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+        currentDep = "";
+        render();
+      });
+    }
+
+    card.querySelectorAll(".sub-inline-btn").forEach(btn => {
+      btn.addEventListener("click", (event) => {
+        event.stopPropagation();
+        event.preventDefault();
+
+        const subName = btn.dataset.sub || "";
+        openSubDepartment(d.dep, subName);
+      });
+    });
+
     els.depGrid.appendChild(card);
   });
 }
 
-function renderSubDepartments(){
-  if(!currentDep){
-    els.selectedPanel.classList.add("hidden");
-    els.subGrid.innerHTML = "";
-    return;
-  }
+function openSubDepartment(dep, sub){
+  if(!dep || !sub) return;
 
-  const depObj = departmentsData.find(d => d.dep === currentDep);
-
-  if(!depObj){
-    currentDep = "";
-    els.selectedPanel.classList.add("hidden");
-    render();
-    return;
-  }
-
-  els.selectedPanel.classList.remove("hidden");
-  els.selectedTitle.textContent = currentDep;
-  els.selectedSub.textContent = `${depObj.subs.length} sub-departments · ${countAllLinksInDepartment(currentDep)} links`;
-
-  const q = els.search.value.trim().toLowerCase();
-
-  let subs = depObj.subs || [];
-
-  if(q){
-    subs = subs.filter(s =>
-      s.name.toLowerCase().includes(q) ||
-      String(countLinksInSub(currentDep, s.name)).includes(q)
-    );
-  }
-
-  els.subGrid.innerHTML = "";
-
-  if(subs.length === 0){
-    els.subGrid.innerHTML = `
-      <div class="empty">
-        <strong>No sub-departments found.</strong>
-        Try another search or submit a request for this department.
-      </div>
-    `;
-    return;
-  }
-
-  subs.forEach(sub => {
-    const linkCount = countLinksInSub(currentDep, sub.name);
-    const locked = needsPaPassword(currentDep, sub.name);
-
-    const chip = document.createElement("article");
-    chip.className = "sub-card" + (locked ? " locked" : "");
-    chip.tabIndex = 0;
-    chip.setAttribute("role", "button");
-    chip.setAttribute("aria-label", `Open ${sub.name}`);
-
-    chip.innerHTML = `
-      <div class="sub-head">
-        <div class="sub-icon">${locked ? "🔒" : "↗"}</div>
-        <div class="sub-count">${linkCount}</div>
-      </div>
-
-      <div>
-        <div class="sub-title">${esc(sub.name)}</div>
-        <div class="sub-desc">${locked ? "Password required" : "Open links"}</div>
-      </div>
-    `;
-
-    const openSubDepartment = () => {
-      const action = () => {
-        window.location.href = buildUrl("links.html", {
-          dep:currentDep,
-          sub:sub.name
-        });
-      };
-
-      if(needsPaPassword(currentDep, sub.name)){
-        openPaLock(action);
-      }else{
-        action();
-      }
-    };
-
-    chip.addEventListener("click", openSubDepartment);
-
-    chip.addEventListener("keydown", (event) => {
-      if(event.key === "Enter" || event.key === " "){
-        event.preventDefault();
-        openSubDepartment();
-      }
+  const action = () => {
+    window.location.href = buildUrl("links.html", {
+      dep:dep,
+      sub:sub
     });
+  };
 
-    els.subGrid.appendChild(chip);
-  });
+  if(needsPaPassword(dep, sub)){
+    openPaLock(action);
+  }else{
+    action();
+  }
 }
 
 /* =========================================================
@@ -2176,16 +2289,13 @@ els.btnTheme.addEventListener("click", toggleTheme);
 els.btnMedia.addEventListener("click", toggleMedia);
 els.btnMediaText.addEventListener("click", toggleMedia);
 
+els.sortMode.addEventListener("change", () => {
+  applySort(els.sortMode.value, true);
+});
+
 els.btnRefresh.addEventListener("click", async () => {
   await loadData();
   await loadScriptLink();
-});
-
-els.btnClearDepartment.addEventListener("click", () => {
-  currentDep = "";
-  els.search.value = "";
-  render();
-  window.scrollTo({ top:0, behavior:"smooth" });
 });
 
 els.btnScriptTop.addEventListener("click", (event) => {
@@ -2229,13 +2339,7 @@ els.search.addEventListener("input", () => {
   clearTimeout(searchTimer);
 
   searchTimer = setTimeout(() => {
-    if(currentDep){
-      renderSubDepartments();
-      updateTopInfo();
-    }else{
-      renderDepartments();
-      updateTopInfo();
-    }
+    render();
   }, 120);
 });
 
@@ -2250,7 +2354,6 @@ document.addEventListener("keydown", (event) => {
 
     if(currentDep){
       currentDep = "";
-      els.search.value = "";
       render();
     }
   }
@@ -2263,6 +2366,7 @@ document.addEventListener("keydown", (event) => {
 async function init(){
   initTheme();
   initMedia();
+  initSort();
   trackVisit();
 
   await loadData();
