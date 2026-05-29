@@ -30,7 +30,9 @@
     --soft:rgba(37,99,235,.10);
     --shadow:0 6px 18px rgba(15,23,42,.08);
     --shadow2:0 12px 30px rgba(15,23,42,.12);
-    --max:1360px;
+
+    /* 98% screen coverage */
+    --max:98vw;
     --grid-cols:6;
   }
 
@@ -108,11 +110,13 @@
     top:0;
     z-index:50;
     border-bottom:1px solid var(--line);
-    background:var(--surface);
+    background:rgba(255,255,255,.86);
+    backdrop-filter:blur(18px);
     box-shadow:0 3px 12px rgba(15,23,42,.08);
   }
 
   body.dark .app-header{
+    background:rgba(16,24,39,.86);
     box-shadow:0 4px 16px rgba(0,0,0,.28);
   }
 
@@ -120,9 +124,9 @@
     width:min(var(--max),100%);
     margin:0 auto;
     min-height:58px;
-    padding:8px 18px;
+    padding:8px 10px;
     display:grid;
-    grid-template-columns:auto minmax(220px,420px) auto;
+    grid-template-columns:auto minmax(260px,520px) auto;
     gap:12px;
     align-items:center;
   }
@@ -131,7 +135,7 @@
     display:flex;
     align-items:center;
     gap:10px;
-    min-width:260px;
+    min-width:270px;
   }
 
   .backbtn{
@@ -188,7 +192,7 @@
   .search-wrap{
     position:relative;
     width:100%;
-    max-width:420px;
+    max-width:520px;
     justify-self:center;
   }
 
@@ -385,15 +389,15 @@
   .page{
     width:min(var(--max),100%);
     margin:0 auto;
-    padding:16px 18px 30px;
+    padding:14px 10px 30px;
   }
 
   .titlebar{
     display:flex;
-    align-items:flex-start;
+    align-items:flex-end;
     justify-content:space-between;
     gap:12px;
-    margin-bottom:14px;
+    margin-bottom:12px;
   }
 
   .title-left{
@@ -402,24 +406,20 @@
 
   .breadcrumb{
     color:var(--muted);
-    font-size:.76rem;
-    font-weight:850;
-    margin-bottom:5px;
+    font-size:.75rem;
+    font-weight:900;
+    margin-bottom:4px;
   }
 
   .page-title{
-    font-size:clamp(1.42rem,2vw,2rem);
-    letter-spacing:-.06em;
-    line-height:1.04;
+    font-size:clamp(1.42rem,2vw,2.05rem);
+    letter-spacing:-.065em;
+    line-height:1.02;
     font-weight:950;
   }
 
   .page-subtitle{
-    margin-top:5px;
-    color:var(--muted);
-    font-size:.82rem;
-    font-weight:750;
-    line-height:1.4;
+    display:none;
   }
 
   .title-actions{
@@ -480,28 +480,31 @@
   .links-grid{
     display:grid;
     grid-template-columns:repeat(var(--grid-cols),minmax(0,1fr));
-    gap:12px;
+    gap:10px;
   }
 
   .link-card{
     position:relative;
-    min-height:110px;
+    min-height:96px;
     border:1px solid var(--line);
-    border-radius:17px;
+    border-radius:16px;
     background:
-      linear-gradient(135deg, rgba(37,99,235,.08), rgba(124,58,237,.06)),
+      linear-gradient(135deg, rgba(var(--card-rgb),.095), rgba(var(--card-rgb2),.055)),
       var(--surface);
-    box-shadow:0 4px 12px rgba(15,23,42,.06);
-    padding:13px;
+    box-shadow:0 4px 12px rgba(15,23,42,.055);
+    padding:13px 13px 12px;
     display:flex;
     flex-direction:column;
     justify-content:space-between;
-    gap:12px;
+    gap:11px;
     overflow:hidden;
     transition:.16s ease;
     contain:layout paint;
     content-visibility:auto;
-    contain-intrinsic-size:110px 180px;
+    contain-intrinsic-size:96px 175px;
+    --card-rgb:37,99,235;
+    --card-rgb2:124,58,237;
+    --card-solid:#2563eb;
   }
 
   .link-card::before{
@@ -511,54 +514,103 @@
     top:0;
     bottom:0;
     width:4px;
-    background:linear-gradient(180deg,var(--accent),var(--accent2));
-    opacity:.86;
+    background:linear-gradient(180deg,var(--card-solid),rgba(var(--card-rgb2),1));
+    opacity:.90;
   }
 
   .link-card:hover{
     transform:translateY(-2px);
-    border-color:rgba(37,99,235,.35);
+    border-color:rgba(var(--card-rgb),.38);
     box-shadow:var(--shadow);
   }
 
   .link-card:focus-visible{
     outline:none;
-    border-color:rgba(37,99,235,.60);
-    box-shadow:0 0 0 4px var(--soft), var(--shadow);
+    border-color:rgba(var(--card-rgb),.60);
+    box-shadow:0 0 0 4px rgba(var(--card-rgb),.12), var(--shadow);
   }
 
-  .link-top{
-    display:flex;
-    align-items:flex-start;
-    justify-content:space-between;
-    gap:9px;
+  .link-card.accent-cam{
+    --card-rgb:37,99,235;
+    --card-rgb2:14,165,233;
+    --card-solid:#2563eb;
   }
 
-  .link-icon{
-    width:31px;
-    height:31px;
-    border-radius:12px;
+  .link-card.accent-trans{
+    --card-rgb:234,88,12;
+    --card-rgb2:245,158,11;
+    --card-solid:#ea580c;
+  }
+
+  .link-card.accent-performance{
+    --card-rgb:22,163,74;
+    --card-rgb2:20,184,166;
+    --card-solid:#16a34a;
+  }
+
+  .link-card.accent-quip{
+    --card-rgb:124,58,237;
+    --card-rgb2:168,85,247;
+    --card-solid:#7c3aed;
+  }
+
+  .link-card.accent-tools{
+    --card-rgb:8,145,178;
+    --card-rgb2:13,148,136;
+    --card-solid:#0891b2;
+  }
+
+  .link-card.accent-alert{
+    --card-rgb:220,38,38;
+    --card-rgb2:249,115,22;
+    --card-solid:#dc2626;
+  }
+
+  .link-card.accent-comm{
+    --card-rgb:219,39,119;
+    --card-rgb2:147,51,234;
+    --card-solid:#db2777;
+  }
+
+  .link-card.accent-default{
+    --card-rgb:79,70,229;
+    --card-rgb2:124,58,237;
+    --card-solid:#4f46e5;
+  }
+
+  .link-main{
+    min-width:0;
+    padding-left:3px;
+    padding-right:26px;
+  }
+
+  .link-name{
+    font-size:1.02rem;
+    line-height:1.14;
+    font-weight:950;
+    letter-spacing:-.045em;
+    word-break:break-word;
+  }
+
+  .report-btn{
+    position:absolute;
+    right:11px;
+    top:11px;
+    width:27px;
+    height:27px;
+    border:1px solid var(--line);
+    border-radius:999px;
+    background:rgba(255,255,255,.62);
+    color:var(--muted);
     display:grid;
     place-items:center;
-    color:#fff;
-    background:linear-gradient(135deg,var(--accent),var(--accent2));
     font-size:.76rem;
     font-weight:950;
     flex:0 0 auto;
   }
 
-  .report-btn{
-    width:28px;
-    height:28px;
-    border:1px solid var(--line);
-    border-radius:999px;
-    background:var(--surface2);
-    color:var(--muted);
-    display:grid;
-    place-items:center;
-    font-size:.78rem;
-    font-weight:950;
-    flex:0 0 auto;
+  body.dark .report-btn{
+    background:rgba(21,31,51,.72);
   }
 
   .report-btn:hover{
@@ -567,56 +619,44 @@
     color:var(--red);
   }
 
-  .link-name{
-    font-size:.89rem;
-    line-height:1.15;
-    font-weight:950;
-    letter-spacing:-.035em;
-    word-break:break-word;
-  }
-
-  .link-meta{
-    margin-top:5px;
-    color:var(--muted);
-    font-size:.66rem;
-    line-height:1.3;
-    font-weight:850;
-    word-break:break-word;
-  }
-
   .link-bottom{
     display:flex;
     align-items:center;
     justify-content:space-between;
     gap:8px;
+    padding-left:3px;
   }
 
   .open-pill{
-    height:25px;
+    height:26px;
     border-radius:999px;
-    padding:0 9px;
+    padding:0 10px;
     display:inline-flex;
     align-items:center;
     justify-content:center;
     gap:5px;
-    background:var(--surface2);
+    background:rgba(255,255,255,.56);
     color:var(--ink);
     border:1px solid var(--line);
-    font-size:.66rem;
+    font-size:.68rem;
     font-weight:950;
   }
 
+  body.dark .open-pill{
+    background:rgba(21,31,51,.72);
+  }
+
   .pending-pill{
-    height:25px;
+    height:26px;
     border-radius:999px;
-    padding:0 9px;
+    padding:0 10px;
     display:inline-flex;
     align-items:center;
     justify-content:center;
     background:rgba(217,119,6,.12);
     color:var(--gold);
     border:1px solid rgba(217,119,6,.20);
-    font-size:.66rem;
+    font-size:.68rem;
     font-weight:950;
   }
 
@@ -956,7 +996,7 @@
     .header-inner{
       grid-template-columns:1fr auto;
       gap:9px;
-      padding:8px 14px;
+      padding:8px 12px;
     }
 
     .brand{
@@ -975,11 +1015,12 @@
     }
 
     .page{
-      padding:14px 14px 28px;
+      padding:14px 12px 28px;
     }
 
     .titlebar{
       flex-direction:column;
+      align-items:flex-start;
     }
 
     .title-actions{
@@ -988,11 +1029,11 @@
 
     .links-grid{
       grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:11px;
+      gap:10px;
     }
 
     .link-card{
-      min-height:105px;
+      min-height:94px;
       border-radius:16px;
       padding:12px;
     }
@@ -1039,7 +1080,7 @@
     }
 
     .page-title{
-      font-size:1.34rem;
+      font-size:1.30rem;
     }
 
     .links-grid{
@@ -1047,11 +1088,7 @@
     }
 
     .link-name{
-      font-size:.82rem;
-    }
-
-    .link-meta{
-      display:none;
+      font-size:.88rem;
     }
 
     .modal-backdrop,
@@ -1092,7 +1129,7 @@
 
         <div class="brand-text">
           <div class="brand-title">RANVEXSI UI</div>
-          <div class="brand-sub">by YXU1 AA Ranveer Singh</div>
+          <div class="brand-sub">by YXU1 PA Ranveer Singh</div>
         </div>
       </div>
 
@@ -1146,15 +1183,24 @@
   <main class="page">
     <section class="titlebar">
       <div class="title-left">
-        <div class="breadcrumb" id="breadcrumb">Department / Sub-department</div>
-        <h1 class="page-title" id="pageTitle">Links</h1>
-        <p class="page-subtitle" id="pageSubtitle">Text-only boxes for smoother workplace laptop scrolling.</p>
+        <div class="breadcrumb" id="breadcrumb">Links Dashboard</div>
+        <h1 class="page-title" id="pageTitle">Department / Sub-department</h1>
+        <p class="page-subtitle" id="pageSubtitle"></p>
       </div>
 
       <div class="title-actions">
         <span class="mini-pill" id="titleMeta">0 shown</span>
 
         <button class="mini-btn" id="btnCopyPage" type="button">Copy Page</button>
+
+        <label class="mini-control">
+          Sort
+          <select id="sortMode">
+            <option value="az">A-Z</option>
+            <option value="za">Z-A</option>
+            <option value="custom">Custom</option>
+          </select>
+        </label>
 
         <label class="mini-control">
           Grid
@@ -1288,6 +1334,7 @@ const els = {
   btnTheme: document.getElementById("btnTheme"),
   btnCopyPage: document.getElementById("btnCopyPage"),
   gridCount: document.getElementById("gridCount"),
+  sortMode: document.getElementById("sortMode"),
   dbDot: document.getElementById("dbDot"),
   dbText: document.getElementById("dbText"),
   viewsToday: document.getElementById("viewsToday"),
@@ -1324,6 +1371,7 @@ let paPendingAction = null;
 const LS = {
   THEME: "rv_theme",
   GRID: "rv_links_grid_light_v1",
+  SORT: "rv_links_sort_v1",
   LOCAL_REQUESTS: "rv_local_pending_requests_v1",
   REPORTER_KEY: "rv_reporter_key_v1",
   PA_UNLOCKED_DATE: "rv_pa_unlocked_date_v1",
@@ -1435,21 +1483,6 @@ function localLinkRequests(){
   return localRequests.filter(r => r.request_type === "link" && r.status !== "rejected");
 }
 
-function getInitials(name){
-  const words = String(name || "RV")
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
-
-  if(words.length === 0) return "RV";
-
-  if(words.length === 1){
-    return words[0].slice(0,2).toUpperCase();
-  }
-
-  return (words[0][0] + words[1][0]).toUpperCase();
-}
-
 function isProcessAssistantName(value){
   return String(value || "").trim().toLowerCase() === "process assistant";
 }
@@ -1475,8 +1508,70 @@ function getReporterKey(){
   return makeReporterKey();
 }
 
+function cleanName(value){
+  return String(value || "").trim().toLowerCase();
+}
+
+function getAccentClass(row){
+  const name = cleanName(row.LinkName);
+  const url = cleanName(row.URL);
+
+  if(name.includes("cam") || url.includes("cam")){
+    return "accent-cam";
+  }
+
+  if(
+    name.includes("trans") ||
+    name.includes("trailer") ||
+    name.includes("yms") ||
+    name.includes("rodeo") ||
+    name.includes("shipclerk")
+  ){
+    return "accent-trans";
+  }
+
+  if(
+    name.includes("myspd") ||
+    name.includes("performance") ||
+    name.includes("lane") ||
+    name.includes("flow") ||
+    name.includes("dashboard")
+  ){
+    return "accent-performance";
+  }
+
+  if(name.includes("quip")){
+    return "accent-quip";
+  }
+
+  if(
+    name.includes("barcode") ||
+    name.includes("tool") ||
+    name.includes("generator") ||
+    name.includes("bookmarks") ||
+    name.includes("menu")
+  ){
+    return "accent-tools";
+  }
+
+  if(
+    name.includes("blue") ||
+    name.includes("bluelight") ||
+    name.includes("eos") ||
+    name.includes("watch")
+  ){
+    return "accent-alert";
+  }
+
+  if(name.includes("slack") || name.includes("chat") || name.includes("message")){
+    return "accent-comm";
+  }
+
+  return "accent-default";
+}
+
 /* =========================================================
-   Theme / Grid
+   Theme / Grid / Sort
 ========================================================= */
 
 function initTheme(){
@@ -1507,6 +1602,21 @@ function applyGrid(value){
   document.documentElement.style.setProperty("--grid-cols", count);
   localStorage.setItem(LS.GRID, count);
   els.gridCount.value = count;
+}
+
+function initSort(){
+  const saved = localStorage.getItem(LS.SORT) || "az";
+  applySort(saved, false);
+}
+
+function applySort(value, shouldRender=true){
+  const mode = ["az","za","custom"].includes(String(value)) ? String(value) : "az";
+  localStorage.setItem(LS.SORT, mode);
+  els.sortMode.value = mode;
+
+  if(shouldRender){
+    render();
+  }
 }
 
 /* =========================================================
@@ -1603,7 +1713,6 @@ async function loadData(){
       .from(LINKS_TABLE)
       .select("*")
       .eq("is_active", true)
-      .order("sort_order", { ascending:true })
       .order("link_name", { ascending:true });
 
     if(currentDep){
@@ -1662,12 +1771,30 @@ function getPendingRows(){
     }));
 }
 
+function sortRows(rows){
+  const mode = localStorage.getItem(LS.SORT) || "az";
+
+  return [...rows].sort((a,b) => {
+    if(a.Pending && !b.Pending) return -1;
+    if(!a.Pending && b.Pending) return 1;
+
+    if(mode === "za"){
+      return b.LinkName.localeCompare(a.LinkName, undefined, { sensitivity:"base" });
+    }
+
+    if(mode === "custom"){
+      return (a.SortOrder - b.SortOrder) || a.LinkName.localeCompare(b.LinkName, undefined, { sensitivity:"base" });
+    }
+
+    return a.LinkName.localeCompare(b.LinkName, undefined, { sensitivity:"base" });
+  });
+}
+
 function filterRows(){
   const q = els.search.value.trim().toLowerCase();
   const pendingRows = getPendingRows();
 
-  let rows = [...pendingRows, ...rawRows]
-    .sort((a,b) => (a.SortOrder - b.SortOrder) || a.LinkName.localeCompare(b.LinkName));
+  let rows = [...pendingRows, ...rawRows];
 
   if(q){
     rows = rows.filter(row =>
@@ -1678,10 +1805,10 @@ function filterRows(){
     );
   }
 
-  shownRows = rows;
+  shownRows = sortRows(rows);
   updateTitleMeta();
 
-  return rows;
+  return shownRows;
 }
 
 /* =========================================================
@@ -1849,11 +1976,17 @@ async function trackVisit(){
 ========================================================= */
 
 function updatePageInfo(){
-  els.breadcrumb.textContent = `${currentDep || "Department"} / ${currentSub || "Sub-department"}`;
-  els.pageTitle.textContent = currentSub || "Links";
-  els.pageSubtitle.textContent = currentDep
-    ? `${currentDep} links. Text-only boxes for faster scrolling.`
-    : "Text-only boxes for faster scrolling.";
+  els.breadcrumb.textContent = "Links Dashboard";
+
+  if(currentDep && currentSub){
+    els.pageTitle.textContent = `${currentDep} / ${currentSub}`;
+    document.title = `RANVEXSI UI — ${currentDep} / ${currentSub}`;
+  }else{
+    els.pageTitle.textContent = "Department / Sub-department";
+    document.title = "RANVEXSI UI — Links";
+  }
+
+  els.pageSubtitle.textContent = "";
 
   els.btnRequestTop.href = buildUrl("request.html", {
     dep:currentDep,
@@ -1892,7 +2025,7 @@ function render(){
     const url = safeUrl(row.URL);
     const card = document.createElement("article");
 
-    card.className = "link-card";
+    card.className = `link-card ${getAccentClass(row)}`;
     card.dataset.linkId = row.ID || "";
     card.dataset.name = row.LinkName;
     card.dataset.url = url;
@@ -1901,14 +2034,10 @@ function render(){
     card.setAttribute("aria-label", `Open ${row.LinkName}`);
 
     card.innerHTML = `
-      <div class="link-top">
-        <div class="link-icon">${esc(getInitials(row.LinkName))}</div>
-        <button class="report-btn" type="button" title="Report this link" aria-label="Report ${esc(row.LinkName)}">!</button>
-      </div>
+      <button class="report-btn" type="button" title="Report this link" aria-label="Report ${esc(row.LinkName)}">!</button>
 
-      <div>
+      <div class="link-main">
         <div class="link-name">${esc(row.LinkName)}</div>
-        <div class="link-meta">${esc(row.Department)} / ${esc(row.SubDepartment)}</div>
       </div>
 
       <div class="link-bottom">
@@ -2095,6 +2224,10 @@ els.gridCount.addEventListener("change", () => {
   applyGrid(els.gridCount.value);
 });
 
+els.sortMode.addEventListener("change", () => {
+  applySort(els.sortMode.value, true);
+});
+
 els.btnScriptTop.addEventListener("click", (event) => {
   event.preventDefault();
   event.stopPropagation();
@@ -2182,6 +2315,7 @@ async function init(){
 
   initTheme();
   initGrid();
+  initSort();
   trackVisit();
 
   const protectedPage = needsPaPassword(currentDep, currentSub);
