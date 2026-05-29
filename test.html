@@ -1050,7 +1050,7 @@
   <section class="hero">
     <div>
       <h2>Admin Dashboard</h2>
-      <p>Focused editing workspace for departments, sub-departments, and text-only links. Manage now keeps your department, sub-department, search, and scroll position after saving.</p>
+      <p>Focused editing workspace for departments, sub-departments, and text-only links. Save/delete now verifies Supabase row changes and preserves your filters.</p>
     </div>
 
     <div class="top-actions">
@@ -1131,7 +1131,10 @@
         </div>
 
         <div class="workspace-note">
-          Link delete has two modes: <b>Hide</b> removes it from the public site safely. <b>Delete permanently</b> removes it from database after typing DELETE.
+          <b>Important:</b> this version expects the SQL functions you are going to run:
+          <br>rv_admin_update_link_v3, rv_admin_deactivate_link_v3, rv_admin_delete_link_v3, etc.
+          <br><br>
+          It will show a real error if Supabase does not update/delete a row.
         </div>
       </aside>
 
@@ -1444,7 +1447,7 @@ Ship Dock,Process Assistant,Foresight Bluelight,https://example.com,blue,0"></te
         <h4>Danger Zone</h4>
         <p>
           Hide removes the item from the public website by setting it inactive.
-          Permanent delete removes it from the database and cannot be easily undone.
+          Permanent delete is only enabled for links and requires typing DELETE.
         </p>
         <div class="row-actions" style="justify-content:flex-start;">
           <button class="btn yellow" id="btnHideCurrent" type="button">Hide from Website</button>
@@ -1587,7 +1590,7 @@ let currentEditRow = null;
 let requestTypeFilter = "all";
 let bulkRows = [];
 
-const MANAGE_STATE_KEY = "rv_admin_manage_state_v2";
+const MANAGE_STATE_KEY = "rv_admin_manage_state_v3";
 
 /* =========================================================
    Helpers
@@ -1631,29 +1634,6 @@ async function rpc(name, args={}){
   const { data, error } = await db.rpc(name, args);
   if(error) throw error;
   return data;
-}
-
-async function tryRpc(names, args, fallback){
-  let lastErr = null;
-
-  for(const name of names){
-    try{
-      return await rpc(name, args);
-    }catch(err){
-      lastErr = err;
-      console.warn(`${name} failed:`, err.message || err);
-    }
-  }
-
-  if(typeof fallback === "function"){
-    try{
-      return await fallback();
-    }catch(err){
-      lastErr = err;
-    }
-  }
-
-  throw lastErr || new Error("Action failed.");
 }
 
 function getFormData(form){
@@ -1729,6 +1709,36 @@ function downloadCSV(filename, rows){
   URL.revokeObjectURL(url);
 }
 
+function getItemId(type, row){
+  if(!row) return "";
+
+  if(type === "links"){
+    return String(row.id || row.link_id || row.LinkID || row.ID || "").trim();
+  }
+
+  if(type === "departments"){
+    return String(row.id || row.department_id || row.DepartmentID || row.ID || "").trim();
+  }
+
+  if(type === "sub_departments"){
+    return String(row.id || row.sub_department_id || row.SubDepartmentID || row.ID || "").trim();
+  }
+
+  return String(row.id || row.ID || "").trim();
+}
+
+function assertAffected(affected, actionLabel){
+  const n = Array.isArray(affected)
+    ? affected.length
+    : Number(affected || 0);
+
+  if(n < 1){
+    throw new Error(`${actionLabel} failed. Supabase returned 0 affected rows.`);
+  }
+
+  return n;
+}
+
 /* =========================================================
    Login / Stats
 ========================================================= */
@@ -1766,8 +1776,8 @@ async function unlock(password){
     setStatus("ok", "Admin");
 
     renderStats(stats);
-    await loadAllOptions();
     restoreManageState();
+    await loadAllOptions(captureManageState());
     await loadManage();
   }catch(err){
     console.error(err);
@@ -1789,9 +1799,12 @@ async function refreshAll(){
   if(!ADMIN_PASSWORD) return;
 
   try{
+    const keep = captureManageState();
+
     setStatus("", "Loading");
     await refreshStatsOnly();
-    await loadAllOptions();
+    await loadAllOptions(keep);
+    restoreManageStateObject(keep);
 
     const tab = activeTab();
     if(tab === "manage") await loadManage();
@@ -1810,7 +1823,9 @@ async function refreshAll(){
 /* =========================================================
    Cache / Options
 ========================================================= */
-async function loadAllOptions(){
+async function loadAllOptions(preserveState = null){
+  const keep = preserveState || captureManageState();
+
   const [departments, subs, links] = await Promise.all([
     listDepartments(""),
     listSubDepartments(""),
@@ -1821,7 +1836,8 @@ async function loadAllOptions(){
   cachedSubDepartments = subs || [];
   cachedLinks = links || [];
 
-  populateDepartmentOptions();
+  populateDepartmentOptions(keep);
+  restoreManageStateObject(keep);
 }
 
 async function listDepartments(search=""){
@@ -1845,7 +1861,10 @@ async function listLinks(search=""){
   });
 }
 
-function populateDepartmentOptions(){
+function populateDepartmentOptions(keep = null){
+  const savedManageDep = keep?.department ?? els.manageDepartmentFilter?.value ?? "";
+  const savedReportDep = els.reportDepartmentFilter?.value ?? "";
+
   const depOptions = `<option value="">All Departments</option>` +
     cachedDepartments
       .map(d => d.department)
@@ -1861,7 +1880,10 @@ function populateDepartmentOptions(){
     .map(d => `<option value="${esc(d.department)}"></option>`)
     .join("");
 
-  updateSubFilters();
+  els.manageDepartmentFilter.value = savedManageDep;
+  els.reportDepartmentFilter.value = savedReportDep;
+
+  updateSubFilters(keep?.sub ?? "");
 }
 
 function getSubsForDepartment(dep){
@@ -1875,7 +1897,10 @@ function getSubsForDepartment(dep){
     .sort((a,b) => a.localeCompare(b));
 }
 
-function updateSubFilters(){
+function updateSubFilters(keepManageSub = ""){
+  const savedManageSub = keepManageSub || els.manageSubFilter?.value || "";
+  const savedReportSub = els.reportSubFilter?.value || "";
+
   const manageDep = els.manageDepartmentFilter.value;
   const reportDep = els.reportDepartmentFilter.value;
 
@@ -1885,41 +1910,63 @@ function updateSubFilters(){
   els.reportSubFilter.innerHTML = `<option value="">All Sub-Depts</option>` +
     getSubsForDepartment(reportDep).map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join("");
 
+  els.manageSubFilter.value = savedManageSub;
+  els.reportSubFilter.value = savedReportSub;
+
   updateManualSubDepartmentOptions();
+}
+
+function updateSubDatalist(dep){
+  els.subDepartmentOptionsList.innerHTML =
+    getSubsForDepartment(dep).map(s => `<option value="${esc(s)}"></option>`).join("");
 }
 
 function updateManualSubDepartmentOptions(){
   const dep = els.manualLinkDepartment?.value || "";
-  els.subDepartmentOptionsList.innerHTML =
-    getSubsForDepartment(dep).map(s => `<option value="${esc(s)}"></option>`).join("");
+  updateSubDatalist(dep);
 }
 
 /* =========================================================
    Manage State
 ========================================================= */
-function saveManageState(){
-  const state = {
-    type: els.manageType.value,
-    department: els.manageDepartmentFilter.value,
-    sub: els.manageSubFilter.value,
-    search: els.manageSearch.value,
+function captureManageState(){
+  return {
+    type: els.manageType?.value || "links",
+    department: els.manageDepartmentFilter?.value || "",
+    sub: els.manageSubFilter?.value || "",
+    search: els.manageSearch?.value || "",
     scrollY: window.scrollY
   };
+}
 
-  sessionStorage.setItem(MANAGE_STATE_KEY, JSON.stringify(state));
+function restoreManageStateObject(state){
+  if(!state) return;
+
+  if(els.manageType) els.manageType.value = state.type || "links";
+
+  if(els.manageDepartmentFilter){
+    els.manageDepartmentFilter.value = state.department || "";
+  }
+
+  updateSubFilters(state.sub || "");
+
+  if(els.manageSubFilter){
+    els.manageSubFilter.value = state.sub || "";
+  }
+
+  if(els.manageSearch){
+    els.manageSearch.value = state.search || "";
+  }
+}
+
+function saveManageState(){
+  sessionStorage.setItem(MANAGE_STATE_KEY, JSON.stringify(captureManageState()));
 }
 
 function restoreManageState(){
   try{
     const state = JSON.parse(sessionStorage.getItem(MANAGE_STATE_KEY) || "{}");
-
-    if(state.type) els.manageType.value = state.type;
-    if(state.department) els.manageDepartmentFilter.value = state.department;
-
-    updateSubFilters();
-
-    if(state.sub) els.manageSubFilter.value = state.sub;
-    if(state.search) els.manageSearch.value = state.search;
+    restoreManageStateObject(state);
   }catch{}
 }
 
@@ -1935,11 +1982,9 @@ function restoreManageScroll(){
 function updateManageFilterVisibility(){
   const type = els.manageType.value;
   const isLinks = type === "links";
-  const isSubs = type === "sub_departments";
 
   els.manageDepartmentField.classList.toggle("hidden", type === "departments");
   els.manageSubField.classList.toggle("hidden", !isLinks);
-
   els.btnOpenFilteredPage.classList.toggle("hidden", !isLinks);
 }
 
@@ -2054,7 +2099,7 @@ async function loadManage(){
 }
 
 function manageRow(type, r, index){
-  const id = r.id || "";
+  const id = getItemId(type, r);
   const name =
     type === "departments"
       ? r.department
@@ -2079,10 +2124,12 @@ function manageRow(type, r, index){
       ? `<button class="btn small btn-copy-url" type="button">Copy</button>`
       : "";
 
+  const idWarning = id ? "" : `<span class="badge rejected">Missing ID</span>`;
+
   return `
     <div class="listbar" data-id="${esc(id)}" data-index="${index}" data-type="${esc(type)}">
       <div>
-        <h4>${esc(name || "Unnamed")}</h4>
+        <h4>${esc(name || "Unnamed")} ${idWarning}</h4>
         <p>${subLine}</p>
       </div>
 
@@ -2100,10 +2147,17 @@ function manageRow(type, r, index){
    Drawer Edit
 ========================================================= */
 function openDrawer(type, row, index){
+  const realId = getItemId(type, row);
+
+  if(!realId){
+    alert("This item has no ID from the admin list function. Edit/delete cannot work until the list RPC returns id/link_id/department_id/sub_department_id.");
+    return;
+  }
+
   currentEditIndex = index;
   currentEditRow = row;
 
-  els.drawerItemId.value = row.id || "";
+  els.drawerItemId.value = realId;
   els.drawerItemType.value = type;
   clearMsg(els.drawerMsg);
 
@@ -2111,6 +2165,7 @@ function openDrawer(type, row, index){
     els.drawerTitle.textContent = "Edit Link";
     els.drawerSub.textContent = `${row.department || ""} / ${row.sub_department || ""}`;
     els.drawerFields.innerHTML = drawerLinkFields(row);
+    updateSubDatalist(row.department || "");
   }else if(type === "departments"){
     els.drawerTitle.textContent = "Edit Department";
     els.drawerSub.textContent = row.department || "";
@@ -2241,6 +2296,7 @@ function drawerData(){
 async function saveDrawerItem(closeAfter=true){
   clearMsg(els.drawerMsg);
 
+  const keep = captureManageState();
   const data = drawerData();
 
   try{
@@ -2267,7 +2323,8 @@ async function saveDrawerItem(closeAfter=true){
       showToast(`Saved sub-department: ${data.sub_department}`);
     }
 
-    await loadAllOptions();
+    await loadAllOptions(keep);
+    restoreManageStateObject(keep);
     await loadManage();
     await refreshStatsOnly();
 
@@ -2283,7 +2340,11 @@ async function saveDrawerItem(closeAfter=true){
 }
 
 async function saveLink(data){
-  const payload = {
+  if(!data.id){
+    throw new Error("Missing link ID. Cannot save.");
+  }
+
+  const affected = await rpc("rv_admin_update_link_v3", {
     p_password: ADMIN_PASSWORD,
     p_link_id: data.id,
     p_department: data.department,
@@ -2292,96 +2353,49 @@ async function saveLink(data){
     p_url: safeUrl(data.url),
     p_color: data.color || null,
     p_sort_order: Number(data.sort_order || 0)
-  };
+  });
 
-  return await tryRpc(
-    ["rv_admin_update_link_v3", "rv_admin_update_link_v2"],
-    payload,
-    async () => {
-      const { error } = await db
-        .from(LINKS_TABLE)
-        .update({
-          department:data.department,
-          sub_department:data.sub_department,
-          link_name:data.link_name,
-          url:safeUrl(data.url),
-          color:data.color || null,
-          sort_order:Number(data.sort_order || 0),
-          updated_at:new Date().toISOString()
-        })
-        .eq("id", data.id);
-
-      if(error) throw error;
-    }
-  );
+  assertAffected(affected, "Save link");
+  return affected;
 }
 
 async function saveDepartment(data){
-  const oldName = currentEditRow?.department || "";
+  if(!data.id){
+    throw new Error("Missing department ID. Cannot save.");
+  }
 
-  const payload = {
+  const affected = await rpc("rv_admin_update_department_v3", {
     p_password: ADMIN_PASSWORD,
     p_department_id: data.id,
-    p_old_department: oldName,
+    p_old_department: currentEditRow?.department || "",
     p_department: data.department,
     p_image_url: data.image_url || null,
     p_color: data.color || null,
     p_sort_order: Number(data.sort_order || 0)
-  };
+  });
 
-  return await tryRpc(
-    ["rv_admin_update_department_v3", "rv_admin_update_department_v2"],
-    payload,
-    async () => {
-      const { error } = await db
-        .from(DEPT_TABLE)
-        .update({
-          department:data.department,
-          image_url:data.image_url || null,
-          color:data.color || null,
-          sort_order:Number(data.sort_order || 0),
-          updated_at:new Date().toISOString()
-        })
-        .eq("id", data.id);
-
-      if(error) throw error;
-    }
-  );
+  assertAffected(affected, "Save department");
+  return affected;
 }
 
 async function saveSubDepartment(data){
-  const oldSub = currentEditRow?.sub_department || "";
-  const oldDep = currentEditRow?.department || "";
+  if(!data.id){
+    throw new Error("Missing sub-department ID. Cannot save.");
+  }
 
-  const payload = {
+  const affected = await rpc("rv_admin_update_sub_department_v3", {
     p_password: ADMIN_PASSWORD,
     p_sub_department_id: data.id,
-    p_old_department: oldDep,
-    p_old_sub_department: oldSub,
+    p_old_department: currentEditRow?.department || "",
+    p_old_sub_department: currentEditRow?.sub_department || "",
     p_department: data.department,
     p_sub_department: data.sub_department,
     p_color: data.color || null,
     p_sort_order: Number(data.sort_order || 0)
-  };
+  });
 
-  return await tryRpc(
-    ["rv_admin_update_sub_department_v3", "rv_admin_update_sub_department_v2"],
-    payload,
-    async () => {
-      const { error } = await db
-        .from(SUB_TABLE)
-        .update({
-          department:data.department,
-          sub_department:data.sub_department,
-          color:data.color || null,
-          sort_order:Number(data.sort_order || 0),
-          updated_at:new Date().toISOString()
-        })
-        .eq("id", data.id);
-
-      if(error) throw error;
-    }
-  );
+  assertAffected(affected, "Save sub-department");
+  return affected;
 }
 
 function openNextItem(){
@@ -2400,6 +2414,7 @@ function openNextItem(){
 }
 
 async function hideCurrentItem(){
+  const keep = captureManageState();
   const data = drawerData();
 
   if(!data.id) return;
@@ -2412,7 +2427,9 @@ async function hideCurrentItem(){
     await hideItem(data.type, data.id);
     showToast(`Hidden: ${label}`);
     closeDrawer();
-    await loadAllOptions();
+
+    await loadAllOptions(keep);
+    restoreManageStateObject(keep);
     await loadManage();
     await refreshStatsOnly();
   }catch(err){
@@ -2422,6 +2439,7 @@ async function hideCurrentItem(){
 }
 
 async function deleteCurrentItem(){
+  const keep = captureManageState();
   const data = drawerData();
 
   if(data.type !== "links"){
@@ -2438,7 +2456,9 @@ async function deleteCurrentItem(){
     await deleteLinkPermanent(data.id);
     showToast(`Deleted permanently: ${label}`);
     closeDrawer();
-    await loadAllOptions();
+
+    await loadAllOptions(keep);
+    restoreManageStateObject(keep);
     await loadManage();
     await refreshStatsOnly();
   }catch(err){
@@ -2448,47 +2468,41 @@ async function deleteCurrentItem(){
 }
 
 async function hideItem(type, id){
+  if(!id){
+    throw new Error("Missing item ID. Cannot hide.");
+  }
+
+  let fn = "";
+  let args = {};
+
   if(type === "links"){
-    return await tryRpc(
-      ["rv_admin_deactivate_link_v3", "rv_admin_deactivate_link_v2"],
-      { p_password: ADMIN_PASSWORD, p_link_id:id },
-      async () => {
-        const { error } = await db.from(LINKS_TABLE).update({ is_active:false }).eq("id", id);
-        if(error) throw error;
-      }
-    );
+    fn = "rv_admin_deactivate_link_v3";
+    args = { p_password: ADMIN_PASSWORD, p_link_id: id };
+  }else if(type === "departments"){
+    fn = "rv_admin_deactivate_department_v3";
+    args = { p_password: ADMIN_PASSWORD, p_department_id: id };
+  }else{
+    fn = "rv_admin_deactivate_sub_department_v3";
+    args = { p_password: ADMIN_PASSWORD, p_sub_department_id: id };
   }
 
-  if(type === "departments"){
-    return await tryRpc(
-      ["rv_admin_deactivate_department_v3", "rv_admin_deactivate_department_v2"],
-      { p_password: ADMIN_PASSWORD, p_department_id:id },
-      async () => {
-        const { error } = await db.from(DEPT_TABLE).update({ is_active:false }).eq("id", id);
-        if(error) throw error;
-      }
-    );
-  }
-
-  return await tryRpc(
-    ["rv_admin_deactivate_sub_department_v3", "rv_admin_deactivate_sub_department_v2"],
-    { p_password: ADMIN_PASSWORD, p_sub_department_id:id },
-    async () => {
-      const { error } = await db.from(SUB_TABLE).update({ is_active:false }).eq("id", id);
-      if(error) throw error;
-    }
-  );
+  const affected = await rpc(fn, args);
+  assertAffected(affected, "Hide item");
+  return affected;
 }
 
 async function deleteLinkPermanent(id){
-  return await tryRpc(
-    ["rv_admin_delete_link_v3", "rv_admin_delete_link_v2"],
-    { p_password: ADMIN_PASSWORD, p_link_id:id },
-    async () => {
-      const { error } = await db.from(LINKS_TABLE).delete().eq("id", id);
-      if(error) throw error;
-    }
-  );
+  if(!id){
+    throw new Error("Missing link ID. Cannot delete.");
+  }
+
+  const affected = await rpc("rv_admin_delete_link_v3", {
+    p_password: ADMIN_PASSWORD,
+    p_link_id: id
+  });
+
+  assertAffected(affected, "Delete link");
+  return affected;
 }
 
 /* =========================================================
@@ -2499,6 +2513,7 @@ async function addDepartment(e){
   clearMsg(els.departmentMsg);
 
   const f = getFormData(els.departmentForm);
+  const keep = captureManageState();
 
   try{
     await rpc("rv_admin_add_department_v2", {
@@ -2513,7 +2528,7 @@ async function addDepartment(e){
     els.departmentForm.reset();
     els.departmentForm.querySelector('[name="sort_order"]').value = "0";
 
-    await loadAllOptions();
+    await loadAllOptions(keep);
     await refreshStatsOnly();
   }catch(err){
     console.error(err);
@@ -2526,6 +2541,7 @@ async function addSubDepartment(e){
   clearMsg(els.subDepartmentMsg);
 
   const f = getFormData(els.subDepartmentForm);
+  const keep = captureManageState();
 
   try{
     await rpc("rv_admin_add_sub_department_v2", {
@@ -2540,7 +2556,7 @@ async function addSubDepartment(e){
     els.subDepartmentForm.reset();
     els.subDepartmentForm.querySelector('[name="sort_order"]').value = "0";
 
-    await loadAllOptions();
+    await loadAllOptions(keep);
     await refreshStatsOnly();
   }catch(err){
     console.error(err);
@@ -2553,6 +2569,7 @@ async function addManualLink(e){
   clearMsg(els.manualLinkMsg);
 
   const f = getFormData(els.manualLinkForm);
+  const keep = captureManageState();
 
   try{
     await rpc("rv_admin_add_link_v2", {
@@ -2571,7 +2588,7 @@ async function addManualLink(e){
     els.manualLinkForm.reset();
     els.manualLinkForm.querySelector('[name="sort_order"]').value = "0";
 
-    await loadAllOptions();
+    await loadAllOptions(keep);
     await refreshStatsOnly();
   }catch(err){
     console.error(err);
@@ -2674,6 +2691,7 @@ function requestCard(r){
 async function approveRequest(card){
   const id = card.dataset.id;
   const type = card.dataset.type;
+  const keep = captureManageState();
 
   const payload = {
     p_password: ADMIN_PASSWORD,
@@ -2709,6 +2727,7 @@ async function approveRequest(card){
 
   try{
     await rpc("rv_admin_approve_request_v2", payload);
+    await loadAllOptions(keep);
     await refreshAll();
   }catch(err){
     console.error(err);
@@ -2884,7 +2903,7 @@ async function importBulk(){
     bulkRows = [];
     els.bulkPreview.classList.add("hidden");
 
-    await loadAllOptions();
+    await loadAllOptions(captureManageState());
     await refreshStatsOnly();
   }catch(err){
     console.error(err);
@@ -2991,40 +3010,18 @@ async function applySuggestedUrl(row){
   }
 
   try{
-    await tryRpc(
-      ["rv_admin_apply_report_suggested_url_v2"],
-      {
-        p_password: ADMIN_PASSWORD,
-        p_report_id: reportId,
-        p_link_id: linkId || null,
-        p_suggested_url: suggestedUrl
-      },
-      async () => {
-        if(!linkId){
-          throw new Error("This report does not include link_id.");
-        }
-
-        const { error:updateError } = await db
-          .from(LINKS_TABLE)
-          .update({ url:suggestedUrl })
-          .eq("id", linkId);
-
-        if(updateError) throw updateError;
-
-        await rpc("rv_admin_update_link_report_status_v2", {
-          p_password: ADMIN_PASSWORD,
-          p_report_id: reportId,
-          p_status: "fixed",
-          p_admin_note: "Applied suggested URL from report."
-        });
-      }
-    );
+    await rpc("rv_admin_apply_report_suggested_url_v2", {
+      p_password: ADMIN_PASSWORD,
+      p_report_id: reportId,
+      p_link_id: linkId || null,
+      p_suggested_url: suggestedUrl
+    });
 
     await refreshStatsOnly();
     await loadReports();
   }catch(err){
     console.error(err);
-    alert((err.message || err) + "\n\nIf this fails, you need SQL function rv_admin_apply_report_suggested_url_v2 or RLS update access.");
+    alert((err.message || err) + "\n\nIf this fails, you need SQL function rv_admin_apply_report_suggested_url_v2.");
   }
 }
 
@@ -3338,8 +3335,11 @@ els.manageType.addEventListener("change", () => {
 });
 
 els.manageDepartmentFilter.addEventListener("change", () => {
-  updateSubFilters();
+  const keep = captureManageState();
+  keep.sub = "";
+  updateSubFilters("");
   els.manageSubFilter.value = "";
+  restoreManageStateObject(keep);
   saveManageState();
   loadManage();
 });
@@ -3358,7 +3358,7 @@ els.manageSearch.addEventListener("keydown", e => {
 els.btnManageReset.addEventListener("click", () => {
   els.manageType.value = "links";
   els.manageDepartmentFilter.value = "";
-  updateSubFilters();
+  updateSubFilters("");
   els.manageSubFilter.value = "";
   els.manageSearch.value = "";
   saveManageState();
@@ -3372,6 +3372,7 @@ els.manageList.addEventListener("click", async (e) => {
   const bar = e.target.closest(".listbar");
   if(!bar) return;
 
+  const keep = captureManageState();
   const type = bar.dataset.type;
   const index = Number(bar.dataset.index);
   const row = manageRows[index];
@@ -3394,11 +3395,19 @@ els.manageList.addEventListener("click", async (e) => {
 
   if(e.target.closest(".btn-hide-item")){
     if(!confirm("Hide this item from public website?")) return;
-    await hideItem(type, row.id);
-    showToast("Item hidden.");
-    await loadAllOptions();
-    await loadManage();
-    await refreshStatsOnly();
+
+    try{
+      await hideItem(type, getItemId(type, row));
+      showToast("Item hidden.");
+
+      await loadAllOptions(keep);
+      restoreManageStateObject(keep);
+      await loadManage();
+      await refreshStatsOnly();
+    }catch(err){
+      alert(err.message || err);
+    }
+
     return;
   }
 
@@ -3407,11 +3416,17 @@ els.manageList.addEventListener("click", async (e) => {
 
     if(typed !== "DELETE") return;
 
-    await deleteLinkPermanent(row.id);
-    showToast("Link permanently deleted.");
-    await loadAllOptions();
-    await loadManage();
-    await refreshStatsOnly();
+    try{
+      await deleteLinkPermanent(getItemId(type, row));
+      showToast("Link permanently deleted.");
+
+      await loadAllOptions(keep);
+      restoreManageStateObject(keep);
+      await loadManage();
+      await refreshStatsOnly();
+    }catch(err){
+      alert(err.message || err);
+    }
   }
 });
 
@@ -3425,7 +3440,7 @@ els.btnDeleteCurrent.addEventListener("click", deleteCurrentItem);
 
 els.drawerFields.addEventListener("input", (e) => {
   if(e.target.name === "department"){
-    updateManualSubDepartmentOptions();
+    updateSubDatalist(e.target.value || "");
   }
 });
 
@@ -3460,7 +3475,7 @@ els.requestsList.addEventListener("click", async (e) => {
 els.btnPreviewBulk.addEventListener("click", previewBulk);
 els.btnImportBulk.addEventListener("click", importBulk);
 
-els.reportDepartmentFilter.addEventListener("change", updateSubFilters);
+els.reportDepartmentFilter.addEventListener("change", () => updateSubFilters(""));
 els.reportStatusFilter.addEventListener("change", loadReports);
 els.btnReportSearch.addEventListener("click", loadReports);
 
