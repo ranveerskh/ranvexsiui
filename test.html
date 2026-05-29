@@ -13,49 +13,43 @@
 <style>
   :root{
     --bg:#eef3fb;
-    --bg-2:#e7edf8;
+    --bg2:#e7edf8;
     --surface:#ffffff;
-    --surface-2:#f7faff;
-    --surface-3:#eef5ff;
-    --ink:#111827;
-    --muted:#6b7280;
-    --muted-2:#94a3b8;
+    --surface2:#f7faff;
+    --surface3:#eef5ff;
+    --ink:#101827;
+    --muted:#64748b;
+    --muted2:#94a3b8;
     --line:rgba(15,23,42,.10);
-    --line-strong:rgba(15,23,42,.16);
+    --line2:rgba(15,23,42,.16);
     --accent:#2563eb;
-    --accent-2:#7c3aed;
-    --accent-soft:rgba(37,99,235,.10);
+    --accent2:#7c3aed;
     --green:#16a34a;
-    --green-2:#22c55e;
     --red:#dc2626;
     --gold:#d97706;
-
-    --shadow-sm:0 6px 16px rgba(15,23,42,.06);
-    --shadow-md:0 14px 34px rgba(15,23,42,.10);
-    --shadow-lg:0 24px 60px rgba(15,23,42,.14);
-
+    --soft:rgba(37,99,235,.10);
+    --shadow:0 6px 18px rgba(15,23,42,.08);
+    --shadow2:0 12px 30px rgba(15,23,42,.12);
     --radius:18px;
     --max:1360px;
-    --grid-cols:4;
   }
 
   body.dark{
     --bg:#080d19;
-    --bg-2:#0c1222;
-    --surface:#111827;
-    --surface-2:#151f33;
-    --surface-3:#1b2942;
+    --bg2:#0c1222;
+    --surface:#101827;
+    --surface2:#151f33;
+    --surface3:#1b2942;
     --ink:#eef5ff;
     --muted:#a9b7d0;
-    --muted-2:#7486a5;
+    --muted2:#7486a5;
     --line:rgba(255,255,255,.10);
-    --line-strong:rgba(255,255,255,.16);
+    --line2:rgba(255,255,255,.16);
     --accent:#60a5fa;
-    --accent-2:#a78bfa;
-    --accent-soft:rgba(96,165,250,.12);
-    --shadow-sm:0 8px 18px rgba(0,0,0,.22);
-    --shadow-md:0 18px 42px rgba(0,0,0,.32);
-    --shadow-lg:0 30px 70px rgba(0,0,0,.42);
+    --accent2:#a78bfa;
+    --soft:rgba(96,165,250,.13);
+    --shadow:0 7px 18px rgba(0,0,0,.24);
+    --shadow2:0 14px 32px rgba(0,0,0,.34);
   }
 
   *{
@@ -74,9 +68,9 @@
     font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
     color:var(--ink);
     background:
-      radial-gradient(circle at top left, rgba(37,99,235,.12), transparent 34%),
-      radial-gradient(circle at top right, rgba(124,58,237,.10), transparent 32%),
-      linear-gradient(180deg,var(--bg),var(--bg-2));
+      radial-gradient(circle at top left, rgba(37,99,235,.11), transparent 32%),
+      radial-gradient(circle at top right, rgba(124,58,237,.10), transparent 30%),
+      linear-gradient(180deg,var(--bg),var(--bg2));
     overflow-x:hidden;
   }
 
@@ -87,6 +81,7 @@
   }
 
   button{
+    cursor:pointer;
     -webkit-tap-highlight-color:transparent;
   }
 
@@ -108,15 +103,12 @@
     top:0;
     z-index:50;
     border-bottom:1px solid var(--line);
-    background:rgba(255,255,255,.84);
-    backdrop-filter:blur(22px);
-    -webkit-backdrop-filter:blur(22px);
-    box-shadow:0 8px 30px rgba(15,23,42,.06);
+    background:var(--surface);
+    box-shadow:0 3px 12px rgba(15,23,42,.08);
   }
 
   body.dark .app-header{
-    background:rgba(17,24,39,.84);
-    box-shadow:0 8px 34px rgba(0,0,0,.22);
+    box-shadow:0 4px 16px rgba(0,0,0,.28);
   }
 
   .header-inner{
@@ -125,9 +117,9 @@
     min-height:58px;
     padding:8px 18px;
     display:grid;
-    grid-template-columns:auto minmax(190px,420px) auto;
-    align-items:center;
+    grid-template-columns:auto minmax(220px,420px) auto;
     gap:12px;
+    align-items:center;
   }
 
   .brand{
@@ -137,38 +129,17 @@
     min-width:230px;
   }
 
-  .backbtn{
-    width:34px;
-    height:34px;
-    border:1px solid var(--line);
-    border-radius:12px;
-    background:var(--surface);
-    color:var(--ink);
-    cursor:pointer;
-    box-shadow:var(--shadow-sm);
-    display:grid;
-    place-items:center;
-    font-size:17px;
-    transition:.18s ease;
-  }
-
-  .backbtn:hover{
-    transform:translateY(-1px);
-    box-shadow:var(--shadow-md);
-    border-color:rgba(37,99,235,.28);
-  }
-
   .logo{
     width:38px;
     height:38px;
     border-radius:14px;
     display:grid;
     place-items:center;
-    color:white;
+    color:#fff;
     font-weight:950;
     letter-spacing:-.06em;
-    background:linear-gradient(135deg,var(--accent),var(--accent-2));
-    box-shadow:0 14px 34px rgba(37,99,235,.28);
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    box-shadow:0 10px 24px rgba(37,99,235,.24);
   }
 
   .brand-text{
@@ -188,47 +159,41 @@
     font-size:.60rem;
     color:var(--muted);
     font-weight:750;
-    letter-spacing:.01em;
   }
 
   .search-wrap{
     position:relative;
     width:100%;
-    max-width:390px;
+    max-width:420px;
     justify-self:center;
   }
 
-  .search-wrap svg{
+  .search-wrap span{
     position:absolute;
     left:13px;
     top:50%;
     transform:translateY(-50%);
     color:var(--muted);
-    pointer-events:none;
+    font-weight:950;
   }
 
   .search-wrap input{
     width:100%;
     height:36px;
     border:1px solid var(--line);
-    background:rgba(255,255,255,.88);
+    background:var(--surface2);
     color:var(--ink);
     outline:none;
     border-radius:14px;
-    padding:0 14px 0 40px;
+    padding:0 14px 0 39px;
     font-size:.84rem;
-    font-weight:750;
-    box-shadow:var(--shadow-sm);
-    transition:.18s ease;
-  }
-
-  body.dark .search-wrap input{
-    background:rgba(15,23,42,.74);
+    font-weight:800;
+    box-shadow:0 3px 10px rgba(15,23,42,.04);
   }
 
   .search-wrap input:focus{
     border-color:rgba(37,99,235,.55);
-    box-shadow:0 0 0 4px var(--accent-soft), var(--shadow-sm);
+    box-shadow:0 0 0 4px var(--soft);
   }
 
   .header-actions{
@@ -247,12 +212,11 @@
     gap:7px;
     border:1px solid var(--line);
     border-radius:999px;
-    background:var(--surface);
+    background:var(--surface2);
     padding:0 10px;
     color:var(--muted);
-    font-weight:850;
+    font-weight:900;
     font-size:.70rem;
-    box-shadow:var(--shadow-sm);
     white-space:nowrap;
   }
 
@@ -260,7 +224,7 @@
     width:8px;
     height:8px;
     border-radius:999px;
-    background:var(--muted-2);
+    background:var(--muted2);
   }
 
   .dot.ok{
@@ -273,79 +237,121 @@
     box-shadow:0 0 0 4px rgba(220,38,38,.12);
   }
 
-  .iconbtn{
-    width:32px;
+  .iconbtn,
+  .top-link-btn,
+  .script-btn{
     height:32px;
     border:1px solid var(--line);
     border-radius:12px;
-    background:var(--surface);
+    background:var(--surface2);
     color:var(--ink);
-    display:grid;
-    place-items:center;
-    cursor:pointer;
-    box-shadow:var(--shadow-sm);
-    transition:.18s ease;
-    font-size:14px;
-  }
-
-  .iconbtn:hover{
-    transform:translateY(-1px);
-    box-shadow:var(--shadow-md);
-    border-color:rgba(37,99,235,.28);
-  }
-
-  .top-link-btn{
-    height:32px;
-    border:0;
-    border-radius:12px;
-    padding:0 11px;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    gap:6px;
-    cursor:pointer;
-    color:white;
-    background:linear-gradient(135deg,var(--accent),var(--accent-2));
-    box-shadow:0 10px 22px rgba(37,99,235,.22);
-    font-size:.75rem;
-    font-weight:950;
-    white-space:nowrap;
-    transition:.18s ease;
-  }
-
-  .top-link-btn:hover{
-    transform:translateY(-1px);
-    box-shadow:0 14px 28px rgba(37,99,235,.28);
-  }
-
-  .script-btn{
-    height:32px;
-    border:0;
-    border-radius:12px;
-    padding:0 11px;
     display:inline-flex;
     align-items:center;
     justify-content:center;
     gap:7px;
-    cursor:pointer;
-    color:white;
-    background:linear-gradient(135deg,#16a34a,#15803d);
-    box-shadow:0 10px 22px rgba(22,163,74,.22);
-    font-size:.75rem;
+    padding:0 11px;
+    font-size:.74rem;
     font-weight:950;
+    box-shadow:0 3px 10px rgba(15,23,42,.05);
+    transition:.16s ease;
     white-space:nowrap;
-    transition:.18s ease;
   }
 
+  .iconbtn{
+    width:32px;
+    padding:0;
+    font-size:14px;
+  }
+
+  .top-link-btn,
+  .script-btn.primary{
+    border:0;
+    color:#fff;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+  }
+
+  .script-btn{
+    border:0;
+    color:#fff;
+    background:linear-gradient(135deg,#16a34a,#15803d);
+  }
+
+  .iconbtn:hover,
+  .top-link-btn:hover,
   .script-btn:hover{
     transform:translateY(-1px);
-    box-shadow:0 14px 28px rgba(22,163,74,.28);
+    box-shadow:var(--shadow);
   }
 
-  .script-btn svg{
-    width:17px;
-    height:17px;
+  .script-wrap{
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+  }
+
+  .script-menu{
+    position:absolute;
+    right:0;
+    top:calc(100% + 8px);
+    width:270px;
+    display:none;
+    padding:8px;
+    border:1px solid var(--line);
+    border-radius:17px;
+    background:var(--surface);
+    box-shadow:var(--shadow2);
+    z-index:90;
+  }
+
+  .script-menu.show{
+    display:block;
+  }
+
+  .script-option{
+    width:100%;
+    min-height:52px;
+    border-radius:13px;
+    padding:10px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    color:var(--ink);
+    transition:.16s ease;
+  }
+
+  .script-option:hover{
+    background:var(--surface3);
+  }
+
+  .script-option-icon{
+    width:34px;
+    height:34px;
+    border-radius:13px;
+    display:grid;
+    place-items:center;
+    color:#fff;
     flex:0 0 auto;
+    font-size:16px;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+  }
+
+  .script-option-icon.pack{
+    background:linear-gradient(135deg,#16a34a,#15803d);
+  }
+
+  .script-option strong{
+    display:block;
+    font-size:.80rem;
+    line-height:1.15;
+    font-weight:950;
+  }
+
+  .script-option small{
+    display:block;
+    margin-top:3px;
+    color:var(--muted);
+    font-size:.68rem;
+    font-weight:800;
   }
 
   /* =========================
@@ -355,12 +361,12 @@
   .page{
     width:min(var(--max),100%);
     margin:0 auto;
-    padding:16px 18px 28px;
+    padding:16px 18px 30px;
   }
 
   .titlebar{
     display:flex;
-    align-items:center;
+    align-items:flex-start;
     justify-content:space-between;
     gap:12px;
     margin-bottom:14px;
@@ -368,36 +374,21 @@
 
   .title-left{
     min-width:0;
-    display:flex;
-    align-items:baseline;
-    gap:10px;
-    flex-wrap:wrap;
   }
 
   .page-title{
     font-size:clamp(1.42rem,2vw,2rem);
     letter-spacing:-.06em;
-    line-height:1.02;
+    line-height:1.04;
     font-weight:950;
   }
 
-  .title-meta{
-    display:inline-flex;
-    align-items:center;
-    gap:5px;
-    min-height:26px;
-    border:1px solid var(--line);
-    border-radius:999px;
-    background:rgba(255,255,255,.68);
+  .page-subtitle{
+    margin-top:5px;
     color:var(--muted);
-    padding:0 10px;
-    font-size:.72rem;
-    font-weight:850;
-    box-shadow:var(--shadow-sm);
-  }
-
-  body.dark .title-meta{
-    background:rgba(17,24,39,.60);
+    font-size:.82rem;
+    font-weight:750;
+    line-height:1.4;
   }
 
   .title-actions{
@@ -408,31 +399,7 @@
     flex-wrap:wrap;
   }
 
-  .mini-control{
-    height:32px;
-    display:inline-flex;
-    align-items:center;
-    gap:7px;
-    border:1px solid var(--line);
-    border-radius:999px;
-    background:var(--surface);
-    color:var(--muted);
-    padding:0 10px;
-    font-size:.73rem;
-    font-weight:900;
-    box-shadow:var(--shadow-sm);
-    white-space:nowrap;
-  }
-
-  .mini-control select{
-    border:0;
-    outline:0;
-    background:transparent;
-    color:var(--ink);
-    font-weight:950;
-    cursor:pointer;
-  }
-
+  .mini-pill,
   .mini-btn{
     min-height:32px;
     border:1px solid var(--line);
@@ -446,21 +413,13 @@
     gap:6px;
     font-size:.73rem;
     font-weight:950;
-    box-shadow:var(--shadow-sm);
-    cursor:pointer;
-    transition:.18s ease;
+    box-shadow:0 3px 10px rgba(15,23,42,.05);
     white-space:nowrap;
   }
 
-  .mini-btn:hover{
-    transform:translateY(-1px);
-    box-shadow:var(--shadow-md);
-  }
-
-  .mini-btn.primary{
-    border:0;
-    color:white;
-    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+  .mini-pill{
+    color:var(--muted);
+    background:var(--surface2);
   }
 
   .mini-btn.active{
@@ -469,287 +428,297 @@
     background:linear-gradient(135deg,#16a34a,#15803d);
   }
 
+  .mini-btn:hover{
+    transform:translateY(-1px);
+    box-shadow:var(--shadow);
+  }
+
   /* =========================
-     Grid
+     Departments
   ========================= */
+
+  .section-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin:18px 0 11px;
+  }
+
+  .section-head h2{
+    font-size:1.04rem;
+    font-weight:950;
+    letter-spacing:-.04em;
+  }
+
+  .section-head p{
+    margin-top:3px;
+    color:var(--muted);
+    font-size:.78rem;
+    font-weight:750;
+  }
 
   .grid{
     display:grid;
-    gap:16px;
+    gap:14px;
   }
 
-  #depGrid,
-  #subGrid{
-    grid-template-columns:repeat(var(--grid-cols),minmax(0,1fr));
+  .department-grid{
+    grid-template-columns:repeat(4,minmax(0,1fr));
   }
 
-  @media (max-width:1050px){
-    #depGrid,
-    #subGrid{
-      grid-template-columns:repeat(3,minmax(0,1fr));
-    }
+  .sub-grid{
+    grid-template-columns:repeat(5,minmax(0,1fr));
   }
 
-  @media (max-width:740px){
-    #depGrid,
-    #subGrid{
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:12px;
-    }
-  }
-
-  /* =========================
-     Department Cards
-  ========================= */
-
-  .card{
+  .dept-card{
     position:relative;
-    min-height:188px;
+    min-height:168px;
     aspect-ratio:4/3;
     border:1px solid var(--line);
     border-radius:var(--radius);
     background:
-      radial-gradient(circle at top left, rgba(37,99,235,.16), transparent 44%),
-      linear-gradient(135deg, rgba(37,99,235,.12), rgba(124,58,237,.10)),
+      radial-gradient(circle at top left, rgba(37,99,235,.18), transparent 42%),
+      linear-gradient(135deg, rgba(37,99,235,.13), rgba(124,58,237,.10)),
       var(--surface);
     overflow:hidden;
-    cursor:pointer;
-    text-decoration:none;
-    box-shadow:var(--shadow-sm);
-    transform:translateZ(0);
-    transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+    box-shadow:var(--shadow);
+    transition:.16s ease;
+    contain:layout paint;
+    content-visibility:auto;
+    contain-intrinsic-size:170px 250px;
   }
 
-  .card:hover{
-    transform:translateY(-3px);
-    box-shadow:var(--shadow-lg);
-    border-color:rgba(37,99,235,.34);
+  .dept-card:hover{
+    transform:translateY(-2px);
+    box-shadow:var(--shadow2);
+    border-color:rgba(37,99,235,.32);
   }
 
-  .card:active{
-    transform:translateY(-1px) scale(.993);
+  .dept-card.active{
+    border-color:rgba(37,99,235,.75);
+    box-shadow:0 0 0 4px var(--soft), var(--shadow2);
   }
 
-  .img{
+  .dept-img{
     position:absolute;
     inset:0;
     width:100%;
     height:100%;
     object-fit:cover;
     display:block;
-    opacity:.90;
-    transform:scale(1.01);
-    transition:transform .28s ease, opacity .18s ease;
+    opacity:.88;
   }
 
-  body.dark .img{
-    opacity:.64;
+  body.dark .dept-img{
+    opacity:.58;
   }
 
-  body.no-images .img{
+  body.no-images .dept-img{
     display:none!important;
   }
 
-  .card:hover .img{
-    transform:scale(1.04);
-  }
-
-  .veil{
+  .dept-overlay{
     position:absolute;
     inset:0;
-    background:
-      radial-gradient(circle at top left, rgba(37,99,235,.16), transparent 42%),
-      linear-gradient(180deg, rgba(0,0,0,.03), rgba(0,0,0,.10));
+    background:linear-gradient(180deg, rgba(0,0,0,.03) 10%, rgba(0,0,0,.15) 48%, rgba(0,0,0,.78) 100%);
     pointer-events:none;
   }
 
-  body.dark .veil{
-    background:
-      radial-gradient(circle at top left, rgba(96,165,250,.18), transparent 42%),
-      linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.22));
-  }
-
-  .overlay{
-    position:absolute;
-    inset:0;
-    background:linear-gradient(180deg, rgba(0,0,0,.02) 6%, rgba(0,0,0,.16) 52%, rgba(0,0,0,.78) 100%);
-    pointer-events:none;
-  }
-
-  body.no-images .overlay{
-    background:linear-gradient(180deg, rgba(0,0,0,.03), rgba(0,0,0,.28));
-  }
-
-  .pending-card{
-    outline:2px solid rgba(217,119,6,.26);
-    outline-offset:-2px;
-  }
-
-  .pending-ribbon{
+  .dept-top{
     position:absolute;
     top:10px;
+    left:10px;
     right:10px;
-    z-index:4;
-    height:24px;
-    padding:0 9px;
-    border-radius:999px;
-    display:inline-flex;
+    z-index:3;
+    display:flex;
     align-items:center;
-    justify-content:center;
-    background:rgba(217,119,6,.92);
-    color:#fff;
-    font-size:.66rem;
-    font-weight:950;
-    box-shadow:0 8px 18px rgba(0,0,0,.20);
-    backdrop-filter:blur(10px);
+    justify-content:space-between;
+    gap:8px;
   }
 
   .vote-mini{
-    position:absolute;
-    z-index:5;
-    left:10px;
-    top:10px;
-    min-width:46px;
+    min-width:45px;
     height:27px;
     border-radius:999px;
-    border:1px solid rgba(255,255,255,.28);
-    background:rgba(255,255,255,.20);
+    border:1px solid rgba(255,255,255,.25);
+    background:rgba(15,23,42,.38);
     color:#fff;
     display:inline-flex;
     align-items:center;
     justify-content:center;
     gap:5px;
     padding:0 9px;
-    font-size:.72rem;
+    font-size:.70rem;
     font-weight:950;
-    cursor:pointer;
-    backdrop-filter:blur(12px);
-    box-shadow:0 8px 18px rgba(0,0,0,.14);
-    transition:.16s ease;
-  }
-
-  .vote-mini:hover{
-    background:rgba(255,255,255,.28);
-    transform:translateY(-1px);
   }
 
   .vote-mini:disabled{
+    opacity:.7;
     cursor:wait;
-    opacity:.75;
   }
 
-  .vote-mini.voted{
-    background:rgba(255,255,255,.20);
+  .lock-mini,
+  .pending-mini{
+    height:25px;
+    border-radius:999px;
+    padding:0 9px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
     color:#fff;
-    border-color:rgba(255,255,255,.28);
+    font-size:.66rem;
+    font-weight:950;
+    background:rgba(217,119,6,.92);
   }
 
-  .label{
+  .lock-mini{
+    background:rgba(15,23,42,.60);
+  }
+
+  .dept-label{
     position:absolute;
     z-index:2;
     left:13px;
     right:13px;
     bottom:12px;
+    color:#fff;
+  }
+
+  .dept-title-row{
     display:flex;
     align-items:flex-end;
     justify-content:space-between;
     gap:10px;
-    color:white;
   }
 
-  .label-main{
+  .dept-title{
     min-width:0;
-  }
-
-  .label-title{
-    display:block;
-    font-size:.98rem;
+    font-size:.96rem;
     line-height:1.1;
     font-weight:950;
     letter-spacing:-.035em;
-    text-shadow:0 2px 10px rgba(0,0,0,.42);
+    text-shadow:0 2px 10px rgba(0,0,0,.44);
     overflow:hidden;
     text-overflow:ellipsis;
     white-space:nowrap;
   }
 
-  .pill{
+  .dept-count{
     flex:0 0 auto;
+    height:24px;
+    border-radius:999px;
+    padding:0 8px;
     display:inline-flex;
     align-items:center;
-    gap:6px;
-    height:25px;
-    padding:0 9px;
-    border-radius:999px;
-    background:rgba(255,255,255,.18);
-    border:1px solid rgba(255,255,255,.22);
-    color:white;
-    font-size:.69rem;
+    justify-content:center;
+    background:rgba(255,255,255,.17);
+    border:1px solid rgba(255,255,255,.18);
+    font-size:.66rem;
     font-weight:950;
-    backdrop-filter:blur(10px);
-    box-shadow:0 6px 18px rgba(0,0,0,.15);
+  }
+
+  .dept-meta{
+    margin-top:5px;
+    color:rgba(255,255,255,.82);
+    font-size:.70rem;
+    font-weight:850;
+    text-shadow:0 2px 8px rgba(0,0,0,.38);
   }
 
   /* =========================
-     Sub Department Chips
+     Selected / Sub departments
   ========================= */
 
-  .subchip{
-    min-height:118px;
+  .selected-panel{
     border:1px solid var(--line);
-    border-radius:18px;
-    background:
-      linear-gradient(135deg, rgba(37,99,235,.10), rgba(124,58,237,.08)),
-      var(--surface);
-    box-shadow:var(--shadow-sm);
+    border-radius:22px;
+    background:var(--surface);
+    box-shadow:var(--shadow);
     padding:15px;
-    cursor:pointer;
-    transition:.18s ease;
+    margin-top:16px;
+  }
+
+  .selected-top{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:12px;
+  }
+
+  .selected-title{
+    font-size:1.20rem;
+    font-weight:950;
+    letter-spacing:-.05em;
+    line-height:1.1;
+  }
+
+  .selected-sub{
+    margin-top:5px;
+    color:var(--muted);
+    font-size:.82rem;
+    font-weight:750;
+  }
+
+  .sub-card{
+    min-height:104px;
+    border:1px solid var(--line);
+    border-radius:17px;
+    background:
+      linear-gradient(135deg, rgba(37,99,235,.09), rgba(124,58,237,.07)),
+      var(--surface2);
+    box-shadow:0 4px 12px rgba(15,23,42,.06);
+    padding:13px;
     display:flex;
     flex-direction:column;
     justify-content:space-between;
     gap:12px;
-    position:relative;
-    overflow:hidden;
+    transition:.16s ease;
+    contain:layout paint;
+    content-visibility:auto;
+    contain-intrinsic-size:105px 190px;
   }
 
-  .subchip:hover{
-    transform:translateY(-3px);
+  .sub-card:hover{
+    transform:translateY(-2px);
     border-color:rgba(37,99,235,.35);
-    box-shadow:var(--shadow-md);
+    box-shadow:var(--shadow);
   }
 
-  .subchip.all{
+  .sub-card.locked{
     background:
-      radial-gradient(circle at top left, rgba(37,99,235,.14), transparent 48%),
-      linear-gradient(135deg, rgba(37,99,235,.12), rgba(124,58,237,.10)),
-      var(--surface);
+      linear-gradient(135deg, rgba(217,119,6,.14), rgba(124,58,237,.06)),
+      var(--surface2);
   }
 
-  .sub-top{
+  .sub-head{
     display:flex;
+    align-items:flex-start;
     justify-content:space-between;
     gap:10px;
-    align-items:flex-start;
   }
 
   .sub-icon{
-    width:36px;
-    height:36px;
-    border-radius:14px;
+    width:34px;
+    height:34px;
+    border-radius:13px;
     display:grid;
     place-items:center;
-    color:white;
-    background:linear-gradient(135deg,var(--accent),var(--accent-2));
-    box-shadow:0 12px 24px rgba(37,99,235,.22);
-    font-size:17px;
+    color:#fff;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    font-size:15px;
     font-weight:950;
   }
 
+  .sub-card.locked .sub-icon{
+    background:linear-gradient(135deg,#d97706,#f59e0b);
+  }
+
   .sub-count{
-    height:27px;
-    min-width:34px;
-    padding:0 9px;
+    height:25px;
+    min-width:32px;
+    padding:0 8px;
     border-radius:999px;
     display:grid;
     place-items:center;
@@ -757,50 +726,174 @@
     border:1px solid var(--line);
     color:var(--muted);
     font-weight:950;
-    font-size:.74rem;
+    font-size:.70rem;
   }
 
   .sub-title{
     font-weight:950;
     letter-spacing:-.04em;
     line-height:1.12;
-    font-size:1rem;
+    font-size:.92rem;
   }
 
   .sub-desc{
     color:var(--muted);
-    font-size:.76rem;
-    font-weight:750;
-    margin-top:5px;
+    font-size:.70rem;
+    font-weight:800;
+    margin-top:4px;
   }
 
   .empty{
     grid-column:1/-1;
-    border:1px dashed var(--line-strong);
+    border:1px dashed var(--line2);
     border-radius:20px;
-    background:rgba(255,255,255,.70);
-    padding:28px 18px;
+    background:var(--surface);
+    padding:26px 18px;
     text-align:center;
     color:var(--muted);
-    box-shadow:var(--shadow-sm);
+    box-shadow:var(--shadow);
     font-weight:800;
     line-height:1.5;
   }
 
-  body.dark .empty{
-    background:rgba(17,24,39,.62);
-  }
-
   .empty strong{
+    display:block;
     color:var(--ink);
     font-size:1.05rem;
+    margin-bottom:4px;
+  }
+
+  /* =========================
+     Password Gate
+  ========================= */
+
+  .pa-lock-backdrop{
+    position:fixed;
+    inset:0;
+    z-index:200;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:18px;
+    background:rgba(2,6,23,.68);
+  }
+
+  .pa-lock-backdrop.show{
+    display:flex;
+  }
+
+  .pa-lock-box{
+    width:min(420px,100%);
+    border:1px solid var(--line);
+    border-radius:24px;
+    background:var(--surface);
+    color:var(--ink);
+    box-shadow:0 28px 80px rgba(0,0,0,.38);
+    padding:20px;
+  }
+
+  .pa-lock-title{
+    font-size:1.25rem;
+    font-weight:950;
+    letter-spacing:-.05em;
+    margin-bottom:6px;
+  }
+
+  .pa-lock-sub{
+    color:var(--muted);
+    font-size:.86rem;
+    font-weight:750;
+    line-height:1.4;
+    margin-bottom:16px;
+  }
+
+  .pa-user-box{
+    border:1px solid var(--line);
+    border-radius:16px;
+    background:var(--surface2);
+    padding:12px;
+    margin-bottom:12px;
+  }
+
+  .pa-user-label{
+    color:var(--muted);
+    font-size:.68rem;
+    font-weight:950;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    margin-bottom:5px;
+  }
+
+  .pa-user-name{
+    font-size:.95rem;
+    font-weight:950;
+  }
+
+  .pa-lock-box input{
+    width:100%;
+    height:44px;
+    border:1px solid var(--line);
+    border-radius:15px;
+    background:var(--surface2);
+    color:var(--ink);
+    outline:none;
+    padding:0 13px;
+    font-weight:850;
+  }
+
+  .pa-lock-box input:focus{
+    border-color:rgba(37,99,235,.55);
+    box-shadow:0 0 0 4px var(--soft);
+  }
+
+  .pa-lock-msg{
+    min-height:22px;
+    margin-top:10px;
+    color:var(--red);
+    font-size:.78rem;
+    font-weight:850;
+  }
+
+  .pa-lock-actions{
+    display:flex;
+    gap:10px;
+    margin-top:14px;
+  }
+
+  .pa-lock-actions button{
+    flex:1;
+    min-height:42px;
+    border-radius:14px;
+    font-weight:950;
+    border:1px solid var(--line);
+  }
+
+  .pa-cancel-btn{
+    background:var(--surface2);
+    color:var(--ink);
+  }
+
+  .pa-unlock-btn{
+    border:0!important;
+    color:#fff;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
   }
 
   /* =========================
      Responsive
   ========================= */
 
-  @media (max-width:980px){
+  @media(max-width:1120px){
+    .department-grid{
+      grid-template-columns:repeat(3,minmax(0,1fr));
+    }
+
+    .sub-grid{
+      grid-template-columns:repeat(4,minmax(0,1fr));
+    }
+  }
+
+  @media(max-width:900px){
     .header-inner{
       grid-template-columns:1fr auto;
       gap:9px;
@@ -812,14 +905,9 @@
     }
 
     .search-wrap{
-      grid-column:1 / -1;
+      grid-column:1/-1;
       grid-row:2;
       max-width:none;
-    }
-
-    .header-actions{
-      min-width:0;
-      gap:6px;
     }
 
     .status-pill,
@@ -827,11 +915,40 @@
       display:none;
     }
 
-    .top-link-btn,
-    .script-btn{
-      height:32px;
-      padding:0 10px;
-      font-size:.73rem;
+    .page{
+      padding:14px 14px 28px;
+    }
+
+    .titlebar,
+    .selected-top{
+      flex-direction:column;
+    }
+
+    .title-actions{
+      justify-content:flex-start;
+    }
+
+    .department-grid,
+    .sub-grid{
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+    }
+
+    .dept-card{
+      min-height:145px;
+      border-radius:17px;
+    }
+
+    .dept-title{
+      white-space:normal;
+      display:-webkit-box;
+      -webkit-line-clamp:2;
+      -webkit-box-orient:vertical;
+      font-size:.86rem;
+    }
+
+    .sub-card{
+      min-height:100px;
     }
 
     .script-btn span{
@@ -839,70 +956,19 @@
     }
 
     .script-btn{
-      width:34px;
+      width:32px;
       padding:0;
-      border-radius:12px;
     }
 
-    .page{
-      padding:14px 14px 26px;
-    }
-
-    .titlebar{
-      align-items:flex-start;
-      flex-direction:column;
-      gap:10px;
-    }
-
-    .title-actions{
-      width:100%;
-      justify-content:flex-start;
-    }
-
-    .card{
-      min-height:152px;
-      border-radius:17px;
-      aspect-ratio:1.05;
-    }
-
-    .label{
-      left:11px;
-      right:11px;
-      bottom:10px;
-      align-items:flex-start;
-      flex-direction:column;
-      gap:7px;
-    }
-
-    .label-title{
-      font-size:.86rem;
-      white-space:normal;
-      display:-webkit-box;
-      -webkit-line-clamp:2;
-      -webkit-box-orient:vertical;
-    }
-
-    .pill{
-      height:23px;
-      font-size:.66rem;
-      padding:0 8px;
-    }
-
-    .vote-mini{
-      height:26px;
-      min-width:44px;
-      padding:0 9px;
-      font-size:.7rem;
-    }
-
-    .subchip{
-      min-height:108px;
-      border-radius:17px;
-      padding:14px;
+    .script-menu{
+      position:fixed;
+      right:12px;
+      top:64px;
+      width:calc(100vw - 24px);
     }
   }
 
-  @media (max-width:520px){
+  @media(max-width:520px){
     .logo{
       width:36px;
       height:36px;
@@ -917,31 +983,36 @@
       font-size:.56rem;
     }
 
-    .iconbtn{
-      width:32px;
-      height:32px;
-      border-radius:12px;
+    .top-link-btn{
+      padding:0 9px;
+      font-size:.70rem;
     }
 
     .page-title{
       font-size:1.34rem;
     }
 
-    .mini-control,
-    .mini-btn{
-      height:31px;
-      min-height:31px;
-      font-size:.70rem;
-      padding:0 9px;
+    .section-head{
+      align-items:flex-start;
+      flex-direction:column;
     }
 
-    .title-actions{
-      gap:7px;
+    .dept-card{
+      min-height:132px;
+      aspect-ratio:1.05;
     }
 
-    #depGrid,
-    #subGrid{
-      grid-template-columns:repeat(2,minmax(0,1fr));
+    .dept-meta{
+      display:none;
+    }
+
+    .pa-lock-box{
+      border-radius:20px;
+      padding:17px;
+    }
+
+    .pa-lock-actions{
+      flex-direction:column;
     }
   }
 </style>
@@ -951,8 +1022,6 @@
   <header class="app-header">
     <div class="header-inner">
       <div class="brand">
-        <button id="btnBack" class="backbtn hidden" title="Back">←</button>
-
         <div class="logo">RV</div>
 
         <div class="brand-text">
@@ -961,74 +1030,115 @@
         </div>
       </div>
 
-      <div class="search-wrap" title="Search">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
-          <path d="M21 21l-4.3-4.3M10.8 18.2a7.4 7.4 0 1 1 0-14.8 7.4 7.4 0 0 1 0 14.8Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>
-        <input id="search" placeholder="Search..." autocomplete="off" />
+      <div class="search-wrap">
+        <span>⌕</span>
+        <input id="search" placeholder="Search departments..." autocomplete="off" />
       </div>
 
       <div class="header-actions">
-        <div class="status-pill" id="dbStatus" title="Supabase status">
+        <div class="status-pill" title="Supabase status">
           <span class="dot" id="dbDot"></span>
           <span id="dbText">Connecting</span>
         </div>
 
         <a class="top-link-btn" id="btnRequestTop" href="request.html">+ Request</a>
 
-        <a class="script-btn hidden" id="btnScriptTop" href="#" target="_blank" rel="noopener" title="Install Tampermonkey Script">
-          <svg viewBox="0 0 32 32" fill="none" aria-hidden="true">
-            <circle cx="16" cy="16" r="14" fill="rgba(255,255,255,.18)"/>
-            <path d="M8.3 15.3c-1.9-.6-3.3.5-3.3 2.2 0 1.8 1.4 3.2 3.3 3.2h.6" stroke="white" stroke-width="2" stroke-linecap="round"/>
-            <path d="M23.7 15.3c1.9-.6 3.3.5 3.3 2.2 0 1.8-1.4 3.2-3.3 3.2h-.6" stroke="white" stroke-width="2" stroke-linecap="round"/>
-            <path d="M9.2 15.4c0-4.2 2.7-7.1 6.8-7.1s6.8 2.9 6.8 7.1v2.1c0 4.1-2.7 6.9-6.8 6.9s-6.8-2.8-6.8-6.9v-2.1Z" fill="white"/>
-            <path d="M11.3 15.3c.6-2.6 2.3-4.1 4.7-4.1s4.1 1.5 4.7 4.1c-.9-.6-1.8-.9-2.8-.9-.9 0-1.5.3-1.9.9-.4-.6-1-.9-1.9-.9-1 0-1.9.3-2.8.9Z" fill="#7c4a20"/>
-            <path d="M11.4 17.3c.9-1.3 1.9-1.9 3-1.9.8 0 1.3.3 1.6.9.3-.6.8-.9 1.6-.9 1.1 0 2.1.6 3 1.9v1.1c0 2.7-1.7 4.5-4.6 4.5s-4.6-1.8-4.6-4.5v-1.1Z" fill="#ffd89a"/>
-            <circle cx="13.7" cy="17.5" r="1" fill="#111827"/>
-            <circle cx="18.3" cy="17.5" r="1" fill="#111827"/>
-            <path d="M14.2 20.3c1.1.9 2.5.9 3.6 0" stroke="#111827" stroke-width="1.4" stroke-linecap="round"/>
-            <path d="M11.6 26.2h8.6" stroke="white" stroke-width="2" stroke-linecap="round"/>
-            <path d="M23.6 22.4v5.2m0 0l-2-2m2 2l2-2" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          <span>Script</span>
-        </a>
+        <div class="script-wrap hidden" id="scriptWrap">
+          <button class="script-btn" id="btnScriptTop" type="button" title="Download Scripts">
+            <span>Script</span>
+          </button>
+
+          <div class="script-menu" id="scriptMenu">
+            <a class="script-option hidden" id="btnRanvexsiScript" href="#" target="_blank" rel="noopener">
+              <span class="script-option-icon">RV</span>
+              <span>
+                <strong>RANVEXSI UI Script</strong>
+                <small>Tampermonkey floating button</small>
+              </span>
+            </a>
+
+            <a class="script-option hidden" id="btnAmazonScripts" href="#" target="_blank" rel="noopener">
+              <span class="script-option-icon pack">📦</span>
+              <span>
+                <strong>All Amazon Scripts</strong>
+                <small>Download full script pack</small>
+              </span>
+            </a>
+          </div>
+        </div>
 
         <button class="iconbtn" id="btnRefresh" title="Reload">↻</button>
         <button class="iconbtn" id="btnTheme" title="Light/Dark">🌗</button>
+        <button class="iconbtn" id="btnMedia" title="Images On/Off">🖼</button>
 
-        <div class="views-pill" title="Today views | Total views">
-          Today <span id="viewsToday">0</span> | Total <span id="viewsTotal">0</span>
+        <div class="views-pill" title="Today / Total">
+          👣 <span id="viewsToday">0</span> / <span id="viewsTotal">0</span>
         </div>
       </div>
     </div>
   </header>
 
-  <main class="page" id="wrap">
+  <main class="page">
     <section class="titlebar">
       <div class="title-left">
         <h1 class="page-title" id="pageTitle">Departments</h1>
-        <span class="title-meta" id="titleMeta">0 departments</span>
+        <p class="page-subtitle" id="pageSubtitle">Choose a department, then open the sub-department you need.</p>
       </div>
 
       <div class="title-actions">
-        <button class="mini-btn primary hidden" id="btnOpenAllLinks" type="button">Open All</button>
-
-        <label class="mini-control">
-          Grid
-          <select id="gridCount">
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-          </select>
-        </label>
-
-        <button class="mini-btn active" id="btnMedia" type="button">Images On</button>
+        <span class="mini-pill" id="titleMeta">0 departments</span>
+        <button class="mini-btn active" id="btnMediaText" type="button">Images On</button>
       </div>
     </section>
 
-    <section id="depGrid" class="grid" aria-label="Departments grid"></section>
-    <section id="subGrid" class="grid hidden" aria-label="Sub-departments grid"></section>
+    <section>
+      <div class="section-head">
+        <div>
+          <h2>Departments</h2>
+          <p>4-column lightweight dashboard cards.</p>
+        </div>
+      </div>
+
+      <div id="depGrid" class="grid department-grid" aria-label="Departments grid"></div>
+    </section>
+
+    <section class="selected-panel hidden" id="selectedPanel">
+      <div class="selected-top">
+        <div>
+          <div class="selected-title" id="selectedTitle">Department</div>
+          <div class="selected-sub" id="selectedSub">Open a sub-department below.</div>
+        </div>
+
+        <button class="mini-btn" id="btnClearDepartment" type="button">Clear Selection</button>
+      </div>
+
+      <div id="subGrid" class="grid sub-grid" aria-label="Sub-departments grid"></div>
+    </section>
   </main>
+
+  <!-- Process Assistant Password Gate -->
+  <div class="pa-lock-backdrop" id="paLockModal">
+    <div class="pa-lock-box">
+      <div class="pa-lock-title">Process Assistant Access</div>
+      <div class="pa-lock-sub">
+        This area is protected. Enter today’s password to continue.
+      </div>
+
+      <div class="pa-user-box">
+        <div class="pa-user-label">Username</div>
+        <div class="pa-user-name">YXU1Admin</div>
+      </div>
+
+      <input id="paPasswordInput" type="password" placeholder="Enter password" autocomplete="current-password" />
+
+      <div class="pa-lock-msg" id="paLockMsg"></div>
+
+      <div class="pa-lock-actions">
+        <button class="pa-cancel-btn" id="paCancelBtn" type="button">Cancel</button>
+        <button class="pa-unlock-btn" id="paUnlockBtn" type="button">Unlock</button>
+      </div>
+    </div>
+  </div>
 
 <script>
 /* =========================================================
@@ -1038,24 +1148,11 @@
 const SUPABASE_URL = "https://qpplbqodulenhccfzrjv.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_ph2JpBSdGl-dIqvx9F6__g_Oo4r96Y_";
 
-const SUPABASE_TABLE = "ranvexsi_links";
+const LINKS_TABLE = "ranvexsi_links";
 const DEPT_TABLE = "ranvexsi_departments";
 const SUB_TABLE = "ranvexsi_sub_departments";
-const REQUEST_TABLE = "ranvexsi_requests";
-const GALLERY_TABLE = "ranvexsi_media_gallery";
-const VOTES_TABLE = "ranvexsi_department_votes";
-
-/*
-  Admin panel can save the Tampermonkey script link in this table later.
-  Supported row examples:
-  1) setting_key = "tampermonkey_script_url", setting_value = "https://..."
-  2) key = "script_url", value = "https://..."
-  3) name = "tampermonkey", url = "https://..."
-  If table does not exist yet, Script button stays hidden.
-*/
 const SETTINGS_TABLE = "ranvexsi_settings";
-const SCRIPT_DOWNLOAD_URL = "";
-
+const VOTES_TABLE = "ranvexsi_department_votes";
 const STORAGE_BUCKET = "media";
 
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
@@ -1068,43 +1165,55 @@ const els = {
   search: document.getElementById("search"),
   depGrid: document.getElementById("depGrid"),
   subGrid: document.getElementById("subGrid"),
+  selectedPanel: document.getElementById("selectedPanel"),
+  selectedTitle: document.getElementById("selectedTitle"),
+  selectedSub: document.getElementById("selectedSub"),
   pageTitle: document.getElementById("pageTitle"),
+  pageSubtitle: document.getElementById("pageSubtitle"),
   titleMeta: document.getElementById("titleMeta"),
-  btnBack: document.getElementById("btnBack"),
-  btnOpenAllLinks: document.getElementById("btnOpenAllLinks"),
+  btnClearDepartment: document.getElementById("btnClearDepartment"),
   btnRequestTop: document.getElementById("btnRequestTop"),
+  scriptWrap: document.getElementById("scriptWrap"),
   btnScriptTop: document.getElementById("btnScriptTop"),
+  scriptMenu: document.getElementById("scriptMenu"),
+  btnRanvexsiScript: document.getElementById("btnRanvexsiScript"),
+  btnAmazonScripts: document.getElementById("btnAmazonScripts"),
   btnRefresh: document.getElementById("btnRefresh"),
   btnTheme: document.getElementById("btnTheme"),
   btnMedia: document.getElementById("btnMedia"),
-  gridCount: document.getElementById("gridCount"),
+  btnMediaText: document.getElementById("btnMediaText"),
   dbDot: document.getElementById("dbDot"),
   dbText: document.getElementById("dbText"),
   viewsToday: document.getElementById("viewsToday"),
-  viewsTotal: document.getElementById("viewsTotal")
+  viewsTotal: document.getElementById("viewsTotal"),
+  paLockModal: document.getElementById("paLockModal"),
+  paPasswordInput: document.getElementById("paPasswordInput"),
+  paLockMsg: document.getElementById("paLockMsg"),
+  paCancelBtn: document.getElementById("paCancelBtn"),
+  paUnlockBtn: document.getElementById("paUnlockBtn")
 };
 
-let rawRows = [];
+let rawLinks = [];
 let departmentRows = [];
 let subDepartmentRows = [];
-let localRequests = [];
 let departmentsData = [];
-let galleryImages = [];
-let currentDep = null;
-let currentMode = "departments";
-let realtimeChannels = [];
+let currentDep = "";
 let voteCounts = {};
 let userVoteStatus = {};
-let analyticsReady = false;
+let paPendingAction = null;
 
 const LS = {
   THEME: "rv_theme",
-  GRID: "rv_grid_index_split",
-  MEDIA: "rv_media_index_split",
-  LOCAL_REQUESTS: "rv_local_pending_requests_v1",
+  MEDIA: "rv_media_index_light_v1",
   VOTER_KEY: "rv_voter_key_v1",
+  PA_UNLOCKED_DATE: "rv_pa_unlocked_date_v1",
   LOCAL_DAILY_VIEWS: "rv_daily_views_fallback",
-  LOCAL_TOTAL_VIEWS: "rv_total_views_fallback"
+  LOCAL_TOTAL_VIEWS: "rv_total_views_fallback",
+  LOCAL_REQUESTS: "rv_local_pending_requests_v1"
+};
+
+const PA_ACCESS = {
+  PASSWORD_HASH: "80ed0c5a40fb1ad015c97cb20678c5c4192bcc1c576ed73180199a7649f8e88f"
 };
 
 /* =========================================================
@@ -1122,7 +1231,9 @@ function esc(v){
 
 function safeUrl(url){
   const u = String(url || "").trim();
+
   if(!u || u === "#") return "#";
+
   if(
     u.startsWith("http://") ||
     u.startsWith("https://") ||
@@ -1131,41 +1242,49 @@ function safeUrl(url){
   ){
     return u;
   }
-  return "https://" + u;
-}
 
-function getPublicImage(path){
-  const p = String(path || "").trim();
-  if(!p || p === "null" || p === "undefined") return "";
-  const { data } = db.storage.from(STORAGE_BUCKET).getPublicUrl(p);
-  return data?.publicUrl || "";
+  return "https://" + u;
 }
 
 function firstGood(...values){
   for(const v of values){
     const s = String(v || "").trim();
-    if(s && s !== "null" && s !== "undefined") return s;
+
+    if(s && s !== "null" && s !== "undefined"){
+      return s;
+    }
   }
+
   return "";
 }
 
-function imageFromRow(row){
-  return firstGood(row.ImageURL, row.image_url, getPublicImage(row.ImagePath || row.image_path));
+function getPublicImage(path){
+  const p = String(path || "").trim();
+
+  if(!p || p === "null" || p === "undefined") return "";
+  if(p.startsWith("http://") || p.startsWith("https://")) return p;
+
+  const { data } = db.storage.from(STORAGE_BUCKET).getPublicUrl(p);
+  return data?.publicUrl || "";
 }
 
 function departmentImageFromRow(row){
   return firstGood(
-    row.DIURL,
-    row.department_image_url,
-    getPublicImage(row.DepartmentImagePath || row.department_image_path),
     row.ImageURL,
     row.image_url,
-    getPublicImage(row.ImagePath || row.image_path)
+    getPublicImage(row.ImagePath || row.image_path),
+    row.DIURL,
+    row.department_image_url,
+    getPublicImage(row.DepartmentImagePath || row.department_image_path)
   );
 }
 
-function fallbackImage(text){
-  return `https://source.unsplash.com/1200x800/?warehouse,workplace,tools,${encodeURIComponent(text || "department")}`;
+function linkDepartmentImage(row){
+  return firstGood(
+    row.department_image_url,
+    row.DIURL,
+    getPublicImage(row.department_image_path || row.DepartmentImagePath)
+  );
 }
 
 function setDbStatus(type, text){
@@ -1174,51 +1293,6 @@ function setDbStatus(type, text){
 
   if(type === "ok") els.dbDot.classList.add("ok");
   if(type === "bad") els.dbDot.classList.add("bad");
-}
-
-function countLinksInSub(dep, sub){
-  return rawRows.filter(r => r.Department === dep && r.SubDepartment === sub).length;
-}
-
-function countAllLinksInDepartment(dep){
-  return rawRows.filter(r => r.Department === dep).length;
-}
-
-function allSubsCount(){
-  return departmentsData.reduce((sum, d) => sum + (d.subs?.length || 0), 0);
-}
-
-function getLocalRequests(){
-  try{
-    const rows = JSON.parse(localStorage.getItem(LS.LOCAL_REQUESTS) || "[]");
-    return Array.isArray(rows) ? rows : [];
-  }catch{
-    return [];
-  }
-}
-
-function localRequestsFor(type){
-  return localRequests.filter(r => r.request_type === type && r.status !== "rejected");
-}
-
-function makeVoterKey(){
-  const existing = localStorage.getItem(LS.VOTER_KEY);
-  if(existing) return existing;
-
-  let key = "";
-
-  if(window.crypto && crypto.randomUUID){
-    key = crypto.randomUUID();
-  }else{
-    key = "rv_" + Date.now() + "_" + Math.random().toString(36).slice(2);
-  }
-
-  localStorage.setItem(LS.VOTER_KEY, key);
-  return key;
-}
-
-function getVoterKey(){
-  return makeVoterKey();
 }
 
 function buildUrl(page, params){
@@ -1233,32 +1307,49 @@ function buildUrl(page, params){
   return url.pathname.split("/").pop() + url.search;
 }
 
-function updateRequestLink(){
-  const params = {};
-  if(currentDep) params.dep = currentDep;
-  els.btnRequestTop.href = buildUrl("request.html", params);
-}
-
-function updateTitleMeta(){
-  if(currentMode === "departments"){
-    els.titleMeta.textContent = `${departmentsData.length} departments · ${allSubsCount()} sub-depts`;
-  }else{
-    const depObj = departmentsData.find(d => d.dep === currentDep);
-    const subCount = depObj?.subs?.length || 0;
-    els.titleMeta.textContent = `${subCount} sub-depts`;
+function getLocalRequests(){
+  try{
+    const rows = JSON.parse(localStorage.getItem(LS.LOCAL_REQUESTS) || "[]");
+    return Array.isArray(rows) ? rows : [];
+  }catch{
+    return [];
   }
 }
 
-function setSearchPlaceholder(){
-  if(currentMode === "departments"){
-    els.search.placeholder = "Search departments...";
-  }else{
-    els.search.placeholder = "Search sub-departments...";
-  }
+function localRequestsFor(type){
+  return getLocalRequests().filter(r => r.request_type === type && r.status !== "rejected");
+}
+
+function countLinksInSub(dep, sub){
+  return rawLinks.filter(r => r.Department === dep && r.SubDepartment === sub).length;
+}
+
+function countAllLinksInDepartment(dep){
+  return rawLinks.filter(r => r.Department === dep).length;
+}
+
+function totalSubCount(){
+  return departmentsData.reduce((sum, d) => sum + (d.subs?.length || 0), 0);
+}
+
+function isProcessAssistantName(value){
+  return String(value || "").trim().toLowerCase() === "process assistant";
+}
+
+function needsPaPassword(dep, sub){
+  return isProcessAssistantName(dep) || isProcessAssistantName(sub);
+}
+
+function todayKey(){
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
 }
 
 /* =========================================================
-   Theme / Prefs
+   Theme / Media
 ========================================================= */
 
 function initTheme(){
@@ -1278,29 +1369,17 @@ function toggleTheme(){
   localStorage.setItem(LS.THEME, dark ? "dark" : "light");
 }
 
-function initPrefs(){
-  const grid = localStorage.getItem(LS.GRID) || "4";
-  const media = localStorage.getItem(LS.MEDIA) || "on";
-
-  els.gridCount.value = ["3","4","5"].includes(grid) ? grid : "4";
-
-  applyGrid(els.gridCount.value);
-  applyMedia(media);
-}
-
-function applyGrid(value){
-  const count = ["3","4","5"].includes(String(value)) ? String(value) : "4";
-  document.documentElement.style.setProperty("--grid-cols", count);
-  localStorage.setItem(LS.GRID, count);
-  els.gridCount.value = count;
+function initMedia(){
+  const saved = localStorage.getItem(LS.MEDIA) || "on";
+  applyMedia(saved);
 }
 
 function applyMedia(value){
   const on = value !== "off";
 
   document.body.classList.toggle("no-images", !on);
-  els.btnMedia.textContent = on ? "Images On" : "Images Off";
-  els.btnMedia.classList.toggle("active", on);
+  els.btnMediaText.textContent = on ? "Images On" : "Images Off";
+  els.btnMediaText.classList.toggle("active", on);
 
   localStorage.setItem(LS.MEDIA, on ? "on" : "off");
 }
@@ -1311,140 +1390,65 @@ function toggleMedia(){
 }
 
 /* =========================================================
-   Script Link
+   Password Gate
 ========================================================= */
 
-function getRowKey(row){
-  return String(
-    row.setting_key ??
-    row.key ??
-    row.name ??
-    row.setting ??
-    row.slug ??
-    row.title ??
-    ""
-  ).trim().toLowerCase();
+function isPaUnlockedToday(){
+  return localStorage.getItem(LS.PA_UNLOCKED_DATE) === todayKey();
 }
 
-function getRowValue(row){
-  return firstGood(
-    row.setting_value,
-    row.value,
-    row.url,
-    row.script_url,
-    row.download_url,
-    row.link,
-    row.href
-  );
+async function sha256Text(text){
+  const data = new TextEncoder().encode(String(text || ""));
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+
+  return [...new Uint8Array(hashBuffer)]
+    .map(b => b.toString(16).padStart(2, "0"))
+    .join("");
 }
 
-function isScriptSettingKey(key){
-  if(!key) return false;
-
-  return (
-    key === "tampermonkey_script_url" ||
-    key === "tampermonkey_url" ||
-    key === "script_url" ||
-    key === "userscript_url" ||
-    key.includes("tampermonkey") ||
-    key.includes("script")
-  );
-}
-
-function showScriptButton(url){
-  const clean = String(url || "").trim();
-
-  if(!clean || clean === "#"){
-    els.btnScriptTop.classList.add("hidden");
-    els.btnScriptTop.href = "#";
+function openPaLock(action){
+  if(isPaUnlockedToday()){
+    action();
     return;
   }
 
-  els.btnScriptTop.href = safeUrl(clean);
-  els.btnScriptTop.classList.remove("hidden");
+  paPendingAction = action;
+
+  els.paPasswordInput.value = "";
+  els.paLockMsg.textContent = "";
+  els.paLockModal.classList.add("show");
+
+  setTimeout(() => els.paPasswordInput.focus(), 80);
 }
 
-async function loadScriptLink(){
-  let scriptUrl = String(SCRIPT_DOWNLOAD_URL || "").trim();
+function closePaLock(){
+  els.paLockModal.classList.remove("show");
+  els.paLockMsg.textContent = "";
+  paPendingAction = null;
+}
 
-  if(scriptUrl){
-    showScriptButton(scriptUrl);
+async function submitPaPassword(){
+  const entered = els.paPasswordInput.value.trim();
+
+  if(!entered){
+    els.paLockMsg.textContent = "Please enter password.";
     return;
   }
 
-  try{
-    const { data, error } = await db
-      .from(SETTINGS_TABLE)
-      .select("*")
-      .limit(100);
+  const hash = await sha256Text(entered);
 
-    if(error) throw error;
+  if(hash === PA_ACCESS.PASSWORD_HASH){
+    localStorage.setItem(LS.PA_UNLOCKED_DATE, todayKey());
 
-    const rows = Array.isArray(data) ? data : [];
+    const action = paPendingAction;
+    closePaLock();
 
-    const found = rows.find(row => {
-      const key = getRowKey(row);
-      const value = getRowValue(row);
-      return isScriptSettingKey(key) && value;
-    });
-
-    if(found){
-      scriptUrl = getRowValue(found);
+    if(typeof action === "function"){
+      action();
     }
-
-    showScriptButton(scriptUrl);
-  }catch(err){
-    console.warn("Script settings table not ready. Script button hidden:", err.message || err);
-    showScriptButton("");
-  }
-}
-
-/* =========================================================
-   Views / Analytics
-========================================================= */
-
-function todayKey(){
-  const d = new Date();
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
-}
-
-function updateViewUI(today, total){
-  els.viewsToday.textContent = String(today || 0);
-  els.viewsTotal.textContent = String(total || 0);
-}
-
-async function trackVisit(){
-  try{
-    const { data, error } = await db.rpc("rv_track_visit");
-    if(error) throw error;
-
-    const today = Number(data?.daily_steps || data?.daily_views || 0);
-    const total = Number(data?.total_views || 0);
-
-    analyticsReady = true;
-    updateViewUI(today, total);
-  }catch(err){
-    console.warn("Supabase analytics not ready, using local fallback:", err.message || err);
-
-    const key = todayKey();
-    const saved = JSON.parse(localStorage.getItem(LS.LOCAL_DAILY_VIEWS) || "{}");
-
-    if(saved.date !== key){
-      saved.date = key;
-      saved.count = 0;
-    }
-
-    saved.count = Number(saved.count || 0) + 1;
-
-    const total = Number(localStorage.getItem(LS.LOCAL_TOTAL_VIEWS) || 0) + 1;
-
-    localStorage.setItem(LS.LOCAL_DAILY_VIEWS, JSON.stringify(saved));
-    localStorage.setItem(LS.LOCAL_TOTAL_VIEWS, String(total));
-
-    updateViewUI(saved.count, total);
+  }else{
+    els.paLockMsg.textContent = "Wrong password. Hint: sorter cam";
+    els.paPasswordInput.select();
   }
 }
 
@@ -1474,17 +1478,16 @@ function normalizeSubDepartment(row){
   };
 }
 
-function normalizeRow(row){
+function normalizeLink(row){
   return {
     ID: row.id || "",
     Department: String(row.department ?? row.Department ?? "").trim(),
     SubDepartment: String(row.sub_department ?? row.SubDepartment ?? "").trim(),
-    DIURL: String(row.department_image_url ?? row.DIURL ?? "").trim(),
     LinkName: String(row.link_name ?? row.LinkName ?? "Unnamed").trim(),
     URL: String(row.url ?? row.URL ?? "#").trim(),
-    Color: String(row.color ?? row.Color ?? "").trim(),
     ImageURL: String(row.image_url ?? row.ImageURL ?? "").trim(),
     ImagePath: String(row.image_path ?? row.ImagePath ?? "").trim(),
+    DepartmentImageURL: String(row.department_image_url ?? row.DIURL ?? "").trim(),
     DepartmentImagePath: String(row.department_image_path ?? row.DepartmentImagePath ?? "").trim(),
     SortOrder: Number(row.sort_order ?? row.SortOrder ?? 0),
     IsActive: row.is_active ?? row.IsActive ?? true
@@ -1499,8 +1502,8 @@ async function loadData(){
   setDbStatus("", "Loading");
 
   try{
-    const { data, error } = await db
-      .from(SUPABASE_TABLE)
+    const { data: linksData, error: linksError } = await db
+      .from(LINKS_TABLE)
       .select("*")
       .eq("is_active", true)
       .order("department", { ascending:true })
@@ -1508,10 +1511,10 @@ async function loadData(){
       .order("sort_order", { ascending:true })
       .order("link_name", { ascending:true });
 
-    if(error) throw error;
+    if(linksError) throw linksError;
 
-    rawRows = (data || [])
-      .map(normalizeRow)
+    rawLinks = (linksData || [])
+      .map(normalizeLink)
       .filter(row => row.Department && row.LinkName);
 
     try{
@@ -1528,7 +1531,7 @@ async function loadData(){
         .map(normalizeDepartment)
         .filter(d => d.Department);
     }catch(depErr){
-      console.warn("Department table not available yet. Using link departments only:", depErr.message || depErr);
+      console.warn("Department table unavailable. Using departments from links:", depErr.message || depErr);
       departmentRows = [];
     }
 
@@ -1546,30 +1549,24 @@ async function loadData(){
         .map(normalizeSubDepartment)
         .filter(s => s.Department && s.SubDepartment);
     }catch(subErr){
-      console.warn("Sub-department table not available yet. Using link sub-departments only:", subErr.message || subErr);
+      console.warn("Sub-department table unavailable. Using sub-departments from links:", subErr.message || subErr);
       subDepartmentRows = [];
     }
-
-    localRequests = getLocalRequests();
 
     buildMaps();
     await loadVoteCounts();
     render();
 
-    setDbStatus("ok", `${rawRows.length} links`);
-  }catch(e){
-    console.error(e);
-
+    setDbStatus("ok", `${rawLinks.length} links`);
+  }catch(err){
+    console.error(err);
     setDbStatus("bad", "DB error");
-
-    els.depGrid.classList.remove("hidden");
-    els.subGrid.classList.add("hidden");
 
     els.depGrid.innerHTML = `
       <div class="empty">
-        <strong>Failed to load Supabase data.</strong><br>
-        ${esc(e.message || e)}<br><br>
-        Check table name, columns, and RLS SELECT policy.
+        <strong>Failed to load Supabase data.</strong>
+        ${esc(err.message || err)}<br><br>
+        Check table names, columns, and RLS SELECT policy.
       </div>
     `;
   }
@@ -1584,17 +1581,20 @@ function buildMaps(){
     if(!map[dep]){
       map[dep] = {
         dep,
-        subs:[],
-        imageUrl:imageUrl || "",
-        totalLinks:0,
+        imageUrl:"",
         sortOrder:Number(sortOrder || 999999),
+        totalLinks:0,
         pending:!!pending,
-        pendingSubs:new Set()
+        subMap:new Map()
       };
     }
 
     if(imageUrl && !map[dep].imageUrl){
       map[dep].imageUrl = imageUrl;
+    }
+
+    if(Number(sortOrder) < map[dep].sortOrder){
+      map[dep].sortOrder = Number(sortOrder);
     }
 
     if(pending){
@@ -1604,46 +1604,55 @@ function buildMaps(){
     return map[dep];
   }
 
-  function addSub(dep, sub, pending=false){
-    const d = ensureDep(dep, "", 999999, false);
+  function addSub(dep, sub, sortOrder=999999, pending=false){
+    const d = ensureDep(dep);
 
     if(!d || !sub) return;
 
-    if(!d.subs.includes(sub)){
-      d.subs.push(sub);
-    }
+    const old = d.subMap.get(sub);
 
-    if(pending){
-      d.pendingSubs.add(sub);
+    if(!old){
+      d.subMap.set(sub, {
+        name:sub,
+        sortOrder:Number(sortOrder || 999999),
+        pending:!!pending
+      });
+    }else{
+      old.sortOrder = Math.min(old.sortOrder, Number(sortOrder || 999999));
+      old.pending = old.pending || !!pending;
     }
   }
 
   departmentRows.forEach(row => {
-    const depImg = firstGood(row.ImageURL, getPublicImage(row.ImagePath));
-    ensureDep(row.Department, depImg, row.SortOrder || 0, false);
+    ensureDep(
+      row.Department,
+      firstGood(row.ImageURL, getPublicImage(row.ImagePath)),
+      row.SortOrder || 0,
+      false
+    );
   });
 
   subDepartmentRows.forEach(row => {
-    ensureDep(row.Department, "", row.SortOrder || 0, false);
-    addSub(row.Department, row.SubDepartment, false);
+    ensureDep(row.Department, "", 999999, false);
+    addSub(row.Department, row.SubDepartment, row.SortOrder || 0, false);
   });
 
-  rawRows.forEach(row => {
-    const dep = row.Department;
-    const sub = row.SubDepartment;
-    const depImg = departmentImageFromRow(row);
-    const d = ensureDep(dep, depImg, 999999, false);
+  rawLinks.forEach(row => {
+    const depImage = firstGood(
+      row.DepartmentImageURL,
+      getPublicImage(row.DepartmentImagePath),
+      departmentImageFromRow(row),
+      linkDepartmentImage(row)
+    );
 
-    if(d && depImg && !d.imageUrl){
-      d.imageUrl = depImg;
-    }
-
-    if(sub){
-      addSub(dep, sub, false);
-    }
+    const d = ensureDep(row.Department, depImage, 999999, false);
 
     if(d){
       d.totalLinks++;
+    }
+
+    if(row.SubDepartment){
+      addSub(row.Department, row.SubDepartment, 999999, false);
     }
   });
 
@@ -1658,12 +1667,12 @@ function buildMaps(){
 
   localRequestsFor("sub_department").forEach(req => {
     ensureDep(req.department, "", 999998, false);
-    addSub(req.department, req.sub_department, true);
+    addSub(req.department, req.sub_department, 999998, true);
   });
 
   localRequestsFor("link").forEach(req => {
     const d = ensureDep(req.department, "", 999998, false);
-    addSub(req.department, req.sub_department || "General", true);
+    addSub(req.department, req.sub_department || "General", 999998, true);
 
     if(d){
       d.totalLinks++;
@@ -1671,20 +1680,38 @@ function buildMaps(){
   });
 
   departmentsData = Object.values(map)
-    .map(d => ({
-      ...d,
-      subs: d.subs.sort((a,b) => a.localeCompare(b)),
-      pendingSubs:[...d.pendingSubs],
-      imageUrl: d.imageUrl || fallbackImage(d.dep)
-    }))
-    .sort((a,b) => (a.sortOrder - b.sortOrder) || a.dep.localeCompare(b.dep));
+    .map(d => {
+      const subs = [...d.subMap.values()]
+        .sort((a,b) => (a.sortOrder - b.sortOrder) || a.name.localeCompare(b.name));
 
-  updateTitleMeta();
+      return {
+        ...d,
+        subs,
+        imageUrl:d.imageUrl || ""
+      };
+    })
+    .sort((a,b) => (a.sortOrder - b.sortOrder) || a.dep.localeCompare(b.dep));
 }
 
 /* =========================================================
-   Vote Logic
+   Votes
 ========================================================= */
+
+function makeVoterKey(){
+  const existing = localStorage.getItem(LS.VOTER_KEY);
+  if(existing) return existing;
+
+  const key = crypto.randomUUID
+    ? crypto.randomUUID()
+    : "rv_" + Date.now() + "_" + Math.random().toString(36).slice(2);
+
+  localStorage.setItem(LS.VOTER_KEY, key);
+  return key;
+}
+
+function getVoterKey(){
+  return makeVoterKey();
+}
 
 async function loadVoteCounts(){
   voteCounts = {};
@@ -1698,14 +1725,12 @@ async function loadVoteCounts(){
       voteCounts[row.department] = Number(row.total_votes || 0);
     });
   }catch(err){
-    console.warn("Could not load vote counts:", err.message || err);
+    console.warn("Vote counts unavailable:", err.message || err);
   }
 
   try{
-    const voterKey = getVoterKey();
-
     const { data, error } = await db.rpc("rv_public_department_vote_statuses", {
-      p_voter_key: voterKey
+      p_voter_key:getVoterKey()
     });
 
     if(error) throw error;
@@ -1714,7 +1739,7 @@ async function loadVoteCounts(){
       userVoteStatus[row.department] = !!row.has_voted;
     });
   }catch(err){
-    console.warn("Could not load vote status:", err.message || err);
+    console.warn("Vote status unavailable:", err.message || err);
   }
 }
 
@@ -1729,16 +1754,13 @@ function hasVoted(dep){
 async function voteDepartment(dep, button){
   if(!dep || !button) return;
 
-  const oldText = button.innerHTML;
   button.disabled = true;
-  button.innerHTML = `...`;
+  button.innerHTML = "...";
 
   try{
-    const voterKey = getVoterKey();
-
     const { data, error } = await db.rpc("rv_public_vote_department", {
-      p_department: dep,
-      p_voter_key: voterKey
+      p_department:dep,
+      p_voter_key:getVoterKey()
     });
 
     if(error) throw error;
@@ -1747,18 +1769,177 @@ async function voteDepartment(dep, button){
 
     if(first){
       voteCounts[dep] = Number(first.total_votes || getVoteCount(dep));
-      userVoteStatus[dep] = true;
     }else{
       voteCounts[dep] = getVoteCount(dep) + 1;
-      userVoteStatus[dep] = true;
     }
 
-    renderDepartments(false);
+    userVoteStatus[dep] = true;
+    renderDepartments();
   }catch(err){
     console.error(err);
     alert("Could not save vote. Please try again.");
-    button.disabled = false;
-    button.innerHTML = oldText;
+    await loadVoteCounts();
+    renderDepartments();
+  }
+}
+
+/* =========================================================
+   Script Links
+========================================================= */
+
+function getRowKey(row){
+  return String(
+    row.setting_key ??
+    row.key ??
+    row.name ??
+    row.setting ??
+    row.slug ??
+    row.title ??
+    ""
+  ).trim().toLowerCase();
+}
+
+function getRowValue(row){
+  return firstGood(
+    row.setting_value,
+    row.value,
+    row.url,
+    row.script_url,
+    row.download_url,
+    row.link,
+    row.href
+  );
+}
+
+function isRanvexsiScriptSettingKey(key){
+  if(!key) return false;
+
+  return (
+    key === "ranvexsi_ui_script_url" ||
+    key === "ranvexsi_script_url" ||
+    key === "tampermonkey_script_url" ||
+    key === "tampermonkey_url" ||
+    key === "script_url" ||
+    key === "userscript_url" ||
+    (key.includes("ranvexsi") && key.includes("script"))
+  );
+}
+
+function isAmazonScriptsSettingKey(key){
+  if(!key) return false;
+
+  return (
+    key === "amazon_scripts_pack_url" ||
+    key === "amazon_script_pack_url" ||
+    key === "all_amazon_scripts_url" ||
+    key === "amazon_scripts_url" ||
+    key === "amazon_pack_url" ||
+    (key.includes("amazon") && key.includes("script"))
+  );
+}
+
+function setScriptOption(el, url){
+  const clean = String(url || "").trim();
+
+  if(!clean || clean === "#"){
+    el.classList.add("hidden");
+    el.href = "#";
+    return false;
+  }
+
+  el.href = safeUrl(clean);
+  el.classList.remove("hidden");
+  return true;
+}
+
+function showScriptOptions(ranvexsiUrl, amazonUrl){
+  const hasRanvexsi = setScriptOption(els.btnRanvexsiScript, ranvexsiUrl);
+  const hasAmazon = setScriptOption(els.btnAmazonScripts, amazonUrl);
+  const hasAny = hasRanvexsi || hasAmazon;
+
+  els.scriptWrap.classList.toggle("hidden", !hasAny);
+
+  if(!hasAny){
+    els.scriptMenu.classList.remove("show");
+  }
+}
+
+async function loadScriptLink(){
+  let ranvexsiUrl = "";
+  let amazonUrl = "";
+
+  try{
+    const { data, error } = await db
+      .from(SETTINGS_TABLE)
+      .select("*")
+      .limit(100);
+
+    if(error) throw error;
+
+    const rows = Array.isArray(data) ? data : [];
+
+    const foundRanvexsi = rows.find(row => {
+      const key = getRowKey(row);
+      return isRanvexsiScriptSettingKey(key) && getRowValue(row);
+    });
+
+    const foundAmazon = rows.find(row => {
+      const key = getRowKey(row);
+      return isAmazonScriptsSettingKey(key) && getRowValue(row);
+    });
+
+    if(foundRanvexsi){
+      ranvexsiUrl = getRowValue(foundRanvexsi);
+    }
+
+    if(foundAmazon){
+      amazonUrl = getRowValue(foundAmazon);
+    }
+
+    showScriptOptions(ranvexsiUrl, amazonUrl);
+  }catch(err){
+    console.warn("Script settings unavailable:", err.message || err);
+    showScriptOptions("", "");
+  }
+}
+
+/* =========================================================
+   Views / Steps
+========================================================= */
+
+function updateViewUI(today, total){
+  els.viewsToday.textContent = String(today || 0);
+  els.viewsTotal.textContent = String(total || 0);
+}
+
+async function trackVisit(){
+  try{
+    const { data, error } = await db.rpc("rv_track_visit");
+    if(error) throw error;
+
+    const today = Number(data?.daily_steps || data?.daily_views || 0);
+    const total = Number(data?.total_views || 0);
+
+    updateViewUI(today, total);
+  }catch(err){
+    console.warn("Supabase step tracking unavailable. Using local fallback:", err.message || err);
+
+    const key = todayKey();
+    const saved = JSON.parse(localStorage.getItem(LS.LOCAL_DAILY_VIEWS) || "{}");
+
+    if(saved.date !== key){
+      saved.date = key;
+      saved.count = 0;
+    }
+
+    saved.count = Number(saved.count || 0) + 1;
+
+    const total = Number(localStorage.getItem(LS.LOCAL_TOTAL_VIEWS) || 0) + 1;
+
+    localStorage.setItem(LS.LOCAL_DAILY_VIEWS, JSON.stringify(saved));
+    localStorage.setItem(LS.LOCAL_TOTAL_VIEWS, String(total));
+
+    updateViewUI(saved.count, total);
   }
 }
 
@@ -1767,61 +1948,40 @@ async function voteDepartment(dep, button){
 ========================================================= */
 
 function render(){
-  updateRequestLink();
-  updateTitleMeta();
-  setSearchPlaceholder();
+  updateTopInfo();
+  renderDepartments();
+  renderSubDepartments();
+}
 
-  if(currentMode === "departments"){
-    renderDepartments();
+function updateTopInfo(){
+  if(currentDep){
+    const depObj = departmentsData.find(d => d.dep === currentDep);
+    const subCount = depObj?.subs?.length || 0;
+    const linkCount = countAllLinksInDepartment(currentDep);
+
+    els.pageTitle.textContent = currentDep;
+    els.pageSubtitle.textContent = "Choose a sub-department to open its links.";
+    els.titleMeta.textContent = `${subCount} sub-depts · ${linkCount} links`;
+    els.search.placeholder = "Search sub-departments...";
+    els.btnRequestTop.href = buildUrl("request.html", { dep:currentDep });
   }else{
-    renderSubDepartments();
+    els.pageTitle.textContent = "Departments";
+    els.pageSubtitle.textContent = "Choose a department, then open the sub-department you need.";
+    els.titleMeta.textContent = `${departmentsData.length} departments · ${totalSubCount()} sub-depts`;
+    els.search.placeholder = "Search departments...";
+    els.btnRequestTop.href = "request.html";
   }
 }
 
-function updateHeroForDepartments(){
-  els.btnBack.classList.add("hidden");
-  els.btnOpenAllLinks.classList.add("hidden");
-
-  els.pageTitle.textContent = "Departments";
-
-  els.depGrid.classList.remove("hidden");
-  els.subGrid.classList.add("hidden");
-
-  updateTitleMeta();
-  setSearchPlaceholder();
-}
-
-function updateHeroForSubDepartments(){
-  els.btnBack.classList.remove("hidden");
-  els.btnOpenAllLinks.classList.remove("hidden");
-
-  els.pageTitle.textContent = currentDep || "Sub-Departments";
-
-  els.depGrid.classList.add("hidden");
-  els.subGrid.classList.remove("hidden");
-
-  updateTitleMeta();
-  setSearchPlaceholder();
-}
-
-function renderDepartments(updateHero=true){
-  currentMode = "departments";
-  currentDep = null;
-
-  if(updateHero){
-    updateHeroForDepartments();
-  }
-
-  updateRequestLink();
-
-  const q = els.search.value.trim().toLowerCase();
+function renderDepartments(){
+  const q = currentDep ? "" : els.search.value.trim().toLowerCase();
 
   let data = departmentsData;
 
   if(q){
     data = data.filter(d =>
       d.dep.toLowerCase().includes(q) ||
-      d.subs.some(s => s.toLowerCase().includes(q))
+      d.subs.some(s => s.name.toLowerCase().includes(q))
     );
   }
 
@@ -1830,8 +1990,8 @@ function renderDepartments(updateHero=true){
   if(data.length === 0){
     els.depGrid.innerHTML = `
       <div class="empty">
-        <strong>No departments found.</strong><br>
-        Use the request button to submit a new department.
+        <strong>No departments found.</strong>
+        Try another search or submit a request.
       </div>
     `;
     return;
@@ -1840,35 +2000,67 @@ function renderDepartments(updateHero=true){
   data.forEach(d => {
     const votes = getVoteCount(d.dep);
     const voted = hasVoted(d.dep);
+    const locked = needsPaPassword(d.dep, "");
+    const imageHtml = d.imageUrl
+      ? `<img class="dept-img" src="${esc(d.imageUrl)}" alt="${esc(d.dep)}" loading="lazy" decoding="async" onerror="this.remove()">`
+      : "";
 
-    const card = document.createElement("div");
-    card.className = "card" + (d.pending ? " pending-card" : "");
-    card.dataset.id = d.dep;
+    const card = document.createElement("article");
+    card.className = "dept-card" + (currentDep === d.dep ? " active" : "");
+    card.dataset.department = d.dep;
+    card.tabIndex = 0;
+    card.setAttribute("role", "button");
+    card.setAttribute("aria-label", `Open ${d.dep}`);
 
     card.innerHTML = `
-      <img class="img" loading="lazy" decoding="async" src="${esc(d.imageUrl)}" alt="${esc(d.dep)}">
-      <div class="veil"></div>
-      <div class="overlay"></div>
+      ${imageHtml}
+      <div class="dept-overlay"></div>
 
-      <button class="vote-mini ${voted ? "voted" : ""}" type="button" title="Vote for ${esc(d.dep)}">
-        👍 <span>${votes}</span>
-      </button>
+      <div class="dept-top">
+        <button class="vote-mini ${voted ? "voted" : ""}" type="button" title="Vote">
+          👍 <span>${votes}</span>
+        </button>
 
-      ${d.pending ? `<div class="pending-ribbon">Pending</div>` : ``}
-
-      <div class="label">
-        <div class="label-main">
-          <span class="label-title">${esc(d.dep)}</span>
+        <div style="display:flex;gap:6px;">
+          ${locked ? `<span class="lock-mini">🔒</span>` : ``}
+          ${d.pending ? `<span class="pending-mini">Pending</span>` : ``}
         </div>
-        <span class="pill">${d.pending ? "Pending" : `${d.subs.length} subs`}</span>
+      </div>
+
+      <div class="dept-label">
+        <div class="dept-title-row">
+          <div class="dept-title">${esc(d.dep)}</div>
+          <div class="dept-count">${d.subs.length} subs</div>
+        </div>
+        <div class="dept-meta">${d.totalLinks} links available</div>
       </div>
     `;
 
-    card.addEventListener("click", () => {
-      currentDep = d.dep;
-      currentMode = "subdepartments";
-      els.search.value = "";
-      renderSubDepartments();
+    const openDepartment = () => {
+      const action = () => {
+        currentDep = d.dep;
+        els.search.value = "";
+        render();
+        els.selectedPanel.scrollIntoView({ behavior:"smooth", block:"start" });
+      };
+
+      if(needsPaPassword(d.dep, "")){
+        openPaLock(action);
+      }else{
+        action();
+      }
+    };
+
+    card.addEventListener("click", (event) => {
+      if(event.target.closest("button")) return;
+      openDepartment();
+    });
+
+    card.addEventListener("keydown", (event) => {
+      if(event.key === "Enter" || event.key === " "){
+        event.preventDefault();
+        openDepartment();
+      }
     });
 
     const voteBtn = card.querySelector(".vote-mini");
@@ -1884,236 +2076,95 @@ function renderDepartments(updateHero=true){
 }
 
 function renderSubDepartments(){
-  currentMode = "subdepartments";
-
   if(!currentDep){
-    goHome();
+    els.selectedPanel.classList.add("hidden");
+    els.subGrid.innerHTML = "";
     return;
   }
-
-  updateHeroForSubDepartments();
-  updateRequestLink();
 
   const depObj = departmentsData.find(d => d.dep === currentDep);
 
   if(!depObj){
-    goHome();
+    currentDep = "";
+    els.selectedPanel.classList.add("hidden");
+    render();
     return;
   }
 
-  const q = els.search.value.trim().toLowerCase();
-  const subs = depObj.subs || [];
+  els.selectedPanel.classList.remove("hidden");
+  els.selectedTitle.textContent = currentDep;
+  els.selectedSub.textContent = `${depObj.subs.length} sub-departments · ${countAllLinksInDepartment(currentDep)} links`;
 
-  let filtered = q
-    ? subs.filter(s => s.toLowerCase().includes(q))
-    : subs;
+  const q = els.search.value.trim().toLowerCase();
+
+  let subs = depObj.subs || [];
+
+  if(q){
+    subs = subs.filter(s =>
+      s.name.toLowerCase().includes(q) ||
+      String(countLinksInSub(currentDep, s.name)).includes(q)
+    );
+  }
 
   els.subGrid.innerHTML = "";
 
-  const totalLinks = countAllLinksInDepartment(currentDep);
-
-  if(totalLinks > 0){
-    const allChip = document.createElement("div");
-    allChip.className = "subchip all";
-
-    allChip.innerHTML = `
-      <div class="sub-top">
-        <div class="sub-icon">★</div>
-        <div class="sub-count">${totalLinks}</div>
-      </div>
-      <div>
-        <div class="sub-title">Open All</div>
-        <div class="sub-desc">Everything under ${esc(currentDep)}</div>
-      </div>
-    `;
-
-    allChip.addEventListener("click", () => {
-      window.location.href = buildUrl("links.html", {
-        dep: currentDep,
-        sub: "__all__"
-      });
-    });
-
-    if(!q || "open all".includes(q) || "all".includes(q)){
-      els.subGrid.appendChild(allChip);
-    }
-  }
-
-  if(filtered.length === 0 && (!q || !"open all".includes(q))){
+  if(subs.length === 0){
     els.subGrid.innerHTML = `
       <div class="empty">
-        <strong>No sub-departments found.</strong><br>
-        Use the request button to submit a new sub-department.
+        <strong>No sub-departments found.</strong>
+        Try another search or submit a request for this department.
       </div>
     `;
     return;
   }
 
-  filtered.forEach(sub => {
-    const isPendingSub = depObj.pendingSubs?.includes(sub);
+  subs.forEach(sub => {
+    const linkCount = countLinksInSub(currentDep, sub.name);
+    const locked = needsPaPassword(currentDep, sub.name);
 
-    const chip = document.createElement("div");
-    chip.className = "subchip" + (isPendingSub ? " pending-card" : "");
+    const chip = document.createElement("article");
+    chip.className = "sub-card" + (locked ? " locked" : "");
+    chip.tabIndex = 0;
+    chip.setAttribute("role", "button");
+    chip.setAttribute("aria-label", `Open ${sub.name}`);
 
     chip.innerHTML = `
-      <div class="sub-top">
-        <div class="sub-icon">↗</div>
-        <div class="sub-count">${countLinksInSub(currentDep, sub)}</div>
+      <div class="sub-head">
+        <div class="sub-icon">${locked ? "🔒" : "↗"}</div>
+        <div class="sub-count">${linkCount}</div>
       </div>
 
-      ${isPendingSub ? `<div class="pending-ribbon">Pending</div>` : ``}
-
       <div>
-        <div class="sub-title">${esc(sub)}</div>
-        <div class="sub-desc">${isPendingSub ? "Waiting for admin approval" : "Open tools"}</div>
+        <div class="sub-title">${esc(sub.name)}</div>
+        <div class="sub-desc">${locked ? "Password required" : "Open links"}</div>
       </div>
     `;
 
-    chip.addEventListener("click", () => {
-      window.location.href = buildUrl("links.html", {
-        dep: currentDep,
-        sub
-      });
+    const openSubDepartment = () => {
+      const action = () => {
+        window.location.href = buildUrl("links.html", {
+          dep:currentDep,
+          sub:sub.name
+        });
+      };
+
+      if(needsPaPassword(currentDep, sub.name)){
+        openPaLock(action);
+      }else{
+        action();
+      }
+    };
+
+    chip.addEventListener("click", openSubDepartment);
+
+    chip.addEventListener("keydown", (event) => {
+      if(event.key === "Enter" || event.key === " "){
+        event.preventDefault();
+        openSubDepartment();
+      }
     });
 
     els.subGrid.appendChild(chip);
-  });
-}
-
-function goHome(){
-  currentDep = null;
-  currentMode = "departments";
-  els.search.value = "";
-  renderDepartments();
-}
-
-function goBack(){
-  if(currentMode === "subdepartments"){
-    goHome();
-  }
-}
-
-function openAllLinks(){
-  if(!currentDep) return;
-
-  window.location.href = buildUrl("links.html", {
-    dep: currentDep,
-    sub: "__all__"
-  });
-}
-
-/* =========================================================
-   Gallery
-========================================================= */
-
-function fallbackGalleryFromLinks(){
-  const seen = new Set();
-  const items = [];
-
-  rawRows.forEach(row => {
-    const url = firstGood(imageFromRow(row), departmentImageFromRow(row));
-
-    if(!url || seen.has(url)) return;
-
-    seen.add(url);
-
-    items.push({
-      id:"",
-      title: row.LinkName || row.Department || "Existing image",
-      category: row.Department || "",
-      url
-    });
-  });
-
-  return items.slice(0, 100);
-}
-
-async function loadGallery(){
-  const fallback = fallbackGalleryFromLinks();
-
-  try{
-    const { data, error } = await db
-      .from(GALLERY_TABLE)
-      .select("id,title,category,image_url,image_path,is_active")
-      .eq("is_active", true)
-      .order("created_at", { ascending:false })
-      .limit(120);
-
-    if(error) throw error;
-
-    const fromTable = (data || [])
-      .map(item => {
-        const url = firstGood(item.image_url, getPublicImage(item.image_path));
-
-        return {
-          id:item.id || "",
-          title:item.title || "Gallery image",
-          category:item.category || "",
-          url
-        };
-      })
-      .filter(x => x.url);
-
-    const merged = [];
-    const seen = new Set();
-
-    [...fromTable, ...fallback].forEach(item => {
-      if(!item.url || seen.has(item.url)) return;
-      seen.add(item.url);
-      merged.push(item);
-    });
-
-    galleryImages = merged;
-  }catch(e){
-    console.warn("Gallery table not available, using existing link images:", e.message || e);
-    galleryImages = fallback;
-  }
-}
-
-/* =========================================================
-   Realtime
-========================================================= */
-
-function setupRealtime(){
-  realtimeChannels.forEach(ch => {
-    try{
-      db.removeChannel(ch);
-    }catch{}
-  });
-
-  realtimeChannels = [];
-
-  const tables = [
-    SUPABASE_TABLE,
-    DEPT_TABLE,
-    SUB_TABLE,
-    REQUEST_TABLE,
-    GALLERY_TABLE,
-    VOTES_TABLE,
-    SETTINGS_TABLE
-  ];
-
-  tables.forEach(table => {
-    try{
-      const channel = db
-        .channel(`rv-index-live-${table}`)
-        .on(
-          "postgres_changes",
-          { event:"*", schema:"public", table },
-          async () => {
-            if(table === SETTINGS_TABLE){
-              await loadScriptLink();
-            }else{
-              await loadData();
-            }
-          }
-        )
-        .subscribe();
-
-      realtimeChannels.push(channel);
-    }catch(e){
-      console.warn("Realtime not started for", table, e);
-    }
   });
 }
 
@@ -2122,20 +2173,55 @@ function setupRealtime(){
 ========================================================= */
 
 els.btnTheme.addEventListener("click", toggleTheme);
+els.btnMedia.addEventListener("click", toggleMedia);
+els.btnMediaText.addEventListener("click", toggleMedia);
 
 els.btnRefresh.addEventListener("click", async () => {
   await loadData();
   await loadScriptLink();
 });
 
-els.btnBack.addEventListener("click", goBack);
-els.btnOpenAllLinks.addEventListener("click", openAllLinks);
-
-els.gridCount.addEventListener("change", () => {
-  applyGrid(els.gridCount.value);
+els.btnClearDepartment.addEventListener("click", () => {
+  currentDep = "";
+  els.search.value = "";
+  render();
+  window.scrollTo({ top:0, behavior:"smooth" });
 });
 
-els.btnMedia.addEventListener("click", toggleMedia);
+els.btnScriptTop.addEventListener("click", (event) => {
+  event.preventDefault();
+  event.stopPropagation();
+  els.scriptMenu.classList.toggle("show");
+});
+
+els.scriptMenu.addEventListener("click", (event) => {
+  event.stopPropagation();
+
+  if(event.target.closest("a")){
+    els.scriptMenu.classList.remove("show");
+  }
+});
+
+document.addEventListener("click", (event) => {
+  if(!els.scriptWrap.contains(event.target)){
+    els.scriptMenu.classList.remove("show");
+  }
+});
+
+els.paUnlockBtn.addEventListener("click", submitPaPassword);
+els.paCancelBtn.addEventListener("click", closePaLock);
+
+els.paPasswordInput.addEventListener("keydown", (event) => {
+  if(event.key === "Enter"){
+    submitPaPassword();
+  }
+});
+
+els.paLockModal.addEventListener("click", (event) => {
+  if(event.target === els.paLockModal){
+    closePaLock();
+  }
+});
 
 let searchTimer = null;
 
@@ -2143,17 +2229,30 @@ els.search.addEventListener("input", () => {
   clearTimeout(searchTimer);
 
   searchTimer = setTimeout(() => {
-    if(currentMode === "departments"){
-      renderDepartments();
-    }else{
+    if(currentDep){
       renderSubDepartments();
+      updateTopInfo();
+    }else{
+      renderDepartments();
+      updateTopInfo();
     }
-  }, 150);
+  }, 120);
 });
 
 document.addEventListener("keydown", (event) => {
-  if(event.key === "Escape" && currentMode === "subdepartments"){
-    goHome();
+  if(event.key === "Escape"){
+    els.scriptMenu.classList.remove("show");
+
+    if(els.paLockModal.classList.contains("show")){
+      closePaLock();
+      return;
+    }
+
+    if(currentDep){
+      currentDep = "";
+      els.search.value = "";
+      render();
+    }
   }
 });
 
@@ -2163,12 +2262,16 @@ document.addEventListener("keydown", (event) => {
 
 async function init(){
   initTheme();
-  initPrefs();
+  initMedia();
   trackVisit();
+
   await loadData();
   await loadScriptLink();
-  await loadGallery();
-  setupRealtime();
+
+  /*
+    Realtime is intentionally disabled for smoother Amazon/work laptop scrolling.
+    Use the Refresh button when admin changes data.
+  */
 }
 
 init();
