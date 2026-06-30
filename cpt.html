@@ -336,6 +336,8 @@ const quarterRules = {
   Q3: { label:"Q3", range:"15:00 - 18:00", start:900, end:1080 }
 };
 
+const ignoredCptNumbers = new Set(["1188","1190","1192"]);
+
 const categories = [
   { key:"srOdd", title:"SR ODD" },
   { key:"srEven", title:"SR EVEN" },
@@ -389,6 +391,11 @@ function parseCptText(text){
     while((match = tokenRegex.exec(line)) !== null){
       const type = match[1].toUpperCase();
       const number = match[2];
+
+      if(ignoredCptNumbers.has(number)){
+        continue;
+      }
+
       if(type === "SR"){
         const bucket = Number(number) % 2 === 0 ? out.srEven : out.srOdd;
         addUnique(bucket, activeTime, number);
