@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ranvexsi CPT Label Tool</title>
+  <style id="pageStyle">@page{size:4in 7in;margin:0}</style>
+  <style>
+    :root{
+      --bg:#f4f6f8;
+      --panel:rgba(255,255,255,.88);
+      --panel-solid:#fff;
+      --ink:#15171a;
+      --muted:#68707b;
+      --line:#dfe3e8;
+      --accent:#111827;
+      --accent-soft:#eef1f5;
+      --success:#137a42;
+      --shadow:0 16px 44px rgba(15,23,42,.08);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--ink);background:
+      radial-gradient(circle at top left,#fff 0,#f7f8fa 34%,transparent 64%),
+      var(--bg)}
+    button,input,select{font:inherit}
+    button{cursor:pointer}
+    .app{min-height:100vh}
+    .topbar{
+      position:sticky;top:0;z-index:20;
+      display:flex;align-items:center;justify-content:space-between;gap:16px;
+      padding:12px 22px;
+      background:rgba(255,255,255,.78);
+      border-bottom:1px solid rgba(210,214,220,.86);
+      backdrop-filter:blur(18px);
+    }
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{
+      width:38px;height:38px;border-radius:12px;display:grid;place-items:center;
+      background:#111827;color:white;font-weight:900;letter-spacing:-1px;
+      box-shadow:0 8px 18px rgba(17,24,39,.18)
+    }
+    .brand-copy strong{display:block;font-size:15px}
+    .brand-copy span{display:block;font-size:12px;color:var(--muted);margin-top:1px}
+    .top-actions{display:flex;gap:8px;align-items:center}
+    .btn{
+      border:1px solid var(--line);background:white;color:var(--ink);
+      border-radius:11px;padding:9px 13px;font-weight:750;
+      transition:.16s ease;
+    }
+    .btn:hover{transform:translateY(-1px);box-shadow:0 7px 20px rgba(15,23,42,.08)}
+    .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+    .btn.ghost{background:transparent}
+    .btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+    main{width:min(1480px,calc(100% - 32px));margin:22px auto 48px}
+    .hero{
+      display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr);
+      gap:18px;margin-bottom:18px
+    }
+    .panel{
+      background:var(--panel);
+      border:1px solid rgba(218,222,228,.94);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(16px);
+    }
+    .upload-card{padding:22px}
+    .eyebrow{font-size:11px;font-weight:850;letter-spacing:.12em;color:#5e6671;text-transform:uppercase}
+    h1{margin:8px 0 7px;font-size:clamp(25px,3vw,40px);letter-spacing:-.045em;line-height:1}
+    .sub{margin:0;color:var(--muted);font-size:14px;line-height:1.55}
+    .dropzone{
+      margin-top:20px;border:1.5px dashed #aeb5bf;border-radius:16px;
+      padding:20px;background:rgba(248,249,251,.78);
+      display:flex;align-items:center;justify-content:space-between;gap:16px;
+      transition:.18s ease
+    }
+    .dropzone.drag{border-color:#111827;background:#f1f3f6;transform:scale(.997)}
+    .drop-copy strong{display:block;font-size:14px}
+    .drop-copy span{display:block;color:var(--muted);font-size:12px;margin-top:5px}
+    .file-input{display:none}
+    .status-card{padding:20px;display:flex;flex-direction:column;justify-content:space-between}
+    .status-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+    .status-title{font-weight:850;font-size:14px}
+    .status-file{font-size:12px;color:var(--muted);margin-top:5px;word-break:break-word}
+    .dot{width:10px;height:10px;border-radius:50%;background:#afb6c0;margin-top:4px;box-shadow:0 0 0 5px #f0f2f5}
+    .dot.ready{background:#1d9a58;box-shadow:0 0 0 5px #e7f6ed}
+    .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:18px}
+    .stat{border:1px solid var(--line);border-radius:13px;padding:12px;background:#fff}
+    .stat b{display:block;font-size:22px;letter-spacing:-.04em}
+    .stat span{display:block;font-size:11px;color:var(--muted);margin-top:3px}
+    .controls{
+      display:grid;grid-template-columns:minmax(260px,1fr) minmax(240px,.7fr) auto;
+      gap:14px;padding:16px;margin-bottom:18px;align-items:end
+    }
+    .control-group label{display:block;font-size:11px;font-weight:850;letter-spacing:.07em;text-transform:uppercase;color:#626a75;margin:0 0 8px}
+    .segments{display:flex;gap:8px;flex-wrap:wrap}
+    .segment{
+      min-width:112px;border:1px solid var(--line);background:#fff;border-radius:12px;
+      padding:10px 12px;text-align:left
+    }
+    .segment strong{display:block;font-size:13px}
+    .segment span{display:block;font-size:11px;color:var(--muted);margin-top:3px}
+    .segment.active{background:#111827;color:#fff;border-color:#111827}
+    .segment.active span{color:#cdd2da}
+    select{
+      width:100%;border:1px solid var(--line);background:#fff;border-radius:12px;
+      padding:11px 12px;color:var(--ink);outline:none
+    }
+    .select-actions{display:flex;gap:8px;justify-content:flex-end}
+    .section-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:5px 2px 12px}
+    .section-head h2{font-size:17px;margin:0;letter-spacing:-.02em}
+    .section-head p{font-size:12px;color:var(--muted);margin:4px 0 0}
+    .cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+    .category-card{
+      position:relative;background:#fff;border:1px solid var(--line);border-radius:17px;
+      min-height:390px;padding:16px;box-shadow:0 10px 28px rgba(15,23,42,.045);
+      transition:.16s ease
+    }
+    .category-card.selected{border-color:#111827;box-shadow:0 0 0 2px #111827,0 15px 35px rgba(15,23,42,.08)}
+    .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-bottom:13px;border-bottom:1px solid var(--line)}
+    .card-title{font-size:17px;font-weight:900;letter-spacing:-.025em}
+    .card-count{font-size:11px;color:var(--muted);margin-top:3px}
+    .check{
+      appearance:none;width:23px;height:23px;border:1.5px solid #aeb5bf;border-radius:7px;background:#fff;display:grid;place-items:center;
+      flex:0 0 auto
+    }
+    .check:checked{background:#111827;border-color:#111827}
+    .check:checked::after{content:"â";color:#fff;font-weight:900;font-size:15px;line-height:1}
+    .time-list{padding-top:5px}
+    .time-row{padding:11px 0;border-bottom:1px solid #edf0f3}
+    .time-row:last-child{border-bottom:0}
+    .time-label{font-size:12px;font-weight:850;margin-bottom:7px}
+    .number-grid{display:flex;flex-wrap:wrap;gap:6px}
+    .pill{
+      min-width:48px;padding:6px 7px;text-align:center;border-radius:8px;
+      background:var(--accent-soft);font-weight:850;font-size:13px;letter-spacing:.02em
+    }
+    .empty{display:grid;place-items:center;text-align:center;min-height:270px;color:var(--muted);font-size:13px;line-height:1.5}
+    .print-summary{
+      margin-top:16px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:14px
+    }
+    .summary-copy strong{display:block;font-size:13px}
+    .summary-copy span{display:block;font-size:12px;color:var(--muted);margin-top:4px}
+    .summary-actions{display:flex;gap:8px}
+    .toast{
+      position:fixed;left:50%;bottom:24px;transform:translate(-50%,16px);
+      opacity:0;pointer-events:none;background:#111827;color:white;border-radius:12px;
+      padding:10px 14px;font-size:13px;font-weight:750;transition:.2s ease;z-index:100
+    }
+    .toast.show{opacity:1;transform:translate(-50%,0)}
+    #printArea{display:none}
+
+    @media(max-width:1100px){
+      .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .controls{grid-template-columns:1fr 1fr}
+      .select-actions{grid-column:1/-1;justify-content:flex-start}
+    }
+    @media(max-width:760px){
+      .topbar{padding:10px 14px}.brand-copy span{display:none}
+      main{width:min(100% - 20px,1480px);margin-top:12px}
+      .hero{grid-template-columns:1fr}
+      .controls{grid-template-columns:1fr}
+      .select-actions{grid-column:auto}
+      .cards{grid-template-columns:1fr}
+      .dropzone{align-items:flex-start;flex-direction:column}
+      .print-summary{align-items:flex-start;flex-direction:column}
+      .summary-actions{width:100%}.summary-actions .btn{flex:1}
+    }
+
+    @media print{
+      html,body{background:#fff!important}
+      body *{visibility:hidden!important}
+      #printArea,#printArea *{visibility:visible!important}
+      #printArea{
+        display:block!important;
+        position:absolute;left:0;top:0;width:100%;
+      }
+      .print-page{
+        page-break-after:always;
+        break-after:page;
+        overflow:hidden;
+        background:#fff;
+        color:#000;
+        font-family:Arial,Helvetica,sans-serif;
+      }
+      .print-page:last-child{page-break-after:auto;break-after:auto}
+      .label-sheet{
+        width:4in;height:7in;
+        padding:.18in;
+        display:flex;flex-direction:column;
+        margin:0 auto;
+        border:0;
+      }
+      body.print-letter .print-page{
+        width:8.5in;height:11in;
+        display:grid;place-items:center;
+      }
+      body.print-letter .label-sheet{
+        border:1px solid #000;
+      }
+      body.print-label .print-page{
+        width:4in;height:7in;
+      }
+      .label-head{
+        display:flex;align-items:flex-end;justify-content:space-between;gap:10px;
+        border-bottom:2px solid #000;padding-bottom:.09in
+      }
+      .label-category{font-size:22pt;font-weight:900;line-height:1;letter-spacing:-.5pt}
+      .label-quarter{font-size:9pt;font-weight:800;text-align:right;white-space:nowrap}
+      .label-body{flex:1;padding-top:.08in;overflow:hidden}
+      .label-time{
+        border-bottom:1px solid #000;
+        padding:.06in 0 .07in
+      }
+      .label-time:last-child{border-bottom:0}
+      .label-time-title{font-size:10pt;font-weight:900;margin-bottom:.045in}
+      .label-numbers{display:grid;grid-template-columns:repeat(4,1fr);gap:.045in}
+      .label-number{
+        border:1px solid #000;border-radius:.045in;
+        text-align:center;font-size:15pt;font-weight:900;
+        line-height:1;padding:.055in .02in
+      }
+      .label-sheet.medium .label-number{font-size:13pt;padding:.045in .015in}
+      .label-sheet.compact .label-number{font-size:11pt;padding:.036in .012in}
+      .label-sheet.compact .label-time-title{font-size:9pt;margin-bottom:.03in}
+      .label-foot{
+        border-top:2px solid #000;padding-top:.055in;
+        display:flex;justify-content:space-between;
+        font-size:8pt;font-weight:800
+      }
+    }
+  </style>
+</head>
+<body class="print-label">
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">RX</div>
+      <div class="brand-copy">
+        <strong>Ranvexsi CPT Labels</strong>
+        <span>Ship Dock Â· Process Assistant</span>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="btn ghost" id="resetBtn" type="button">Reset</button>
+      <button class="btn primary" id="printTopBtn" type="button">Print Selected</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="panel upload-card">
+        <div class="eyebrow">CPT sheet extractor</div>
+        <h1>Upload. Select. Print.</h1>
+        <p class="sub">The page separates SR odd, SR even, East Flats and West Flats by CPT time. Route names and other sheet details are ignored.</p>
+        <div class="dropzone" id="dropzone">
+          <div class="drop-copy">
+            <strong>Drop CPT CSV here</strong>
+            <span>CSV file exported from the CPT sheet</span>
+          </div>
+          <div>
+            <input class="file-input" id="fileInput" type="file" accept=".csv,text/csv" />
+            <button class="btn" id="browseBtn" type="button">Choose File</button>
+          </div>
+        </div>
+      </div>
+
+      <aside class="panel status-card">
+        <div class="status-row">
+          <div>
+            <div class="status-title" id="statusTitle">No CSV uploaded</div>
+            <div class="status-file" id="statusFile">Choose a CSV file to begin</div>
+          </div>
+          <div class="dot" id="statusDot"></div>
+        </div>
+        <div class="stats">
+          <div class="stat"><b id="cptCount">0</b><span>CPT numbers found</span></div>
+          <div class="stat"><b id="timeCount">0</b><span>CPT time groups</span></div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="panel controls">
+      <div class="control-group">
+        <label>Quarter</label>
+        <div class="segments" id="quarterSegments">
+          <button class="segment" data-quarter="Q1" type="button"><strong>Q1</strong><span>07:00â11:00</span></button>
+          <button class="segment active" data-quarter="Q2" type="button"><strong>Q2</strong><span>11:30â14:30</span></button>
+          <button class="segment" data-quarter="Q3" type="button"><strong>Q3</strong><span>15:00â18:00</span></button>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label>Paper size</label>
+        <select id="paperSize">
+          <option value="label">4 Ã 7 label</option>
+          <option value="letter">Letter sheet â label centered</option>
+        </select>
+      </div>
+
+      <div class="select-actions">
+        <button class="btn" id="selectAllBtn" type="button">Select All</button>
+        <button class="btn" id="clearBtn" type="button">Clear</button>
+      </div>
+    </section>
+
+    <div class="section-head">
+      <div>
+        <h2 id="previewHeading">Q2 label preview</h2>
+        <p>Choose exactly which labels you want to print.</p>
+      </div>
+    </div>
+
+    <section class="cards" id="categoryCards"></section>
+
+    <section class="panel print-summary">
+      <div class="summary-copy">
+        <strong id="summaryTitle">4 labels selected</strong>
+        <span id="summaryText">Each selected side prints on its own 4 Ã 7 page.</span>
+      </div>
+      <div class="summary-actions">
+        <button class="btn" id="previewBtn" type="button">Refresh Preview</button>
+        <button class="btn primary" id="printBtn" type="button">Print Selected</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div id="printArea"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const quarterRules = {
+  Q1: { label:"Q1", range:"07:00â11:00", start:420, end:660 },
+  Q2: { label:"Q2", range:"11:30â14:30", start:690, end:870 },
+  Q3: { label:"Q3", range:"15:00â18:00", start:900, end:1080 }
+};
+
+const categories = [
+  { key:"srOdd", title:"SR ODD" },
+  { key:"srEven", title:"SR EVEN" },
+  { key:"east", title:"EAST FLATS" },
+  { key:"west", title:"WEST FLATS" }
+];
+
+let currentQuarter = "Q2";
+let parsed = emptyParsed();
+let selected = new Set(categories.map(x => x.key));
+let loadedFileName = "";
+
+function emptyParsed(){
+  return { srOdd:{}, srEven:{}, east:{}, west:{}, ignored:{}, total:0, timeGroups:new Set() };
+}
+
+function timeToMinutes(time){
+  const m = /^(\d{1,2}):(\d{2})$/.exec(time || "");
+  return m ? Number(m[1]) * 60 + Number(m[2]) : null;
+}
+
+function belongsToQuarter(time, quarter){
+  const mins = timeToMinutes(time);
+  const q = quarterRules[quarter];
+  return mins !== null && mins >= q.start && mins <= q.end;
+}
+
+function addUnique(bucket, time, number){
+  if(!bucket[time]) bucket[time] = [];
+  if(!bucket[time].includes(number)) bucket[time].push(number);
+}
+
+function parseCptText(text){
+  const out = emptyParsed();
+  let activeTime = null;
+  const lines = String(text || "").replace(/\r/g,"").split("\n");
+
+  for(const rawLine of lines){
+    const line = rawLine.trim();
+    const timeHeader = line.match(/(?:^|\s)(\d{1,2}:\d{2})\s*\|/i);
+    if(timeHeader){
+      activeTime = timeHeader[1].padStart(5,"0");
+      out.timeGroups.add(activeTime);
+      continue;
+    }
+
+    if(!activeTime) continue;
+
+    const tokenRegex = /\b(SR|FR)-(\d{4})\b/gi;
+    let match;
+    while((match = tokenRegex.exec(line)) !== null){
+      const type = match[1].toUpperCase();
+      const number = match[2];
+      if(type === "SR"){
+        const bucket = Number(number) % 2 === 0 ? out.srEven : out.srOdd;
+        addUnique(bucket, activeTime, number);
+        out.total++;
+      }else{
+        const lanePrefix = Number(number.slice(0,2));
+        if(lanePrefix >= 10 && lanePrefix <= 12){
+          addUnique(out.east, activeTime, number);
+          out.total++;
+        }else if(lanePrefix >= 16 && lanePrefix <= 19){
+          addUnique(out.west, activeTime, number);
+          out.total++;
+        }else{
+          addUnique(out.ignored, activeTime, number);
+        }
+      }
+    }
+  }
+  return out;
+}
+
+function sortedTimes(bucket, quarter){
+  return Object.keys(bucket)
+    .filter(time => belongsToQuarter(time, quarter))
+    .sort((a,b) => timeToMinutes(a) - timeToMinutes(b));
+}
+
+function quarterCount(categoryKey, quarter){
+  return sortedTimes(parsed[categoryKey], quarter)
+    .reduce((sum,time) => sum + parsed[categoryKey][time].length, 0);
+}
+
+function formatDisplayTime(time){
+  const [h,m] = time.split(":").map(Number);
+  const suffix = h >= 12 ? "PM" : "AM";
+  const hr = h % 12 || 12;
+  return `${hr}:${String(m).padStart(2,"0")} ${suffix}`;
+}
+
+function renderCards(){
+  const host = document.getElementById("categoryCards");
+  host.innerHTML = "";
+
+  categories.forEach(cat => {
+    const card = document.createElement("article");
+    card.className = "category-card" + (selected.has(cat.key) ? " selected" : "");
+    const times = sortedTimes(parsed[cat.key], currentQuarter);
+    const count = quarterCount(cat.key, currentQuarter);
+
+    let rows = "";
+    if(times.length){
+      rows = times.map(time => {
+        const pills = parsed[cat.key][time].map(n => `<span class="pill">${n}</span>`).join("");
+        return `<div class="time-row">
+          <div class="time-label">${formatDisplayTime(time)}</div>
+          <div class="number-grid">${pills}</div>
+        </div>`;
+      }).join("");
+    }else{
+      rows = `<div class="empty">No CPT numbers found for<br>${quarterRules[currentQuarter].label}.</div>`;
+    }
+
+    card.innerHTML = `
+      <div class="card-top">
+        <div>
+          <div class="card-title">${cat.title}</div>
+          <div class="card-count">${count} CPT number${count === 1 ? "" : "s"}</div>
+        </div>
+        <input class="check" type="checkbox" aria-label="Select ${cat.title}" ${selected.has(cat.key) ? "checked" : ""}>
+      </div>
+      <div class="time-list">${rows}</div>`;
+
+    const checkbox = card.querySelector(".check");
+    checkbox.addEventListener("change", () => {
+      checkbox.checked ? selected.add(cat.key) : selected.delete(cat.key);
+      renderCards();
+      updateSummary();
+    });
+    card.addEventListener("click", e => {
+      if(e.target === checkbox) return;
+      checkbox.checked = !checkbox.checked;
+      checkbox.dispatchEvent(new Event("change"));
+    });
+    host.appendChild(card);
+  });
+
+  document.getElementById("previewHeading").textContent = `${currentQuarter} label preview`;
+}
+
+function buildPrintArea(){
+  const printArea = document.getElementById("printArea");
+  const q = quarterRules[currentQuarter];
+  let pages = "";
+
+  categories.filter(cat => selected.has(cat.key)).forEach(cat => {
+    const times = sortedTimes(parsed[cat.key], currentQuarter);
+    const total = quarterCount(cat.key, currentQuarter);
+    const density = total > 34 ? "compact" : total > 22 ? "medium" : "";
+
+    const blocks = times.length ? times.map(time => {
+      const nums = parsed[cat.key][time].map(n => `<div class="label-number">${n}</div>`).join("");
+      return `<section class="label-time">
+        <div class="label-time-title">${formatDisplayTime(time)}</div>
+        <div class="label-numbers">${nums}</div>
+      </section>`;
+    }).join("") : `<section class="label-time"><div class="label-time-title">No CPT numbers</div></section>`;
+
+    pages += `<section class="print-page">
+      <article class="label-sheet ${density}">
+        <header class="label-head">
+          <div class="label-category">${cat.title}</div>
+          <div class="label-quarter">${q.label}<br>${q.range}</div>
+        </header>
+        <main class="label-body">${blocks}</main>
+        <footer class="label-foot"><span>YXU1</span><span>${total} CPT</span></footer>
+      </article>
+    </section>`;
+  });
+
+  printArea.innerHTML = pages;
+}
+
+function updateSummary(){
+  const count = selected.size;
+  document.getElementById("summaryTitle").textContent = `${count} label${count === 1 ? "" : "s"} selected`;
+  document.getElementById("summaryText").textContent =
+    count ? `Each selected side prints on its own ${document.getElementById("paperSize").value === "label" ? "4 Ã 7 page" : "letter sheet"}.`
+          : "Select at least one label to print.";
+  document.getElementById("printBtn").disabled = count === 0;
+  document.getElementById("printTopBtn").disabled = count === 0;
+  buildPrintArea();
+}
+
+function updateStats(){
+  const uniqueTimes = [...parsed.timeGroups].length;
+  document.getElementById("cptCount").textContent = parsed.total;
+  document.getElementById("timeCount").textContent = uniqueTimes;
+}
+
+function setStatus(title, file, ready=true){
+  document.getElementById("statusTitle").textContent = title;
+  document.getElementById("statusFile").textContent = file || "";
+  document.getElementById("statusDot").classList.toggle("ready", ready);
+}
+
+function loadText(text, fileName){
+  parsed = parseCptText(text);
+  loadedFileName = fileName || "Uploaded CPT sheet";
+  setStatus(parsed.total ? "CSV ready" : "No CPT numbers found", loadedFileName, parsed.total > 0);
+  updateStats();
+  renderCards();
+  updateSummary();
+  showToast(parsed.total ? `${parsed.total} CPT numbers extracted` : "No matching CPT numbers found");
+}
+
+function showToast(message){
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.classList.add("show");
+  clearTimeout(showToast.timer);
+  showToast.timer = setTimeout(() => toast.classList.remove("show"), 1700);
+}
+
+function readFile(file){
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => loadText(reader.result, file.name);
+  reader.onerror = () => showToast("Could not read this file");
+  reader.readAsText(file);
+}
+
+function syncPageSize(){
+  const paper = document.getElementById("paperSize").value;
+  document.getElementById("pageStyle").textContent =
+    paper === "letter"
+      ? "@page{size:letter portrait;margin:0}"
+      : "@page{size:4in 7in;margin:0}";
+}
+
+function printSelected(){
+  if(!selected.size){
+    showToast("Select at least one label");
+    return;
+  }
+  buildPrintArea();
+  syncPageSize();
+  document.body.classList.toggle("print-letter", document.getElementById("paperSize").value === "letter");
+  document.body.classList.toggle("print-label", document.getElementById("paperSize").value === "label");
+  window.print();
+}
+
+document.getElementById("browseBtn").addEventListener("click", () => document.getElementById("fileInput").click());
+document.getElementById("fileInput").addEventListener("change", e => readFile(e.target.files[0]));
+
+const dropzone = document.getElementById("dropzone");
+["dragenter","dragover"].forEach(evt => dropzone.addEventListener(evt, e => {
+  e.preventDefault(); dropzone.classList.add("drag");
+}));
+["dragleave","drop"].forEach(evt => dropzone.addEventListener(evt, e => {
+  e.preventDefault(); dropzone.classList.remove("drag");
+}));
+dropzone.addEventListener("drop", e => readFile(e.dataTransfer.files[0]));
+
+document.getElementById("quarterSegments").addEventListener("click", e => {
+  const btn = e.target.closest(".segment");
+  if(!btn) return;
+  currentQuarter = btn.dataset.quarter;
+  document.querySelectorAll(".segment").forEach(x => x.classList.toggle("active", x === btn));
+  renderCards();
+  updateSummary();
+});
+
+document.getElementById("selectAllBtn").addEventListener("click", () => {
+  selected = new Set(categories.map(x => x.key)); renderCards(); updateSummary();
+});
+document.getElementById("clearBtn").addEventListener("click", () => {
+  selected.clear(); renderCards(); updateSummary();
+});
+document.getElementById("paperSize").addEventListener("change", () => { syncPageSize(); updateSummary(); });
+document.getElementById("previewBtn").addEventListener("click", () => {
+  buildPrintArea(); showToast("Print preview refreshed");
+});
+document.getElementById("printBtn").addEventListener("click", printSelected);
+document.getElementById("printTopBtn").addEventListener("click", printSelected);
+document.getElementById("resetBtn").addEventListener("click", () => {
+  selected = new Set(categories.map(x => x.key));
+  currentQuarter = "Q2";
+  parsed = emptyParsed();
+  loadedFileName = "";
+  document.getElementById("fileInput").value = "";
+  document.querySelectorAll(".segment").forEach(x => x.classList.toggle("active", x.dataset.quarter === "Q2"));
+  document.getElementById("paperSize").value = "label";
+  setStatus("No CSV uploaded", "Choose a CSV file to begin", false);
+  updateStats();
+  renderCards();
+  syncPageSize();
+  updateSummary();
+  showToast("Cleared");
+});
+
+window.addEventListener("afterprint", () => {
+  document.body.classList.remove("print-letter");
+  document.body.classList.add("print-label");
+});
+
+syncPageSize();
+updateStats();
+renderCards();
+updateSummary();
+</script>
+</body>
+</html>
