@@ -238,7 +238,7 @@
       <div class="logo">RX</div>
       <div class="brand-copy">
         <strong>Ranvexsi CPT Labels</strong>
-        <span>Ship Dock Â· Process Assistant</span>
+        <span>Ship Dock - Process Assistant</span>
       </div>
     </div>
     <div class="top-actions">
@@ -284,17 +284,17 @@
       <div class="control-group">
         <label>Quarter</label>
         <div class="segments" id="quarterSegments">
-          <button class="segment" data-quarter="Q1" type="button"><strong>Q1</strong><span>07:00â11:00</span></button>
-          <button class="segment active" data-quarter="Q2" type="button"><strong>Q2</strong><span>11:30â14:30</span></button>
-          <button class="segment" data-quarter="Q3" type="button"><strong>Q3</strong><span>15:00â18:00</span></button>
+          <button class="segment" data-quarter="Q1" type="button"><strong>Q1</strong><span>07:00 - 11:00</span></button>
+          <button class="segment active" data-quarter="Q2" type="button"><strong>Q2</strong><span>11:30 - 14:30</span></button>
+          <button class="segment" data-quarter="Q3" type="button"><strong>Q3</strong><span>15:00 - 18:00</span></button>
         </div>
       </div>
 
       <div class="control-group">
         <label>Paper size</label>
         <select id="paperSize">
-          <option value="label">4 Ã 7 label</option>
-          <option value="letter">Letter sheet â label centered</option>
+          <option value="label">4 x 7 label</option>
+          <option value="letter">Letter sheet - label centered</option>
         </select>
       </div>
 
@@ -315,8 +315,8 @@
 
     <section class="panel print-summary">
       <div class="summary-copy">
-        <strong id="summaryTitle">4 labels selected</strong>
-        <span id="summaryText">Each selected side prints on its own 4 Ã 7 page.</span>
+        <strong id="summaryTitle">0 labels selected</strong>
+        <span id="summaryText">Each selected side prints on its own 4 x 7 page.</span>
       </div>
       <div class="summary-actions">
         <button class="btn" id="previewBtn" type="button">Refresh Preview</button>
@@ -331,9 +331,9 @@
 
 <script>
 const quarterRules = {
-  Q1: { label:"Q1", range:"07:00â11:00", start:420, end:660 },
-  Q2: { label:"Q2", range:"11:30â14:30", start:690, end:870 },
-  Q3: { label:"Q3", range:"15:00â18:00", start:900, end:1080 }
+  Q1: { label:"Q1", range:"07:00 - 11:00", start:420, end:660 },
+  Q2: { label:"Q2", range:"11:30 - 14:30", start:690, end:870 },
+  Q3: { label:"Q3", range:"15:00 - 18:00", start:900, end:1080 }
 };
 
 const categories = [
@@ -345,7 +345,7 @@ const categories = [
 
 let currentQuarter = "Q2";
 let parsed = emptyParsed();
-let selected = new Set(categories.map(x => x.key));
+let selected = new Set();
 let loadedFileName = "";
 
 function emptyParsed(){
@@ -515,7 +515,7 @@ function updateSummary(){
   const count = selected.size;
   document.getElementById("summaryTitle").textContent = `${count} label${count === 1 ? "" : "s"} selected`;
   document.getElementById("summaryText").textContent =
-    count ? `Each selected side prints on its own ${document.getElementById("paperSize").value === "label" ? "4 Ã 7 page" : "letter sheet"}.`
+    count ? `Each selected side prints on its own ${document.getElementById("paperSize").value === "label" ? "4 x 7 page" : "letter sheet"}.`
           : "Select at least one label to print.";
   document.getElementById("printBtn").disabled = count === 0;
   document.getElementById("printTopBtn").disabled = count === 0;
@@ -602,7 +602,7 @@ document.getElementById("quarterSegments").addEventListener("click", e => {
 });
 
 document.getElementById("selectAllBtn").addEventListener("click", () => {
-  selected = new Set(categories.map(x => x.key)); renderCards(); updateSummary();
+  selected = new Set(); renderCards(); updateSummary();
 });
 document.getElementById("clearBtn").addEventListener("click", () => {
   selected.clear(); renderCards(); updateSummary();
@@ -614,7 +614,7 @@ document.getElementById("previewBtn").addEventListener("click", () => {
 document.getElementById("printBtn").addEventListener("click", printSelected);
 document.getElementById("printTopBtn").addEventListener("click", printSelected);
 document.getElementById("resetBtn").addEventListener("click", () => {
-  selected = new Set(categories.map(x => x.key));
+  selected = new Set();
   currentQuarter = "Q2";
   parsed = emptyParsed();
   loadedFileName = "";
