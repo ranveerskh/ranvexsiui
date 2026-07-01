@@ -1,386 +1,1456 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Ranvexsi CPT Label Tool</title>
-  <style id="pageStyle">@page{size:4in 7in;margin:0}</style>
-  <style>
-    :root{
-      --bg:#f4f6f8;
-      --panel:rgba(255,255,255,.88);
-      --panel-solid:#fff;
-      --ink:#15171a;
-      --muted:#68707b;
-      --line:#dfe3e8;
-      --accent:#111827;
-      --accent-soft:#eef1f5;
-      --success:#137a42;
-      --shadow:0 16px 44px rgba(15,23,42,.08);
-      --radius:18px;
-    }
-    *{box-sizing:border-box}
-    html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--ink);background:
-      radial-gradient(circle at top left,#fff 0,#f7f8fa 34%,transparent 64%),
-      var(--bg)}
-    button,input,select{font:inherit}
-    button{cursor:pointer}
-    .app{min-height:100vh}
-    .topbar{
-      position:sticky;top:0;z-index:20;
-      display:flex;align-items:center;justify-content:space-between;gap:16px;
-      padding:12px 22px;
-      background:rgba(255,255,255,.78);
-      border-bottom:1px solid rgba(210,214,220,.86);
-      backdrop-filter:blur(18px);
-    }
-    .brand{display:flex;align-items:center;gap:12px}
-    .logo{
-      width:38px;height:38px;border-radius:12px;display:grid;place-items:center;
-      background:#111827;color:white;font-weight:900;letter-spacing:-1px;
-      box-shadow:0 8px 18px rgba(17,24,39,.18)
-    }
-    .brand-copy strong{display:block;font-size:15px}
-    .brand-copy span{display:block;font-size:12px;color:var(--muted);margin-top:1px}
-    .top-actions{display:flex;gap:8px;align-items:center}
-    .btn{
-      border:1px solid var(--line);background:white;color:var(--ink);
-      border-radius:11px;padding:9px 13px;font-weight:750;
-      transition:.16s ease;
-    }
-    .btn:hover{transform:translateY(-1px);box-shadow:0 7px 20px rgba(15,23,42,.08)}
-    .btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
-    .btn.ghost{background:transparent}
-    .btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
-    main{width:min(1480px,calc(100% - 32px));margin:22px auto 48px}
-    .hero{
-      display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr);
-      gap:18px;margin-bottom:18px
-    }
-    .panel{
-      background:var(--panel);
-      border:1px solid rgba(218,222,228,.94);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      backdrop-filter:blur(16px);
-    }
-    .upload-card{padding:22px}
-    .eyebrow{font-size:11px;font-weight:850;letter-spacing:.12em;color:#5e6671;text-transform:uppercase}
-    h1{margin:8px 0 7px;font-size:clamp(25px,3vw,40px);letter-spacing:-.045em;line-height:1}
-    .sub{margin:0;color:var(--muted);font-size:14px;line-height:1.55}
-    .dropzone{
-      margin-top:20px;border:1.5px dashed #aeb5bf;border-radius:16px;
-      padding:20px;background:rgba(248,249,251,.78);
-      display:flex;align-items:center;justify-content:space-between;gap:16px;
-      transition:.18s ease
-    }
-    .dropzone.drag{border-color:#111827;background:#f1f3f6;transform:scale(.997)}
-    .drop-copy strong{display:block;font-size:14px}
-    .drop-copy span{display:block;color:var(--muted);font-size:12px;margin-top:5px}
-    .file-input{display:none}
-    .status-card{padding:20px;display:flex;flex-direction:column;justify-content:space-between}
-    .status-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
-    .status-title{font-weight:850;font-size:14px}
-    .status-file{font-size:12px;color:var(--muted);margin-top:5px;word-break:break-word}
-    .dot{width:10px;height:10px;border-radius:50%;background:#afb6c0;margin-top:4px;box-shadow:0 0 0 5px #f0f2f5}
-    .dot.ready{background:#1d9a58;box-shadow:0 0 0 5px #e7f6ed}
-    .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:18px}
-    .stat{border:1px solid var(--line);border-radius:13px;padding:12px;background:#fff}
-    .stat b{display:block;font-size:22px;letter-spacing:-.04em}
-    .stat span{display:block;font-size:11px;color:var(--muted);margin-top:3px}
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RANVEXSI UI - CPT Labels</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style id="pageStyle">
+  @page{size:4in 7in;margin:0}
+</style>
+
+<style>
+  :root{
+    --bg:#eef3fb;
+    --bg2:#e7edf8;
+    --surface:#ffffff;
+    --surface2:#f7faff;
+    --surface3:#eef5ff;
+    --ink:#111827;
+    --muted:#64748b;
+    --muted2:#94a3b8;
+    --line:rgba(15,23,42,.10);
+    --line2:rgba(15,23,42,.16);
+    --accent:#2563eb;
+    --accent2:#7c3aed;
+    --green:#16a34a;
+    --red:#dc2626;
+    --yellow:#d97706;
+    --blueSoft:rgba(37,99,235,.10);
+    --greenSoft:rgba(22,163,74,.10);
+    --redSoft:rgba(220,38,38,.10);
+    --shadow:0 10px 28px rgba(15,23,42,.08);
+    --shadow2:0 22px 70px rgba(15,23,42,.16);
+    --radius:20px;
+    --max:98vw;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+
+  html{
+    min-height:100%;
+    scroll-behavior:smooth;
+  }
+
+  body{
+    min-height:100vh;
+    font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at top left,rgba(37,99,235,.12),transparent 34%),
+      radial-gradient(circle at top right,rgba(124,58,237,.10),transparent 32%),
+      linear-gradient(180deg,var(--bg),var(--bg2));
+    overflow-x:hidden;
+  }
+
+  button,input,select{font:inherit}
+  button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+  a{color:inherit;text-decoration:none}
+  .hidden{display:none!important}
+
+  .topbar{
+    position:sticky;
+    top:0;
+    z-index:60;
+    background:rgba(255,255,255,.88);
+    backdrop-filter:blur(20px);
+    -webkit-backdrop-filter:blur(20px);
+    border-bottom:1px solid var(--line);
+    box-shadow:0 4px 16px rgba(15,23,42,.06);
+  }
+
+  .top-inner{
+    width:min(var(--max),100%);
+    margin:0 auto;
+    min-height:58px;
+    padding:8px 10px;
+    display:grid;
+    grid-template-columns:1fr auto;
+    align-items:center;
+    gap:12px;
+  }
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-width:0;
+  }
+
+  .logo{
+    width:38px;
+    height:38px;
+    flex:0 0 38px;
+    border-radius:14px;
+    display:grid;
+    place-items:center;
+    color:white;
+    font-weight:950;
+    letter-spacing:-.06em;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    box-shadow:0 12px 28px rgba(37,99,235,.24);
+  }
+
+  .brand h1{
+    font-size:.98rem;
+    line-height:1.04;
+    letter-spacing:-.045em;
+    font-weight:950;
+  }
+
+  .brand p{
+    margin-top:2px;
+    color:var(--muted);
+    font-size:.60rem;
+    font-weight:750;
+  }
+
+  .top-actions{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:7px;
+    flex-wrap:wrap;
+  }
+
+  .status-pill{
+    min-height:32px;
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    border:1px solid var(--line);
+    border-radius:999px;
+    background:var(--surface);
+    padding:0 10px;
+    color:var(--muted);
+    font-size:.70rem;
+    font-weight:900;
+    box-shadow:0 4px 12px rgba(15,23,42,.04);
+    white-space:nowrap;
+  }
+
+  .dot{
+    width:8px;
+    height:8px;
+    border-radius:999px;
+    background:#94a3b8;
+  }
+
+  .dot.ok{
+    background:var(--green);
+    box-shadow:0 0 0 4px rgba(22,163,74,.12);
+  }
+
+  .dot.bad{
+    background:var(--red);
+    box-shadow:0 0 0 4px rgba(220,38,38,.12);
+  }
+
+  .btn{
+    min-height:34px;
+    border:1px solid var(--line);
+    border-radius:12px;
+    background:var(--surface);
+    color:var(--ink);
+    padding:0 12px;
+    font-size:.76rem;
+    font-weight:900;
+    box-shadow:0 4px 12px rgba(15,23,42,.04);
+    transition:.16s ease;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    white-space:nowrap;
+  }
+
+  .btn:hover:not(:disabled){
+    transform:translateY(-1px);
+    box-shadow:var(--shadow);
+  }
+
+  .btn.primary{
+    border:0;
+    color:#fff;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    box-shadow:0 12px 26px rgba(37,99,235,.22);
+  }
+
+  .btn.green{
+    border:0;
+    color:#fff;
+    background:linear-gradient(135deg,#16a34a,#22c55e);
+  }
+
+  .btn:disabled{
+    opacity:.52;
+    cursor:not-allowed;
+    transform:none;
+  }
+
+  .page{
+    width:min(var(--max),100%);
+    margin:0 auto;
+    padding:16px 10px 34px;
+  }
+
+  .hero{
+    display:grid;
+    grid-template-columns:minmax(0,1.2fr) minmax(300px,.8fr);
+    gap:12px;
+    margin-bottom:12px;
+  }
+
+  .card{
+    border:1px solid var(--line);
+    border-radius:20px;
+    background:rgba(255,255,255,.82);
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    box-shadow:0 8px 22px rgba(15,23,42,.06);
+    padding:15px;
+  }
+
+  .hero-copy{
+    min-height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
+
+  .eyebrow{
+    color:var(--accent);
+    font-size:.67rem;
+    line-height:1;
+    font-weight:950;
+    letter-spacing:.09em;
+    text-transform:uppercase;
+  }
+
+  .hero h2{
+    margin-top:8px;
+    font-size:clamp(1.55rem,2.1vw,2.15rem);
+    font-weight:950;
+    letter-spacing:-.065em;
+    line-height:1.02;
+  }
+
+  .hero p{
+    margin-top:7px;
+    color:var(--muted);
+    font-weight:700;
+    line-height:1.48;
+    max-width:820px;
+    font-size:.86rem;
+  }
+
+  .instructions{
+    margin-top:14px;
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:8px;
+  }
+
+  .instruction{
+    min-height:76px;
+    border:1px solid var(--line);
+    border-radius:15px;
+    background:var(--surface2);
+    padding:10px;
+    display:flex;
+    align-items:flex-start;
+    gap:9px;
+  }
+
+  .step-number{
+    width:25px;
+    height:25px;
+    flex:0 0 25px;
+    border-radius:9px;
+    display:grid;
+    place-items:center;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    color:#fff;
+    font-size:.72rem;
+    font-weight:950;
+  }
+
+  .instruction strong{
+    display:block;
+    font-size:.76rem;
+    line-height:1.25;
+    font-weight:950;
+  }
+
+  .instruction span{
+    display:block;
+    margin-top:4px;
+    color:var(--muted);
+    font-size:.68rem;
+    line-height:1.35;
+    font-weight:700;
+  }
+
+  .instruction-link{
+    border:0;
+    padding:0;
+    background:transparent;
+    color:var(--accent);
+    font:inherit;
+    font-weight:950;
+    text-align:left;
+  }
+
+  .upload-card{
+    display:flex;
+    flex-direction:column;
+    min-height:100%;
+  }
+
+  .upload-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:10px;
+  }
+
+  .upload-head h3{
+    font-size:1.02rem;
+    letter-spacing:-.04em;
+    font-weight:950;
+  }
+
+  .upload-head p{
+    margin-top:5px;
+    color:var(--muted);
+    font-size:.78rem;
+    font-weight:700;
+    line-height:1.4;
+  }
+
+  .file-state{
+    height:28px;
+    display:inline-flex;
+    align-items:center;
+    border-radius:999px;
+    padding:0 9px;
+    background:rgba(37,99,235,.10);
+    color:var(--accent);
+    font-size:.67rem;
+    font-weight:950;
+    white-space:nowrap;
+  }
+
+  .dropzone{
+    flex:1;
+    min-height:158px;
+    margin-top:12px;
+    border:1.5px dashed var(--line2);
+    border-radius:18px;
+    background:rgba(247,250,255,.76);
+    display:grid;
+    place-items:center;
+    text-align:center;
+    padding:20px;
+    transition:.16s ease;
+  }
+
+  .dropzone.drag{
+    border-color:var(--accent);
+    background:rgba(37,99,235,.08);
+    transform:scale(.995);
+  }
+
+  .dropzone strong{
+    display:block;
+    font-size:.90rem;
+    font-weight:950;
+  }
+
+  .dropzone span{
+    display:block;
+    margin-top:5px;
+    color:var(--muted);
+    font-size:.75rem;
+    font-weight:700;
+  }
+
+  .dropzone .btn{
+    margin-top:12px;
+  }
+
+  .file-input{display:none}
+
+  .controls{
+    display:grid;
+    grid-template-columns:minmax(280px,1fr) minmax(380px,1.35fr) minmax(220px,.72fr) auto;
+    gap:12px;
+    align-items:end;
+    margin-bottom:12px;
+  }
+
+  .control{
+    min-width:0;
+  }
+
+  .control label{
+    display:block;
+    margin-bottom:7px;
+    color:var(--muted);
+    font-size:.68rem;
+    font-weight:950;
+    text-transform:uppercase;
+    letter-spacing:.07em;
+  }
+
+  .segments{
+    display:flex;
+    gap:7px;
+    flex-wrap:wrap;
+  }
+
+  .segment{
+    min-height:40px;
+    border:1px solid var(--line);
+    border-radius:13px;
+    background:var(--surface);
+    color:var(--ink);
+    padding:6px 11px;
+    text-align:left;
+    box-shadow:0 4px 12px rgba(15,23,42,.04);
+  }
+
+  .segment strong{
+    display:block;
+    font-size:.76rem;
+    line-height:1.1;
+    font-weight:950;
+  }
+
+  .segment span{
+    display:block;
+    margin-top:3px;
+    color:var(--muted);
+    font-size:.63rem;
+    line-height:1;
+    font-weight:750;
+  }
+
+  .segment.active{
+    border-color:transparent;
+    color:#fff;
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+    box-shadow:0 12px 26px rgba(37,99,235,.20);
+  }
+
+  .segment.active span{color:rgba(255,255,255,.78)}
+
+  select{
+    width:100%;
+    min-height:40px;
+    border:1px solid var(--line);
+    border-radius:13px;
+    background:var(--surface);
+    color:var(--ink);
+    outline:none;
+    padding:0 11px;
+    font-size:.78rem;
+    font-weight:850;
+    box-shadow:0 4px 12px rgba(15,23,42,.04);
+  }
+
+  select:focus{
+    border-color:rgba(37,99,235,.55);
+    box-shadow:0 0 0 4px var(--blueSoft);
+  }
+
+  .control-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:7px;
+    flex-wrap:wrap;
+  }
+
+  .summary{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(110px,1fr));
+    gap:10px;
+    margin-bottom:12px;
+  }
+
+  .stat{
+    border:1px solid var(--line);
+    border-radius:17px;
+    background:rgba(255,255,255,.78);
+    backdrop-filter:blur(16px);
+    box-shadow:0 6px 16px rgba(15,23,42,.05);
+    padding:12px;
+  }
+
+  .stat span{
+    display:block;
+    color:var(--muted);
+    font-size:.64rem;
+    font-weight:950;
+    text-transform:uppercase;
+    letter-spacing:.07em;
+  }
+
+  .stat b{
+    display:block;
+    margin-top:4px;
+    font-size:1.22rem;
+    letter-spacing:-.06em;
+    font-weight:950;
+  }
+
+  .section-head{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:12px;
+    margin:14px 2px 10px;
+  }
+
+  .section-head h3{
+    font-size:1.02rem;
+    letter-spacing:-.04em;
+    font-weight:950;
+  }
+
+  .section-head p{
+    margin-top:4px;
+    color:var(--muted);
+    font-size:.77rem;
+    font-weight:700;
+  }
+
+  .selected-count{
+    color:var(--accent);
+    font-size:.76rem;
+    font-weight:950;
+  }
+
+  .label-grid{
+    display:grid;
+    grid-template-columns:repeat(4,minmax(0,1fr));
+    gap:10px;
+  }
+
+  .label-card{
+    min-height:350px;
+    border:1px solid var(--line);
+    border-radius:20px;
+    background:rgba(255,255,255,.86);
+    box-shadow:0 8px 22px rgba(15,23,42,.05);
+    padding:14px;
+    transition:.16s ease;
+    cursor:pointer;
+  }
+
+  .label-card:hover{
+    transform:translateY(-1px);
+    box-shadow:var(--shadow);
+  }
+
+  .label-card.selected{
+    border-color:rgba(37,99,235,.62);
+    box-shadow:0 0 0 4px rgba(37,99,235,.10),var(--shadow);
+  }
+
+  .label-card-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:10px;
+    padding-bottom:11px;
+    border-bottom:1px solid var(--line);
+  }
+
+  .label-card h4{
+    font-size:.94rem;
+    line-height:1.05;
+    letter-spacing:-.035em;
+    font-weight:950;
+  }
+
+  .label-card-meta{
+    margin-top:4px;
+    color:var(--muted);
+    font-size:.69rem;
+    font-weight:750;
+  }
+
+  .check{
+    appearance:none;
+    -webkit-appearance:none;
+    width:24px;
+    height:24px;
+    flex:0 0 24px;
+    border:1.5px solid #a9b2c0;
+    border-radius:8px;
+    background:#fff;
+    display:grid;
+    place-items:center;
+  }
+
+  .check:checked{
+    border-color:var(--accent);
+    background:linear-gradient(135deg,var(--accent),var(--accent2));
+  }
+
+  .check:checked::after{
+    content:"OK";
+    color:#fff;
+    font-size:.51rem;
+    line-height:1;
+    font-weight:950;
+  }
+
+  .time-list{
+    padding-top:3px;
+  }
+
+  .time-row{
+    padding:10px 0;
+    border-bottom:1px solid rgba(15,23,42,.07);
+  }
+
+  .time-row:last-child{border-bottom:0}
+
+  .time-title{
+    margin-bottom:7px;
+    color:var(--ink);
+    font-size:.71rem;
+    font-weight:950;
+  }
+
+  .number-list{
+    display:flex;
+    flex-wrap:wrap;
+    gap:5px;
+  }
+
+  .number{
+    min-width:47px;
+    border-radius:8px;
+    background:var(--surface3);
+    padding:6px 7px;
+    text-align:center;
+    color:var(--ink);
+    font-size:.78rem;
+    line-height:1;
+    font-weight:950;
+  }
+
+  .empty-card{
+    min-height:260px;
+    display:grid;
+    place-items:center;
+    text-align:center;
+    color:var(--muted);
+    font-size:.75rem;
+    line-height:1.45;
+    font-weight:750;
+  }
+
+  .bottom-bar{
+    position:sticky;
+    bottom:10px;
+    z-index:30;
+    margin-top:12px;
+    border:1px solid var(--line);
+    border-radius:18px;
+    background:rgba(255,255,255,.92);
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+    box-shadow:var(--shadow2);
+    padding:11px 12px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+  }
+
+  .bottom-bar strong{
+    display:block;
+    font-size:.80rem;
+    font-weight:950;
+  }
+
+  .bottom-bar span{
+    display:block;
+    margin-top:3px;
+    color:var(--muted);
+    font-size:.70rem;
+    font-weight:700;
+  }
+
+  .bottom-actions{
+    display:flex;
+    gap:7px;
+    flex-wrap:wrap;
+  }
+
+  .toast{
+    position:fixed;
+    left:50%;
+    bottom:18px;
+    transform:translateX(-50%) translateY(20px);
+    z-index:180;
+    max-width:min(520px,calc(100vw - 24px));
+    border:1px solid var(--line);
+    border-radius:999px;
+    background:rgba(17,24,39,.94);
+    color:#fff;
+    box-shadow:0 18px 50px rgba(0,0,0,.24);
+    padding:10px 14px;
+    font-size:.80rem;
+    font-weight:850;
+    opacity:0;
+    pointer-events:none;
+    transition:.18s ease;
+  }
+
+  .toast.show{
+    opacity:1;
+    transform:translateX(-50%) translateY(0);
+  }
+
+  #printArea{display:none}
+
+  @media(max-width:1180px){
     .controls{
-      display:grid;grid-template-columns:minmax(260px,1fr) minmax(240px,.7fr) auto;
-      gap:14px;padding:16px;margin-bottom:18px;align-items:end
-    }
-    .control-group label{display:block;font-size:11px;font-weight:850;letter-spacing:.07em;text-transform:uppercase;color:#626a75;margin:0 0 8px}
-    .segments{display:flex;gap:8px;flex-wrap:wrap}
-    .segment{
-      min-width:112px;border:1px solid var(--line);background:#fff;border-radius:12px;
-      padding:10px 12px;text-align:left
-    }
-    .segment strong{display:block;font-size:13px}
-    .segment span{display:block;font-size:11px;color:var(--muted);margin-top:3px}
-    .segment.active{background:#111827;color:#fff;border-color:#111827}
-    .segment.active span{color:#cdd2da}
-    select{
-      width:100%;border:1px solid var(--line);background:#fff;border-radius:12px;
-      padding:11px 12px;color:var(--ink);outline:none
-    }
-    .select-actions{display:flex;gap:8px;justify-content:flex-end}
-    .section-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:5px 2px 12px}
-    .section-head h2{font-size:17px;margin:0;letter-spacing:-.02em}
-    .section-head p{font-size:12px;color:var(--muted);margin:4px 0 0}
-    .cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
-    .category-card{
-      position:relative;background:#fff;border:1px solid var(--line);border-radius:17px;
-      min-height:390px;padding:16px;box-shadow:0 10px 28px rgba(15,23,42,.045);
-      transition:.16s ease
-    }
-    .category-card.selected{border-color:#111827;box-shadow:0 0 0 2px #111827,0 15px 35px rgba(15,23,42,.08)}
-    .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-bottom:13px;border-bottom:1px solid var(--line)}
-    .card-title{font-size:17px;font-weight:900;letter-spacing:-.025em}
-    .card-count{font-size:11px;color:var(--muted);margin-top:3px}
-    .check{
-      appearance:none;width:23px;height:23px;border:1.5px solid #aeb5bf;border-radius:7px;background:#fff;display:grid;place-items:center;
-      flex:0 0 auto
-    }
-    .check:checked{background:#111827;border-color:#111827}
-    .check:checked::after{content:"â";color:#fff;font-weight:900;font-size:15px;line-height:1}
-    .time-list{padding-top:5px}
-    .time-row{padding:11px 0;border-bottom:1px solid #edf0f3}
-    .time-row:last-child{border-bottom:0}
-    .time-label{font-size:12px;font-weight:850;margin-bottom:7px}
-    .number-grid{display:flex;flex-wrap:wrap;gap:6px}
-    .pill{
-      min-width:48px;padding:6px 7px;text-align:center;border-radius:8px;
-      background:var(--accent-soft);font-weight:850;font-size:13px;letter-spacing:.02em
-    }
-    .empty{display:grid;place-items:center;text-align:center;min-height:270px;color:var(--muted);font-size:13px;line-height:1.5}
-    .print-summary{
-      margin-top:16px;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:14px
-    }
-    .summary-copy strong{display:block;font-size:13px}
-    .summary-copy span{display:block;font-size:12px;color:var(--muted);margin-top:4px}
-    .summary-actions{display:flex;gap:8px}
-    .toast{
-      position:fixed;left:50%;bottom:24px;transform:translate(-50%,16px);
-      opacity:0;pointer-events:none;background:#111827;color:white;border-radius:12px;
-      padding:10px 14px;font-size:13px;font-weight:750;transition:.2s ease;z-index:100
-    }
-    .toast.show{opacity:1;transform:translate(-50%,0)}
-    #printArea{display:none}
-
-    @media(max-width:1100px){
-      .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
-      .controls{grid-template-columns:1fr 1fr}
-      .select-actions{grid-column:1/-1;justify-content:flex-start}
-    }
-    @media(max-width:760px){
-      .topbar{padding:10px 14px}.brand-copy span{display:none}
-      main{width:min(100% - 20px,1480px);margin-top:12px}
-      .hero{grid-template-columns:1fr}
-      .controls{grid-template-columns:1fr}
-      .select-actions{grid-column:auto}
-      .cards{grid-template-columns:1fr}
-      .dropzone{align-items:flex-start;flex-direction:column}
-      .print-summary{align-items:flex-start;flex-direction:column}
-      .summary-actions{width:100%}.summary-actions .btn{flex:1}
+      grid-template-columns:1fr 1.3fr;
     }
 
-    @media print{
-      html,body{background:#fff!important}
-      body *{visibility:hidden!important}
-      #printArea,#printArea *{visibility:visible!important}
-      #printArea{
-        display:block!important;
-        position:absolute;left:0;top:0;width:100%;
-      }
-      .print-page{
-        page-break-after:always;
-        break-after:page;
-        overflow:hidden;
-        background:#fff;
-        color:#000;
-        font-family:Arial,Helvetica,sans-serif;
-      }
-      .print-page:last-child{page-break-after:auto;break-after:auto}
-      .label-sheet{
-        width:4in;height:7in;
-        padding:.18in;
-        display:flex;flex-direction:column;
-        margin:0 auto;
-        border:0;
-      }
-      body.print-letter .print-page{
-        width:8.5in;height:11in;
-        display:grid;place-items:center;
-      }
-      body.print-letter .label-sheet{
-        border:1px solid #000;
-      }
-      body.print-label .print-page{
-        width:4in;height:7in;
-      }
-      .label-head{
-        display:flex;align-items:flex-end;justify-content:space-between;gap:10px;
-        border-bottom:2px solid #000;padding-bottom:.09in
-      }
-      .label-category{font-size:22pt;font-weight:900;line-height:1;letter-spacing:-.5pt}
-      .label-quarter{font-size:9pt;font-weight:800;text-align:right;white-space:nowrap}
-      .label-body{flex:1;padding-top:.08in;overflow:hidden}
-      .label-time{
-        border-bottom:1px solid #000;
-        padding:.06in 0 .07in
-      }
-      .label-time:last-child{border-bottom:0}
-      .label-time-title{font-size:10pt;font-weight:900;margin-bottom:.045in}
-      .label-numbers{display:grid;grid-template-columns:repeat(4,1fr);gap:.045in}
-      .label-number{
-        border:1px solid #000;border-radius:.045in;
-        text-align:center;font-size:15pt;font-weight:900;
-        line-height:1;padding:.055in .02in
-      }
-      .label-sheet.medium .label-number{font-size:13pt;padding:.045in .015in}
-      .label-sheet.compact .label-number{font-size:11pt;padding:.036in .012in}
-      .label-sheet.compact .label-time-title{font-size:9pt;margin-bottom:.03in}
-      .label-foot{
-        border-top:2px solid #000;padding-top:.055in;
-        display:flex;justify-content:space-between;
-        font-size:8pt;font-weight:800
-      }
+    .control-actions{
+      justify-content:flex-start;
     }
-  </style>
+
+    .label-grid{
+      grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+  }
+
+  @media(max-width:860px){
+    .top-inner{
+      grid-template-columns:1fr;
+    }
+
+    .top-actions{
+      justify-content:flex-start;
+    }
+
+    .hero{
+      grid-template-columns:1fr;
+    }
+
+    .instructions{
+      grid-template-columns:1fr;
+    }
+
+    .controls{
+      grid-template-columns:1fr;
+    }
+
+    .summary{
+      grid-template-columns:repeat(2,1fr);
+    }
+  }
+
+  @media(max-width:560px){
+    .page{padding:12px 10px 28px}
+
+    .top-actions{
+      width:100%;
+    }
+
+    .top-actions .btn,
+    .top-actions .status-pill{
+      flex:1;
+    }
+
+    .summary{
+      grid-template-columns:1fr 1fr;
+    }
+
+    .label-grid{
+      grid-template-columns:1fr;
+    }
+
+    .bottom-bar{
+      position:static;
+      align-items:flex-start;
+      flex-direction:column;
+    }
+
+    .bottom-actions{
+      width:100%;
+    }
+
+    .bottom-actions .btn{
+      flex:1;
+    }
+  }
+
+  @media print{
+    html,body{
+      background:#fff!important;
+      margin:0!important;
+      padding:0!important;
+    }
+
+    body *{
+      visibility:hidden!important;
+    }
+
+    #printArea,
+    #printArea *{
+      visibility:visible!important;
+    }
+
+    #printArea{
+      display:block!important;
+      position:absolute;
+      left:0;
+      top:0;
+      width:100%;
+      margin:0;
+      padding:0;
+    }
+
+    .print-page{
+      page-break-after:always;
+      break-after:page;
+      overflow:hidden;
+      background:#fff;
+      color:#000;
+      font-family:Arial,Helvetica,sans-serif;
+    }
+
+    .print-page:last-child{
+      page-break-after:auto;
+      break-after:auto;
+    }
+
+    body.print-label .print-page{
+      width:4in;
+      height:7in;
+    }
+
+    body.print-letter .print-page{
+      width:8.5in;
+      height:11in;
+      display:grid;
+      place-items:center;
+    }
+
+    .print-label-sheet{
+      width:4in;
+      height:7in;
+      margin:0 auto;
+      padding:.16in;
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+      background:#fff;
+      color:#000;
+    }
+
+    body.print-letter .print-label-sheet{
+      border:1px solid #000;
+    }
+
+    .print-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+      gap:.08in;
+      border-bottom:2px solid #000;
+      padding-bottom:.07in;
+    }
+
+    .print-title{
+      font-size:21pt;
+      line-height:1;
+      font-weight:900;
+      letter-spacing:-.5pt;
+    }
+
+    .print-quarter{
+      text-align:right;
+      white-space:nowrap;
+      font-size:8.5pt;
+      line-height:1.25;
+      font-weight:900;
+    }
+
+    .print-body{
+      flex:1;
+      min-height:0;
+      padding-top:.04in;
+      overflow:hidden;
+    }
+
+    .print-time{
+      padding:.052in 0 .058in;
+      border-bottom:1px solid #000;
+    }
+
+    .print-time:last-child{
+      border-bottom:0;
+    }
+
+    .print-time-title{
+      margin-bottom:.038in;
+      font-size:9.5pt;
+      line-height:1;
+      font-weight:900;
+    }
+
+    .print-numbers{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:.04in;
+    }
+
+    .print-number{
+      border:1px solid #000;
+      border-radius:.04in;
+      padding:.052in .018in;
+      text-align:center;
+      font-size:14.5pt;
+      line-height:1;
+      font-weight:900;
+    }
+
+    .print-label-sheet.medium .print-number{
+      padding:.043in .014in;
+      font-size:12.5pt;
+    }
+
+    .print-label-sheet.medium .print-time{
+      padding:.044in 0 .049in;
+    }
+
+    .print-label-sheet.compact .print-title{
+      font-size:18pt;
+    }
+
+    .print-label-sheet.compact .print-time-title{
+      margin-bottom:.026in;
+      font-size:8.5pt;
+    }
+
+    .print-label-sheet.compact .print-time{
+      padding:.033in 0 .037in;
+    }
+
+    .print-label-sheet.compact .print-numbers{
+      grid-template-columns:repeat(5,1fr);
+      gap:.03in;
+    }
+
+    .print-label-sheet.compact .print-number{
+      padding:.032in .008in;
+      font-size:10.5pt;
+    }
+
+    .print-empty{
+      padding:.2in 0;
+      text-align:center;
+      font-size:11pt;
+      font-weight:800;
+    }
+  }
+</style>
 </head>
+
 <body class="print-label">
-<div class="app">
-  <header class="topbar">
+<header class="topbar">
+  <div class="top-inner">
     <div class="brand">
-      <div class="logo">RX</div>
-      <div class="brand-copy">
-        <strong>Ranvexsi CPT Labels</strong>
-        <span>Ship Dock - Process Assistant</span>
-      </div>
-    </div>
-    <div class="top-actions">
-      <button class="btn ghost" id="resetBtn" type="button">Reset</button>
-      <button class="btn primary" id="printTopBtn" type="button">Print Selected</button>
-    </div>
-  </header>
-
-  <main>
-    <section class="hero">
-      <div class="panel upload-card">
-        <div class="eyebrow">CPT sheet extractor</div>
-        <h1>Upload. Select. Print.</h1>
-        <p class="sub">The page separates SR odd, SR even, East Flats and West Flats by CPT time. Route names and other sheet details are ignored.</p>
-        <div class="dropzone" id="dropzone">
-          <div class="drop-copy">
-            <strong>Drop CPT CSV here</strong>
-            <span>CSV file exported from the CPT sheet</span>
-          </div>
-          <div>
-            <input class="file-input" id="fileInput" type="file" accept=".csv,text/csv" />
-            <button class="btn" id="browseBtn" type="button">Choose File</button>
-          </div>
-        </div>
-      </div>
-
-      <aside class="panel status-card">
-        <div class="status-row">
-          <div>
-            <div class="status-title" id="statusTitle">No CSV uploaded</div>
-            <div class="status-file" id="statusFile">Choose a CSV file to begin</div>
-          </div>
-          <div class="dot" id="statusDot"></div>
-        </div>
-        <div class="stats">
-          <div class="stat"><b id="cptCount">0</b><span>CPT numbers found</span></div>
-          <div class="stat"><b id="timeCount">0</b><span>CPT time groups</span></div>
-        </div>
-      </aside>
-    </section>
-
-    <section class="panel controls">
-      <div class="control-group">
-        <label>Quarter</label>
-        <div class="segments" id="quarterSegments">
-          <button class="segment" data-quarter="Q1" type="button"><strong>Q1</strong><span>07:00 - 11:00</span></button>
-          <button class="segment active" data-quarter="Q2" type="button"><strong>Q2</strong><span>11:30 - 14:30</span></button>
-          <button class="segment" data-quarter="Q3" type="button"><strong>Q3</strong><span>15:00 - 18:00</span></button>
-        </div>
-      </div>
-
-      <div class="control-group">
-        <label>Paper size</label>
-        <select id="paperSize">
-          <option value="label">4 x 7 label</option>
-          <option value="letter">Letter sheet - label centered</option>
-        </select>
-      </div>
-
-      <div class="select-actions">
-        <button class="btn" id="selectAllBtn" type="button">Select All</button>
-        <button class="btn" id="clearBtn" type="button">Clear</button>
-      </div>
-    </section>
-
-    <div class="section-head">
+      <div class="logo">RV</div>
       <div>
-        <h2 id="previewHeading">Q2 label preview</h2>
-        <p>Choose exactly which labels you want to print.</p>
+        <h1>RANVEXSI UI - CPT Labels</h1>
+        <p>Ship Dock - Process Assistant</p>
       </div>
     </div>
 
-    <section class="cards" id="categoryCards"></section>
+    <div class="top-actions">
+      <div class="status-pill">
+        <span class="dot" id="toolkitDot"></span>
+        <span id="toolkitStatus">Loading toolkit link</span>
+      </div>
+      <a class="btn" href="index.html">Back to Website</a>
+      <button class="btn primary" id="downloadToolkitBtn" type="button" disabled>Download CPT Toolkit</button>
+    </div>
+  </div>
+</header>
 
-    <section class="panel print-summary">
-      <div class="summary-copy">
-        <strong id="summaryTitle">0 labels selected</strong>
-        <span id="summaryText">Each selected side prints on its own 4 x 7 page.</span>
+<main class="page">
+  <section class="hero">
+    <div class="card hero-copy">
+      <div class="eyebrow">CPT label extractor</div>
+      <h2>Upload the updated CPT TXT file.</h2>
+      <p>The page keeps only the required SR and Flats CPT numbers, separates them by time and prints one selected side per label page.</p>
+
+      <div class="instructions">
+        <div class="instruction">
+          <span class="step-number">1</span>
+          <div>
+            <strong><button class="instruction-link" id="instructionDownloadBtn" type="button">Download CPT Toolkit</button></strong>
+            <span>Use the current toolkit link saved in the admin panel.</span>
+          </div>
+        </div>
+
+        <div class="instruction">
+          <span class="step-number">2</span>
+          <div>
+            <strong>Update CPT and export to TXT</strong>
+            <span>Open the toolkit, update the CPT sheet and export it as a text file.</span>
+          </div>
+        </div>
+
+        <div class="instruction">
+          <span class="step-number">3</span>
+          <div>
+            <strong>Upload that TXT file here</strong>
+            <span>The page will extract the required CPT numbers automatically.</span>
+          </div>
+        </div>
       </div>
-      <div class="summary-actions">
-        <button class="btn" id="previewBtn" type="button">Refresh Preview</button>
-        <button class="btn primary" id="printBtn" type="button">Print Selected</button>
+    </div>
+
+    <div class="card upload-card">
+      <div class="upload-head">
+        <div>
+          <h3>Upload CPT TXT</h3>
+          <p>No sample data is loaded. Your file stays in this browser.</p>
+        </div>
+        <span class="file-state" id="fileState">No file</span>
       </div>
-    </section>
-  </main>
-</div>
+
+      <div class="dropzone" id="dropzone">
+        <div>
+          <strong>Drop the exported TXT file here</strong>
+          <span>or choose it from your computer</span>
+          <input class="file-input" id="fileInput" type="file" accept=".txt,.csv,text/plain,text/csv" />
+          <button class="btn primary" id="chooseFileBtn" type="button">Choose TXT File</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card controls">
+    <div class="control">
+      <label>Shift</label>
+      <div class="segments" id="shiftSegments">
+        <button class="segment active" data-shift="day" type="button">
+          <strong>Day Shift</strong>
+          <span>07:00 - 18:00</span>
+        </button>
+        <button class="segment" data-shift="night" type="button">
+          <strong>Night Shift</strong>
+          <span>18:30 - 05:00</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="control">
+      <label>Quarter</label>
+      <div class="segments" id="quarterSegments"></div>
+    </div>
+
+    <div class="control">
+      <label>Paper Size</label>
+      <select id="paperSize">
+        <option value="label">4 x 7 label</option>
+        <option value="letter">Letter sheet - label centered</option>
+      </select>
+    </div>
+
+    <div class="control-actions">
+      <button class="btn" id="clearSelectionBtn" type="button">Clear Selection</button>
+      <button class="btn" id="resetBtn" type="button">Reset Page</button>
+    </div>
+  </section>
+
+  <section class="summary">
+    <div class="stat">
+      <span>File Status</span>
+      <b id="fileStatusStat">Empty</b>
+    </div>
+    <div class="stat">
+      <span>Detected Shift</span>
+      <b id="detectedShiftStat">-</b>
+    </div>
+    <div class="stat">
+      <span>CPT Numbers</span>
+      <b id="numberCountStat">0</b>
+    </div>
+    <div class="stat">
+      <span>Time Groups</span>
+      <b id="timeCountStat">0</b>
+    </div>
+  </section>
+
+  <div class="section-head">
+    <div>
+      <h3 id="previewTitle">Day Shift - Q1</h3>
+      <p>Select only the label sides you want to print. Nothing is selected automatically.</p>
+    </div>
+    <div class="selected-count" id="selectedCount">0 selected</div>
+  </div>
+
+  <section class="label-grid" id="labelGrid"></section>
+
+  <section class="bottom-bar">
+    <div>
+      <strong id="printSummaryTitle">No labels selected</strong>
+      <span id="printSummaryText">Select at least one side. Each selected side prints on a separate page.</span>
+    </div>
+
+    <div class="bottom-actions">
+      <button class="btn green" id="printBtn" type="button" disabled>Print Selected</button>
+    </div>
+  </section>
+</main>
 
 <div id="printArea"></div>
 <div class="toast" id="toast"></div>
 
 <script>
-const quarterRules = {
-  Q1: { label:"Q1", range:"07:00 - 11:00", start:420, end:660 },
-  Q2: { label:"Q2", range:"11:30 - 14:30", start:690, end:870 },
-  Q3: { label:"Q3", range:"15:00 - 18:00", start:900, end:1080 }
-};
+const SUPABASE_URL = "https://qpplbqodulenhccfzrjv.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_ph2JpBSdGl-dIqvx9F6__g_Oo4r96Y_";
+const SETTINGS_TABLE = "ranvexsi_settings";
+const CPT_TOOLKIT_SETTING_KEY = "cpt_toolkit_url";
 
-const ignoredCptNumbers = new Set(["1188","1190","1192"]);
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
 
-const categories = [
-  { key:"srOdd", title:"SR ODD" },
-  { key:"srEven", title:"SR EVEN" },
-  { key:"east", title:"EAST FLATS" },
-  { key:"west", title:"WEST FLATS" }
+const IGNORED_CPT_NUMBERS = new Set([
+  "1188",
+  "1190",
+  "1192"
+]);
+
+const CATEGORY_DEFINITIONS = [
+  {key:"odd",title:"ODD SIDE"},
+  {key:"even",title:"EVEN SIDE"},
+  {key:"east",title:"EAST FLATS"},
+  {key:"west",title:"WEST FLATS"}
 ];
 
-let currentQuarter = "Q2";
-let parsed = emptyParsed();
-let selected = new Set();
-let loadedFileName = "";
+const SHIFT_DEFINITIONS = {
+  day:{
+    label:"Day Shift",
+    quarters:{
+      Q1:{
+        label:"Q1",
+        range:"07:00 - 11:00",
+        start:420,
+        end:660,
+        crossesMidnight:false,
+        endExclusive:false
+      },
+      Q2:{
+        label:"Q2",
+        range:"11:30 - 14:30",
+        start:690,
+        end:870,
+        crossesMidnight:false,
+        endExclusive:false
+      },
+      Q3:{
+        label:"Q3",
+        range:"15:00 - 18:00",
+        start:900,
+        end:1080,
+        crossesMidnight:false,
+        endExclusive:false
+      }
+    }
+  },
+  night:{
+    label:"Night Shift",
+    quarters:{
+      Q1:{
+        label:"Q1",
+        range:"18:30 - 22:00",
+        start:1110,
+        end:1320,
+        crossesMidnight:false,
+        endExclusive:false
+      },
+      Q2:{
+        label:"Q2",
+        range:"22:30 - 01:30",
+        start:1350,
+        end:90,
+        crossesMidnight:true,
+        endExclusive:true
+      },
+      Q3:{
+        label:"Q3",
+        range:"01:30 - 05:00",
+        start:90,
+        end:300,
+        crossesMidnight:false,
+        endExclusive:false
+      }
+    }
+  }
+};
 
-function emptyParsed(){
-  return { srOdd:{}, srEven:{}, east:{}, west:{}, ignored:{}, total:0, timeGroups:new Set() };
+const els = {
+  toolkitDot:document.getElementById("toolkitDot"),
+  toolkitStatus:document.getElementById("toolkitStatus"),
+  downloadToolkitBtn:document.getElementById("downloadToolkitBtn"),
+  instructionDownloadBtn:document.getElementById("instructionDownloadBtn"),
+
+  fileInput:document.getElementById("fileInput"),
+  chooseFileBtn:document.getElementById("chooseFileBtn"),
+  dropzone:document.getElementById("dropzone"),
+  fileState:document.getElementById("fileState"),
+
+  shiftSegments:document.getElementById("shiftSegments"),
+  quarterSegments:document.getElementById("quarterSegments"),
+  paperSize:document.getElementById("paperSize"),
+  clearSelectionBtn:document.getElementById("clearSelectionBtn"),
+  resetBtn:document.getElementById("resetBtn"),
+
+  fileStatusStat:document.getElementById("fileStatusStat"),
+  detectedShiftStat:document.getElementById("detectedShiftStat"),
+  numberCountStat:document.getElementById("numberCountStat"),
+  timeCountStat:document.getElementById("timeCountStat"),
+
+  previewTitle:document.getElementById("previewTitle"),
+  selectedCount:document.getElementById("selectedCount"),
+  labelGrid:document.getElementById("labelGrid"),
+
+  printSummaryTitle:document.getElementById("printSummaryTitle"),
+  printSummaryText:document.getElementById("printSummaryText"),
+  printBtn:document.getElementById("printBtn"),
+  printArea:document.getElementById("printArea"),
+  pageStyle:document.getElementById("pageStyle"),
+
+  toast:document.getElementById("toast")
+};
+
+let toolkitUrl = "";
+let selectedShift = "day";
+let selectedQuarter = "Q1";
+let selectedCategories = new Set();
+let loadedFileName = "";
+let detectedShift = "";
+let parsedData = createEmptyParsedData();
+
+function createEmptyParsedData(){
+  return {
+    odd:{},
+    even:{},
+    east:{},
+    west:{},
+    ignored:{},
+    allTimes:new Set(),
+    includedTimes:new Set(),
+    totalIncluded:0
+  };
+}
+
+function normalizeTime(value){
+  const match = String(value || "").match(/(\d{1,2}):(\d{2})/);
+
+  if(!match) return "";
+
+  return String(Number(match[1])).padStart(2,"0") + ":" + match[2];
 }
 
 function timeToMinutes(time){
-  const m = /^(\d{1,2}):(\d{2})$/.exec(time || "");
-  return m ? Number(m[1]) * 60 + Number(m[2]) : null;
+  const match = /^(\d{2}):(\d{2})$/.exec(String(time || ""));
+
+  if(!match) return null;
+
+  return Number(match[1]) * 60 + Number(match[2]);
 }
 
-function belongsToQuarter(time, quarter){
-  const mins = timeToMinutes(time);
-  const q = quarterRules[quarter];
-  return mins !== null && mins >= q.start && mins <= q.end;
+function formatDisplayTime(time){
+  const minutes = timeToMinutes(time);
+
+  if(minutes === null) return time;
+
+  const hour24 = Math.floor(minutes / 60);
+  const minute = minutes % 60;
+  const suffix = hour24 >= 12 ? "PM" : "AM";
+  const hour12 = hour24 % 12 || 12;
+
+  return `${hour12}:${String(minute).padStart(2,"0")} ${suffix}`;
 }
 
-function addUnique(bucket, time, number){
-  if(!bucket[time]) bucket[time] = [];
-  if(!bucket[time].includes(number)) bucket[time].push(number);
+function safeUrl(value){
+  const url = String(value || "").trim();
+
+  if(!url) return "";
+
+  if(
+    url.startsWith("https://") ||
+    url.startsWith("http://")
+  ){
+    return url;
+  }
+
+  return "https://" + url;
+}
+
+function getSettingKey(row){
+  return String(
+    row?.setting_key ??
+    row?.key ??
+    row?.name ??
+    row?.setting ??
+    row?.slug ??
+    ""
+  ).trim().toLowerCase();
+}
+
+function getSettingValue(row){
+  return String(
+    row?.setting_value ??
+    row?.value ??
+    row?.url ??
+    row?.download_url ??
+    row?.link ??
+    row?.href ??
+    ""
+  ).trim();
+}
+
+async function loadToolkitLink(){
+  els.toolkitStatus.textContent = "Loading toolkit link";
+  els.toolkitDot.classList.remove("ok","bad");
+  els.downloadToolkitBtn.disabled = true;
+
+  try{
+    let rows = [];
+
+    const direct = await db
+      .from(SETTINGS_TABLE)
+      .select("*")
+      .eq("setting_key",CPT_TOOLKIT_SETTING_KEY)
+      .limit(1);
+
+    if(direct.error){
+      const fallback = await db
+        .from(SETTINGS_TABLE)
+        .select("*")
+        .limit(100);
+
+      if(fallback.error) throw direct.error;
+      rows = fallback.data || [];
+    }else{
+      rows = direct.data || [];
+    }
+
+    const row = rows.find(item => {
+      return getSettingKey(item) === CPT_TOOLKIT_SETTING_KEY;
+    });
+
+    toolkitUrl = safeUrl(getSettingValue(row));
+
+    if(!toolkitUrl){
+      throw new Error("Toolkit link is not saved.");
+    }
+
+    els.toolkitStatus.textContent = "Toolkit ready";
+    els.toolkitDot.classList.add("ok");
+    els.downloadToolkitBtn.disabled = false;
+  }catch(error){
+    console.warn("Could not load CPT Toolkit link:",error);
+    toolkitUrl = "";
+    els.toolkitStatus.textContent = "Toolkit link unavailable";
+    els.toolkitDot.classList.add("bad");
+    els.downloadToolkitBtn.disabled = true;
+  }
+}
+
+function openToolkit(){
+  if(!toolkitUrl){
+    showToast("CPT Toolkit link is not available.");
+    return;
+  }
+
+  window.open(toolkitUrl,"_blank","noopener,noreferrer");
+}
+
+function addUnique(bucket,time,number){
+  if(!bucket[time]){
+    bucket[time] = [];
+  }
+
+  if(bucket[time].includes(number)){
+    return false;
+  }
+
+  bucket[time].push(number);
+  return true;
+}
+
+function detectShiftFromText(text){
+  const value = String(text || "");
+
+  if(/\bnight\s+shift\b/i.test(value)){
+    return "night";
+  }
+
+  if(/\bday\s+shift\b/i.test(value)){
+    return "day";
+  }
+
+  return "";
 }
 
 function parseCptText(text){
-  const out = emptyParsed();
-  let activeTime = null;
-  const lines = String(text || "").replace(/\r/g,"").split("\n");
+  const result = createEmptyParsedData();
+  const lines = String(text || "")
+    .replace(/\r/g,"")
+    .split("\n");
+
+  let activeTime = "";
 
   for(const rawLine of lines){
-    const line = rawLine.trim();
-    const timeHeader = line.match(/(?:^|\s)(\d{1,2}:\d{2})\s*\|/i);
+    const line = String(rawLine || "").trim();
+
+    if(!line) continue;
+
+    const timeHeader =
+      line.match(/(?:^|\s)(\d{1,2}:\d{2})\s*\|\s*Total\s+Chasers/i) ||
+      line.match(/(?:^|\s)(\d{1,2}:\d{2})\s*\|/i);
+
     if(timeHeader){
-      activeTime = timeHeader[1].padStart(5,"0");
-      out.timeGroups.add(activeTime);
+      activeTime = normalizeTime(timeHeader[1]);
+
+      if(activeTime){
+        result.allTimes.add(activeTime);
+      }
+
       continue;
     }
 
@@ -388,263 +1458,537 @@ function parseCptText(text){
 
     const tokenRegex = /\b(SR|FR)-(\d{4})\b/gi;
     let match;
+
     while((match = tokenRegex.exec(line)) !== null){
       const type = match[1].toUpperCase();
       const number = match[2];
 
-      if(ignoredCptNumbers.has(number)){
+      if(IGNORED_CPT_NUMBERS.has(number)){
+        addUnique(result.ignored,activeTime,number);
         continue;
       }
 
+      let added = false;
+
       if(type === "SR"){
-        const bucket = Number(number) % 2 === 0 ? out.srEven : out.srOdd;
-        addUnique(bucket, activeTime, number);
-        out.total++;
+        const category = Number(number) % 2 === 0
+          ? result.even
+          : result.odd;
+
+        added = addUnique(category,activeTime,number);
       }else{
-        const lanePrefix = Number(number.slice(0,2));
-        if(lanePrefix >= 10 && lanePrefix <= 12){
-          addUnique(out.east, activeTime, number);
-          out.total++;
-        }else if(lanePrefix >= 16 && lanePrefix <= 19){
-          addUnique(out.west, activeTime, number);
-          out.total++;
+        const prefix = Number(number.slice(0,2));
+
+        if(prefix >= 10 && prefix <= 12){
+          added = addUnique(result.east,activeTime,number);
+        }else if(prefix >= 16 && prefix <= 19){
+          added = addUnique(result.west,activeTime,number);
         }else{
-          addUnique(out.ignored, activeTime, number);
+          addUnique(result.ignored,activeTime,number);
         }
+      }
+
+      if(added){
+        result.totalIncluded++;
+        result.includedTimes.add(activeTime);
       }
     }
   }
-  return out;
+
+  return result;
 }
 
-function sortedTimes(bucket, quarter){
-  return Object.keys(bucket)
-    .filter(time => belongsToQuarter(time, quarter))
-    .sort((a,b) => timeToMinutes(a) - timeToMinutes(b));
-}
+function isTimeInQuarter(time,shiftKey,quarterKey){
+  const minutes = timeToMinutes(time);
+  const quarter = SHIFT_DEFINITIONS[shiftKey]?.quarters?.[quarterKey];
 
-function quarterCount(categoryKey, quarter){
-  return sortedTimes(parsed[categoryKey], quarter)
-    .reduce((sum,time) => sum + parsed[categoryKey][time].length, 0);
-}
+  if(minutes === null || !quarter){
+    return false;
+  }
 
-function formatDisplayTime(time){
-  const [h,m] = time.split(":").map(Number);
-  const suffix = h >= 12 ? "PM" : "AM";
-  const hr = h % 12 || 12;
-  return `${hr}:${String(m).padStart(2,"0")} ${suffix}`;
-}
-
-function renderCards(){
-  const host = document.getElementById("categoryCards");
-  host.innerHTML = "";
-
-  categories.forEach(cat => {
-    const card = document.createElement("article");
-    card.className = "category-card" + (selected.has(cat.key) ? " selected" : "");
-    const times = sortedTimes(parsed[cat.key], currentQuarter);
-    const count = quarterCount(cat.key, currentQuarter);
-
-    let rows = "";
-    if(times.length){
-      rows = times.map(time => {
-        const pills = parsed[cat.key][time].map(n => `<span class="pill">${n}</span>`).join("");
-        return `<div class="time-row">
-          <div class="time-label">${formatDisplayTime(time)}</div>
-          <div class="number-grid">${pills}</div>
-        </div>`;
-      }).join("");
-    }else{
-      rows = `<div class="empty">No CPT numbers found for<br>${quarterRules[currentQuarter].label}.</div>`;
+  if(quarter.crossesMidnight){
+    if(quarter.endExclusive){
+      return minutes >= quarter.start || minutes < quarter.end;
     }
 
-    card.innerHTML = `
-      <div class="card-top">
-        <div>
-          <div class="card-title">${cat.title}</div>
-          <div class="card-count">${count} CPT number${count === 1 ? "" : "s"}</div>
-        </div>
-        <input class="check" type="checkbox" aria-label="Select ${cat.title}" ${selected.has(cat.key) ? "checked" : ""}>
-      </div>
-      <div class="time-list">${rows}</div>`;
+    return minutes >= quarter.start || minutes <= quarter.end;
+  }
 
-    const checkbox = card.querySelector(".check");
-    checkbox.addEventListener("change", () => {
-      checkbox.checked ? selected.add(cat.key) : selected.delete(cat.key);
-      renderCards();
-      updateSummary();
+  if(quarter.endExclusive){
+    return minutes >= quarter.start && minutes < quarter.end;
+  }
+
+  return minutes >= quarter.start && minutes <= quarter.end;
+}
+
+function getQuarterSortValue(time,shiftKey,quarterKey){
+  const minutes = timeToMinutes(time);
+  const quarter = SHIFT_DEFINITIONS[shiftKey]?.quarters?.[quarterKey];
+
+  if(minutes === null || !quarter){
+    return Number.MAX_SAFE_INTEGER;
+  }
+
+  if(quarter.crossesMidnight && minutes < quarter.start){
+    return minutes + 1440;
+  }
+
+  return minutes;
+}
+
+function getSortedTimes(categoryKey){
+  const bucket = parsedData[categoryKey] || {};
+
+  return Object.keys(bucket)
+    .filter(time => {
+      return isTimeInQuarter(
+        time,
+        selectedShift,
+        selectedQuarter
+      );
+    })
+    .sort((a,b) => {
+      return (
+        getQuarterSortValue(a,selectedShift,selectedQuarter) -
+        getQuarterSortValue(b,selectedShift,selectedQuarter)
+      );
     });
-    card.addEventListener("click", e => {
-      if(e.target === checkbox) return;
-      checkbox.checked = !checkbox.checked;
-      checkbox.dispatchEvent(new Event("change"));
+}
+
+function getCategoryCount(categoryKey){
+  return getSortedTimes(categoryKey)
+    .reduce((total,time) => {
+      return total + (parsedData[categoryKey][time]?.length || 0);
+    },0);
+}
+
+function getVisibleTimeCount(){
+  const times = new Set();
+
+  CATEGORY_DEFINITIONS.forEach(category => {
+    getSortedTimes(category.key).forEach(time => {
+      times.add(time);
     });
-    host.appendChild(card);
   });
 
-  document.getElementById("previewHeading").textContent = `${currentQuarter} label preview`;
+  return times.size;
+}
+
+function renderQuarterSegments(){
+  const quarters = SHIFT_DEFINITIONS[selectedShift].quarters;
+
+  els.quarterSegments.innerHTML = Object.values(quarters)
+    .map(quarter => {
+      const active = selectedQuarter === quarter.label
+        ? " active"
+        : "";
+
+      return `
+        <button class="segment${active}" data-quarter="${quarter.label}" type="button">
+          <strong>${quarter.label}</strong>
+          <span>${quarter.range}</span>
+        </button>
+      `;
+    })
+    .join("");
+}
+
+function renderLabelCards(){
+  els.labelGrid.innerHTML = CATEGORY_DEFINITIONS
+    .map(category => {
+      const selected = selectedCategories.has(category.key);
+      const times = getSortedTimes(category.key);
+      const count = getCategoryCount(category.key);
+
+      const content = times.length
+        ? times.map(time => {
+            const numbers = parsedData[category.key][time]
+              .map(number => {
+                return `<span class="number">${number}</span>`;
+              })
+              .join("");
+
+            return `
+              <div class="time-row">
+                <div class="time-title">${formatDisplayTime(time)}</div>
+                <div class="number-list">${numbers}</div>
+              </div>
+            `;
+          })
+          .join("")
+        : `
+          <div class="empty-card">
+            No CPT numbers found for this side in ${selectedQuarter}.
+          </div>
+        `;
+
+      return `
+        <article class="label-card${selected ? " selected" : ""}" data-category="${category.key}">
+          <div class="label-card-head">
+            <div>
+              <h4>${category.title}</h4>
+              <div class="label-card-meta">${count} CPT number${count === 1 ? "" : "s"}</div>
+            </div>
+            <input
+              class="check"
+              type="checkbox"
+              aria-label="Select ${category.title}"
+              ${selected ? "checked" : ""}
+            />
+          </div>
+          <div class="time-list">${content}</div>
+        </article>
+      `;
+    })
+    .join("");
+}
+
+function renderStats(){
+  els.fileStatusStat.textContent = loadedFileName
+    ? "Ready"
+    : "Empty";
+
+  els.detectedShiftStat.textContent = detectedShift
+    ? SHIFT_DEFINITIONS[detectedShift].label.replace(" Shift","")
+    : "-";
+
+  els.numberCountStat.textContent = parsedData.totalIncluded;
+  els.timeCountStat.textContent = parsedData.includedTimes.size;
+}
+
+function updateHeaderText(){
+  const shift = SHIFT_DEFINITIONS[selectedShift];
+  const quarter = shift.quarters[selectedQuarter];
+
+  els.previewTitle.textContent =
+    `${shift.label} - ${quarter.label} (${quarter.range})`;
+}
+
+function updateSelectionSummary(){
+  const count = selectedCategories.size;
+  const paperText = els.paperSize.value === "label"
+    ? "4 x 7 label page"
+    : "Letter sheet";
+
+  els.selectedCount.textContent =
+    `${count} selected`;
+
+  els.printSummaryTitle.textContent = count
+    ? `${count} label${count === 1 ? "" : "s"} selected`
+    : "No labels selected";
+
+  els.printSummaryText.textContent = count
+    ? `Each selected side prints on its own ${paperText}.`
+    : "Select at least one side. Each selected side prints on a separate page.";
+
+  els.printBtn.disabled = count === 0;
 }
 
 function buildPrintArea(){
-  const printArea = document.getElementById("printArea");
-  const q = quarterRules[currentQuarter];
-  let pages = "";
+  const shift = SHIFT_DEFINITIONS[selectedShift];
+  const quarter = shift.quarters[selectedQuarter];
 
-  categories.filter(cat => selected.has(cat.key)).forEach(cat => {
-    const times = sortedTimes(parsed[cat.key], currentQuarter);
-    const total = quarterCount(cat.key, currentQuarter);
-    const density = total > 34 ? "compact" : total > 22 ? "medium" : "";
+  const pages = CATEGORY_DEFINITIONS
+    .filter(category => selectedCategories.has(category.key))
+    .map(category => {
+      const times = getSortedTimes(category.key);
+      const total = getCategoryCount(category.key);
+      const densityClass =
+        total > 34 || times.length > 8
+          ? "compact"
+          : total > 22 || times.length > 6
+            ? "medium"
+            : "";
 
-    const blocks = times.length ? times.map(time => {
-      const nums = parsed[cat.key][time].map(n => `<div class="label-number">${n}</div>`).join("");
-      return `<section class="label-time">
-        <div class="label-time-title">${formatDisplayTime(time)}</div>
-        <div class="label-numbers">${nums}</div>
-      </section>`;
-    }).join("") : `<section class="label-time"><div class="label-time-title">No CPT numbers</div></section>`;
+      const blocks = times.length
+        ? times.map(time => {
+            const numbers = parsedData[category.key][time]
+              .map(number => {
+                return `<div class="print-number">${number}</div>`;
+              })
+              .join("");
 
-    pages += `<section class="print-page">
-      <article class="label-sheet ${density}">
-        <header class="label-head">
-          <div class="label-category">${cat.title}</div>
-          <div class="label-quarter">${q.label}<br>${q.range}</div>
-        </header>
-        <main class="label-body">${blocks}</main>
-        <footer class="label-foot"><span>YXU1</span><span>${total} CPT</span></footer>
-      </article>
-    </section>`;
-  });
+            return `
+              <section class="print-time">
+                <div class="print-time-title">${formatDisplayTime(time)}</div>
+                <div class="print-numbers">${numbers}</div>
+              </section>
+            `;
+          })
+          .join("")
+        : `<div class="print-empty">No CPT numbers</div>`;
 
-  printArea.innerHTML = pages;
+      return `
+        <section class="print-page">
+          <article class="print-label-sheet ${densityClass}">
+            <header class="print-head">
+              <div class="print-title">${category.title}</div>
+              <div class="print-quarter">
+                ${shift.label}<br>
+                ${quarter.label} - ${quarter.range}
+              </div>
+            </header>
+            <main class="print-body">${blocks}</main>
+          </article>
+        </section>
+      `;
+    })
+    .join("");
+
+  els.printArea.innerHTML = pages;
 }
 
-function updateSummary(){
-  const count = selected.size;
-  document.getElementById("summaryTitle").textContent = `${count} label${count === 1 ? "" : "s"} selected`;
-  document.getElementById("summaryText").textContent =
-    count ? `Each selected side prints on its own ${document.getElementById("paperSize").value === "label" ? "4 x 7 page" : "letter sheet"}.`
-          : "Select at least one label to print.";
-  document.getElementById("printBtn").disabled = count === 0;
-  document.getElementById("printTopBtn").disabled = count === 0;
+function syncPrintPageSize(){
+  const isLetter = els.paperSize.value === "letter";
+
+  document.body.classList.toggle("print-letter",isLetter);
+  document.body.classList.toggle("print-label",!isLetter);
+
+  els.pageStyle.textContent = isLetter
+    ? "@page{size:letter portrait;margin:0}"
+    : "@page{size:4in 7in;margin:0}";
+}
+
+function renderAll(){
+  renderQuarterSegments();
+  renderLabelCards();
+  renderStats();
+  updateHeaderText();
+  updateSelectionSummary();
   buildPrintArea();
 }
 
-function updateStats(){
-  const uniqueTimes = [...parsed.timeGroups].length;
-  document.getElementById("cptCount").textContent = parsed.total;
-  document.getElementById("timeCount").textContent = uniqueTimes;
+function setShift(shiftKey,fromFile=false){
+  if(!SHIFT_DEFINITIONS[shiftKey]) return;
+
+  selectedShift = shiftKey;
+  selectedQuarter = "Q1";
+  selectedCategories.clear();
+
+  document
+    .querySelectorAll("#shiftSegments .segment")
+    .forEach(button => {
+      button.classList.toggle(
+        "active",
+        button.dataset.shift === shiftKey
+      );
+    });
+
+  renderAll();
+
+  if(fromFile){
+    showToast(`${SHIFT_DEFINITIONS[shiftKey].label} detected.`);
+  }
 }
 
-function setStatus(title, file, ready=true){
-  document.getElementById("statusTitle").textContent = title;
-  document.getElementById("statusFile").textContent = file || "";
-  document.getElementById("statusDot").classList.toggle("ready", ready);
+function setQuarter(quarterKey){
+  if(!SHIFT_DEFINITIONS[selectedShift].quarters[quarterKey]){
+    return;
+  }
+
+  selectedQuarter = quarterKey;
+  selectedCategories.clear();
+  renderAll();
 }
 
-function loadText(text, fileName){
-  parsed = parseCptText(text);
-  loadedFileName = fileName || "Uploaded CPT sheet";
-  setStatus(parsed.total ? "CSV ready" : "No CPT numbers found", loadedFileName, parsed.total > 0);
-  updateStats();
-  renderCards();
-  updateSummary();
-  showToast(parsed.total ? `${parsed.total} CPT numbers extracted` : "No matching CPT numbers found");
+function loadFileText(text,fileName){
+  const value = String(text || "");
+
+  parsedData = parseCptText(value);
+  loadedFileName = fileName || "Uploaded TXT";
+  detectedShift = detectShiftFromText(value);
+
+  els.fileState.textContent = loadedFileName;
+
+  if(detectedShift){
+    setShift(detectedShift,true);
+  }else{
+    selectedCategories.clear();
+    renderAll();
+  }
+
+  if(parsedData.totalIncluded){
+    showToast(`${parsedData.totalIncluded} CPT numbers extracted.`);
+  }else{
+    showToast("No matching CPT numbers were found.");
+  }
 }
 
-function showToast(message){
-  const toast = document.getElementById("toast");
-  toast.textContent = message;
-  toast.classList.add("show");
-  clearTimeout(showToast.timer);
-  showToast.timer = setTimeout(() => toast.classList.remove("show"), 1700);
-}
-
-function readFile(file){
+function readSelectedFile(file){
   if(!file) return;
+
+  const allowed =
+    file.name.toLowerCase().endsWith(".txt") ||
+    file.name.toLowerCase().endsWith(".csv") ||
+    file.type === "text/plain" ||
+    file.type === "text/csv";
+
+  if(!allowed){
+    showToast("Please choose a TXT file.");
+    return;
+  }
+
   const reader = new FileReader();
-  reader.onload = () => loadText(reader.result, file.name);
-  reader.onerror = () => showToast("Could not read this file");
+
+  reader.onload = () => {
+    loadFileText(reader.result,file.name);
+  };
+
+  reader.onerror = () => {
+    showToast("The selected file could not be read.");
+  };
+
   reader.readAsText(file);
 }
 
-function syncPageSize(){
-  const paper = document.getElementById("paperSize").value;
-  document.getElementById("pageStyle").textContent =
-    paper === "letter"
-      ? "@page{size:letter portrait;margin:0}"
-      : "@page{size:4in 7in;margin:0}";
+function resetPage(){
+  selectedShift = "day";
+  selectedQuarter = "Q1";
+  selectedCategories.clear();
+  loadedFileName = "";
+  detectedShift = "";
+  parsedData = createEmptyParsedData();
+
+  els.fileInput.value = "";
+  els.fileState.textContent = "No file";
+  els.paperSize.value = "label";
+
+  document
+    .querySelectorAll("#shiftSegments .segment")
+    .forEach(button => {
+      button.classList.toggle(
+        "active",
+        button.dataset.shift === "day"
+      );
+    });
+
+  syncPrintPageSize();
+  renderAll();
+  showToast("Page reset.");
 }
 
 function printSelected(){
-  if(!selected.size){
-    showToast("Select at least one label");
+  if(!selectedCategories.size){
+    showToast("Select at least one label side.");
     return;
   }
+
   buildPrintArea();
-  syncPageSize();
-  document.body.classList.toggle("print-letter", document.getElementById("paperSize").value === "letter");
-  document.body.classList.toggle("print-label", document.getElementById("paperSize").value === "label");
+  syncPrintPageSize();
   window.print();
 }
 
-document.getElementById("browseBtn").addEventListener("click", () => document.getElementById("fileInput").click());
-document.getElementById("fileInput").addEventListener("change", e => readFile(e.target.files[0]));
+function showToast(message){
+  els.toast.textContent = message;
+  els.toast.classList.add("show");
 
-const dropzone = document.getElementById("dropzone");
-["dragenter","dragover"].forEach(evt => dropzone.addEventListener(evt, e => {
-  e.preventDefault(); dropzone.classList.add("drag");
-}));
-["dragleave","drop"].forEach(evt => dropzone.addEventListener(evt, e => {
-  e.preventDefault(); dropzone.classList.remove("drag");
-}));
-dropzone.addEventListener("drop", e => readFile(e.dataTransfer.files[0]));
+  clearTimeout(showToast.timer);
 
-document.getElementById("quarterSegments").addEventListener("click", e => {
-  const btn = e.target.closest(".segment");
-  if(!btn) return;
-  currentQuarter = btn.dataset.quarter;
-  document.querySelectorAll(".segment").forEach(x => x.classList.toggle("active", x === btn));
-  renderCards();
-  updateSummary();
+  showToast.timer = setTimeout(() => {
+    els.toast.classList.remove("show");
+  },2000);
+}
+
+els.downloadToolkitBtn.addEventListener("click",openToolkit);
+els.instructionDownloadBtn.addEventListener("click",openToolkit);
+
+els.chooseFileBtn.addEventListener("click",() => {
+  els.fileInput.click();
 });
 
-document.getElementById("selectAllBtn").addEventListener("click", () => {
-  selected = new Set(); renderCards(); updateSummary();
-});
-document.getElementById("clearBtn").addEventListener("click", () => {
-  selected.clear(); renderCards(); updateSummary();
-});
-document.getElementById("paperSize").addEventListener("change", () => { syncPageSize(); updateSummary(); });
-document.getElementById("previewBtn").addEventListener("click", () => {
-  buildPrintArea(); showToast("Print preview refreshed");
-});
-document.getElementById("printBtn").addEventListener("click", printSelected);
-document.getElementById("printTopBtn").addEventListener("click", printSelected);
-document.getElementById("resetBtn").addEventListener("click", () => {
-  selected = new Set();
-  currentQuarter = "Q2";
-  parsed = emptyParsed();
-  loadedFileName = "";
-  document.getElementById("fileInput").value = "";
-  document.querySelectorAll(".segment").forEach(x => x.classList.toggle("active", x.dataset.quarter === "Q2"));
-  document.getElementById("paperSize").value = "label";
-  setStatus("No CSV uploaded", "Choose a CSV file to begin", false);
-  updateStats();
-  renderCards();
-  syncPageSize();
-  updateSummary();
-  showToast("Cleared");
+els.fileInput.addEventListener("change",event => {
+  readSelectedFile(event.target.files[0]);
 });
 
-window.addEventListener("afterprint", () => {
-  document.body.classList.remove("print-letter");
-  document.body.classList.add("print-label");
+["dragenter","dragover"].forEach(eventName => {
+  els.dropzone.addEventListener(eventName,event => {
+    event.preventDefault();
+    els.dropzone.classList.add("drag");
+  });
 });
 
-syncPageSize();
-updateStats();
-renderCards();
-updateSummary();
+["dragleave","drop"].forEach(eventName => {
+  els.dropzone.addEventListener(eventName,event => {
+    event.preventDefault();
+    els.dropzone.classList.remove("drag");
+  });
+});
+
+els.dropzone.addEventListener("drop",event => {
+  readSelectedFile(event.dataTransfer.files[0]);
+});
+
+els.shiftSegments.addEventListener("click",event => {
+  const button = event.target.closest("[data-shift]");
+
+  if(!button) return;
+
+  setShift(button.dataset.shift);
+});
+
+els.quarterSegments.addEventListener("click",event => {
+  const button = event.target.closest("[data-quarter]");
+
+  if(!button) return;
+
+  setQuarter(button.dataset.quarter);
+});
+
+els.labelGrid.addEventListener("click",event => {
+  const card = event.target.closest("[data-category]");
+
+  if(!card) return;
+
+  const categoryKey = card.dataset.category;
+  const checkbox = card.querySelector(".check");
+
+  if(event.target === checkbox){
+    if(checkbox.checked){
+      selectedCategories.add(categoryKey);
+    }else{
+      selectedCategories.delete(categoryKey);
+    }
+  }else{
+    if(selectedCategories.has(categoryKey)){
+      selectedCategories.delete(categoryKey);
+    }else{
+      selectedCategories.add(categoryKey);
+    }
+  }
+
+  renderLabelCards();
+  updateSelectionSummary();
+  buildPrintArea();
+});
+
+els.clearSelectionBtn.addEventListener("click",() => {
+  selectedCategories.clear();
+  renderLabelCards();
+  updateSelectionSummary();
+  buildPrintArea();
+});
+
+els.resetBtn.addEventListener("click",resetPage);
+
+els.paperSize.addEventListener("change",() => {
+  syncPrintPageSize();
+  updateSelectionSummary();
+  buildPrintArea();
+});
+
+els.printBtn.addEventListener("click",printSelected);
+
+window.addEventListener("afterprint",() => {
+  syncPrintPageSize();
+});
+
+async function init(){
+  syncPrintPageSize();
+  renderAll();
+  await loadToolkitLink();
+}
+
+init();
 </script>
 </body>
 </html>
