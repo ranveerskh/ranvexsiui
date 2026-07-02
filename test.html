@@ -808,6 +808,21 @@
     }
   }
 
+  .label-grid.roll-mode .label-card{
+    opacity:.62;
+    cursor:default;
+    pointer-events:none;
+  }
+
+  .label-grid.roll-mode .check{
+    display:none;
+  }
+
+  .label-grid.roll-mode .label-card.selected{
+    border-color:var(--line);
+    box-shadow:0 8px 22px rgba(15,23,42,.05);
+  }
+
   @media print{
     html,body{
       background:#fff!important;
@@ -971,6 +986,168 @@
       font-size:10.5pt;
     }
 
+    .letter-print-page{
+      width:8.5in;
+      height:11in;
+      page-break-after:always;
+      break-after:page;
+      overflow:hidden;
+      background:#fff;
+      color:#000;
+      font-family:Arial,Helvetica,sans-serif;
+    }
+
+    .letter-print-page:last-child{
+      page-break-after:auto;
+      break-after:auto;
+    }
+
+    .letter-sheet{
+      width:8.5in;
+      height:11in;
+      padding:.32in .38in;
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+      background:#fff;
+      color:#000;
+    }
+
+    .letter-head{
+      flex:0 0 auto;
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+      gap:.2in;
+      border-bottom:3px solid #000;
+      padding-bottom:.11in;
+    }
+
+    .letter-title{
+      font-size:25pt;
+      line-height:1;
+      font-weight:900;
+      letter-spacing:-.7pt;
+    }
+
+    .letter-shift{
+      text-align:right;
+      font-size:11pt;
+      line-height:1.15;
+      font-weight:900;
+    }
+
+    .letter-body{
+      flex:1;
+      min-height:0;
+      display:flex;
+      flex-direction:column;
+      gap:.10in;
+      padding-top:.11in;
+    }
+
+    .letter-quarter-section{
+      flex:1 1 0;
+      min-height:0;
+      overflow:hidden;
+      border:1.5px solid #000;
+      border-radius:.07in;
+      padding:.085in .10in;
+    }
+
+    .letter-quarter-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:.12in;
+      border-bottom:1.5px solid #000;
+      padding-bottom:.055in;
+      margin-bottom:.035in;
+    }
+
+    .letter-quarter-name{
+      font-size:15pt;
+      line-height:1;
+      font-weight:900;
+    }
+
+    .letter-quarter-range{
+      font-size:9.5pt;
+      line-height:1;
+      font-weight:900;
+    }
+
+    .letter-time-row{
+      display:grid;
+      grid-template-columns:.78in minmax(0,1fr);
+      gap:.08in;
+      align-items:start;
+      padding:.035in 0;
+      border-bottom:1px solid #777;
+    }
+
+    .letter-time-row:last-child{
+      border-bottom:0;
+    }
+
+    .letter-time-label{
+      padding-top:.045in;
+      font-size:10.5pt;
+      line-height:1;
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    .letter-number-grid{
+      display:grid;
+      grid-template-columns:repeat(8,minmax(0,1fr));
+      gap:.035in;
+    }
+
+    .letter-number{
+      min-width:0;
+      border:1px solid #000;
+      border-radius:.035in;
+      padding:.045in .012in;
+      text-align:center;
+      font-size:11.5pt;
+      line-height:1;
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    .letter-empty{
+      padding:.14in 0;
+      text-align:center;
+      font-size:10pt;
+      font-weight:800;
+    }
+
+    .letter-sheet.compact .letter-quarter-section{
+      padding:.065in .08in;
+    }
+
+    .letter-sheet.compact .letter-time-row{
+      grid-template-columns:.68in minmax(0,1fr);
+      gap:.05in;
+      padding:.024in 0;
+    }
+
+    .letter-sheet.compact .letter-time-label{
+      font-size:9pt;
+      padding-top:.034in;
+    }
+
+    .letter-sheet.compact .letter-number-grid{
+      grid-template-columns:repeat(9,minmax(0,1fr));
+      gap:.025in;
+    }
+
+    .letter-sheet.compact .letter-number{
+      padding:.032in .008in;
+      font-size:9.4pt;
+    }
+
     .roll-print-page{
       width:2in;
       height:1in;
@@ -990,7 +1167,7 @@
     .roll-label{
       width:2in;
       height:1in;
-      padding:.035in .055in .04in;
+      padding:.035in .045in .04in;
       display:flex;
       flex-direction:column;
       justify-content:center;
@@ -1003,7 +1180,7 @@
       flex:0 0 auto;
       margin-bottom:.035in;
       text-align:center;
-      font-size:11.5pt;
+      font-size:11pt;
       line-height:1;
       font-weight:900;
       letter-spacing:.1pt;
@@ -1013,27 +1190,43 @@
       flex:1;
       min-height:0;
       display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
       align-items:center;
-      gap:.04in;
+      gap:.025in;
     }
 
-    .roll-numbers.single{
+    .roll-numbers.count-1{
       grid-template-columns:1fr;
+    }
+
+    .roll-numbers.count-2{
+      grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+
+    .roll-numbers.count-3{
+      grid-template-columns:repeat(3,minmax(0,1fr));
     }
 
     .roll-number{
       min-width:0;
       text-align:center;
-      font-size:24pt;
       line-height:.92;
       font-weight:900;
-      letter-spacing:-1pt;
       white-space:nowrap;
     }
 
-    .roll-numbers.single .roll-number{
-      font-size:28pt;
+    .roll-numbers.count-1 .roll-number{
+      font-size:29pt;
+      letter-spacing:-1.2pt;
+    }
+
+    .roll-numbers.count-2 .roll-number{
+      font-size:23pt;
+      letter-spacing:-1pt;
+    }
+
+    .roll-numbers.count-3 .roll-number{
+      font-size:17.2pt;
+      letter-spacing:-.8pt;
     }
 
     .print-empty{
@@ -1073,7 +1266,7 @@
     <div class="card hero-copy">
       <div class="eyebrow">CPT label extractor</div>
       <h2>Upload the updated CPT TXT file.</h2>
-      <p>The page keeps only the required SR and Flats CPT numbers, separates them by time, prints selected summary labels, or prints the full quarter on 2 x 1 roll labels.</p>
+      <p>The page keeps only the required SR and Flats CPT numbers, separates them by time and supports 4 x 7 summaries, all-three-quarter Letter sheets, and flexible 2 x 1 roll labels.</p>
 
       <div class="instructions">
         <div class="instruction">
@@ -1143,10 +1336,13 @@
     </div>
 
     <div class="control">
-      <label>Paper Size</label>
+      <label>Print Format</label>
       <select id="paperSize">
-        <option value="label">4 x 7 label</option>
-        <option value="letter">Letter sheet - label centered</option>
+        <option value="label">4 x 7 - selected quarter</option>
+        <option value="letter">Letter - all 3 quarters</option>
+        <option value="roll1">2 x 1 - 1 CPT per label</option>
+        <option value="roll2">2 x 1 - 2 CPTs per label</option>
+        <option value="roll3">2 x 1 - 3 CPTs per label</option>
       </select>
     </div>
 
@@ -1178,7 +1374,7 @@
   <div class="section-head">
     <div>
       <h3 id="previewTitle">Day Shift - Q1</h3>
-      <p>Select only the label sides you want to print. Nothing is selected automatically.</p>
+      <p id="previewHelp">Select only the label sides you want to print. Nothing is selected automatically.</p>
     </div>
     <div class="selected-count" id="selectedCount">0 selected</div>
   </div>
@@ -1192,8 +1388,7 @@
     </div>
 
     <div class="bottom-actions">
-      <button class="btn" id="printAllQuarterBtn" type="button" disabled>Print All Quarter CPTs - 2 x 1</button>
-      <button class="btn green" id="printBtn" type="button" disabled>Print Selected Summary</button>
+      <button class="btn green" id="printBtn" type="button" disabled>Print Selected 4 x 7</button>
     </div>
   </section>
 </main>
@@ -1309,12 +1504,12 @@ const els = {
   timeCountStat:document.getElementById("timeCountStat"),
 
   previewTitle:document.getElementById("previewTitle"),
+  previewHelp:document.getElementById("previewHelp"),
   selectedCount:document.getElementById("selectedCount"),
   labelGrid:document.getElementById("labelGrid"),
 
   printSummaryTitle:document.getElementById("printSummaryTitle"),
   printSummaryText:document.getElementById("printSummaryText"),
-  printAllQuarterBtn:document.getElementById("printAllQuarterBtn"),
   printBtn:document.getElementById("printBtn"),
   printArea:document.getElementById("printArea"),
   pageStyle:document.getElementById("pageStyle"),
@@ -1603,7 +1798,27 @@ function getQuarterSortValue(time,shiftKey,quarterKey){
   return minutes;
 }
 
-function getSortedTimes(categoryKey){
+function getPrintMode(){
+  return els.paperSize.value;
+}
+
+function isRollMode(){
+  return getPrintMode().startsWith("roll");
+}
+
+function getRollGroupSize(){
+  const mode = getPrintMode();
+
+  if(mode === "roll1") return 1;
+  if(mode === "roll3") return 3;
+  return 2;
+}
+
+function getQuarterKeys(){
+  return Object.keys(SHIFT_DEFINITIONS[selectedShift].quarters);
+}
+
+function getSortedTimesForQuarter(categoryKey,quarterKey){
   const bucket = parsedData[categoryKey] || {};
 
   return Object.keys(bucket)
@@ -1611,22 +1826,36 @@ function getSortedTimes(categoryKey){
       return isTimeInQuarter(
         time,
         selectedShift,
-        selectedQuarter
+        quarterKey
       );
     })
     .sort((a,b) => {
       return (
-        getQuarterSortValue(a,selectedShift,selectedQuarter) -
-        getQuarterSortValue(b,selectedShift,selectedQuarter)
+        getQuarterSortValue(a,selectedShift,quarterKey) -
+        getQuarterSortValue(b,selectedShift,quarterKey)
       );
     });
 }
 
-function getCategoryCount(categoryKey){
-  return getSortedTimes(categoryKey)
+function getSortedTimes(categoryKey){
+  return getSortedTimesForQuarter(categoryKey,selectedQuarter);
+}
+
+function getCategoryCountForQuarter(categoryKey,quarterKey){
+  return getSortedTimesForQuarter(categoryKey,quarterKey)
     .reduce((total,time) => {
       return total + (parsedData[categoryKey][time]?.length || 0);
     },0);
+}
+
+function getCategoryCount(categoryKey){
+  return getCategoryCountForQuarter(categoryKey,selectedQuarter);
+}
+
+function getCategoryAllQuarterCount(categoryKey){
+  return getQuarterKeys().reduce((total,quarterKey) => {
+    return total + getCategoryCountForQuarter(categoryKey,quarterKey);
+  },0);
 }
 
 function getVisibleTimeCount(){
@@ -1641,11 +1870,11 @@ function getVisibleTimeCount(){
   return times.size;
 }
 
-function getAllQuarterCptsByTime(){
+function getAllQuarterCptsByTime(quarterKey=selectedQuarter){
   const allTimes = new Set();
 
   CATEGORY_DEFINITIONS.forEach(category => {
-    getSortedTimes(category.key).forEach(time => {
+    getSortedTimesForQuarter(category.key,quarterKey).forEach(time => {
       allTimes.add(time);
     });
   });
@@ -1653,8 +1882,8 @@ function getAllQuarterCptsByTime(){
   return [...allTimes]
     .sort((a,b) => {
       return (
-        getQuarterSortValue(a,selectedShift,selectedQuarter) -
-        getQuarterSortValue(b,selectedShift,selectedQuarter)
+        getQuarterSortValue(a,selectedShift,quarterKey) -
+        getQuarterSortValue(b,selectedShift,quarterKey)
       );
     })
     .map(time => {
@@ -1680,14 +1909,15 @@ function getAllQuarterCptsByTime(){
     .filter(group => group.numbers.length > 0);
 }
 
-function getAllQuarterRollLabels(){
+function getAllQuarterRollLabels(groupSize=getRollGroupSize()){
   const labels = [];
+  const size = Math.max(1,Math.min(3,Number(groupSize) || 2));
 
-  getAllQuarterCptsByTime().forEach(group => {
-    for(let index = 0; index < group.numbers.length; index += 2){
+  getAllQuarterCptsByTime(selectedQuarter).forEach(group => {
+    for(let index = 0; index < group.numbers.length; index += size){
       labels.push({
         time:group.time,
-        numbers:group.numbers.slice(index,index + 2)
+        numbers:group.numbers.slice(index,index + size)
       });
     }
   });
@@ -1785,34 +2015,73 @@ function updateHeaderText(){
     `${shift.label} - ${quarter.label} (${quarter.range})`;
 }
 
-function updateSelectionSummary(){
-  const count = selectedCategories.size;
-  const rollCount = getAllQuarterRollLabels().length;
-  const paperText = els.paperSize.value === "label"
-    ? "4 x 7 label page"
-    : "Letter sheet";
+function updateModeUI(){
+  const mode = getPrintMode();
+  const rollMode = isRollMode();
 
-  els.selectedCount.textContent =
-    `${count} selected`;
+  els.labelGrid.classList.toggle("roll-mode",rollMode);
+  els.clearSelectionBtn.disabled = rollMode;
 
-  els.printSummaryTitle.textContent = count
-    ? `${count} summary label${count === 1 ? "" : "s"} selected`
-    : "No summary labels selected";
-
-  if(rollCount > 0){
-    els.printSummaryText.textContent = count
-      ? `Selected sides print on ${paperText}. Full quarter roll print will create ${rollCount} small 2 x 1 label${rollCount === 1 ? "" : "s"}.`
-      : `Full quarter roll print will create ${rollCount} small 2 x 1 label${rollCount === 1 ? "" : "s"}.`;
+  if(mode === "letter"){
+    els.previewHelp.textContent =
+      "Select the sides you want. Printing will include Q1, Q2 and Q3, separated clearly on the Letter sheet.";
+  }else if(rollMode){
+    els.previewHelp.textContent =
+      `Side selection is not needed. All CPTs from ${selectedQuarter} will print, grouped by time.`;
   }else{
-    els.printSummaryText.textContent =
-      "Upload a CPT file and choose a quarter to print.";
+    els.previewHelp.textContent =
+      "Select only the label sides you want to print. Nothing is selected automatically.";
+  }
+}
+
+function updateSelectionSummary(){
+  const mode = getPrintMode();
+  const count = selectedCategories.size;
+  const rollMode = isRollMode();
+  const rollCount = rollMode
+    ? getAllQuarterRollLabels(getRollGroupSize()).length
+    : 0;
+
+  if(rollMode){
+    const groupSize = getRollGroupSize();
+    const cptWord = groupSize === 1 ? "CPT" : "CPTs";
+
+    els.selectedCount.textContent = "All sides included";
+    els.printSummaryTitle.textContent = rollCount
+      ? `${rollCount} small label${rollCount === 1 ? "" : "s"} ready`
+      : "No CPT labels ready";
+    els.printSummaryText.textContent = rollCount
+      ? `${selectedShift === "day" ? "Day" : "Night"} ${selectedQuarter}: ${groupSize} ${cptWord} per 2 x 1 label. Different CPT times are never mixed.`
+      : "Upload a CPT file and choose a quarter to print.";
+    els.printBtn.textContent = `Print 2 x 1 - ${groupSize} ${cptWord} Each`;
+    els.printBtn.disabled = rollCount === 0;
+    return;
+  }
+
+  els.selectedCount.textContent = `${count} selected`;
+
+  if(mode === "letter"){
+    els.printSummaryTitle.textContent = count
+      ? `${count} Letter sheet${count === 1 ? "" : "s"} selected`
+      : "No sides selected";
+    els.printSummaryText.textContent = count
+      ? "Each selected side prints on its own Letter page with Q1, Q2 and Q3 in separate sections."
+      : "Select at least one side. All three quarters will print together by quarter.";
+    els.printBtn.textContent = "Print All 3 Quarters - Letter";
+  }else{
+    els.printSummaryTitle.textContent = count
+      ? `${count} summary label${count === 1 ? "" : "s"} selected`
+      : "No summary labels selected";
+    els.printSummaryText.textContent = count
+      ? `Each selected side prints on its own 4 x 7 page for ${selectedQuarter}.`
+      : "Select at least one side. Each selected side prints on a separate 4 x 7 page.";
+    els.printBtn.textContent = "Print Selected 4 x 7";
   }
 
   els.printBtn.disabled = count === 0;
-  els.printAllQuarterBtn.disabled = rollCount === 0;
 }
 
-function buildSummaryPrintArea(){
+function buildFourBySevenPrintArea(){
   const shift = SHIFT_DEFINITIONS[selectedShift];
   const quarter = shift.quarters[selectedQuarter];
 
@@ -1866,14 +2135,82 @@ function buildSummaryPrintArea(){
   els.printArea.innerHTML = pages;
 }
 
+function buildLetterPrintArea(){
+  const shift = SHIFT_DEFINITIONS[selectedShift];
+  const quarterKeys = getQuarterKeys();
+
+  const pages = CATEGORY_DEFINITIONS
+    .filter(category => selectedCategories.has(category.key))
+    .map(category => {
+      const total = getCategoryAllQuarterCount(category.key);
+      const compactClass = total > 70 ? " compact" : "";
+
+      const quarterSections = quarterKeys
+        .map(quarterKey => {
+          const quarter = shift.quarters[quarterKey];
+          const times = getSortedTimesForQuarter(category.key,quarterKey);
+
+          const rows = times.length
+            ? times.map(time => {
+                const numbers = parsedData[category.key][time]
+                  .map(number => {
+                    return `<div class="letter-number">${number}</div>`;
+                  })
+                  .join("");
+
+                return `
+                  <div class="letter-time-row">
+                    <div class="letter-time-label">${formatDisplayTime(time)}</div>
+                    <div class="letter-number-grid">${numbers}</div>
+                  </div>
+                `;
+              })
+              .join("")
+            : `<div class="letter-empty">No CPT numbers in this quarter</div>`;
+
+          return `
+            <section class="letter-quarter-section">
+              <header class="letter-quarter-head">
+                <div class="letter-quarter-name">${quarter.label}</div>
+                <div class="letter-quarter-range">${quarter.range}</div>
+              </header>
+              ${rows}
+            </section>
+          `;
+        })
+        .join("");
+
+      return `
+        <section class="letter-print-page">
+          <article class="letter-sheet${compactClass}">
+            <header class="letter-head">
+              <div class="letter-title">${category.title}</div>
+              <div class="letter-shift">${shift.label}<br>All 3 Quarters</div>
+            </header>
+            <main class="letter-body">${quarterSections}</main>
+          </article>
+        </section>
+      `;
+    })
+    .join("");
+
+  els.printArea.innerHTML = pages;
+}
+
+function buildSummaryPrintArea(){
+  if(getPrintMode() === "letter"){
+    buildLetterPrintArea();
+  }else{
+    buildFourBySevenPrintArea();
+  }
+}
+
 function buildRollPrintArea(){
-  const labels = getAllQuarterRollLabels();
+  const labels = getAllQuarterRollLabels(getRollGroupSize());
 
   els.printArea.innerHTML = labels
     .map(label => {
-      const singleClass = label.numbers.length === 1
-        ? " single"
-        : "";
+      const countClass = ` count-${label.numbers.length}`;
 
       const numbers = label.numbers
         .map(number => {
@@ -1885,7 +2222,7 @@ function buildRollPrintArea(){
         <section class="roll-print-page">
           <article class="roll-label">
             <div class="roll-time">${label.time}</div>
-            <div class="roll-numbers${singleClass}">${numbers}</div>
+            <div class="roll-numbers${countClass}">${numbers}</div>
           </article>
         </section>
       `;
@@ -1893,22 +2230,33 @@ function buildRollPrintArea(){
     .join("");
 }
 
-function syncPrintPageSize(){
-  const isLetter = els.paperSize.value === "letter";
-
-  document.body.classList.remove("print-roll");
-  document.body.classList.toggle("print-letter",isLetter);
-  document.body.classList.toggle("print-label",!isLetter);
-
-  els.pageStyle.textContent = isLetter
-    ? "@page{size:letter portrait;margin:0}"
-    : "@page{size:4in 7in;margin:0}";
+function buildCurrentPrintArea(){
+  if(isRollMode()){
+    buildRollPrintArea();
+  }else{
+    buildSummaryPrintArea();
+  }
 }
 
-function syncRollPrintPageSize(){
-  document.body.classList.remove("print-letter","print-label");
-  document.body.classList.add("print-roll");
-  els.pageStyle.textContent = "@page{size:2in 1in;margin:0}";
+function syncPrintPageSize(){
+  const mode = getPrintMode();
+
+  document.body.classList.remove(
+    "print-roll",
+    "print-letter",
+    "print-label"
+  );
+
+  if(mode === "letter"){
+    document.body.classList.add("print-letter");
+    els.pageStyle.textContent = "@page{size:letter portrait;margin:0}";
+  }else if(isRollMode()){
+    document.body.classList.add("print-roll");
+    els.pageStyle.textContent = "@page{size:2in 1in;margin:0}";
+  }else{
+    document.body.classList.add("print-label");
+    els.pageStyle.textContent = "@page{size:4in 7in;margin:0}";
+  }
 }
 
 function renderAll(){
@@ -1916,8 +2264,9 @@ function renderAll(){
   renderLabelCards();
   renderStats();
   updateHeaderText();
+  updateModeUI();
   updateSelectionSummary();
-  buildSummaryPrintArea();
+  buildCurrentPrintArea();
 }
 
 function setShift(shiftKey,fromFile=false){
@@ -2029,27 +2378,21 @@ function resetPage(){
   showToast("Page reset.");
 }
 
-function printSelected(){
-  if(!selectedCategories.size){
+function printCurrentMode(){
+  if(isRollMode()){
+    const labels = getAllQuarterRollLabels(getRollGroupSize());
+
+    if(!labels.length){
+      showToast("No CPT numbers found in this quarter.");
+      return;
+    }
+  }else if(!selectedCategories.size){
     showToast("Select at least one label side.");
     return;
   }
 
-  buildSummaryPrintArea();
+  buildCurrentPrintArea();
   syncPrintPageSize();
-  window.print();
-}
-
-function printAllQuarterCpts(){
-  const labels = getAllQuarterRollLabels();
-
-  if(!labels.length){
-    showToast("No CPT numbers found in this quarter.");
-    return;
-  }
-
-  buildRollPrintArea();
-  syncRollPrintPageSize();
   window.print();
 }
 
@@ -2110,6 +2453,8 @@ els.quarterSegments.addEventListener("click",event => {
 });
 
 els.labelGrid.addEventListener("click",event => {
+  if(isRollMode()) return;
+
   const card = event.target.closest("[data-category]");
 
   if(!card) return;
@@ -2133,30 +2478,30 @@ els.labelGrid.addEventListener("click",event => {
 
   renderLabelCards();
   updateSelectionSummary();
-  buildSummaryPrintArea();
+  buildCurrentPrintArea();
 });
 
 els.clearSelectionBtn.addEventListener("click",() => {
   selectedCategories.clear();
   renderLabelCards();
   updateSelectionSummary();
-  buildSummaryPrintArea();
+  buildCurrentPrintArea();
 });
 
 els.resetBtn.addEventListener("click",resetPage);
 
 els.paperSize.addEventListener("change",() => {
   syncPrintPageSize();
+  updateModeUI();
   updateSelectionSummary();
-  buildSummaryPrintArea();
+  buildCurrentPrintArea();
 });
 
-els.printAllQuarterBtn.addEventListener("click",printAllQuarterCpts);
-els.printBtn.addEventListener("click",printSelected);
+els.printBtn.addEventListener("click",printCurrentMode);
 
 window.addEventListener("afterprint",() => {
   syncPrintPageSize();
-  buildSummaryPrintArea();
+  buildCurrentPrintArea();
 });
 
 async function init(){
