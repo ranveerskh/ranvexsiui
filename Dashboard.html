@@ -1,5 +1,3 @@
-from pathlib import Path
-
 html = r'''<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -324,6 +322,3 @@ render();
 </body>
 </html>'''
 
-path = Path('/mnt/data/operations-dashboard.html')
-path.write_text(html, encoding='utf-8')
-print(path)
