@@ -18,7 +18,9 @@
       --sidebar:#111827;
     }
 
-    * { box-sizing:border-box; }
+    * {
+      box-sizing:border-box;
+    }
 
     body {
       margin:0;
@@ -62,8 +64,13 @@
       cursor:pointer;
     }
 
-    .feature:hover { background:#1f2937; }
-    .feature input { accent-color:var(--accent); }
+    .feature:hover {
+      background:#1f2937;
+    }
+
+    .feature input {
+      accent-color:var(--accent);
+    }
 
     main {
       padding:24px;
@@ -172,10 +179,21 @@
       color:var(--muted);
     }
 
-    .good { border-left:7px solid #43a047; }
-    .warn { border-left:7px solid #f59e0b; }
-    .bad { border-left:7px solid #e11d48; }
-    .neutral { border-left:7px solid #98a2b3; }
+    .good {
+      border-left:7px solid #43a047;
+    }
+
+    .warn {
+      border-left:7px solid #f59e0b;
+    }
+
+    .bad {
+      border-left:7px solid #e11d48;
+    }
+
+    .neutral {
+      border-left:7px solid #98a2b3;
+    }
 
     .section-title {
       margin:8px 0 12px;
@@ -195,6 +213,10 @@
       border-radius:14px;
       box-shadow:var(--shadow);
       overflow:hidden;
+    }
+
+    .card.dock-wide {
+      grid-column:1 / -1;
     }
 
     .card-head {
@@ -268,7 +290,9 @@
       border-radius:8px;
     }
 
-    .item:last-child { border-bottom:0; }
+    .item:last-child {
+      border-bottom:0;
+    }
 
     .item-main {
       display:flex;
@@ -283,7 +307,9 @@
       font-weight:700;
     }
 
-    .item a:hover { text-decoration:underline; }
+    .item a:hover {
+      text-decoration:underline;
+    }
 
     .meta {
       color:var(--muted);
@@ -321,18 +347,36 @@
     }
 
     @keyframes blinkOrange {
-      0%, 100% { opacity:1; box-shadow:0 0 12px rgba(249,115,22,.9); }
-      50% { opacity:.25; box-shadow:none; }
+      0%, 100% {
+        opacity:1;
+        box-shadow:0 0 12px rgba(249,115,22,.9);
+      }
+      50% {
+        opacity:.25;
+        box-shadow:none;
+      }
     }
 
     @keyframes blinkGreen {
-      0%, 100% { opacity:1; box-shadow:0 0 12px rgba(34,197,94,.9); }
-      50% { opacity:.25; box-shadow:none; }
+      0%, 100% {
+        opacity:1;
+        box-shadow:0 0 12px rgba(34,197,94,.9);
+      }
+      50% {
+        opacity:.25;
+        box-shadow:none;
+      }
     }
 
     @keyframes blinkRed {
-      0%, 100% { opacity:1; box-shadow:0 0 12px rgba(239,68,68,.9); }
-      50% { opacity:.25; box-shadow:none; }
+      0%, 100% {
+        opacity:1;
+        box-shadow:0 0 12px rgba(239,68,68,.9);
+      }
+      50% {
+        opacity:.25;
+        box-shadow:none;
+      }
     }
 
     .cpt-soon {
@@ -362,7 +406,52 @@
       margin-left:4px;
     }
 
-    .hidden { display:none!important; }
+    .dock-table {
+      width:100%;
+      border-collapse:collapse;
+      font-size:14px;
+    }
+
+    .dock-table th {
+      text-align:left;
+      color:#667085;
+      font-size:12px;
+      padding:9px 10px;
+      border-bottom:1px solid #e4e7ec;
+      background:#f9fafb;
+      white-space:nowrap;
+    }
+
+    .dock-table td {
+      padding:11px 10px;
+      border-bottom:1px solid #f0f2f5;
+      font-weight:700;
+      vertical-align:top;
+    }
+
+    .dock-table tr:last-child td {
+      border-bottom:0;
+    }
+
+    .dock-status {
+      font-weight:800;
+    }
+
+    .dock-time {
+      white-space:nowrap;
+    }
+
+    .dock-cpt-soon {
+      background:#fff7ed;
+    }
+
+    .dock-cpt-soon td {
+      color:#c2410c;
+    }
+
+    .hidden {
+      display:none!important;
+    }
 
     .empty {
       padding:24px;
@@ -371,24 +460,49 @@
     }
 
     @media(max-width:1100px) {
-      .kpi-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .kpi-grid {
+        grid-template-columns:repeat(2,minmax(0,1fr));
+      }
     }
 
     @media(max-width:900px) {
-      .app { grid-template-columns:1fr; }
-      .grid { grid-template-columns:1fr; }
-      .topbar { flex-direction:column; align-items:flex-start; }
-      .actions { justify-content:flex-start; }
+      .app {
+        grid-template-columns:1fr;
+      }
+
+      .grid {
+        grid-template-columns:1fr;
+      }
+
+      .topbar {
+        flex-direction:column;
+        align-items:flex-start;
+      }
+
+      .actions {
+        justify-content:flex-start;
+      }
+
+      .card.dock-wide {
+        grid-column:auto;
+      }
     }
 
     @media(max-width:560px) {
-      main { padding:16px; }
-      .kpi-grid { grid-template-columns:1fr; }
+      main {
+        padding:16px;
+      }
+
+      .kpi-grid {
+        grid-template-columns:1fr;
+      }
+
       .item {
         flex-direction:column;
         align-items:flex-start;
         gap:4px;
       }
+
       .meta {
         max-width:100%;
         text-align:left;
@@ -533,7 +647,7 @@
       const isDock = section.id === 'next-5-vrid-releasing';
 
       const card = document.createElement('article');
-      card.className = 'card';
+      card.className = isDock ? 'card dock-wide' : 'card';
 
       card.innerHTML = `
         <div class="card-head">
@@ -546,7 +660,13 @@
           </div>
         </div>
         <div class="card-body">
-          ${items.length ? items.map(item => renderDashboardItem(item, section.id)).join('') : '<div class="empty">No items</div>'}
+          ${
+            isDock
+              ? renderDockTable(items)
+              : items.length
+                ? items.map(item => renderDashboardItem(item, section.id)).join('')
+                : '<div class="empty">No items</div>'
+          }
         </div>
       `;
 
@@ -563,6 +683,42 @@
       }
 
       return card;
+    }
+
+    function renderDockTable(items) {
+      if (!items.length) {
+        return '<div class="empty">No Dock OB trailers</div>';
+      }
+
+      return `
+        <table class="dock-table">
+          <thead>
+            <tr>
+              <th>Destination</th>
+              <th>DD</th>
+              <th>Status</th>
+              <th>SDT</th>
+              <th>CPT</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${items.map(item => {
+              const d = item.dock || {};
+              const cptSoon = isCptWithinNextMinutes('CPT ' + (d.cpt || ''), 10);
+
+              return `
+                <tr class="${cptSoon ? 'dock-cpt-soon' : ''}">
+                  <td>${escapeHtml(d.destination || item.label || '')}</td>
+                  <td>${escapeHtml(d.door || '')}</td>
+                  <td class="dock-status">${escapeHtml(d.status || '')}</td>
+                  <td class="dock-time">${escapeHtml(d.sdt || '')}</td>
+                  <td class="dock-time">${escapeHtml(d.cpt || '')}</td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      `;
     }
 
     function renderDashboardItem(item, sectionId) {
@@ -626,7 +782,6 @@
 
       cpt.setHours(hour, minute, 0, 0);
 
-      // If CPT looks like it already passed by many hours, treat it as tomorrow.
       if (cpt.getTime() < now.getTime() - 6 * 60 * 60 * 1000) {
         cpt.setDate(cpt.getDate() + 1);
       }
@@ -640,14 +795,20 @@
     function requestDockOBRefresh(button) {
       const btn = button || document.getElementById('dockTopRefreshBtn');
       const old = btn.textContent;
+
       btn.textContent = 'Sent...';
 
+      const payload = {
+        type: 'OPS_MANUAL_DOCK_REFRESH',
+        requestedAt: new Date().toISOString(),
+        nonce: Date.now()
+      };
+
       window.dispatchEvent(new CustomEvent('OPS_MANUAL_DOCK_REFRESH', {
-        detail: {
-          requestedAt: new Date().toISOString(),
-          nonce: Date.now()
-        }
+        detail: payload
       }));
+
+      window.postMessage(payload, '*');
 
       setTimeout(() => {
         btn.textContent = old;
