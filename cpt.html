@@ -1151,6 +1151,8 @@
     body.print-roll #printArea{
       width:2in!important;
       height:auto!important;
+      margin:0!important;
+      padding:0!important;
     }
 
     .roll-print-page{
@@ -1164,6 +1166,10 @@
       background:#fff;
       color:#000;
       font-family:Arial,Helvetica,sans-serif;
+      display:grid;
+      place-items:center;
+      -webkit-print-color-adjust:exact;
+      print-color-adjust:exact;
     }
 
     .roll-print-page:last-child{
@@ -1172,13 +1178,14 @@
     }
 
     .roll-label{
-      width:2in;
-      height:1.25in;
+      width:1.88in;
+      height:1.12in;
       margin:0;
-      padding:.055in .06in .055in;
+      padding:.045in .045in .04in;
       display:flex;
       flex-direction:column;
       justify-content:center;
+      align-items:stretch;
       overflow:hidden;
       background:#fff;
       color:#000;
@@ -1186,9 +1193,9 @@
 
     .roll-time{
       flex:0 0 auto;
-      margin-bottom:.05in;
+      margin-bottom:.035in;
       text-align:center;
-      font-size:12pt;
+      font-size:11pt;
       line-height:1;
       font-weight:900;
       letter-spacing:.1pt;
@@ -1201,7 +1208,8 @@
       display:grid;
       align-items:center;
       justify-content:center;
-      gap:.03in;
+      gap:.02in;
+      width:100%;
     }
 
     .roll-numbers.count-1{
@@ -1222,21 +1230,22 @@
       line-height:.88;
       font-weight:900;
       white-space:nowrap;
+      color:#000;
     }
 
     .roll-numbers.count-1 .roll-number{
-      font-size:40pt;
-      letter-spacing:-1.8pt;
+      font-size:38pt;
+      letter-spacing:-1.6pt;
     }
 
     .roll-numbers.count-2 .roll-number{
-      font-size:29pt;
+      font-size:27pt;
       letter-spacing:-1.2pt;
     }
 
     .roll-numbers.count-3 .roll-number{
-      font-size:21pt;
-      letter-spacing:-1pt;
+      font-size:18pt;
+      letter-spacing:-.9pt;
     }
 
     .print-empty{
@@ -1256,7 +1265,7 @@
       <div class="logo">RV</div>
       <div>
         <h1>RANVEXSI UI - CPT Labels</h1>
-        <p>Ship Dock - Process Assistant</p>
+        <p>Ship Dock - Process Assistant - v2.2 Roll Fix</p>
       </div>
     </div>
 
@@ -1350,13 +1359,16 @@
       <select id="paperSize">
         <option value="label">4 x 7 - selected quarter</option>
         <option value="letter">Letter - all 3 quarters</option>
-        <option value="roll1">2 x 1.25 - 1 CPT per label</option>
-        <option value="roll2">2 x 1.25 - 2 CPTs per label</option>
-        <option value="roll3">2 x 1.25 - 3 CPTs per label</option>
+        <option value="rollSel1">2 x 1.25 - selected QTR - 1 CPT</option>
+        <option value="rollSel2">2 x 1.25 - selected QTR - 2 CPTs</option>
+        <option value="rollSel3">2 x 1.25 - selected QTR - 3 CPTs</option>
+        <option value="rollAll1">2 x 1.25 - all 3 QTRs - 1 CPT</option>
+        <option value="rollAll2">2 x 1.25 - all 3 QTRs - 2 CPTs</option>
+        <option value="rollAll3">2 x 1.25 - all 3 QTRs - 3 CPTs</option>
       </select>
     </div>
 
-    <div class="control hidden" id="rollScopeControl">
+    <div class="control hidden" id="rollScopeControl" style="display:none!important;">
       <label>Roll Label Scope</label>
       <select id="rollScope">
         <option value="selected">Selected Quarter</option>
@@ -1829,13 +1841,19 @@ function isRollMode(){
 function getRollGroupSize(){
   const mode = getPrintMode();
 
-  if(mode === "roll1") return 1;
-  if(mode === "roll3") return 3;
+  if(mode.endsWith("1")) return 1;
+  if(mode.endsWith("3")) return 3;
   return 2;
 }
 
 function getRollScope(){
-  return els.rollScope?.value || "selected";
+  const mode = getPrintMode();
+
+  if(mode.startsWith("rollAll")){
+    return "all";
+  }
+
+  return "selected";
 }
 
 function getRollQuarterKeys(){
@@ -2058,7 +2076,7 @@ function updateModeUI(){
 
   els.labelGrid.classList.toggle("roll-mode",rollMode);
   els.clearSelectionBtn.disabled = rollMode;
-  els.rollScopeControl.classList.toggle("hidden",!rollMode);
+  if(els.rollScopeControl) els.rollScopeControl.classList.add("hidden");
 
   if(mode === "letter"){
     els.previewHelp.textContent =
