@@ -1148,9 +1148,16 @@
       font-size:9.4pt;
     }
 
+    body.print-roll #printArea{
+      width:2in!important;
+      height:auto!important;
+    }
+
     .roll-print-page{
       width:2in;
-      height:1in;
+      height:1.25in;
+      margin:0;
+      padding:0;
       page-break-after:always;
       break-after:page;
       overflow:hidden;
@@ -1166,8 +1173,9 @@
 
     .roll-label{
       width:2in;
-      height:1in;
-      padding:.035in .045in .04in;
+      height:1.25in;
+      margin:0;
+      padding:.055in .06in .055in;
       display:flex;
       flex-direction:column;
       justify-content:center;
@@ -1178,12 +1186,13 @@
 
     .roll-time{
       flex:0 0 auto;
-      margin-bottom:.035in;
+      margin-bottom:.05in;
       text-align:center;
-      font-size:11pt;
+      font-size:12pt;
       line-height:1;
       font-weight:900;
       letter-spacing:.1pt;
+      white-space:nowrap;
     }
 
     .roll-numbers{
@@ -1191,7 +1200,8 @@
       min-height:0;
       display:grid;
       align-items:center;
-      gap:.025in;
+      justify-content:center;
+      gap:.03in;
     }
 
     .roll-numbers.count-1{
@@ -1209,24 +1219,24 @@
     .roll-number{
       min-width:0;
       text-align:center;
-      line-height:.92;
+      line-height:.88;
       font-weight:900;
       white-space:nowrap;
     }
 
     .roll-numbers.count-1 .roll-number{
+      font-size:40pt;
+      letter-spacing:-1.8pt;
+    }
+
+    .roll-numbers.count-2 .roll-number{
       font-size:29pt;
       letter-spacing:-1.2pt;
     }
 
-    .roll-numbers.count-2 .roll-number{
-      font-size:23pt;
-      letter-spacing:-1pt;
-    }
-
     .roll-numbers.count-3 .roll-number{
-      font-size:17.2pt;
-      letter-spacing:-.8pt;
+      font-size:21pt;
+      letter-spacing:-1pt;
     }
 
     .print-empty{
@@ -1266,7 +1276,7 @@
     <div class="card hero-copy">
       <div class="eyebrow">CPT label extractor</div>
       <h2>Upload the updated CPT TXT file.</h2>
-      <p>The page keeps only the required SR and Flats CPT numbers, separates them by time and supports 4 x 7 summaries, all-three-quarter Letter sheets, and flexible 2 x 1 roll labels.</p>
+      <p>The page keeps only the required SR and Flats CPT numbers, separates them by time and supports 4 x 7 summaries, all-three-quarter Letter sheets, and flexible 2 x 1.25 roll labels.</p>
 
       <div class="instructions">
         <div class="instruction">
@@ -1340,9 +1350,17 @@
       <select id="paperSize">
         <option value="label">4 x 7 - selected quarter</option>
         <option value="letter">Letter - all 3 quarters</option>
-        <option value="roll1">2 x 1 - 1 CPT per label</option>
-        <option value="roll2">2 x 1 - 2 CPTs per label</option>
-        <option value="roll3">2 x 1 - 3 CPTs per label</option>
+        <option value="roll1">2 x 1.25 - 1 CPT per label</option>
+        <option value="roll2">2 x 1.25 - 2 CPTs per label</option>
+        <option value="roll3">2 x 1.25 - 3 CPTs per label</option>
+      </select>
+    </div>
+
+    <div class="control hidden" id="rollScopeControl">
+      <label>Roll Label Scope</label>
+      <select id="rollScope">
+        <option value="selected">Selected Quarter</option>
+        <option value="all">All 3 Quarters</option>
       </select>
     </div>
 
@@ -1495,6 +1513,8 @@ const els = {
   shiftSegments:document.getElementById("shiftSegments"),
   quarterSegments:document.getElementById("quarterSegments"),
   paperSize:document.getElementById("paperSize"),
+  rollScopeControl:document.getElementById("rollScopeControl"),
+  rollScope:document.getElementById("rollScope"),
   clearSelectionBtn:document.getElementById("clearSelectionBtn"),
   resetBtn:document.getElementById("resetBtn"),
 
@@ -1814,6 +1834,18 @@ function getRollGroupSize(){
   return 2;
 }
 
+function getRollScope(){
+  return els.rollScope?.value || "selected";
+}
+
+function getRollQuarterKeys(){
+  if(getRollScope() === "all"){
+    return getQuarterKeys();
+  }
+
+  return [selectedQuarter];
+}
+
 function getQuarterKeys(){
   return Object.keys(SHIFT_DEFINITIONS[selectedShift].quarters);
 }
@@ -1912,14 +1944,19 @@ function getAllQuarterCptsByTime(quarterKey=selectedQuarter){
 function getAllQuarterRollLabels(groupSize=getRollGroupSize()){
   const labels = [];
   const size = Math.max(1,Math.min(3,Number(groupSize) || 2));
+  const includeQuarterOnLabel = getRollScope() === "all";
 
-  getAllQuarterCptsByTime(selectedQuarter).forEach(group => {
-    for(let index = 0; index < group.numbers.length; index += size){
-      labels.push({
-        time:group.time,
-        numbers:group.numbers.slice(index,index + size)
-      });
-    }
+  getRollQuarterKeys().forEach(quarterKey => {
+    getAllQuarterCptsByTime(quarterKey).forEach(group => {
+      for(let index = 0; index < group.numbers.length; index += size){
+        labels.push({
+          quarter:quarterKey,
+          time:group.time,
+          displayTime:includeQuarterOnLabel ? `${quarterKey}  ${group.time}` : group.time,
+          numbers:group.numbers.slice(index,index + size)
+        });
+      }
+    });
   });
 
   return labels;
@@ -2021,13 +2058,16 @@ function updateModeUI(){
 
   els.labelGrid.classList.toggle("roll-mode",rollMode);
   els.clearSelectionBtn.disabled = rollMode;
+  els.rollScopeControl.classList.toggle("hidden",!rollMode);
 
   if(mode === "letter"){
     els.previewHelp.textContent =
       "Select the sides you want. Printing will include Q1, Q2 and Q3, separated clearly on the Letter sheet.";
   }else if(rollMode){
     els.previewHelp.textContent =
-      `Side selection is not needed. All CPTs from ${selectedQuarter} will print, grouped by time.`;
+      getRollScope() === "all"
+        ? "Side selection is not needed. All CPTs from Q1, Q2 and Q3 will print, grouped by quarter and time."
+        : `Side selection is not needed. All CPTs from ${selectedQuarter} will print, grouped by time.`;
   }else{
     els.previewHelp.textContent =
       "Select only the label sides you want to print. Nothing is selected automatically.";
@@ -2050,10 +2090,14 @@ function updateSelectionSummary(){
     els.printSummaryTitle.textContent = rollCount
       ? `${rollCount} small label${rollCount === 1 ? "" : "s"} ready`
       : "No CPT labels ready";
+    const scopeText = getRollScope() === "all"
+      ? "All 3 quarters"
+      : selectedQuarter;
+
     els.printSummaryText.textContent = rollCount
-      ? `${selectedShift === "day" ? "Day" : "Night"} ${selectedQuarter}: ${groupSize} ${cptWord} per 2 x 1 label. Different CPT times are never mixed.`
-      : "Upload a CPT file and choose a quarter to print.";
-    els.printBtn.textContent = `Print 2 x 1 - ${groupSize} ${cptWord} Each`;
+      ? `${selectedShift === "day" ? "Day" : "Night"} ${scopeText}: ${groupSize} ${cptWord} per 2 x 1.25 label. Different CPT times are never mixed.`
+      : "Upload a CPT file and choose a quarter/scope to print.";
+    els.printBtn.textContent = `Print 2 x 1.25 - ${groupSize} ${cptWord} Each`;
     els.printBtn.disabled = rollCount === 0;
     return;
   }
@@ -2221,7 +2265,7 @@ function buildRollPrintArea(){
       return `
         <section class="roll-print-page">
           <article class="roll-label">
-            <div class="roll-time">${label.time}</div>
+            <div class="roll-time">${label.displayTime || label.time}</div>
             <div class="roll-numbers${countClass}">${numbers}</div>
           </article>
         </section>
@@ -2252,7 +2296,7 @@ function syncPrintPageSize(){
     els.pageStyle.textContent = "@page{size:letter portrait;margin:0}";
   }else if(isRollMode()){
     document.body.classList.add("print-roll");
-    els.pageStyle.textContent = "@page{size:2in 1in;margin:0}";
+    els.pageStyle.textContent = "@page{size:2in 1.25in;margin:0}";
   }else{
     document.body.classList.add("print-label");
     els.pageStyle.textContent = "@page{size:4in 7in;margin:0}";
@@ -2363,6 +2407,7 @@ function resetPage(){
   els.fileInput.value = "";
   els.fileState.textContent = "No file";
   els.paperSize.value = "label";
+  els.rollScope.value = "selected";
 
   document
     .querySelectorAll("#shiftSegments .segment")
@@ -2495,6 +2540,10 @@ els.paperSize.addEventListener("change",() => {
   updateModeUI();
   updateSelectionSummary();
   buildCurrentPrintArea();
+});
+
+els.rollScope.addEventListener("change",() => {
+  renderAll();
 });
 
 els.printBtn.addEventListener("click",printCurrentMode);
