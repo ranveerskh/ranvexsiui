@@ -122,6 +122,14 @@
       font-weight:700;
     }
 
+    .btn-small {
+      padding:6px 9px;
+      font-size:12px;
+      background:#fff;
+      color:#667085;
+      font-weight:700;
+    }
+
     .btn:hover,
     .pill:hover {
       border-color:var(--accent);
@@ -379,33 +387,6 @@
       }
     }
 
-    .cpt-soon {
-      background:#fff7ed;
-      border:1px solid #fed7aa;
-      padding-left:10px;
-      padding-right:10px;
-    }
-
-    .cpt-soon a {
-      color:#9a3412;
-    }
-
-    .cpt-soon .meta {
-      color:#c2410c;
-      font-weight:800;
-    }
-
-    .cpt-badge {
-      display:inline-block;
-      background:#f97316;
-      color:#fff;
-      border-radius:999px;
-      padding:2px 7px;
-      font-size:11px;
-      font-weight:900;
-      margin-left:4px;
-    }
-
     .dock-table {
       width:100%;
       border-collapse:collapse;
@@ -533,6 +514,7 @@
         <div class="actions">
           <div id="refreshCounter" class="pill refresh-pill">Auto refresh: 30s</div>
           <button id="dockTopRefreshBtn" class="btn" type="button">Refresh Dock OB</button>
+          <button id="clearCacheBtn" class="btn btn-small" type="button">Clear Cache</button>
           <a id="sourceLink" class="pill" href="#" target="_blank">Open Source Page</a>
         </div>
       </div>
@@ -578,6 +560,10 @@
 
     document.getElementById('dockTopRefreshBtn').addEventListener('click', () => {
       requestDockOBRefresh();
+    });
+
+    document.getElementById('clearCacheBtn').addEventListener('click', () => {
+      clearDashboardCache();
     });
 
     window.renderOpsDashboard = function(data) {
@@ -726,16 +712,11 @@
       const label = String(item.label || '');
       const light = getStatusLight(value, sectionId);
 
-      const cptSoon = sectionId === 'next-5-vrid-releasing' && isCptWithinNextMinutes(value, 10);
-      const rowClass = cptSoon ? 'item cpt-soon' : 'item';
-      const badge = cptSoon ? '<span class="cpt-badge">CPT ≤10m</span>' : '';
-
       return `
-        <div class="${rowClass}">
+        <div class="item">
           <div class="item-main">
             ${light}
             <a href="${safeUrl(item.link)}" target="_blank">${escapeHtml(label)}</a>
-            ${badge}
           </div>
           <span class="meta">${escapeHtml(value)}</span>
         </div>
@@ -813,6 +794,28 @@
       setTimeout(() => {
         btn.textContent = old;
       }, 1600);
+    }
+
+    function clearDashboardCache() {
+      localStorage.clear();
+
+      const payload = {
+        type: 'OPS_CLEAR_CACHE',
+        requestedAt: new Date().toISOString(),
+        nonce: Date.now()
+      };
+
+      window.dispatchEvent(new CustomEvent('OPS_CLEAR_CACHE', {
+        detail: payload
+      }));
+
+      window.postMessage(payload, '*');
+
+      document.getElementById('status').textContent = 'Cache cleared. Reloading...';
+
+      setTimeout(() => {
+        location.reload();
+      }, 700);
     }
 
     function renderKpis(data) {
