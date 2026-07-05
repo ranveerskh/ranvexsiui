@@ -249,6 +249,10 @@
       cursor:pointer;
     }
 
+    .card-refresh:hover {
+      border-color:#2563eb;
+    }
+
     .card-body {
       padding:8px 16px 14px;
     }
@@ -256,13 +260,22 @@
     .item {
       display:flex;
       justify-content:space-between;
+      align-items:center;
       gap:12px;
       padding:10px 0;
       border-bottom:1px solid #f0f2f5;
       font-size:13px;
+      border-radius:8px;
     }
 
     .item:last-child { border-bottom:0; }
+
+    .item-main {
+      display:flex;
+      align-items:center;
+      min-width:0;
+      gap:8px;
+    }
 
     .item a {
       color:var(--text);
@@ -277,6 +290,76 @@
       text-align:right;
       max-width:58%;
       overflow-wrap:anywhere;
+    }
+
+    .status-light {
+      width:13px;
+      height:13px;
+      border-radius:999px;
+      display:inline-block;
+      flex:0 0 auto;
+    }
+
+    .light-blue {
+      background:#2563eb;
+      box-shadow:0 0 10px rgba(37,99,235,.75);
+    }
+
+    .light-orange {
+      background:#f97316;
+      animation:blinkOrange 1s infinite;
+    }
+
+    .light-green {
+      background:#22c55e;
+      animation:blinkGreen 1s infinite;
+    }
+
+    .light-red {
+      background:#ef4444;
+      animation:blinkRed 1s infinite;
+    }
+
+    @keyframes blinkOrange {
+      0%, 100% { opacity:1; box-shadow:0 0 12px rgba(249,115,22,.9); }
+      50% { opacity:.25; box-shadow:none; }
+    }
+
+    @keyframes blinkGreen {
+      0%, 100% { opacity:1; box-shadow:0 0 12px rgba(34,197,94,.9); }
+      50% { opacity:.25; box-shadow:none; }
+    }
+
+    @keyframes blinkRed {
+      0%, 100% { opacity:1; box-shadow:0 0 12px rgba(239,68,68,.9); }
+      50% { opacity:.25; box-shadow:none; }
+    }
+
+    .cpt-soon {
+      background:#fff7ed;
+      border:1px solid #fed7aa;
+      padding-left:10px;
+      padding-right:10px;
+    }
+
+    .cpt-soon a {
+      color:#9a3412;
+    }
+
+    .cpt-soon .meta {
+      color:#c2410c;
+      font-weight:800;
+    }
+
+    .cpt-badge {
+      display:inline-block;
+      background:#f97316;
+      color:#fff;
+      border-radius:999px;
+      padding:2px 7px;
+      font-size:11px;
+      font-weight:900;
+      margin-left:4px;
     }
 
     .hidden { display:none!important; }
@@ -301,8 +384,15 @@
     @media(max-width:560px) {
       main { padding:16px; }
       .kpi-grid { grid-template-columns:1fr; }
-      .item { flex-direction:column; gap:4px; }
-      .meta { max-width:100%; text-align:left; }
+      .item {
+        flex-direction:column;
+        align-items:flex-start;
+        gap:4px;
+      }
+      .meta {
+        max-width:100%;
+        text-align:left;
+      }
     }
   </style>
 </head>
@@ -368,6 +458,7 @@
 
   <script>
     const AUTO_REFRESH_SECONDS = 30;
+
     let lastOpsData = null;
     let lastUpdateMs = null;
 
@@ -455,12 +546,7 @@
           </div>
         </div>
         <div class="card-body">
-          ${items.length ? items.map(item => `
-            <div class="item">
-              <a href="${safeUrl(item.link)}" target="_blank">${escapeHtml(item.label || '')}</a>
-              <span class="meta">${escapeHtml(item.value || '')}</span>
-            </div>
-          `).join('') : '<div class="empty">No items</div>'}
+          ${items.length ? items.map(item => renderDashboardItem(item, section.id)).join('') : '<div class="empty">No items</div>'}
         </div>
       `;
 
@@ -477,6 +563,78 @@
       }
 
       return card;
+    }
+
+    function renderDashboardItem(item, sectionId) {
+      const value = String(item.value || '');
+      const label = String(item.label || '');
+      const light = getStatusLight(value, sectionId);
+
+      const cptSoon = sectionId === 'next-5-vrid-releasing' && isCptWithinNextMinutes(value, 10);
+      const rowClass = cptSoon ? 'item cpt-soon' : 'item';
+      const badge = cptSoon ? '<span class="cpt-badge">CPT ≤10m</span>' : '';
+
+      return `
+        <div class="${rowClass}">
+          <div class="item-main">
+            ${light}
+            <a href="${safeUrl(item.link)}" target="_blank">${escapeHtml(label)}</a>
+            ${badge}
+          </div>
+          <span class="meta">${escapeHtml(value)}</span>
+        </div>
+      `;
+    }
+
+    function getStatusLight(value, sectionId) {
+      if (sectionId !== 'lane-watch-100-defect') return '';
+
+      const text = String(value || '').toLowerCase();
+
+      if (text.includes('blue light')) {
+        return '<span class="status-light light-blue" title="Blue Light"></span>';
+      }
+
+      if (text.includes('jam')) {
+        return '<span class="status-light light-orange" title="Jam"></span>';
+      }
+
+      if (text.includes('disabled')) {
+        return '<span class="status-light light-green" title="Disabled"></span>';
+      }
+
+      if (text.includes('100% defect')) {
+        return '<span class="status-light light-red" title="100% Defect"></span>';
+      }
+
+      return '';
+    }
+
+    function isCptWithinNextMinutes(value, minutes) {
+      const text = String(value || '');
+
+      const match = text.match(/\bCPT\s+(\d{1,2}):(\d{2})\b/i);
+      if (!match) return false;
+
+      const hour = Number(match[1]);
+      const minute = Number(match[2]);
+
+      if (!Number.isFinite(hour) || !Number.isFinite(minute)) return false;
+
+      const now = new Date();
+      const cpt = new Date(now);
+
+      cpt.setHours(hour, minute, 0, 0);
+
+      // If CPT looks like it already passed by many hours, treat it as tomorrow.
+      if (cpt.getTime() < now.getTime() - 6 * 60 * 60 * 1000) {
+        cpt.setDate(cpt.getDate() + 1);
+      }
+
+      const diffMs = cpt.getTime() - now.getTime();
+      const limitMs = minutes * 60 * 1000;
+
+      return diffMs >= 0 && diffMs <= limitMs;
     }
 
     function requestDockOBRefresh(button) {
@@ -549,6 +707,7 @@
       for (const section of data.sections || []) {
         for (const item of section.items || []) {
           const label = String(item.label || '').toLowerCase().trim();
+
           for (const wanted of labelOptions) {
             if (label === wanted.toLowerCase().trim()) {
               return String(item.value || '').trim();
@@ -556,11 +715,13 @@
           }
         }
       }
+
       return '--';
     }
 
     function getKpiClass(type, value) {
       const n = Number(String(value || '').replace('%','').trim());
+
       if (Number.isNaN(n)) return 'neutral';
 
       if (type === 'fpy') {
@@ -600,6 +761,7 @@
 
       const elapsed = Math.floor((Date.now() - lastUpdateMs) / 1000);
       const left = Math.max(0, AUTO_REFRESH_SECONDS - elapsed);
+
       el.textContent = `Auto refresh: ${left}s`;
     }
 
@@ -611,6 +773,7 @@
           if (item.link) return safeUrl(item.link);
         }
       }
+
       return '#';
     }
 
