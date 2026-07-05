@@ -7,457 +7,302 @@
 
   <style>
     :root {
-      --bg: #090b0f;
-      --sidebar: #111827;
-      --panel: #151a21;
-      --panel2: #1b212b;
-      --text: #f9fafb;
-      --muted: #9ca3af;
-      --line: #2b3442;
-      --shadow: 0 14px 35px rgba(0, 0, 0, 0.35);
-
-      --good: #43a047;
-      --warn: #f59e0b;
-      --bad: #e11d48;
-      --neutral: #6b7280;
-      --accent: #ff9900;
-      --blue: #2563eb;
+      --bg:#f4f6f8;
+      --panel:#ffffff;
+      --text:#17202a;
+      --muted:#667085;
+      --line:#e4e7ec;
+      --accent:#ff9900;
+      --blue:#2563eb;
+      --shadow:0 10px 30px rgba(16,24,40,.10);
+      --sidebar:#111827;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing:border-box; }
 
     body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      margin:0;
+      font-family:Arial, sans-serif;
+      background:var(--bg);
+      color:var(--text);
     }
 
     .app {
-      min-height: 100vh;
-      display: grid;
-      grid-template-columns: 260px 1fr;
+      min-height:100vh;
+      display:grid;
+      grid-template-columns:250px 1fr;
     }
 
     aside {
-      background: var(--sidebar);
-      border-right: 1px solid var(--line);
-      padding: 20px 16px;
+      background:var(--sidebar);
+      color:#fff;
+      padding:20px 16px;
     }
 
     .brand {
-      font-size: 21px;
-      font-weight: 900;
-      margin-bottom: 6px;
+      font-size:20px;
+      font-weight:800;
+      margin-bottom:8px;
     }
 
     .sub {
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 20px;
-      line-height: 1.4;
+      font-size:13px;
+      color:#9ca3af;
+      margin-bottom:20px;
+      line-height:1.45;
     }
 
     .feature {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      padding: 11px 9px;
-      border-radius: 10px;
-      font-size: 14px;
-      cursor: pointer;
-      color: #e5e7eb;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      padding:10px 8px;
+      border-radius:8px;
+      font-size:14px;
+      cursor:pointer;
     }
 
-    .feature:hover {
-      background: #1f2937;
-    }
-
-    .feature input {
-      accent-color: var(--accent);
-    }
+    .feature:hover { background:#1f2937; }
+    .feature input { accent-color:var(--accent); }
 
     main {
-      padding: 24px;
-      min-width: 0;
+      padding:24px;
+      min-width:0;
     }
 
     .topbar {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 15px;
-      margin-bottom: 15px;
+      display:flex;
+      justify-content:space-between;
+      gap:15px;
+      align-items:flex-start;
+      margin-bottom:15px;
     }
 
     h1 {
-      margin: 0;
-      font-size: 28px;
-      letter-spacing: -0.5px;
+      margin:0;
+      font-size:26px;
     }
 
     .subtitle {
-      margin-top: 6px;
-      color: var(--muted);
-      font-size: 13px;
+      margin-top:5px;
+      color:var(--muted);
+      font-size:13px;
     }
 
-    .top-actions {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-      justify-content: flex-end;
+    .actions {
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      gap:10px;
+      flex-wrap:wrap;
     }
 
     .pill,
     .btn {
-      border: 1px solid var(--line);
-      background: var(--panel);
-      color: #d1d5db;
-      border-radius: 999px;
-      padding: 9px 12px;
-      font-size: 13px;
-      text-decoration: none;
-      cursor: pointer;
-      white-space: nowrap;
+      background:#fff;
+      border:1px solid var(--line);
+      color:var(--text);
+      padding:9px 12px;
+      border-radius:999px;
+      font-size:13px;
+      text-decoration:none;
+      cursor:pointer;
+      box-shadow:0 3px 10px rgba(16,24,40,.05);
+      white-space:nowrap;
     }
 
-    .pill:hover,
-    .btn:hover {
-      border-color: var(--accent);
+    .btn {
+      font-weight:700;
     }
 
-    .btn-primary {
-      background: #1f2937;
-      color: #fff;
-      border-color: #374151;
+    .btn:hover,
+    .pill:hover {
+      border-color:var(--accent);
     }
 
     .refresh-pill {
-      background: #101827;
-      border-color: #334155;
-      color: #e5e7eb;
-      font-weight: 800;
+      font-weight:800;
+      color:#111827;
+      background:#fff7ed;
+      border-color:#fed7aa;
     }
 
     .status {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      padding: 12px 14px;
-      border-radius: 12px;
-      margin-bottom: 16px;
-      font-size: 13px;
-      color: #d1d5db;
-      box-shadow: var(--shadow);
+      background:#fff;
+      border:1px solid var(--line);
+      padding:11px 13px;
+      border-radius:10px;
+      margin-bottom:14px;
+      font-size:13px;
+      box-shadow:0 4px 16px rgba(16,24,40,.05);
     }
 
     .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 14px;
-      margin-bottom: 18px;
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:14px;
+      margin-bottom:18px;
     }
 
     .kpi {
-      min-height: 155px;
-      border-radius: 14px;
-      padding: 16px;
-      box-shadow: var(--shadow);
-      border: 1px solid rgba(255,255,255,.08);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .kpi::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,.18), rgba(255,255,255,0));
-      pointer-events: none;
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:14px;
+      box-shadow:var(--shadow);
+      padding:15px;
+      min-height:125px;
     }
 
     .kpi-label {
-      position: relative;
-      z-index: 1;
-      font-size: 16px;
-      font-weight: 800;
-      line-height: 1.3;
+      color:var(--muted);
+      font-size:14px;
+      font-weight:800;
+      margin-bottom:8px;
     }
 
     .kpi-value {
-      position: relative;
-      z-index: 1;
-      font-size: 58px;
-      font-weight: 900;
-      letter-spacing: -2px;
-      line-height: 1;
-      margin-top: 12px;
-    }
-
-    .kpi-value .percent {
-      font-size: 30px;
-      letter-spacing: -1px;
-      margin-left: 2px;
+      font-size:42px;
+      font-weight:900;
+      letter-spacing:-1px;
     }
 
     .kpi-note {
-      position: relative;
-      z-index: 1;
-      font-size: 12px;
-      margin-top: 10px;
-      opacity: .9;
+      margin-top:8px;
+      font-size:12px;
+      color:var(--muted);
     }
 
-    .good {
-      background: var(--good);
-      color: #fff;
-    }
-
-    .warn {
-      background: linear-gradient(135deg, #f97316, #f59e0b);
-      color: #fff;
-    }
-
-    .bad {
-      background: var(--bad);
-      color: #fff;
-    }
-
-    .neutral {
-      background: var(--neutral);
-      color: #fff;
-    }
+    .good { border-left:7px solid #43a047; }
+    .warn { border-left:7px solid #f59e0b; }
+    .bad { border-left:7px solid #e11d48; }
+    .neutral { border-left:7px solid #98a2b3; }
 
     .section-title {
-      margin: 8px 0 12px;
-      color: #d1d5db;
-      font-size: 19px;
-      font-weight: 900;
+      margin:8px 0 12px;
+      font-size:19px;
+      font-weight:900;
     }
 
     .grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:14px;
     }
 
     .card {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
-
-    .card.wide {
-      grid-column: span 2;
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:14px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
     }
 
     .card-head {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--line);
-      background: var(--panel2);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      padding:14px 16px;
+      border-bottom:1px solid var(--line);
+      background:#fff;
     }
 
-    .card-head-left {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      min-width: 0;
-      cursor: pointer;
-      flex: 1;
+    .card-title-wrap {
+      display:flex;
+      align-items:center;
+      gap:9px;
+      min-width:0;
+      cursor:pointer;
+      flex:1;
     }
 
     .card-title {
-      font-weight: 900;
-      color: #e5e7eb;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      font-weight:800;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
 
-    .card-head-right {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      flex-shrink: 0;
+    .card-right {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      flex-shrink:0;
     }
 
     .badge {
-      font-size: 12px;
-      padding: 5px 9px;
-      border-radius: 999px;
-      background: #273244;
-      color: #d1d5db;
-      white-space: nowrap;
+      font-size:12px;
+      padding:4px 8px;
+      border-radius:999px;
+      background:#f2f4f7;
+      white-space:nowrap;
     }
 
-    .card-refresh-btn {
-      border: 1px solid #475569;
-      background: #0f172a;
-      color: #e5e7eb;
-      border-radius: 999px;
-      padding: 6px 9px;
-      font-size: 12px;
-      font-weight: 800;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
-    .card-refresh-btn:hover {
-      border-color: var(--accent);
+    .card-refresh {
+      border:1px solid #bfdbfe;
+      background:#eff6ff;
+      color:#1d4ed8;
+      border-radius:999px;
+      padding:5px 9px;
+      font-size:12px;
+      font-weight:800;
+      cursor:pointer;
     }
 
     .card-body {
-      padding: 8px 16px 14px;
+      padding:8px 16px 14px;
     }
 
     .item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 14px;
-      padding: 12px 0;
-      border-bottom: 1px solid rgba(255,255,255,.07);
-      font-size: 14px;
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      padding:10px 0;
+      border-bottom:1px solid #f0f2f5;
+      font-size:13px;
     }
 
-    .item:last-child {
-      border-bottom: 0;
-    }
+    .item:last-child { border-bottom:0; }
 
     .item a {
-      color: #f3f4f6;
-      text-decoration: none;
+      color:var(--text);
+      text-decoration:none;
+      font-weight:700;
     }
 
-    .item a:hover {
-      text-decoration: underline;
-    }
+    .item a:hover { text-decoration:underline; }
 
     .meta {
-      color: #fff;
-      font-weight: 900;
-      white-space: nowrap;
-      font-size: 18px;
-      text-align: right;
+      color:var(--muted);
+      text-align:right;
+      max-width:58%;
+      overflow-wrap:anywhere;
     }
 
-    .table-wrap {
-      overflow-x: auto;
-      padding-top: 8px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-      min-width: 520px;
-    }
-
-    th {
-      text-align: left;
-      color: #cbd5e1;
-      background: #111827;
-      border-bottom: 1px solid var(--line);
-      padding: 10px 9px;
-      font-weight: 900;
-      white-space: nowrap;
-    }
-
-    td {
-      border-bottom: 1px solid rgba(255,255,255,.07);
-      padding: 10px 9px;
-      color: #f3f4f6;
-      vertical-align: top;
-    }
-
-    tr:last-child td {
-      border-bottom: 0;
-    }
-
-    .muted {
-      color: var(--muted);
-    }
-
-    .hidden {
-      display: none !important;
-    }
+    .hidden { display:none!important; }
 
     .empty {
-      padding: 28px;
-      text-align: center;
-      color: var(--muted);
+      padding:24px;
+      text-align:center;
+      color:var(--muted);
     }
 
-    @media (max-width: 1200px) {
-      .card.wide {
-        grid-column: span 1;
-      }
+    @media(max-width:1100px) {
+      .kpi-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
     }
 
-    @media (max-width: 1100px) {
-      .kpi-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
+    @media(max-width:900px) {
+      .app { grid-template-columns:1fr; }
+      .grid { grid-template-columns:1fr; }
+      .topbar { flex-direction:column; align-items:flex-start; }
+      .actions { justify-content:flex-start; }
     }
 
-    @media (max-width: 900px) {
-      .app {
-        grid-template-columns: 1fr;
-      }
-
-      aside {
-        border-right: 0;
-        border-bottom: 1px solid var(--line);
-      }
-
-      .grid {
-        grid-template-columns: 1fr;
-      }
-
-      .topbar {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .top-actions {
-        justify-content: flex-start;
-      }
-    }
-
-    @media (max-width: 560px) {
-      main {
-        padding: 16px;
-      }
-
-      .kpi-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .kpi-value {
-        font-size: 52px;
-      }
-
-      .item {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 5px;
-      }
-
-      .meta {
-        text-align: left;
-      }
+    @media(max-width:560px) {
+      main { padding:16px; }
+      .kpi-grid { grid-template-columns:1fr; }
+      .item { flex-direction:column; gap:4px; }
+      .meta { max-width:100%; text-align:left; }
     }
   </style>
 </head>
@@ -468,9 +313,9 @@
       <div class="brand">Ops Dashboard</div>
       <div class="sub">
         Live data from source tabs.<br>
-        Auto pages refresh every 30 sec.
+        Auto pages refresh every 30 sec.<br>
+        Dock OB is manual only.
       </div>
-
       <div id="featureList"></div>
     </aside>
 
@@ -478,83 +323,61 @@
       <div class="topbar">
         <div>
           <h1>YXU1 Live Operations Dashboard</h1>
-          <div class="subtitle">
-            MySPD • Lane Watch • Routing • Recirc • Dock OB
-          </div>
+          <div class="subtitle">MySPD • Lane Watch • Routing • Recirc • Dock OB</div>
         </div>
 
-        <div class="top-actions">
-          <div id="refreshCounter" class="refresh-pill pill">Refresh: 30s</div>
-          <button id="dockTopRefreshBtn" class="btn btn-primary" type="button">
-            Refresh Dock OB
-          </button>
+        <div class="actions">
+          <div id="refreshCounter" class="pill refresh-pill">Auto refresh: 30s</div>
+          <button id="dockTopRefreshBtn" class="btn" type="button">Refresh Dock OB</button>
           <a id="sourceLink" class="pill" href="#" target="_blank">Open Source Page</a>
         </div>
       </div>
 
-      <div id="status" class="status">
-        Waiting for Tampermonkey connection...
-      </div>
+      <div id="status" class="status">Waiting for Tampermonkey connection...</div>
 
       <section id="kpis" class="kpi-grid">
         <div class="kpi neutral">
-          <div>
-            <div class="kpi-label">Ops Defect %</div>
-            <div class="kpi-value">--</div>
-          </div>
-          <div class="kpi-note">Waiting for MySPD data</div>
+          <div class="kpi-label">Ops Defect %</div>
+          <div class="kpi-value">--</div>
+          <div class="kpi-note">Waiting</div>
         </div>
-
         <div class="kpi neutral">
-          <div>
-            <div class="kpi-label">Total Scan Defect %</div>
-            <div class="kpi-value">--</div>
-          </div>
-          <div class="kpi-note">Waiting for MySPD data</div>
+          <div class="kpi-label">Total Scan Defect %</div>
+          <div class="kpi-value">--</div>
+          <div class="kpi-note">Waiting</div>
         </div>
-
         <div class="kpi neutral">
-          <div>
-            <div class="kpi-label">Load Balance Defect %</div>
-            <div class="kpi-value">--</div>
-          </div>
-          <div class="kpi-note">Waiting for MySPD data</div>
+          <div class="kpi-label">Load Balance Defect %</div>
+          <div class="kpi-value">--</div>
+          <div class="kpi-note">Waiting</div>
         </div>
-
         <div class="kpi neutral">
-          <div>
-            <div class="kpi-label">FPY Success/Total</div>
-            <div class="kpi-value">--</div>
-          </div>
-          <div class="kpi-note">Waiting for MySPD data</div>
+          <div class="kpi-label">FPY Success/Total</div>
+          <div class="kpi-value">--</div>
+          <div class="kpi-note">Waiting</div>
         </div>
       </section>
 
       <div class="section-title">Deep Dive</div>
 
       <section id="dashboard" class="grid">
-        <div class="card empty">
-          Keep source pages open in other tabs.
-        </div>
+        <div class="card empty">Keep source pages open in other tabs.</div>
       </section>
     </main>
   </div>
 
   <script>
     const AUTO_REFRESH_SECONDS = 30;
-
     let lastOpsData = null;
-    let lastRenderTime = null;
+    let lastUpdateMs = null;
 
-    const topDockRefreshBtn = document.getElementById('dockTopRefreshBtn');
-
-    topDockRefreshBtn.addEventListener('click', () => {
+    document.getElementById('dockTopRefreshBtn').addEventListener('click', () => {
       requestDockOBRefresh();
     });
 
     window.renderOpsDashboard = function(data) {
       lastOpsData = data;
-      lastRenderTime = Date.now();
+      lastUpdateMs = Date.now();
 
       const dashboard = document.getElementById('dashboard');
       const featureList = document.getElementById('featureList');
@@ -564,7 +387,7 @@
       dashboard.innerHTML = '';
       featureList.innerHTML = '';
 
-      const selected = JSON.parse(localStorage.getItem('ops-selected') || '{}');
+      const selected = JSON.parse(localStorage.getItem('ops-selected-clean') || '{}');
 
       if (!data || !Array.isArray(data.sections)) {
         renderEmptyKpis();
@@ -573,7 +396,7 @@
         return;
       }
 
-      localStorage.setItem('ops-last-data', JSON.stringify(data));
+      renderKpis(data);
 
       const firstLink = getFirstLink(data);
       if (firstLink && firstLink !== '#') {
@@ -583,12 +406,8 @@
         sourceLink.style.display = 'none';
       }
 
-      renderKpis(data);
-
       data.sections.forEach(section => {
-        if (selected[section.id] === undefined) {
-          selected[section.id] = true;
-        }
+        if (selected[section.id] === undefined) selected[section.id] = true;
 
         const option = document.createElement('label');
         option.className = 'feature';
@@ -599,7 +418,7 @@
 
         option.querySelector('input').addEventListener('change', e => {
           selected[section.id] = e.target.checked;
-          localStorage.setItem('ops-selected', JSON.stringify(selected));
+          localStorage.setItem('ops-selected-clean', JSON.stringify(selected));
           window.renderOpsDashboard(lastOpsData);
         });
 
@@ -607,165 +426,63 @@
 
         if (!selected[section.id]) return;
 
-        const card = renderSectionCard(section);
-        dashboard.appendChild(card);
+        dashboard.appendChild(renderCard(section));
       });
 
-      localStorage.setItem('ops-selected', JSON.stringify(selected));
+      localStorage.setItem('ops-selected-clean', JSON.stringify(selected));
 
-      const updated = data.updatedAt
-        ? new Date(data.updatedAt).toLocaleTimeString()
-        : 'Unknown';
-
+      const updated = data.updatedAt ? new Date(data.updatedAt).toLocaleTimeString() : 'Unknown';
       status.textContent = `Connected • Last update: ${updated} • ${data.sections.length} source${data.sections.length === 1 ? '' : 's'}`;
-      updateRefreshCounter();
+
+      updateCounter();
     };
 
-    function renderSectionCard(section) {
+    function renderCard(section) {
       const items = Array.isArray(section.items) ? section.items : [];
-      const hasTable = section.table && Array.isArray(section.table.rows);
-      const isDockOB = section.id === 'next-5-vrid-releasing';
+      const isDock = section.id === 'next-5-vrid-releasing';
 
       const card = document.createElement('article');
       card.className = 'card';
 
-      if (hasTable || isDockOB || section.id === 'routing-profile-destinations') {
-        card.classList.add('wide');
-      }
-
-      const rightControls = `
-        ${isDockOB ? '<button class="card-refresh-btn" type="button" data-action="dock-refresh">Refresh</button>' : ''}
-        <span class="badge">${items.length} items</span>
-      `;
-
       card.innerHTML = `
         <div class="card-head">
-          <div class="card-head-left" data-action="toggle">
+          <div class="card-title-wrap" data-toggle="1">
             <span class="card-title">${section.icon || '📌'} ${escapeHtml(section.title)}</span>
           </div>
-          <div class="card-head-right">
-            ${rightControls}
+          <div class="card-right">
+            ${isDock ? '<button class="card-refresh" data-dock-refresh="1" type="button">Refresh</button>' : ''}
+            <span class="badge">${items.length} items</span>
           </div>
         </div>
         <div class="card-body">
-          ${hasTable ? renderTable(section.table, section.id) : renderItems(items)}
+          ${items.length ? items.map(item => `
+            <div class="item">
+              <a href="${safeUrl(item.link)}" target="_blank">${escapeHtml(item.label || '')}</a>
+              <span class="meta">${escapeHtml(item.value || '')}</span>
+            </div>
+          `).join('') : '<div class="empty">No items</div>'}
         </div>
       `;
 
-      card.querySelector('[data-action="toggle"]').addEventListener('click', () => {
+      card.querySelector('[data-toggle="1"]').addEventListener('click', () => {
         card.querySelector('.card-body').classList.toggle('hidden');
       });
 
-      const refreshBtn = card.querySelector('[data-action="dock-refresh"]');
-      if (refreshBtn) {
-        refreshBtn.addEventListener('click', e => {
+      const dockBtn = card.querySelector('[data-dock-refresh="1"]');
+      if (dockBtn) {
+        dockBtn.addEventListener('click', e => {
           e.stopPropagation();
-          requestDockOBRefresh(refreshBtn);
+          requestDockOBRefresh(dockBtn);
         });
       }
 
       return card;
     }
 
-    function renderItems(items) {
-      if (!items.length) {
-        return '<div class="empty">No items</div>';
-      }
-
-      return items.map(item => `
-        <div class="item">
-          <a href="${safeUrl(item.link)}" target="_blank">${escapeHtml(item.label || '')}</a>
-          <span class="meta">${escapeHtml(item.value || '')}</span>
-        </div>
-      `).join('');
-    }
-
-    function renderTable(table, sectionId) {
-      const columns = Array.isArray(table.columns) ? table.columns : [];
-      const rows = Array.isArray(table.rows) ? table.rows : [];
-
-      if (!rows.length) {
-        return '<div class="empty">No rows</div>';
-      }
-
-      return `
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                ${columns.map(col => `<th>${escapeHtml(col)}</th>`).join('')}
-              </tr>
-            </thead>
-            <tbody>
-              ${rows.map(row => renderTableRow(row, columns, sectionId)).join('')}
-            </tbody>
-          </table>
-        </div>
-      `;
-    }
-
-    function renderTableRow(row, columns, sectionId) {
-      return `
-        <tr>
-          ${columns.map(col => {
-            const value = getTableValue(row, col, sectionId);
-            return `<td>${escapeHtml(value)}</td>`;
-          }).join('')}
-        </tr>
-      `;
-    }
-
-    function getTableValue(row, col, sectionId) {
-      const key = String(col || '').toLowerCase();
-
-      if (sectionId === 'lane-watch-100-defect') {
-        if (key.includes('lane')) return row.lane || '';
-        if (key.includes('pkg')) return row.packages || row.totalDefects || '';
-        if (key.includes('issue')) return row.issue || '';
-      }
-
-      if (sectionId === 'routing-profile-assignments') {
-        if (key.includes('routing')) return row.profile || '';
-        if (key.includes('total')) return row.total || '';
-        if (key.includes('percentage')) return row.percentage || '';
-      }
-
-      if (sectionId === 'routing-profile-destinations') {
-        if (key.includes('routing')) return row.profile || '';
-        if (key.includes('destination')) return row.path || '';
-      }
-
-      if (sectionId === 'top-5-recirc-volume') {
-        if (key.includes('lane')) return row.lane || '';
-        if (key.includes('package')) return row.package || '';
-        if (key.includes('count')) return row.count || '';
-      }
-
-      if (sectionId === 'next-5-vrid-releasing') {
-        if (key === 'vrid') return row.vrid || '';
-        if (key === 'status') return row.status || '';
-        if (key === 'destination') return row.destination || '';
-        if (key === 'door') return row.dockDoor || row.door || '';
-        if (key === 'driver') return row.driver || '';
-        if (key === 'sdt') return shortDateTime(row.sdt || '');
-        if (key === 'rel') return shortDateTime(row.rel || '');
-        if (key === 'cpt') return shortDateTime(row.cpt || '');
-      }
-
-      return row[col] || row[key] || '';
-    }
-
     function requestDockOBRefresh(button) {
-      const targetButton = button || topDockRefreshBtn;
-      const originalText = targetButton.textContent;
-
-      targetButton.textContent = 'Sent...';
-
-      window.postMessage({
-        type: 'OPS_MANUAL_DOCK_REFRESH',
-        requestedAt: new Date().toISOString(),
-        nonce: Date.now()
-      }, '*');
+      const btn = button || document.getElementById('dockTopRefreshBtn');
+      const old = btn.textContent;
+      btn.textContent = 'Sent...';
 
       window.dispatchEvent(new CustomEvent('OPS_MANUAL_DOCK_REFRESH', {
         detail: {
@@ -775,78 +492,55 @@
       }));
 
       setTimeout(() => {
-        targetButton.textContent = originalText;
-      }, 1800);
+        btn.textContent = old;
+      }, 1600);
     }
 
     function renderKpis(data) {
       const kpis = document.getElementById('kpis');
 
-      const opsDefect = findMetric(data, ['Ops Defect %', 'Operational Defect %']);
-      const scanDefect = findMetric(data, ['Total Scan Defect %', 'Scan Defect %']);
-      const loadBalanceDefect = findMetric(data, ['Load Balance Defect %', 'Load Balancing Defect %']);
-      const fpySuccess = findMetric(data, ['FPY Success/Total', 'FPY (Success/Total)', 'FPY']);
-
       const cards = [
         {
-          title: 'Ops Defect %',
-          value: opsDefect,
-          type: 'ops',
-          note: 'Operational sorter defects'
+          title:'Ops Defect %',
+          value:findMetric(data, ['Ops Defect %']),
+          type:'ops',
+          note:'Operational sorter defects'
         },
         {
-          title: 'Total Scan Defect %',
-          value: scanDefect,
-          type: 'scan',
-          note: 'NoRead + MultiRead + NoCode'
+          title:'Total Scan Defect %',
+          value:findMetric(data, ['Total Scan Defect %', 'Scan Defect %']),
+          type:'scan',
+          note:'Scanner defect rate'
         },
         {
-          title: 'Load Balance Defect %',
-          value: loadBalanceDefect,
-          type: 'load',
-          note: 'Load balancing issue rate'
+          title:'Load Balance Defect %',
+          value:findMetric(data, ['Load Balance Defect %']),
+          type:'load',
+          note:'Load balance defects'
         },
         {
-          title: 'FPY Success/Total',
-          value: fpySuccess,
-          type: 'fpy',
-          note: 'First pass yield success rate'
+          title:'FPY Success/Total',
+          value:findMetric(data, ['FPY Success/Total', 'FPY (Success/Total)', 'FPY']),
+          type:'fpy',
+          note:'First pass yield'
         }
       ];
 
-      kpis.innerHTML = cards.map(card => {
-        const value = card.value || '--';
-        const className = getKpiClass(card.type, value);
-        const formatted = formatBigValue(value);
-
-        return `
-          <article class="kpi ${className}">
-            <div>
-              <div class="kpi-label">${escapeHtml(card.title)}</div>
-              <div class="kpi-value">${formatted}</div>
-            </div>
-            <div class="kpi-note">${escapeHtml(card.note)}</div>
-          </article>
-        `;
-      }).join('');
+      kpis.innerHTML = cards.map(card => `
+        <article class="kpi ${getKpiClass(card.type, card.value)}">
+          <div class="kpi-label">${escapeHtml(card.title)}</div>
+          <div class="kpi-value">${escapeHtml(card.value || '--')}</div>
+          <div class="kpi-note">${escapeHtml(card.note)}</div>
+        </article>
+      `).join('');
     }
 
     function renderEmptyKpis() {
-      const kpis = document.getElementById('kpis');
-      const titles = [
-        'Ops Defect %',
-        'Total Scan Defect %',
-        'Load Balance Defect %',
-        'FPY Success/Total'
-      ];
-
-      kpis.innerHTML = titles.map(title => `
+      document.getElementById('kpis').innerHTML = ['Ops Defect %','Total Scan Defect %','Load Balance Defect %','FPY Success/Total'].map(title => `
         <article class="kpi neutral">
-          <div>
-            <div class="kpi-label">${escapeHtml(title)}</div>
-            <div class="kpi-value">--</div>
-          </div>
-          <div class="kpi-note">Waiting for MySPD data</div>
+          <div class="kpi-label">${escapeHtml(title)}</div>
+          <div class="kpi-value">--</div>
+          <div class="kpi-note">Waiting</div>
         </article>
       `).join('');
     }
@@ -855,7 +549,6 @@
       for (const section of data.sections || []) {
         for (const item of section.items || []) {
           const label = String(item.label || '').toLowerCase().trim();
-
           for (const wanted of labelOptions) {
             if (label === wanted.toLowerCase().trim()) {
               return String(item.value || '').trim();
@@ -863,72 +556,54 @@
           }
         }
       }
-
       return '--';
     }
 
     function getKpiClass(type, value) {
-      const num = parseNumber(value);
-
-      if (Number.isNaN(num)) return 'neutral';
+      const n = Number(String(value || '').replace('%','').trim());
+      if (Number.isNaN(n)) return 'neutral';
 
       if (type === 'fpy') {
-        if (num >= 85) return 'good';
-        if (num >= 75) return 'warn';
+        if (n >= 85) return 'good';
+        if (n >= 75) return 'warn';
         return 'bad';
       }
 
       if (type === 'ops') {
-        if (num <= 3) return 'good';
-        if (num <= 8) return 'warn';
+        if (n <= 3) return 'good';
+        if (n <= 8) return 'warn';
         return 'bad';
       }
 
       if (type === 'scan') {
-        if (num <= 1) return 'good';
-        if (num <= 5) return 'warn';
+        if (n <= 1) return 'good';
+        if (n <= 5) return 'warn';
         return 'bad';
       }
 
       if (type === 'load') {
-        if (num <= 5) return 'good';
-        if (num <= 10) return 'warn';
+        if (n <= 5) return 'good';
+        if (n <= 10) return 'warn';
         return 'bad';
       }
 
       return 'neutral';
     }
 
-    function parseNumber(value) {
-      return Number(String(value || '').replace('%', '').trim());
-    }
-
-    function formatBigValue(value) {
-      const text = String(value || '--').trim();
-
-      if (text.endsWith('%')) {
-        const num = text.replace('%', '');
-        return `${escapeHtml(num)}<span class="percent">%</span>`;
-      }
-
-      return escapeHtml(text);
-    }
-
-    function updateRefreshCounter() {
+    function updateCounter() {
       const el = document.getElementById('refreshCounter');
 
-      if (!lastRenderTime) {
-        el.textContent = `Refresh: ${AUTO_REFRESH_SECONDS}s`;
+      if (!lastUpdateMs) {
+        el.textContent = `Auto refresh: ${AUTO_REFRESH_SECONDS}s`;
         return;
       }
 
-      const elapsed = Math.floor((Date.now() - lastRenderTime) / 1000);
-      const remain = Math.max(0, AUTO_REFRESH_SECONDS - elapsed);
-
-      el.textContent = `Auto refresh: ${remain}s`;
+      const elapsed = Math.floor((Date.now() - lastUpdateMs) / 1000);
+      const left = Math.max(0, AUTO_REFRESH_SECONDS - elapsed);
+      el.textContent = `Auto refresh: ${left}s`;
     }
 
-    setInterval(updateRefreshCounter, 1000);
+    setInterval(updateCounter, 1000);
 
     function getFirstLink(data) {
       for (const section of data.sections || []) {
@@ -937,11 +612,6 @@
         }
       }
       return '#';
-    }
-
-    function shortDateTime(value) {
-      const match = String(value || '').match(/(\d{1,2}:\d{2})$/);
-      return match ? match[1] : value;
     }
 
     function escapeHtml(value) {
@@ -958,21 +628,6 @@
       const url = String(value || '#');
       return /^(https?:|#)/i.test(url) ? url : '#';
     }
-
-    try {
-      const saved = localStorage.getItem('ops-last-data');
-      if (saved) {
-        window.renderOpsDashboard(JSON.parse(saved));
-      }
-    } catch (err) {
-      console.warn('Could not load saved dashboard data', err);
-    }
-
-    window.addEventListener('message', event => {
-      if (event.data && event.data.type === 'OPS_DASHBOARD_DATA') {
-        window.renderOpsDashboard(event.data.payload);
-      }
-    });
   </script>
 </body>
 </html>
