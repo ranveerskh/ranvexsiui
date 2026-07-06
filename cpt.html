@@ -1249,7 +1249,7 @@
       font-size:11pt;
       font-weight:800;
     }
-    /* v2.6 roll layout - normal horizontal default */
+    /* v2.7 roll layout - Zebra alignment fixed */
     body.print-roll #printArea{
       width:2in!important;
       height:auto!important;
@@ -1354,34 +1354,50 @@
       letter-spacing:-.35pt!important;
     }
 
-    /* Backup: only use if your Zebra driver rotates differently */
+    /* Zebra Rotate Fix: moved right/down and centered inside the real 2 x 1.25 label */
     body.print-roll .roll-label.rotate-fix{
       position:absolute!important;
-      left:50%!important;
-      top:50%!important;
-      width:1.05in!important;
-      height:1.82in!important;
+      left:58%!important;
+      top:56%!important;
+      width:1.03in!important;
+      height:1.78in!important;
       margin:0!important;
       padding:0!important;
       transform:translate(-50%,-50%) rotate(90deg)!important;
       transform-origin:center center!important;
-      grid-template-rows:.18in 1.64in!important;
+      grid-template-rows:.16in 1.62in!important;
     }
 
     body.print-roll .roll-label.rotate-fix .roll-time{
-      font-size:8.5pt!important;
+      font-size:7.4pt!important;
+      line-height:1!important;
+      padding:0!important;
+      margin:0!important;
+      text-align:center!important;
+    }
+
+    body.print-roll .roll-label.rotate-fix .roll-numbers{
+      width:100%!important;
+      height:100%!important;
+      justify-content:center!important;
+      align-items:center!important;
     }
 
     body.print-roll .roll-label.rotate-fix .roll-numbers.count-1 .roll-number{
-      font-size:31pt!important;
+      font-size:29pt!important;
+      letter-spacing:-.7pt!important;
     }
 
     body.print-roll .roll-label.rotate-fix .roll-numbers.count-2 .roll-number{
-      font-size:23pt!important;
+      font-size:22pt!important;
+      letter-spacing:-.4pt!important;
+      line-height:.84!important;
     }
 
     body.print-roll .roll-label.rotate-fix .roll-numbers.count-3 .roll-number{
-      font-size:19pt!important;
+      font-size:18.5pt!important;
+      letter-spacing:-.3pt!important;
+      line-height:.82!important;
     }
 
   }
@@ -1395,7 +1411,7 @@
       <div class="logo">RV</div>
       <div>
         <h1>RANVEXSI UI - CPT Labels</h1>
-        <p>Ship Dock - Process Assistant - v2.6 Normal Roll Layout</p>
+        <p>Ship Dock - Process Assistant - v2.7 Zebra Align Fix</p>
       </div>
     </div>
 
@@ -2273,7 +2289,7 @@ function updateSelectionSummary(){
       : selectedQuarter;
 
     const orientationText = getRollOrientation() === "rotate"
-      ? "normal horizontal"
+      ? "normal / Zebra aligned"
       : "normal";
 
     els.printSummaryText.textContent = rollCount
