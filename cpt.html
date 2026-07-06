@@ -1249,7 +1249,7 @@
       font-size:11pt;
       font-weight:800;
     }
-    /* v2.4 Zebra roll layout fix */
+    /* v2.5 Zebra roll spacing fix - conservative, no overlap */
     body.print-roll #printArea{
       width:2in!important;
       height:auto!important;
@@ -1269,14 +1269,14 @@
     }
 
     body.print-roll .roll-label{
-      width:1.90in!important;
-      height:1.13in!important;
-      margin:0!important;
-      padding:.075in .095in!important;
+      width:1.72in!important;
+      height:1.02in!important;
+      margin:.11in .14in!important;
+      padding:0!important;
       display:grid!important;
-      grid-template-rows:.23in 1fr!important;
+      grid-template-rows:.18in .84in!important;
       align-items:center!important;
-      justify-content:stretch!important;
+      justify-content:center!important;
       overflow:hidden!important;
       background:#fff!important;
       color:#000!important;
@@ -1286,26 +1286,25 @@
       position:absolute!important;
       left:50%!important;
       top:50%!important;
-      width:1.13in!important;
-      height:1.90in!important;
-      padding:.075in .065in!important;
+      width:1.02in!important;
+      height:1.72in!important;
+      margin:0!important;
+      padding:0!important;
       transform:translate(-50%,-50%) rotate(90deg)!important;
       transform-origin:center center!important;
-      grid-template-rows:.27in 1fr!important;
+      grid-template-rows:.18in 1.54in!important;
     }
 
     body.print-roll .roll-time{
       margin:0!important;
+      padding:0!important;
       text-align:center!important;
-      font-size:10.5pt!important;
+      font-size:8.8pt!important;
       line-height:1!important;
       font-weight:900!important;
-      letter-spacing:.05pt!important;
+      letter-spacing:0!important;
       white-space:nowrap!important;
-    }
-
-    body.print-roll .roll-label.rotate-fix .roll-time{
-      font-size:9.5pt!important;
+      overflow:hidden!important;
     }
 
     body.print-roll .roll-numbers{
@@ -1316,63 +1315,70 @@
       display:grid!important;
       align-items:center!important;
       justify-content:center!important;
-      column-gap:.08in!important;
-      row-gap:.025in!important;
+      gap:0!important;
+      overflow:hidden!important;
     }
 
     body.print-roll .roll-numbers.count-1{
       grid-template-columns:1fr!important;
+      grid-template-rows:1fr!important;
     }
 
     body.print-roll .roll-numbers.count-2{
-      grid-template-columns:repeat(2,minmax(0,1fr))!important;
+      grid-template-columns:1fr!important;
+      grid-template-rows:repeat(2,1fr)!important;
     }
 
     body.print-roll .roll-numbers.count-3{
-      grid-template-columns:repeat(3,minmax(0,1fr))!important;
-    }
-
-    body.print-roll .roll-label.rotate-fix .roll-numbers.count-3{
       grid-template-columns:1fr!important;
       grid-template-rows:repeat(3,1fr)!important;
-      row-gap:.018in!important;
     }
 
     body.print-roll .roll-number{
+      width:100%!important;
       min-width:0!important;
+      margin:0!important;
+      padding:0!important;
       text-align:center!important;
-      line-height:.86!important;
+      line-height:.88!important;
       font-weight:900!important;
       white-space:nowrap!important;
-      letter-spacing:-.75pt!important;
+      overflow:hidden!important;
+      letter-spacing:-.25pt!important;
     }
 
     body.print-roll .roll-numbers.count-1 .roll-number{
-      font-size:35pt!important;
+      font-size:30pt!important;
+      letter-spacing:-.75pt!important;
     }
 
     body.print-roll .roll-numbers.count-2 .roll-number{
       font-size:24pt!important;
+      letter-spacing:-.45pt!important;
     }
 
     body.print-roll .roll-numbers.count-3 .roll-number{
-      font-size:16.5pt!important;
-      letter-spacing:-.55pt!important;
+      font-size:20pt!important;
+      letter-spacing:-.35pt!important;
+    }
+
+    body.print-roll .roll-label.rotate-fix .roll-time{
+      font-size:8.5pt!important;
     }
 
     body.print-roll .roll-label.rotate-fix .roll-numbers.count-1 .roll-number{
-      font-size:36pt!important;
-      letter-spacing:-1pt!important;
+      font-size:30pt!important;
+      letter-spacing:-.75pt!important;
     }
 
     body.print-roll .roll-label.rotate-fix .roll-numbers.count-2 .roll-number{
-      font-size:21.5pt!important;
-      letter-spacing:-.7pt!important;
+      font-size:24pt!important;
+      letter-spacing:-.45pt!important;
     }
 
     body.print-roll .roll-label.rotate-fix .roll-numbers.count-3 .roll-number{
-      font-size:20pt!important;
-      letter-spacing:-.65pt!important;
+      font-size:19.5pt!important;
+      letter-spacing:-.35pt!important;
     }
 
   }
@@ -1386,7 +1392,7 @@
       <div class="logo">RV</div>
       <div>
         <h1>RANVEXSI UI - CPT Labels</h1>
-        <p>Ship Dock - Process Assistant - v2.4 Roll Layout Fix</p>
+        <p>Ship Dock - Process Assistant - v2.5 Roll Spacing Fix</p>
       </div>
     </div>
 
@@ -2264,7 +2270,7 @@ function updateSelectionSummary(){
       : selectedQuarter;
 
     const orientationText = getRollOrientation() === "rotate"
-      ? "Zebra rotate fix"
+      ? "Zebra rotate fix - spacing safe"
       : "normal";
 
     els.printSummaryText.textContent = rollCount
