@@ -809,18 +809,13 @@
   }
 
   .label-grid.roll-mode .label-card{
-    opacity:.62;
-    cursor:default;
-    pointer-events:none;
+    opacity:1;
+    cursor:pointer;
+    pointer-events:auto;
   }
 
   .label-grid.roll-mode .check{
-    display:none;
-  }
-
-  .label-grid.roll-mode .label-card.selected{
-    border-color:var(--line);
-    box-shadow:0 8px 22px rgba(15,23,42,.05);
+    display:grid;
   }
 
   @media print{
@@ -1265,7 +1260,7 @@
       <div class="logo">RV</div>
       <div>
         <h1>RANVEXSI UI - CPT Labels</h1>
-        <p>Ship Dock - Process Assistant - v2.2 Roll Fix</p>
+        <p>Ship Dock - Process Assistant - v2.3 Roll Select Fix</p>
       </div>
     </div>
 
@@ -1864,6 +1859,16 @@ function getRollQuarterKeys(){
   return [selectedQuarter];
 }
 
+function getRollCategories(){
+  if(selectedCategories.size){
+    return CATEGORY_DEFINITIONS.filter(category => {
+      return selectedCategories.has(category.key);
+    });
+  }
+
+  return CATEGORY_DEFINITIONS;
+}
+
 function getQuarterKeys(){
   return Object.keys(SHIFT_DEFINITIONS[selectedShift].quarters);
 }
@@ -1923,7 +1928,9 @@ function getVisibleTimeCount(){
 function getAllQuarterCptsByTime(quarterKey=selectedQuarter){
   const allTimes = new Set();
 
-  CATEGORY_DEFINITIONS.forEach(category => {
+  const categoriesForRoll = getRollCategories();
+
+  categoriesForRoll.forEach(category => {
     getSortedTimesForQuarter(category.key,quarterKey).forEach(time => {
       allTimes.add(time);
     });
@@ -1939,7 +1946,7 @@ function getAllQuarterCptsByTime(quarterKey=selectedQuarter){
     .map(time => {
       const numbers = [];
 
-      CATEGORY_DEFINITIONS.forEach(category => {
+      categoriesForRoll.forEach(category => {
         const values = parsedData[category.key]?.[time] || [];
 
         values.forEach(number => {
@@ -2084,8 +2091,8 @@ function updateModeUI(){
   }else if(rollMode){
     els.previewHelp.textContent =
       getRollScope() === "all"
-        ? "Side selection is not needed. All CPTs from Q1, Q2 and Q3 will print, grouped by quarter and time."
-        : `Side selection is not needed. All CPTs from ${selectedQuarter} will print, grouped by time.`;
+        ? "Select sides if needed. If nothing is selected, all sides print for Q1, Q2 and Q3, grouped by quarter and time."
+        : `Select sides if needed. If nothing is selected, all sides print for ${selectedQuarter}, grouped by time.`;
   }else{
     els.previewHelp.textContent =
       "Select only the label sides you want to print. Nothing is selected automatically.";
@@ -2103,8 +2110,11 @@ function updateSelectionSummary(){
   if(rollMode){
     const groupSize = getRollGroupSize();
     const cptWord = groupSize === 1 ? "CPT" : "CPTs";
+    const sideText = selectedCategories.size
+      ? `${selectedCategories.size} side${selectedCategories.size === 1 ? "" : "s"} selected`
+      : "All sides included";
 
-    els.selectedCount.textContent = "All sides included";
+    els.selectedCount.textContent = sideText;
     els.printSummaryTitle.textContent = rollCount
       ? `${rollCount} small label${rollCount === 1 ? "" : "s"} ready`
       : "No CPT labels ready";
@@ -2113,7 +2123,7 @@ function updateSelectionSummary(){
       : selectedQuarter;
 
     els.printSummaryText.textContent = rollCount
-      ? `${selectedShift === "day" ? "Day" : "Night"} ${scopeText}: ${groupSize} ${cptWord} per 2 x 1.25 label. Different CPT times are never mixed.`
+      ? `${selectedShift === "day" ? "Day" : "Night"} ${scopeText}: ${sideText}, ${groupSize} ${cptWord} per 2 x 1.25 label. Different CPT times are never mixed.`
       : "Upload a CPT file and choose a quarter/scope to print.";
     els.printBtn.textContent = `Print 2 x 1.25 - ${groupSize} ${cptWord} Each`;
     els.printBtn.disabled = rollCount === 0;
@@ -2446,7 +2456,7 @@ function printCurrentMode(){
     const labels = getAllQuarterRollLabels(getRollGroupSize());
 
     if(!labels.length){
-      showToast("No CPT numbers found in this quarter.");
+      showToast("No CPT numbers found for this roll label selection.");
       return;
     }
   }else if(!selectedCategories.size){
@@ -2516,8 +2526,6 @@ els.quarterSegments.addEventListener("click",event => {
 });
 
 els.labelGrid.addEventListener("click",event => {
-  if(isRollMode()) return;
-
   const card = event.target.closest("[data-category]");
 
   if(!card) return;
