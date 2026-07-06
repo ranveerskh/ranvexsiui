@@ -1400,6 +1400,64 @@
       line-height:.82!important;
     }
 
+    body.print-roll .roll-numbers.count-4,
+    body.print-roll .roll-numbers.count-5,
+    body.print-roll .roll-numbers.count-6,
+    body.print-roll .roll-numbers.count-7{
+      grid-template-columns:repeat(2,minmax(0,1fr))!important;
+      grid-auto-rows:1fr!important;
+      column-gap:.015in!important;
+      row-gap:.005in!important;
+    }
+
+    body.print-roll .roll-numbers.count-4 .roll-number{
+      font-size:15.5pt!important;
+      letter-spacing:-.25pt!important;
+      line-height:.82!important;
+    }
+
+    body.print-roll .roll-numbers.count-5 .roll-number,
+    body.print-roll .roll-numbers.count-6 .roll-number{
+      font-size:13.5pt!important;
+      letter-spacing:-.2pt!important;
+      line-height:.80!important;
+    }
+
+    body.print-roll .roll-numbers.count-7 .roll-number{
+      font-size:12pt!important;
+      letter-spacing:-.15pt!important;
+      line-height:.78!important;
+    }
+
+    body.print-roll .roll-label.rotate-fix .roll-numbers.count-4,
+    body.print-roll .roll-label.rotate-fix .roll-numbers.count-5,
+    body.print-roll .roll-label.rotate-fix .roll-numbers.count-6,
+    body.print-roll .roll-label.rotate-fix .roll-numbers.count-7{
+      grid-template-columns:repeat(2,minmax(0,1fr))!important;
+      grid-auto-rows:1fr!important;
+      column-gap:.012in!important;
+      row-gap:.004in!important;
+    }
+
+    body.print-roll .roll-label.rotate-fix .roll-numbers.count-4 .roll-number{
+      font-size:15pt!important;
+      letter-spacing:-.2pt!important;
+      line-height:.80!important;
+    }
+
+    body.print-roll .roll-label.rotate-fix .roll-numbers.count-5 .roll-number,
+    body.print-roll .roll-label.rotate-fix .roll-numbers.count-6 .roll-number{
+      font-size:13pt!important;
+      letter-spacing:-.15pt!important;
+      line-height:.78!important;
+    }
+
+    body.print-roll .roll-label.rotate-fix .roll-numbers.count-7 .roll-number{
+      font-size:11.5pt!important;
+      letter-spacing:-.1pt!important;
+      line-height:.76!important;
+    }
+
   }
 </style>
 </head>
@@ -1411,7 +1469,7 @@
       <div class="logo">RV</div>
       <div>
         <h1>RANVEXSI UI - CPT Labels</h1>
-        <p>Ship Dock - Process Assistant - v2.7 Zebra Align Fix</p>
+        <p>Ship Dock - Process Assistant - v2.8 Roll Auto Fit</p>
       </div>
     </div>
 
@@ -1508,9 +1566,7 @@
         <option value="rollSel1">2 x 1.25 - selected QTR - 1 CPT</option>
         <option value="rollSel2">2 x 1.25 - selected QTR - 2 CPTs</option>
         <option value="rollSel3">2 x 1.25 - selected QTR - 3 CPTs</option>
-        <option value="rollAll1">2 x 1.25 - all 3 QTRs - 1 CPT</option>
-        <option value="rollAll2">2 x 1.25 - all 3 QTRs - 2 CPTs</option>
-        <option value="rollAll3">2 x 1.25 - all 3 QTRs - 3 CPTs</option>
+        <option value="rollAuto">2 x 1.25 - selected QTR - Auto Fit</option>
       </select>
     </div>
 
@@ -1997,9 +2053,23 @@ function isRollMode(){
 function getRollGroupSize(){
   const mode = getPrintMode();
 
+  if(mode === "rollAuto") return 7;
   if(mode.endsWith("1")) return 1;
   if(mode.endsWith("3")) return 3;
   return 2;
+}
+
+function isRollAutoFit(){
+  return getPrintMode() === "rollAuto";
+}
+
+function getAutoFitChunkSize(count){
+  const n = Number(count || 0);
+
+  if(n <= 0) return 0;
+  if(n <= 7) return n;
+
+  return 7;
 }
 
 function getRollScope(){
@@ -2133,16 +2203,24 @@ function getAllQuarterCptsByTime(quarterKey=selectedQuarter){
 
 function getAllQuarterRollLabels(groupSize=getRollGroupSize()){
   const labels = [];
-  const size = Math.max(1,Math.min(3,Number(groupSize) || 2));
+  const fixedSize = Math.max(1,Math.min(3,Number(groupSize) || 2));
   const includeQuarterOnLabel = getRollScope() === "all";
+  const autoFit = isRollAutoFit();
 
   getRollQuarterKeys().forEach(quarterKey => {
     getAllQuarterCptsByTime(quarterKey).forEach(group => {
+      const size = autoFit
+        ? getAutoFitChunkSize(group.numbers.length)
+        : fixedSize;
+
+      if(!size) return;
+
       for(let index = 0; index < group.numbers.length; index += size){
         labels.push({
           quarter:quarterKey,
           time:group.time,
           displayTime:includeQuarterOnLabel ? `${quarterKey}  ${group.time}` : group.time,
+          autoFit:autoFit,
           numbers:group.numbers.slice(index,index + size)
         });
       }
@@ -2258,7 +2336,7 @@ function updateModeUI(){
     els.previewHelp.textContent =
       getRollScope() === "all"
         ? "Select sides if needed. If nothing is selected, all sides print for Q1, Q2 and Q3, grouped by quarter and time."
-        : `Select sides if needed. If nothing is selected, all sides print for ${selectedQuarter}, grouped by time.`;
+        : `Select sides if needed. If nothing is selected, all sides print for ${selectedQuarter}, grouped by time. Auto Fit keeps same-time CPTs together when possible.`;
   }else{
     els.previewHelp.textContent =
       "Select only the label sides you want to print. Nothing is selected automatically.";
@@ -2275,6 +2353,7 @@ function updateSelectionSummary(){
 
   if(rollMode){
     const groupSize = getRollGroupSize();
+    const autoFit = isRollAutoFit();
     const cptWord = groupSize === 1 ? "CPT" : "CPTs";
     const sideText = selectedCategories.size
       ? `${selectedCategories.size} side${selectedCategories.size === 1 ? "" : "s"} selected`
@@ -2293,9 +2372,13 @@ function updateSelectionSummary(){
       : "normal";
 
     els.printSummaryText.textContent = rollCount
-      ? `${selectedShift === "day" ? "Day" : "Night"} ${scopeText}: ${sideText}, ${groupSize} ${cptWord} per 2 x 1.25 label, ${orientationText}. Different CPT times are never mixed.`
+      ? autoFit
+        ? `${selectedShift === "day" ? "Day" : "Night"} ${scopeText}: ${sideText}, Auto Fit up to 7 CPTs per 2 x 1.25 label, ${orientationText}. Different CPT times are never mixed.`
+        : `${selectedShift === "day" ? "Day" : "Night"} ${scopeText}: ${sideText}, ${groupSize} ${cptWord} per 2 x 1.25 label, ${orientationText}. Different CPT times are never mixed.`
       : "Upload a CPT file and choose a quarter/scope to print.";
-    els.printBtn.textContent = `Print 2 x 1.25 - ${groupSize} ${cptWord} Each`;
+    els.printBtn.textContent = autoFit
+      ? "Print 2 x 1.25 - Auto Fit"
+      : `Print 2 x 1.25 - ${groupSize} ${cptWord} Each`;
     els.printBtn.disabled = rollCount === 0;
     return;
   }
@@ -2452,7 +2535,7 @@ function buildRollPrintArea(){
 
   els.printArea.innerHTML = labels
     .map(label => {
-      const countClass = ` count-${label.numbers.length}`;
+      const countClass = ` count-${Math.min(label.numbers.length,7)}${label.autoFit ? " auto-fit" : ""}`;
 
       const numbers = label.numbers
         .map(number => {
