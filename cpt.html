@@ -1249,7 +1249,7 @@
       font-size:11pt;
       font-weight:800;
     }
-    /* v2.5 Zebra roll spacing fix - conservative, no overlap */
+    /* v2.6 roll layout - normal horizontal default */
     body.print-roll #printArea{
       width:2in!important;
       height:auto!important;
@@ -1266,15 +1266,19 @@
       position:relative!important;
       overflow:hidden!important;
       background:#fff!important;
+      color:#000!important;
+      font-family:Arial,Helvetica,sans-serif!important;
+      -webkit-print-color-adjust:exact!important;
+      print-color-adjust:exact!important;
     }
 
     body.print-roll .roll-label{
-      width:1.72in!important;
-      height:1.02in!important;
-      margin:.11in .14in!important;
+      width:1.82in!important;
+      height:1.05in!important;
+      margin:.10in .09in!important;
       padding:0!important;
       display:grid!important;
-      grid-template-rows:.18in .84in!important;
+      grid-template-rows:.18in .87in!important;
       align-items:center!important;
       justify-content:center!important;
       overflow:hidden!important;
@@ -1282,24 +1286,12 @@
       color:#000!important;
     }
 
-    body.print-roll .roll-label.rotate-fix{
-      position:absolute!important;
-      left:50%!important;
-      top:50%!important;
-      width:1.02in!important;
-      height:1.72in!important;
-      margin:0!important;
-      padding:0!important;
-      transform:translate(-50%,-50%) rotate(90deg)!important;
-      transform-origin:center center!important;
-      grid-template-rows:.18in 1.54in!important;
-    }
-
     body.print-roll .roll-time{
+      width:100%!important;
       margin:0!important;
       padding:0!important;
       text-align:center!important;
-      font-size:8.8pt!important;
+      font-size:9pt!important;
       line-height:1!important;
       font-weight:900!important;
       letter-spacing:0!important;
@@ -1340,7 +1332,7 @@
       margin:0!important;
       padding:0!important;
       text-align:center!important;
-      line-height:.88!important;
+      line-height:.86!important;
       font-weight:900!important;
       white-space:nowrap!important;
       overflow:hidden!important;
@@ -1348,18 +1340,32 @@
     }
 
     body.print-roll .roll-numbers.count-1 .roll-number{
-      font-size:30pt!important;
-      letter-spacing:-.75pt!important;
+      font-size:36pt!important;
+      letter-spacing:-1pt!important;
     }
 
     body.print-roll .roll-numbers.count-2 .roll-number{
-      font-size:24pt!important;
-      letter-spacing:-.45pt!important;
+      font-size:25pt!important;
+      letter-spacing:-.55pt!important;
     }
 
     body.print-roll .roll-numbers.count-3 .roll-number{
-      font-size:20pt!important;
+      font-size:19.5pt!important;
       letter-spacing:-.35pt!important;
+    }
+
+    /* Backup: only use if your Zebra driver rotates differently */
+    body.print-roll .roll-label.rotate-fix{
+      position:absolute!important;
+      left:50%!important;
+      top:50%!important;
+      width:1.05in!important;
+      height:1.82in!important;
+      margin:0!important;
+      padding:0!important;
+      transform:translate(-50%,-50%) rotate(90deg)!important;
+      transform-origin:center center!important;
+      grid-template-rows:.18in 1.64in!important;
     }
 
     body.print-roll .roll-label.rotate-fix .roll-time{
@@ -1367,18 +1373,15 @@
     }
 
     body.print-roll .roll-label.rotate-fix .roll-numbers.count-1 .roll-number{
-      font-size:30pt!important;
-      letter-spacing:-.75pt!important;
+      font-size:31pt!important;
     }
 
     body.print-roll .roll-label.rotate-fix .roll-numbers.count-2 .roll-number{
-      font-size:24pt!important;
-      letter-spacing:-.45pt!important;
+      font-size:23pt!important;
     }
 
     body.print-roll .roll-label.rotate-fix .roll-numbers.count-3 .roll-number{
-      font-size:19.5pt!important;
-      letter-spacing:-.35pt!important;
+      font-size:19pt!important;
     }
 
   }
@@ -1392,7 +1395,7 @@
       <div class="logo">RV</div>
       <div>
         <h1>RANVEXSI UI - CPT Labels</h1>
-        <p>Ship Dock - Process Assistant - v2.5 Roll Spacing Fix</p>
+        <p>Ship Dock - Process Assistant - v2.6 Normal Roll Layout</p>
       </div>
     </div>
 
@@ -1506,8 +1509,8 @@
     <div class="control hidden" id="rollOrientationControl">
       <label>Roll Orientation</label>
       <select id="rollOrientation">
-        <option value="rotate" selected>Zebra Rotate Fix</option>
-        <option value="normal">Normal</option>
+        <option value="normal" selected>Normal</option>
+        <option value="rotate">Zebra Rotate Fix</option>
       </select>
     </div>
 
@@ -1994,7 +1997,7 @@ function getRollScope(){
 }
 
 function getRollOrientation(){
-  return els.rollOrientation?.value || "rotate";
+  return els.rollOrientation?.value || "normal";
 }
 
 function getRollQuarterKeys(){
@@ -2270,7 +2273,7 @@ function updateSelectionSummary(){
       : selectedQuarter;
 
     const orientationText = getRollOrientation() === "rotate"
-      ? "Zebra rotate fix - spacing safe"
+      ? "normal horizontal"
       : "normal";
 
     els.printSummaryText.textContent = rollCount
@@ -2587,7 +2590,7 @@ function resetPage(){
   els.fileState.textContent = "No file";
   els.paperSize.value = "label";
   els.rollScope.value = "selected";
-  els.rollOrientation.value = "rotate";
+  els.rollOrientation.value = "normal";
 
   document
     .querySelectorAll("#shiftSegments .segment")
