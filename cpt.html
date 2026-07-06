@@ -1249,6 +1249,132 @@
       font-size:11pt;
       font-weight:800;
     }
+    /* v2.4 Zebra roll layout fix */
+    body.print-roll #printArea{
+      width:2in!important;
+      height:auto!important;
+      margin:0!important;
+      padding:0!important;
+    }
+
+    body.print-roll .roll-print-page{
+      width:2in!important;
+      height:1.25in!important;
+      margin:0!important;
+      padding:0!important;
+      display:block!important;
+      position:relative!important;
+      overflow:hidden!important;
+      background:#fff!important;
+    }
+
+    body.print-roll .roll-label{
+      width:1.90in!important;
+      height:1.13in!important;
+      margin:0!important;
+      padding:.075in .095in!important;
+      display:grid!important;
+      grid-template-rows:.23in 1fr!important;
+      align-items:center!important;
+      justify-content:stretch!important;
+      overflow:hidden!important;
+      background:#fff!important;
+      color:#000!important;
+    }
+
+    body.print-roll .roll-label.rotate-fix{
+      position:absolute!important;
+      left:50%!important;
+      top:50%!important;
+      width:1.13in!important;
+      height:1.90in!important;
+      padding:.075in .065in!important;
+      transform:translate(-50%,-50%) rotate(90deg)!important;
+      transform-origin:center center!important;
+      grid-template-rows:.27in 1fr!important;
+    }
+
+    body.print-roll .roll-time{
+      margin:0!important;
+      text-align:center!important;
+      font-size:10.5pt!important;
+      line-height:1!important;
+      font-weight:900!important;
+      letter-spacing:.05pt!important;
+      white-space:nowrap!important;
+    }
+
+    body.print-roll .roll-label.rotate-fix .roll-time{
+      font-size:9.5pt!important;
+    }
+
+    body.print-roll .roll-numbers{
+      width:100%!important;
+      height:100%!important;
+      min-width:0!important;
+      min-height:0!important;
+      display:grid!important;
+      align-items:center!important;
+      justify-content:center!important;
+      column-gap:.08in!important;
+      row-gap:.025in!important;
+    }
+
+    body.print-roll .roll-numbers.count-1{
+      grid-template-columns:1fr!important;
+    }
+
+    body.print-roll .roll-numbers.count-2{
+      grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    }
+
+    body.print-roll .roll-numbers.count-3{
+      grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    }
+
+    body.print-roll .roll-label.rotate-fix .roll-numbers.count-3{
+      grid-template-columns:1fr!important;
+      grid-template-rows:repeat(3,1fr)!important;
+      row-gap:.018in!important;
+    }
+
+    body.print-roll .roll-number{
+      min-width:0!important;
+      text-align:center!important;
+      line-height:.86!important;
+      font-weight:900!important;
+      white-space:nowrap!important;
+      letter-spacing:-.75pt!important;
+    }
+
+    body.print-roll .roll-numbers.count-1 .roll-number{
+      font-size:35pt!important;
+    }
+
+    body.print-roll .roll-numbers.count-2 .roll-number{
+      font-size:24pt!important;
+    }
+
+    body.print-roll .roll-numbers.count-3 .roll-number{
+      font-size:16.5pt!important;
+      letter-spacing:-.55pt!important;
+    }
+
+    body.print-roll .roll-label.rotate-fix .roll-numbers.count-1 .roll-number{
+      font-size:36pt!important;
+      letter-spacing:-1pt!important;
+    }
+
+    body.print-roll .roll-label.rotate-fix .roll-numbers.count-2 .roll-number{
+      font-size:21.5pt!important;
+      letter-spacing:-.7pt!important;
+    }
+
+    body.print-roll .roll-label.rotate-fix .roll-numbers.count-3 .roll-number{
+      font-size:20pt!important;
+      letter-spacing:-.65pt!important;
+    }
+
   }
 </style>
 </head>
@@ -1260,7 +1386,7 @@
       <div class="logo">RV</div>
       <div>
         <h1>RANVEXSI UI - CPT Labels</h1>
-        <p>Ship Dock - Process Assistant - v2.3 Roll Select Fix</p>
+        <p>Ship Dock - Process Assistant - v2.4 Roll Layout Fix</p>
       </div>
     </div>
 
@@ -1368,6 +1494,14 @@
       <select id="rollScope">
         <option value="selected">Selected Quarter</option>
         <option value="all">All 3 Quarters</option>
+      </select>
+    </div>
+
+    <div class="control hidden" id="rollOrientationControl">
+      <label>Roll Orientation</label>
+      <select id="rollOrientation">
+        <option value="rotate" selected>Zebra Rotate Fix</option>
+        <option value="normal">Normal</option>
       </select>
     </div>
 
@@ -1522,6 +1656,8 @@ const els = {
   paperSize:document.getElementById("paperSize"),
   rollScopeControl:document.getElementById("rollScopeControl"),
   rollScope:document.getElementById("rollScope"),
+  rollOrientationControl:document.getElementById("rollOrientationControl"),
+  rollOrientation:document.getElementById("rollOrientation"),
   clearSelectionBtn:document.getElementById("clearSelectionBtn"),
   resetBtn:document.getElementById("resetBtn"),
 
@@ -1851,6 +1987,10 @@ function getRollScope(){
   return "selected";
 }
 
+function getRollOrientation(){
+  return els.rollOrientation?.value || "rotate";
+}
+
 function getRollQuarterKeys(){
   if(getRollScope() === "all"){
     return getQuarterKeys();
@@ -2084,6 +2224,7 @@ function updateModeUI(){
   els.labelGrid.classList.toggle("roll-mode",rollMode);
   els.clearSelectionBtn.disabled = rollMode;
   if(els.rollScopeControl) els.rollScopeControl.classList.add("hidden");
+  els.rollOrientationControl.classList.toggle("hidden",!rollMode);
 
   if(mode === "letter"){
     els.previewHelp.textContent =
@@ -2122,8 +2263,12 @@ function updateSelectionSummary(){
       ? "All 3 quarters"
       : selectedQuarter;
 
+    const orientationText = getRollOrientation() === "rotate"
+      ? "Zebra rotate fix"
+      : "normal";
+
     els.printSummaryText.textContent = rollCount
-      ? `${selectedShift === "day" ? "Day" : "Night"} ${scopeText}: ${sideText}, ${groupSize} ${cptWord} per 2 x 1.25 label. Different CPT times are never mixed.`
+      ? `${selectedShift === "day" ? "Day" : "Night"} ${scopeText}: ${sideText}, ${groupSize} ${cptWord} per 2 x 1.25 label, ${orientationText}. Different CPT times are never mixed.`
       : "Upload a CPT file and choose a quarter/scope to print.";
     els.printBtn.textContent = `Print 2 x 1.25 - ${groupSize} ${cptWord} Each`;
     els.printBtn.disabled = rollCount === 0;
@@ -2292,7 +2437,7 @@ function buildRollPrintArea(){
 
       return `
         <section class="roll-print-page">
-          <article class="roll-label">
+          <article class="roll-label ${getRollOrientation() === "rotate" ? "rotate-fix" : ""}">
             <div class="roll-time">${label.displayTime || label.time}</div>
             <div class="roll-numbers${countClass}">${numbers}</div>
           </article>
@@ -2436,6 +2581,7 @@ function resetPage(){
   els.fileState.textContent = "No file";
   els.paperSize.value = "label";
   els.rollScope.value = "selected";
+  els.rollOrientation.value = "rotate";
 
   document
     .querySelectorAll("#shiftSegments .segment")
@@ -2569,6 +2715,10 @@ els.paperSize.addEventListener("change",() => {
 });
 
 els.rollScope.addEventListener("change",() => {
+  renderAll();
+});
+
+els.rollOrientation.addEventListener("change",() => {
   renderAll();
 });
 
