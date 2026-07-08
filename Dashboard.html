@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Live Operations Dashboard v4.2</title>
+  <title>Live Operations Dashboard v4.3</title>
 
   <style>
     :root {
@@ -443,27 +443,6 @@
       color:#c2410c;
     }
 
-    .defect-table th:nth-child(1),
-    .defect-table td:nth-child(1) {
-      width: 180px;
-    }
-
-    .defect-table th:nth-child(2),
-    .defect-table td:nth-child(2) {
-      width: 120px;
-    }
-
-    .defect-table th:nth-child(3),
-    .defect-table td:nth-child(3) {
-      width: 70px;
-      text-align:center;
-    }
-
-    .defect-table th:nth-child(4),
-    .defect-table td:nth-child(4) {
-      width: 150px;
-    }
-
     .defect-pkgs {
       text-align:center;
       font-size:15px;
@@ -675,7 +654,7 @@
       dashboard.innerHTML = '';
       featureList.innerHTML = '';
 
-      const selected = JSON.parse(localStorage.getItem('ops-selected-clean-v5') || '{}');
+      const selected = JSON.parse(localStorage.getItem('ops-selected-clean-v6') || '{}');
 
       if (!data || !Array.isArray(data.sections)) {
         renderEmptyKpis();
@@ -706,7 +685,7 @@
 
         option.querySelector('input').addEventListener('change', e => {
           selected[section.id] = e.target.checked;
-          localStorage.setItem('ops-selected-clean-v5', JSON.stringify(selected));
+          localStorage.setItem('ops-selected-clean-v6', JSON.stringify(selected));
           window.renderOpsDashboard(lastOpsData);
         });
 
@@ -717,7 +696,7 @@
         dashboard.appendChild(renderCard(section));
       });
 
-      localStorage.setItem('ops-selected-clean-v5', JSON.stringify(selected));
+      localStorage.setItem('ops-selected-clean-v6', JSON.stringify(selected));
 
       const updated = data.updatedAt ? new Date(data.updatedAt).toLocaleTimeString() : 'Unknown';
       status.textContent = `Connected â¢ Last update: ${updated} â¢ ${data.sections.length} source${data.sections.length === 1 ? '' : 's'}`;
