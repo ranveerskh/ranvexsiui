@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Live Operations Dashboard v4.3</title>
+  <title>Live Operations Dashboard v4.4</title>
 
   <style>
     :root {
@@ -654,7 +654,7 @@
       dashboard.innerHTML = '';
       featureList.innerHTML = '';
 
-      const selected = JSON.parse(localStorage.getItem('ops-selected-clean-v6') || '{}');
+      const selected = JSON.parse(localStorage.getItem('ops-selected-clean-v7') || '{}');
 
       if (!data || !Array.isArray(data.sections)) {
         renderEmptyKpis();
@@ -685,7 +685,7 @@
 
         option.querySelector('input').addEventListener('change', e => {
           selected[section.id] = e.target.checked;
-          localStorage.setItem('ops-selected-clean-v6', JSON.stringify(selected));
+          localStorage.setItem('ops-selected-clean-v7', JSON.stringify(selected));
           window.renderOpsDashboard(lastOpsData);
         });
 
@@ -696,7 +696,7 @@
         dashboard.appendChild(renderCard(section));
       });
 
-      localStorage.setItem('ops-selected-clean-v6', JSON.stringify(selected));
+      localStorage.setItem('ops-selected-clean-v7', JSON.stringify(selected));
 
       const updated = data.updatedAt ? new Date(data.updatedAt).toLocaleTimeString() : 'Unknown';
       status.textContent = `Connected â¢ Last update: ${updated} â¢ ${data.sections.length} source${data.sections.length === 1 ? '' : 's'}`;
@@ -949,7 +949,7 @@
     }
 
     function getStatusLight(value, sectionId) {
-      if (sectionId !== 'lane-watch-100-defect') return '';
+      if (sectionId !== 'lane-watch-100-defect' && sectionId !== 'foresight-blue-lights') return '';
 
       const text = String(value || '').toLowerCase();
 
