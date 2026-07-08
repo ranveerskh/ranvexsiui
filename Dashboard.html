@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Live Operations Dashboard</title>
+  <title>Live Operations Dashboard v4.0</title>
 
   <style>
     :root {
@@ -654,7 +654,7 @@
       dashboard.innerHTML = '';
       featureList.innerHTML = '';
 
-      const selected = JSON.parse(localStorage.getItem('ops-selected-clean-v2') || '{}');
+      const selected = JSON.parse(localStorage.getItem('ops-selected-clean-v4') || '{}');
 
       if (!data || !Array.isArray(data.sections)) {
         renderEmptyKpis();
@@ -685,7 +685,7 @@
 
         option.querySelector('input').addEventListener('change', e => {
           selected[section.id] = e.target.checked;
-          localStorage.setItem('ops-selected-clean-v2', JSON.stringify(selected));
+          localStorage.setItem('ops-selected-clean-v4', JSON.stringify(selected));
           window.renderOpsDashboard(lastOpsData);
         });
 
@@ -696,7 +696,7 @@
         dashboard.appendChild(renderCard(section));
       });
 
-      localStorage.setItem('ops-selected-clean-v2', JSON.stringify(selected));
+      localStorage.setItem('ops-selected-clean-v4', JSON.stringify(selected));
 
       const updated = data.updatedAt ? new Date(data.updatedAt).toLocaleTimeString() : 'Unknown';
       status.textContent = `Connected â¢ Last update: ${updated} â¢ ${data.sections.length} source${data.sections.length === 1 ? '' : 's'}`;
@@ -724,10 +724,10 @@
       card.innerHTML = `
         <div class="card-head">
           <div class="card-title-wrap" data-toggle="1">
-            <span class="card-title">${section.icon || 'ð'} ${escapeHtml(section.title)}</span>
+            <span class="card-title">${isDefectTable ? escapeHtml(section.title) : `${section.icon || 'ð'} ${escapeHtml(section.title)}`}</span>
           </div>
           <div class="card-right">
-            ${isDock ? '<button class="card-refresh" data-dock-refresh="1" type="button">Refresh</button>' : ''}
+            <button class="card-refresh" data-section-refresh="${escapeAttr(section.id)}" type="button">Refresh</button>
             <span class="badge">${items.length} items</span>
           </div>
         </div>
@@ -748,11 +748,11 @@
         card.querySelector('.card-body').classList.toggle('hidden');
       });
 
-      const dockBtn = card.querySelector('[data-dock-refresh="1"]');
-      if (dockBtn) {
-        dockBtn.addEventListener('click', e => {
+      const refreshBtn = card.querySelector('[data-section-refresh]');
+      if (refreshBtn) {
+        refreshBtn.addEventListener('click', e => {
           e.stopPropagation();
-          requestDockOBRefresh(dockBtn);
+          requestSectionRefresh(section.id, refreshBtn);
         });
       }
 
@@ -821,7 +821,7 @@
                 <td>${escapeHtml(row.location || '')}</td>
                 <td>
                   <a href="${safeUrl(row.link)}" target="_blank">
-                    ${escapeHtml(row.lowerChute || row.label || '')}
+                    ${escapeHtml(row.displayChute || row.lowerChute || row.label || '')}
                   </a>
                 </td>
                 <td class="defect-pkgs">${escapeHtml(row.packages || '0')}</td>
@@ -840,6 +840,7 @@
       return {
         location: item.location || parsed.location || '',
         lowerChute: item.lowerChute || item.chute || item.label || parsed.lowerChute || '',
+        displayChute: item.displayChute || item.display || item.lowerDisplay || '',
         packages: item.packages ?? item.pkg ?? item.count ?? parsed.packages ?? '',
         issue: item.issue || parsed.issue || item.value || '',
         reason: item.reason || parsed.reason || '',
@@ -891,19 +892,19 @@
       const badges = [];
 
       if (text.includes('blue')) {
-        badges.push('<span class="issue-badge issue-blue">ðµ Blue Light</span>');
+        badges.push('<span class="issue-badge issue-blue">Blue Light</span>');
       }
 
       if (text.includes('disabled') || text.includes('failed to divert')) {
-        badges.push('<span class="issue-badge issue-disabled">ð¦ Disabled</span>');
+        badges.push('<span class="issue-badge issue-disabled">Disabled</span>');
       }
 
       if (text.includes('jam')) {
-        badges.push('<span class="issue-badge issue-jam">ð¡ Jam</span>');
+        badges.push('<span class="issue-badge issue-jam">Jam</span>');
       }
 
       if (!badges.length && text.includes('100%')) {
-        badges.push('<span class="issue-badge issue-other">ð´ 100% Defect</span>');
+        badges.push('<span class="issue-badge issue-other">100% Defect</span>');
       }
 
       if (!badges.length) {
@@ -997,19 +998,20 @@
       return diffMs >= 0 && diffMs <= limitMs;
     }
 
-    function requestDockOBRefresh(button) {
+    function requestSectionRefresh(sectionId, button) {
       const btn = button || document.getElementById('dockTopRefreshBtn');
       const old = btn.textContent;
 
       btn.textContent = 'Sent...';
 
       const payload = {
-        type: 'OPS_MANUAL_DOCK_REFRESH',
+        type: 'OPS_MANUAL_SECTION_REFRESH',
+        sectionId,
         requestedAt: new Date().toISOString(),
         nonce: Date.now()
       };
 
-      window.dispatchEvent(new CustomEvent('OPS_MANUAL_DOCK_REFRESH', {
+      window.dispatchEvent(new CustomEvent('OPS_MANUAL_SECTION_REFRESH', {
         detail: payload
       }));
 
@@ -1018,6 +1020,10 @@
       setTimeout(() => {
         btn.textContent = old;
       }, 1600);
+    }
+
+    function requestDockOBRefresh(button) {
+      requestSectionRefresh('next-5-vrid-releasing', button);
     }
 
     function clearDashboardCache() {
