@@ -227,6 +227,10 @@
       grid-column:1 / -1;
     }
 
+    .card.defect-wide {
+      grid-column:1 / -1;
+    }
+
     .card-head {
       display:flex;
       justify-content:space-between;
@@ -344,6 +348,11 @@
       animation:blinkOrange 1s infinite;
     }
 
+    .light-sky {
+      background:#38bdf8;
+      box-shadow:0 0 10px rgba(56,189,248,.75);
+    }
+
     .light-green {
       background:#22c55e;
       animation:blinkGreen 1s infinite;
@@ -387,13 +396,15 @@
       }
     }
 
-    .dock-table {
+    .dock-table,
+    .defect-table {
       width:100%;
       border-collapse:collapse;
       font-size:14px;
     }
 
-    .dock-table th {
+    .dock-table th,
+    .defect-table th {
       text-align:left;
       color:#667085;
       font-size:12px;
@@ -403,14 +414,16 @@
       white-space:nowrap;
     }
 
-    .dock-table td {
+    .dock-table td,
+    .defect-table td {
       padding:11px 10px;
       border-bottom:1px solid #f0f2f5;
       font-weight:700;
       vertical-align:top;
     }
 
-    .dock-table tr:last-child td {
+    .dock-table tr:last-child td,
+    .defect-table tr:last-child td {
       border-bottom:0;
     }
 
@@ -428,6 +441,56 @@
 
     .dock-cpt-soon td {
       color:#c2410c;
+    }
+
+    .defect-pkgs {
+      text-align:center;
+      font-size:15px;
+      font-weight:900;
+    }
+
+    .issue-badge {
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:5px 9px;
+      border-radius:999px;
+      font-weight:900;
+      white-space:nowrap;
+      font-size:12px;
+      margin:2px 4px 2px 0;
+    }
+
+    .issue-blue {
+      background:#dbeafe;
+      color:#1d4ed8;
+    }
+
+    .issue-disabled {
+      background:#e0f2fe;
+      color:#0369a1;
+    }
+
+    .issue-jam {
+      background:#fef9c3;
+      color:#a16207;
+    }
+
+    .issue-other {
+      background:#f2f4f7;
+      color:#344054;
+    }
+
+    .defect-row-blue {
+      background:#eff6ff;
+    }
+
+    .defect-row-disabled {
+      background:#f0f9ff;
+    }
+
+    .defect-row-jam {
+      background:#fefce8;
     }
 
     .hidden {
@@ -464,7 +527,8 @@
         justify-content:flex-start;
       }
 
-      .card.dock-wide {
+      .card.dock-wide,
+      .card.defect-wide {
         grid-column:auto;
       }
     }
@@ -488,6 +552,18 @@
         max-width:100%;
         text-align:left;
       }
+
+      .defect-table,
+      .dock-table {
+        font-size:12px;
+      }
+
+      .defect-table th,
+      .defect-table td,
+      .dock-table th,
+      .dock-table td {
+        padding:8px 6px;
+      }
     }
   </style>
 </head>
@@ -508,7 +584,7 @@
       <div class="topbar">
         <div>
           <h1>YXU1 Live Operations Dashboard</h1>
-          <div class="subtitle">MySPD • Lane Watch • Routing • Recirc • Dock OB</div>
+          <div class="subtitle">MySPD â¢ Lane Watch â¢ Routing â¢ Recirc â¢ Dock OB</div>
         </div>
 
         <div class="actions">
@@ -578,7 +654,7 @@
       dashboard.innerHTML = '';
       featureList.innerHTML = '';
 
-      const selected = JSON.parse(localStorage.getItem('ops-selected-clean') || '{}');
+      const selected = JSON.parse(localStorage.getItem('ops-selected-clean-v2') || '{}');
 
       if (!data || !Array.isArray(data.sections)) {
         renderEmptyKpis();
@@ -604,12 +680,12 @@
         option.className = 'feature';
         option.innerHTML = `
           <input type="checkbox" data-id="${escapeAttr(section.id)}" ${selected[section.id] ? 'checked' : ''}>
-          <span>${section.icon || '📌'} ${escapeHtml(section.title)}</span>
+          <span>${section.icon || 'ð'} ${escapeHtml(section.title)}</span>
         `;
 
         option.querySelector('input').addEventListener('change', e => {
           selected[section.id] = e.target.checked;
-          localStorage.setItem('ops-selected-clean', JSON.stringify(selected));
+          localStorage.setItem('ops-selected-clean-v2', JSON.stringify(selected));
           window.renderOpsDashboard(lastOpsData);
         });
 
@@ -620,10 +696,10 @@
         dashboard.appendChild(renderCard(section));
       });
 
-      localStorage.setItem('ops-selected-clean', JSON.stringify(selected));
+      localStorage.setItem('ops-selected-clean-v2', JSON.stringify(selected));
 
       const updated = data.updatedAt ? new Date(data.updatedAt).toLocaleTimeString() : 'Unknown';
-      status.textContent = `Connected • Last update: ${updated} • ${data.sections.length} source${data.sections.length === 1 ? '' : 's'}`;
+      status.textContent = `Connected â¢ Last update: ${updated} â¢ ${data.sections.length} source${data.sections.length === 1 ? '' : 's'}`;
 
       updateCounter();
     };
@@ -631,14 +707,24 @@
     function renderCard(section) {
       const items = Array.isArray(section.items) ? section.items : [];
       const isDock = section.id === 'next-5-vrid-releasing';
+      const isDefectTable =
+        section.id === 'lane-watch-defects' ||
+        section.id === 'lane-watch-100-defect';
 
       const card = document.createElement('article');
-      card.className = isDock ? 'card dock-wide' : 'card';
+
+      if (isDock) {
+        card.className = 'card dock-wide';
+      } else if (isDefectTable) {
+        card.className = 'card defect-wide';
+      } else {
+        card.className = 'card';
+      }
 
       card.innerHTML = `
         <div class="card-head">
           <div class="card-title-wrap" data-toggle="1">
-            <span class="card-title">${section.icon || '📌'} ${escapeHtml(section.title)}</span>
+            <span class="card-title">${section.icon || 'ð'} ${escapeHtml(section.title)}</span>
           </div>
           <div class="card-right">
             ${isDock ? '<button class="card-refresh" data-dock-refresh="1" type="button">Refresh</button>' : ''}
@@ -649,9 +735,11 @@
           ${
             isDock
               ? renderDockTable(items)
-              : items.length
-                ? items.map(item => renderDashboardItem(item, section.id)).join('')
-                : '<div class="empty">No items</div>'
+              : isDefectTable
+                ? renderDefectTable(items)
+                : items.length
+                  ? items.map(item => renderDashboardItem(item, section.id)).join('')
+                  : '<div class="empty">No items</div>'
           }
         </div>
       `;
@@ -707,6 +795,142 @@
       `;
     }
 
+    function renderDefectTable(items) {
+      if (!items.length) {
+        return '<div class="empty">No active defect / recirc lanes</div>';
+      }
+
+      const rows = items.map(item => normalizeDefectItem(item))
+        .sort((a, b) => Number(b.packages || 0) - Number(a.packages || 0));
+
+      return `
+        <table class="defect-table">
+          <thead>
+            <tr>
+              <th>Location</th>
+              <th>Lower Chute</th>
+              <th>Pkgs</th>
+              <th>Issue</th>
+              <th>Reason</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            ${rows.map(row => `
+              <tr class="${getDefectRowClass(row.issue)}">
+                <td>${escapeHtml(row.location || '')}</td>
+                <td>
+                  <a href="${safeUrl(row.link)}" target="_blank">
+                    ${escapeHtml(row.lowerChute || row.label || '')}
+                  </a>
+                </td>
+                <td class="defect-pkgs">${escapeHtml(row.packages || '0')}</td>
+                <td>${getIssueBadge(row.issue || row.value || '')}</td>
+                <td>${escapeHtml(row.reason || '')}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function normalizeDefectItem(item) {
+      const parsed = parseOldDefectListItem(item);
+
+      return {
+        location: item.location || parsed.location || '',
+        lowerChute: item.lowerChute || item.chute || item.label || parsed.lowerChute || '',
+        packages: item.packages ?? item.pkg ?? item.count ?? parsed.packages ?? '',
+        issue: item.issue || parsed.issue || item.value || '',
+        reason: item.reason || parsed.reason || '',
+        link: item.link || '#',
+        label: item.label || ''
+      };
+    }
+
+    function parseOldDefectListItem(item) {
+      const label = String(item.label || '');
+      const value = String(item.value || '');
+
+      const pkgMatch = value.match(/(\d+)\s*pkg/i);
+      const packages = pkgMatch ? pkgMatch[1] : '';
+
+      let issue = '';
+
+      if (/blue light/i.test(value)) {
+        issue += issue ? ' + Blue Light' : 'Blue Light';
+      }
+
+      if (/disabled|failed to divert/i.test(value)) {
+        issue += issue ? ' + Disabled' : 'Disabled';
+      }
+
+      if (/jam/i.test(value)) {
+        issue += issue ? ' + Jam' : 'Jam';
+      }
+
+      if (!issue && /100% defect/i.test(value)) {
+        issue = '100% Defect';
+      }
+
+      let reason = value
+        .replace(/^\d+\s*pkg\s*recirc\s*â¢?\s*/i, '')
+        .trim();
+
+      return {
+        lowerChute: label,
+        packages,
+        issue,
+        reason
+      };
+    }
+
+    function getIssueBadge(issue) {
+      const text = String(issue || '').toLowerCase();
+
+      const badges = [];
+
+      if (text.includes('blue')) {
+        badges.push('<span class="issue-badge issue-blue">ðµ Blue Light</span>');
+      }
+
+      if (text.includes('disabled') || text.includes('failed to divert')) {
+        badges.push('<span class="issue-badge issue-disabled">ð¦ Disabled</span>');
+      }
+
+      if (text.includes('jam')) {
+        badges.push('<span class="issue-badge issue-jam">ð¡ Jam</span>');
+      }
+
+      if (!badges.length && text.includes('100%')) {
+        badges.push('<span class="issue-badge issue-other">ð´ 100% Defect</span>');
+      }
+
+      if (!badges.length) {
+        badges.push(`<span class="issue-badge issue-other">${escapeHtml(issue || 'Issue')}</span>`);
+      }
+
+      return badges.join(' ');
+    }
+
+    function getDefectRowClass(issue) {
+      const text = String(issue || '').toLowerCase();
+
+      if (text.includes('jam')) {
+        return 'defect-row-jam';
+      }
+
+      if (text.includes('blue')) {
+        return 'defect-row-blue';
+      }
+
+      if (text.includes('disabled') || text.includes('failed')) {
+        return 'defect-row-disabled';
+      }
+
+      return '';
+    }
+
     function renderDashboardItem(item, sectionId) {
       const value = String(item.value || '');
       const label = String(item.label || '');
@@ -737,7 +961,7 @@
       }
 
       if (text.includes('disabled')) {
-        return '<span class="status-light light-green" title="Disabled"></span>';
+        return '<span class="status-light light-sky" title="Disabled"></span>';
       }
 
       if (text.includes('100% defect')) {
