@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>RD Bucket</title>
+    <style>
+      :root {
+        --page: #f4f7f5;
+        --surface: #ffffff;
+        --ink: #17211b;
+        --muted: #64736a;
+        --line: #dce5df;
+        --green: #177c49;
+        --green-dark: #0f6338;
+        --green-soft: #e8f5ed;
+        --amber: #b66a09;
+        --amber-soft: #fff3df;
+        --red: #b73939;
+        --red-soft: #fdeaea;
+        --blue: #2d66b3;
+        --blue-soft: #eaf1fb;
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-width: 320px;
+        color: var(--ink);
+        background:
+          radial-gradient(circle at top right, #e2f1e7 0, transparent 30rem),
+          var(--page);
+      }
+
+      button,
+      a {
+        font: inherit;
+      }
+
+      button:focus-visible,
+      a:focus-visible {
+        outline: 3px solid rgba(23, 124, 73, 0.25);
+        outline-offset: 2px;
+      }
+
+      .shell {
+        width: min(1180px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 34px 0 52px;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 24px;
+        margin-bottom: 22px;
+      }
+
+      .eyebrow {
+        margin: 0 0 7px;
+        color: var(--green);
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(30px, 5vw, 48px);
+        line-height: 1;
+        letter-spacing: -0.045em;
+      }
+
+      .subtitle {
+        margin: 11px 0 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 10px;
+      }
+
+      .button {
+        display: inline-flex;
+        min-height: 42px;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        padding: 0 15px;
+        color: var(--ink);
+        background: var(--surface);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 750;
+        cursor: pointer;
+        transition:
+          transform 120ms ease,
+          border-color 120ms ease,
+          background 120ms ease;
+      }
+
+      .button:hover {
+        border-color: #b8c8be;
+        transform: translateY(-1px);
+      }
+
+      .button.primary {
+        border-color: var(--green);
+        color: white;
+        background: var(--green);
+      }
+
+      .button.primary:hover {
+        border-color: var(--green-dark);
+        background: var(--green-dark);
+      }
+
+      .button:disabled {
+        cursor: not-allowed;
+        opacity: 0.58;
+        transform: none;
+      }
+
+      .panel {
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: var(--surface);
+        box-shadow: 0 16px 38px rgba(35, 63, 45, 0.08);
+      }
+
+      .panel-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        border-bottom: 1px solid var(--line);
+        padding: 16px 18px;
+      }
+
+      .connection {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .dot {
+        width: 9px;
+        height: 9px;
+        flex: 0 0 auto;
+        border-radius: 999px;
+        background: #b8c0bb;
+        box-shadow: 0 0 0 4px rgba(184, 192, 187, 0.18);
+      }
+
+      .connection.connected {
+        color: var(--green-dark);
+      }
+
+      .connection.connected .dot {
+        background: var(--green);
+        box-shadow: 0 0 0 4px rgba(23, 124, 73, 0.13);
+      }
+
+      .progress {
+        min-width: 0;
+        color: var(--muted);
+        font-size: 13px;
+        text-align: right;
+      }
+
+      .progress.error {
+        color: var(--red);
+      }
+
+      .table-wrap {
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        min-width: 760px;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        border-bottom: 1px solid var(--line);
+        padding: 14px 16px;
+        text-align: left;
+        vertical-align: middle;
+      }
+
+      th {
+        color: var(--muted);
+        background: #fafcfb;
+        font-size: 11px;
+        font-weight: 850;
+        letter-spacing: 0.075em;
+        text-transform: uppercase;
+      }
+
+      td {
+        font-size: 13px;
+      }
+
+      tbody tr:last-child td {
+        border-bottom: 0;
+      }
+
+      tbody tr:hover td {
+        background: #fbfdfc;
+      }
+
+      .metric {
+        width: 120px;
+        font-variant-numeric: tabular-nums;
+        font-weight: 800;
+      }
+
+      .destination {
+        font-weight: 750;
+      }
+
+      .status {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        padding: 5px 9px;
+        color: var(--muted);
+        background: #eff3f1;
+        font-size: 11px;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+
+      .status.loading {
+        color: var(--amber);
+        background: var(--amber-soft);
+      }
+
+      .status.finished,
+      .status.completed {
+        color: var(--green-dark);
+        background: var(--green-soft);
+      }
+
+      .status.paused {
+        color: var(--red);
+        background: var(--red-soft);
+      }
+
+      .status.scheduled,
+      .status.attached {
+        color: var(--blue);
+        background: var(--blue-soft);
+      }
+
+      .empty {
+        padding: 64px 24px;
+        color: var(--muted);
+        text-align: center;
+      }
+
+      .empty strong {
+        display: block;
+        margin-bottom: 7px;
+        color: var(--ink);
+        font-size: 16px;
+      }
+
+      .foot {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px 18px;
+        color: var(--muted);
+        background: #fafcfb;
+        font-size: 11px;
+      }
+
+      @media (max-width: 760px) {
+        .shell {
+          width: min(100% - 20px, 1180px);
+          padding-top: 22px;
+        }
+
+        .topbar,
+        .panel-head {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        .actions {
+          justify-content: flex-start;
+        }
+
+        .progress {
+          text-align: left;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell" id="rd-bucket-page">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">YXU1 Â· Test view</p>
+          <h1>RD Bucket</h1>
+          <p class="subtitle">
+            Current visible Dock OB page Â· all load statuses included for testing
+          </p>
+        </div>
+
+        <div class="actions">
+          <a
+            class="button"
+            href="./RD_Bucket_Extractor_GitHub_TEST_v0.1.2.txt"
+            download
+          >
+            Extractor TXT
+          </a>
+          <button class="button primary" id="scan-button" type="button">
+            Scan Dock OB
+          </button>
+        </div>
+      </header>
+
+      <section class="panel" aria-live="polite">
+        <div class="panel-head">
+          <div class="connection" id="connection">
+            <span class="dot" aria-hidden="true"></span>
+            <span id="connection-label">Extractor not connected</span>
+          </div>
+          <div class="progress" id="progress">Ready for test scan</div>
+        </div>
+
+        <div class="table-wrap" id="table-wrap" hidden>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">CPT</th>
+                <th scope="col">Destination</th>
+                <th scope="col">Status</th>
+                <th class="metric" scope="col">Received</th>
+                <th class="metric" scope="col">Diverted</th>
+                <th class="metric" scope="col">Stacked</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+
+        <div class="empty" id="empty">
+          <strong>No extracted loads yet</strong>
+          Keep Dock OB open in another tab, install the extractor, then run a
+          test scan.
+        </div>
+
+        <div class="foot">
+          <span id="row-count">0 loads</span>
+          <span id="updated-at">Not updated yet</span>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      (() => {
+        "use strict";
+
+        const BRIDGE_NODE_ID = "ranvexsi-rd-bucket-bridge";
+        const UPDATE_EVENT = "ranvexsi-rd-bucket-update";
+        const READY_EVENT = "ranvexsi-rd-bucket-ready";
+        const SCAN_EVENT = "ranvexsi-rd-bucket-scan-request";
+
+        const elements = {
+          connection: document.getElementById("connection"),
+          connectionLabel: document.getElementById("connection-label"),
+          progress: document.getElementById("progress"),
+          scanButton: document.getElementById("scan-button"),
+          tableWrap: document.getElementById("table-wrap"),
+          rows: document.getElementById("rows"),
+          empty: document.getElementById("empty"),
+          rowCount: document.getElementById("row-count"),
+          updatedAt: document.getElementById("updated-at"),
+        };
+
+        const numberFormatter = new Intl.NumberFormat();
+
+        function metric(value) {
+          if (value === null || value === undefined || value === "") {
+            return "â";
+          }
+
+          return Number.isFinite(Number(value))
+            ? numberFormatter.format(Number(value))
+            : "â";
+        }
+
+        function statusClass(status) {
+          const value = String(status || "").toLowerCase();
+          if (value.includes("paused")) return "paused";
+          if (value.includes("finished")) return "finished";
+          if (value.includes("completed")) return "completed";
+          if (value.includes("loading")) return "loading";
+          if (value.includes("attached")) return "attached";
+          if (value.includes("scheduled")) return "scheduled";
+          return "";
+        }
+
+        function cell(value, className = "") {
+          const node = document.createElement("td");
+          node.className = className;
+          node.textContent = value;
+          return node;
+        }
+
+        function renderRows(rows) {
+          elements.rows.replaceChildren();
+
+          for (const row of rows) {
+            const tableRow = document.createElement("tr");
+            const statusCell = document.createElement("td");
+            const status = document.createElement("span");
+
+            status.className = `status ${statusClass(row.status)}`.trim();
+            status.textContent = row.status || "Unknown";
+            statusCell.appendChild(status);
+
+            tableRow.append(
+              cell(row.cpt || "â"),
+              cell(row.destination || "â", "destination"),
+              statusCell,
+              cell(metric(row.received), "metric"),
+              cell(metric(row.diverted), "metric"),
+              cell(metric(row.stacked), "metric"),
+            );
+
+            elements.rows.appendChild(tableRow);
+          }
+
+          elements.tableWrap.hidden = rows.length === 0;
+          elements.empty.hidden = rows.length > 0;
+          elements.rowCount.textContent = `${rows.length} ${
+            rows.length === 1 ? "load" : "loads"
+          }`;
+        }
+
+        function render(snapshot) {
+          const connected = Boolean(snapshot?.connected);
+          const payload = snapshot?.payload || {};
+          const progress = snapshot?.progress || {};
+          const rows = Array.isArray(payload.rows) ? payload.rows : [];
+          const progressState = String(progress.state || "idle");
+          const busy = ["requested", "scanning"].includes(progressState);
+
+          elements.connection.classList.toggle("connected", connected);
+          elements.connectionLabel.textContent = connected
+            ? "Extractor connected"
+            : "Extractor not connected";
+          elements.progress.classList.toggle(
+            "error",
+            progressState === "error",
+          );
+          elements.progress.textContent =
+            progress.message || "Ready for test scan";
+          elements.scanButton.disabled = !connected || busy;
+          elements.scanButton.textContent = busy
+            ? "Scanningâ¦"
+            : "Scan Dock OB";
+
+          renderRows(rows);
+
+          if (payload.updatedAt) {
+            const updated = new Date(payload.updatedAt);
+            elements.updatedAt.textContent = Number.isNaN(updated.getTime())
+              ? "Updated"
+              : `Updated ${updated.toLocaleString()}`;
+          } else {
+            elements.updatedAt.textContent = "Not updated yet";
+          }
+        }
+
+        function readBridge() {
+          const node = document.getElementById(BRIDGE_NODE_ID);
+          if (!node?.textContent) {
+            render({
+              connected: false,
+              payload: { rows: [] },
+              progress: { state: "idle", message: "Ready for test scan" },
+            });
+            return;
+          }
+
+          try {
+            render(JSON.parse(node.textContent));
+          } catch {
+            elements.progress.classList.add("error");
+            elements.progress.textContent =
+              "Could not read the extractor response.";
+          }
+        }
+
+        elements.scanButton.addEventListener("click", () => {
+          window.dispatchEvent(new Event(SCAN_EVENT));
+        });
+
+        window.addEventListener(UPDATE_EVENT, readBridge);
+        window.dispatchEvent(new Event(READY_EVENT));
+        readBridge();
+
+        // Re-announce the page so a userscript enabled after page load can connect.
+        window.setInterval(() => {
+          window.dispatchEvent(new Event(READY_EVENT));
+        }, 2500);
+      })();
+    </script>
+  </body>
+</html>
