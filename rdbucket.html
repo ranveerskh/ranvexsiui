@@ -40,12 +40,14 @@
       }
 
       button,
-      a {
+      a,
+      input {
         font: inherit;
       }
 
       button:focus-visible,
-      a:focus-visible {
+      a:focus-visible,
+      input:focus-visible {
         outline: 3px solid rgba(23, 124, 73, 0.25);
         outline-offset: 2px;
       }
@@ -136,6 +138,57 @@
         transform: none;
       }
 
+      .filters {
+        display: flex;
+        align-items: end;
+        gap: 12px;
+        margin-bottom: 16px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 14px;
+        background: rgba(255, 255, 255, 0.82);
+        box-shadow: 0 8px 24px rgba(35, 63, 45, 0.05);
+      }
+
+      .field {
+        display: grid;
+        gap: 6px;
+      }
+
+      .field.date {
+        min-width: 170px;
+      }
+
+      .field.time {
+        width: 125px;
+      }
+
+      .field label {
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .field input {
+        width: 100%;
+        min-height: 40px;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        padding: 0 10px;
+        color: var(--ink);
+        background: var(--surface);
+        font-size: 13px;
+      }
+
+      .rule-note {
+        margin-left: auto;
+        color: var(--muted);
+        font-size: 12px;
+        text-align: right;
+      }
+
       .panel {
         overflow: hidden;
         border: 1px solid var(--line);
@@ -197,7 +250,7 @@
 
       table {
         width: 100%;
-        min-width: 760px;
+        min-width: 1040px;
         border-collapse: collapse;
       }
 
@@ -304,9 +357,20 @@
         }
 
         .topbar,
-        .panel-head {
+        .panel-head,
+        .filters {
           align-items: stretch;
           flex-direction: column;
+        }
+
+        .field.date,
+        .field.time {
+          width: 100%;
+        }
+
+        .rule-note {
+          margin-left: 0;
+          text-align: left;
         }
 
         .actions {
@@ -333,7 +397,7 @@
         <div class="actions">
           <a
             class="button"
-            href="./RD_Bucket_Extractor_GitHub_TEST_v0.1.2.txt"
+            href="./RD_Bucket_Extractor_TEST_v0.2.0.txt"
             download
           >
             Extractor TXT
@@ -343,6 +407,25 @@
           </button>
         </div>
       </header>
+
+      <section class="filters" aria-label="Scan window">
+        <div class="field date">
+          <label for="scan-date">Date</label>
+          <input id="scan-date" type="date" />
+        </div>
+        <div class="field time">
+          <label for="start-time">Start time</label>
+          <input id="start-time" type="time" value="07:30" />
+        </div>
+        <div class="field time">
+          <label for="end-time">End time</label>
+          <input id="end-time" type="time" value="18:00" />
+        </div>
+        <div class="rule-note">
+          Long dwell: over 6 hours<br />
+          Missing: PS Station Workspace
+        </div>
+      </section>
 
       <section class="panel" aria-live="polite">
         <div class="panel-head">
@@ -362,6 +445,8 @@
                 <th scope="col">Status</th>
                 <th class="metric" scope="col">Received</th>
                 <th class="metric" scope="col">Diverted</th>
+                <th class="metric" scope="col">Long Dwells</th>
+                <th class="metric" scope="col">Missing Marked</th>
                 <th class="metric" scope="col">Stacked</th>
               </tr>
             </thead>
@@ -396,6 +481,9 @@
           connectionLabel: document.getElementById("connection-label"),
           progress: document.getElementById("progress"),
           scanButton: document.getElementById("scan-button"),
+          scanDate: document.getElementById("scan-date"),
+          startTime: document.getElementById("start-time"),
+          endTime: document.getElementById("end-time"),
           tableWrap: document.getElementById("table-wrap"),
           rows: document.getElementById("rows"),
           empty: document.getElementById("empty"),
@@ -404,6 +492,28 @@
         };
 
         const numberFormatter = new Intl.NumberFormat();
+
+        function localToday() {
+          const date = new Date();
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, "0");
+          const day = String(date.getDate()).padStart(2, "0");
+          return `${year}-${month}-${day}`;
+        }
+
+        function timeToMinutes(value) {
+          const match = String(value || "").match(/^(\d{2}):(\d{2})$/);
+          if (!match) return null;
+          return Number(match[1]) * 60 + Number(match[2]);
+        }
+
+        function selectedFilters() {
+          return {
+            date: elements.scanDate.value,
+            startTime: elements.startTime.value,
+            endTime: elements.endTime.value,
+          };
+        }
 
         function metric(value) {
           if (value === null || value === undefined || value === "") {
@@ -451,6 +561,8 @@
               statusCell,
               cell(metric(row.received), "metric"),
               cell(metric(row.diverted), "metric"),
+              cell(metric(row.longDwells), "metric"),
+              cell(metric(row.missingMarked), "metric"),
               cell(metric(row.stacked), "metric"),
             );
 
@@ -486,6 +598,9 @@
           elements.scanButton.textContent = busy
             ? "Scanningâ¦"
             : "Scan Dock OB";
+          elements.scanDate.disabled = busy;
+          elements.startTime.disabled = busy;
+          elements.endTime.disabled = busy;
 
           renderRows(rows);
 
@@ -520,9 +635,30 @@
         }
 
         elements.scanButton.addEventListener("click", () => {
-          window.dispatchEvent(new Event(SCAN_EVENT));
+          const filters = selectedFilters();
+          const startMinutes = timeToMinutes(filters.startTime);
+          const endMinutes = timeToMinutes(filters.endTime);
+
+          if (
+            !filters.date ||
+            startMinutes === null ||
+            endMinutes === null ||
+            endMinutes < startMinutes
+          ) {
+            elements.progress.classList.add("error");
+            elements.progress.textContent =
+              "Please select a valid date and time range.";
+            return;
+          }
+
+          window.dispatchEvent(
+            new CustomEvent(SCAN_EVENT, {
+              detail: JSON.stringify(filters),
+            }),
+          );
         });
 
+        elements.scanDate.value = localToday();
         window.addEventListener(UPDATE_EVENT, readBridge);
         window.dispatchEvent(new Event(READY_EVENT));
         readBridge();
