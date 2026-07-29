@@ -387,17 +387,17 @@
     <main class="shell" id="rd-bucket-page">
       <header class="topbar">
         <div>
-          <p class="eyebrow">YXU1 Â· Test view</p>
+          <p class="eyebrow">YXU1 - Test view</p>
           <h1>RD Bucket</h1>
           <p class="subtitle">
-            Current visible Dock OB page Â· all load statuses included for testing
+            Current visible Dock OB page - all load statuses included for testing
           </p>
         </div>
 
         <div class="actions">
           <a
             class="button"
-            href="./RD_Bucket_Extractor_TEST_v0.2.0.txt"
+            href="./RD_Bucket_Extractor_TEST_v0.3.0.txt"
             download
           >
             Extractor TXT
@@ -475,6 +475,8 @@
         const UPDATE_EVENT = "ranvexsi-rd-bucket-update";
         const READY_EVENT = "ranvexsi-rd-bucket-ready";
         const SCAN_EVENT = "ranvexsi-rd-bucket-scan-request";
+        const EXPECTED_EXTRACTOR_VERSION = "0.3.0";
+        const EXPECTED_SCHEMA_VERSION = 3;
 
         const elements = {
           connection: document.getElementById("connection"),
@@ -517,12 +519,12 @@
 
         function metric(value) {
           if (value === null || value === undefined || value === "") {
-            return "â";
+            return "-";
           }
 
           return Number.isFinite(Number(value))
             ? numberFormatter.format(Number(value))
-            : "â";
+            : "-";
         }
 
         function statusClass(status) {
@@ -556,8 +558,8 @@
             statusCell.appendChild(status);
 
             tableRow.append(
-              cell(row.cpt || "â"),
-              cell(row.destination || "â", "destination"),
+              cell(row.cpt || "-"),
+              cell(row.destination || "-", "destination"),
               statusCell,
               cell(metric(row.received), "metric"),
               cell(metric(row.diverted), "metric"),
@@ -578,25 +580,38 @@
 
         function render(snapshot) {
           const connected = Boolean(snapshot?.connected);
+          const extractorVersion = String(snapshot?.version || "");
+          const compatible =
+            connected &&
+            extractorVersion === EXPECTED_EXTRACTOR_VERSION;
           const payload = snapshot?.payload || {};
           const progress = snapshot?.progress || {};
-          const rows = Array.isArray(payload.rows) ? payload.rows : [];
+          const payloadIsCurrent =
+            payload.schemaVersion === EXPECTED_SCHEMA_VERSION;
+          const rows =
+            compatible &&
+            payloadIsCurrent &&
+            Array.isArray(payload.rows)
+              ? payload.rows
+              : [];
           const progressState = String(progress.state || "idle");
           const busy = ["requested", "scanning"].includes(progressState);
 
-          elements.connection.classList.toggle("connected", connected);
-          elements.connectionLabel.textContent = connected
-            ? "Extractor connected"
-            : "Extractor not connected";
+          elements.connection.classList.toggle("connected", compatible);
+          elements.connectionLabel.textContent = !connected
+            ? "Extractor not connected"
+            : compatible
+              ? `Extractor connected - v${extractorVersion}`
+              : `Update extractor to v${EXPECTED_EXTRACTOR_VERSION}`;
           elements.progress.classList.toggle(
             "error",
             progressState === "error",
           );
           elements.progress.textContent =
             progress.message || "Ready for test scan";
-          elements.scanButton.disabled = !connected || busy;
+          elements.scanButton.disabled = !compatible || busy;
           elements.scanButton.textContent = busy
-            ? "Scanningâ¦"
+            ? "Scanning..."
             : "Scan Dock OB";
           elements.scanDate.disabled = busy;
           elements.startTime.disabled = busy;
