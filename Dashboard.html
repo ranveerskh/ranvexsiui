@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Live Operations Dashboard v4.6</title>
+  <title>Live Operations Dashboard v4.7 - Grouped Defects</title>
 
   <style>
     :root {
@@ -223,10 +223,7 @@
       overflow:hidden;
     }
 
-    .card.dock-wide {
-      grid-column:1 / -1;
-    }
-
+    .card.dock-wide,
     .card.defect-wide {
       grid-column:1 / -1;
     }
@@ -396,15 +393,13 @@
       }
     }
 
-    .dock-table,
-    .defect-table {
+    .dock-table {
       width:100%;
       border-collapse:collapse;
       font-size:14px;
     }
 
-    .dock-table th,
-    .defect-table th {
+    .dock-table th {
       text-align:left;
       color:#667085;
       font-size:12px;
@@ -414,16 +409,14 @@
       white-space:nowrap;
     }
 
-    .dock-table td,
-    .defect-table td {
+    .dock-table td {
       padding:11px 10px;
       border-bottom:1px solid #f0f2f5;
       font-weight:700;
       vertical-align:top;
     }
 
-    .dock-table tr:last-child td,
-    .defect-table tr:last-child td {
+    .dock-table tr:last-child td {
       border-bottom:0;
     }
 
@@ -441,6 +434,162 @@
 
     .dock-cpt-soon td {
       color:#c2410c;
+    }
+
+    /* Grouped Defect / Recirc layout */
+    .defect-groups {
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:14px;
+      padding-top:6px;
+    }
+
+    .defect-location-box {
+      --group-color:#64748b;
+      --group-soft:#f8fafc;
+      border:2px solid var(--group-color);
+      border-radius:13px;
+      overflow:hidden;
+      background:#fff;
+      min-width:0;
+      box-shadow:0 4px 14px rgba(16,24,40,.07);
+    }
+
+    .location-east {
+      --group-color:#2563eb;
+      --group-soft:#eff6ff;
+    }
+
+    .location-west {
+      --group-color:#f97316;
+      --group-soft:#fff7ed;
+    }
+
+    .location-jackpot {
+      --group-color:#dc2626;
+      --group-soft:#fef2f2;
+    }
+
+    .location-odd {
+      --group-color:#7c3aed;
+      --group-soft:#f5f3ff;
+    }
+
+    .location-even {
+      --group-color:#059669;
+      --group-soft:#ecfdf5;
+    }
+
+    .location-other {
+      --group-color:#64748b;
+      --group-soft:#f8fafc;
+    }
+
+    .defect-location-head {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      padding:11px 12px;
+      color:var(--group-color);
+      background:var(--group-soft);
+      border-bottom:1px solid color-mix(in srgb, var(--group-color) 30%, white);
+    }
+
+    .defect-location-title {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      min-width:0;
+      font-size:16px;
+      font-weight:900;
+    }
+
+    .location-dot {
+      width:11px;
+      height:11px;
+      border-radius:999px;
+      background:var(--group-color);
+      box-shadow:0 0 0 4px color-mix(in srgb, var(--group-color) 16%, transparent);
+      flex:0 0 auto;
+    }
+
+    .location-summary {
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .location-count {
+      border:1px solid color-mix(in srgb, var(--group-color) 32%, white);
+      background:#fff;
+      color:var(--group-color);
+      border-radius:999px;
+      padding:4px 7px;
+      font-size:11px;
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    .defect-table-wrap {
+      width:100%;
+      overflow-x:auto;
+    }
+
+    .defect-group-table {
+      width:100%;
+      border-collapse:collapse;
+      table-layout:fixed;
+      font-size:13px;
+    }
+
+    .defect-group-table th {
+      text-align:left;
+      color:#667085;
+      font-size:11px;
+      padding:8px 8px;
+      border-bottom:1px solid #e4e7ec;
+      background:#fff;
+      white-space:nowrap;
+    }
+
+    .defect-group-table td {
+      padding:10px 8px;
+      border-bottom:1px solid #f0f2f5;
+      font-weight:700;
+      vertical-align:top;
+      overflow-wrap:anywhere;
+    }
+
+    .defect-group-table tr:last-child td {
+      border-bottom:0;
+    }
+
+    .defect-group-table th:nth-child(1),
+    .defect-group-table td:nth-child(1) {
+      width:24%;
+    }
+
+    .defect-group-table th:nth-child(2),
+    .defect-group-table td:nth-child(2) {
+      width:11%;
+      text-align:center;
+    }
+
+    .defect-group-table th:nth-child(3),
+    .defect-group-table td:nth-child(3) {
+      width:28%;
+    }
+
+    .defect-group-table th:nth-child(4),
+    .defect-group-table td:nth-child(4) {
+      width:37%;
+    }
+
+    .defect-group-table a {
+      color:#17202a;
+      font-weight:900;
     }
 
     .defect-pkgs {
@@ -507,6 +656,10 @@
       .kpi-grid {
         grid-template-columns:repeat(2,minmax(0,1fr));
       }
+
+      .defect-groups {
+        grid-template-columns:1fr;
+      }
     }
 
     @media(max-width:900px) {
@@ -553,16 +706,30 @@
         text-align:left;
       }
 
-      .defect-table,
+      .defect-location-head {
+        align-items:flex-start;
+        flex-direction:column;
+      }
+
+      .location-summary {
+        justify-content:flex-start;
+      }
+
+      .defect-group-table,
       .dock-table {
         font-size:12px;
       }
 
-      .defect-table th,
-      .defect-table td,
+      .defect-group-table th,
+      .defect-group-table td,
       .dock-table th,
       .dock-table td {
         padding:8px 6px;
+      }
+
+      .issue-badge {
+        white-space:normal;
+        text-align:center;
       }
     }
   </style>
@@ -736,7 +903,7 @@
             isDock
               ? renderDockTable(items)
               : isDefectTable
-                ? renderDefectTable(items)
+                ? renderDefectGroups(items)
                 : items.length
                   ? items.map(item => renderDashboardItem(item, section.id)).join('')
                   : '<div class="empty">No items</div>'
@@ -795,43 +962,118 @@
       `;
     }
 
-    function renderDefectTable(items) {
+    function renderDefectGroups(items) {
       if (!items.length) {
         return '<div class="empty">No active defect / recirc lanes</div>';
       }
 
-      const rows = items.map(item => normalizeDefectItem(item))
+      const rows = items
+        .map(item => normalizeDefectItem(item))
         .sort((a, b) => Number(b.packages || 0) - Number(a.packages || 0));
 
-      return `
-        <table class="defect-table">
-          <thead>
-            <tr>
-              <th>Location</th>
-              <th>Chute</th>
-              <th>Pkgs</th>
-              <th>Issue</th>
-              <th>Reason</th>
-            </tr>
-          </thead>
+      const groups = new Map();
 
-          <tbody>
-            ${rows.map(row => `
-              <tr class="${getDefectRowClass(row.issue)}">
-                <td>${escapeHtml(row.location || '')}</td>
-                <td>
-                  <a href="${safeUrl(row.link)}" target="_blank">
-                    ${escapeHtml(row.displayChute || row.lowerChute || row.label || '')}
-                  </a>
-                </td>
-                <td class="defect-pkgs">${escapeHtml(row.packages || '0')}</td>
-                <td>${getIssueBadge(row.issue || row.value || '')}</td>
-                <td>${escapeHtml(row.reason || '')}</td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
+      rows.forEach(row => {
+        const location = String(row.location || 'Other').trim() || 'Other';
+        const key = location.toLowerCase();
+
+        if (!groups.has(key)) {
+          groups.set(key, {
+            location,
+            rows:[],
+            totalPackages:0,
+            style:getLocationStyle(location)
+          });
+        }
+
+        const group = groups.get(key);
+        group.rows.push(row);
+        group.totalPackages += Number(row.packages || 0);
+      });
+
+      const orderedGroups = Array.from(groups.values()).sort((a, b) => {
+        if (a.style.order !== b.style.order) return a.style.order - b.style.order;
+        return a.location.localeCompare(b.location);
+      });
+
+      return `
+        <div class="defect-groups">
+          ${orderedGroups.map(group => renderDefectLocationBox(group)).join('')}
+        </div>
       `;
+    }
+
+    function renderDefectLocationBox(group) {
+      const laneWord = group.rows.length === 1 ? 'lane' : 'lanes';
+      const packageWord = group.totalPackages === 1 ? 'pkg' : 'pkgs';
+
+      return `
+        <section class="defect-location-box ${escapeAttr(group.style.className)}">
+          <div class="defect-location-head">
+            <div class="defect-location-title">
+              <span class="location-dot" aria-hidden="true"></span>
+              <span>${escapeHtml(group.location)}</span>
+            </div>
+            <div class="location-summary">
+              <span class="location-count">${group.rows.length} ${laneWord}</span>
+              <span class="location-count">${group.totalPackages} ${packageWord}</span>
+            </div>
+          </div>
+
+          <div class="defect-table-wrap">
+            <table class="defect-group-table">
+              <thead>
+                <tr>
+                  <th>Chute</th>
+                  <th>Pkgs</th>
+                  <th>Issue</th>
+                  <th>Reason</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${group.rows.map(row => `
+                  <tr class="${getDefectRowClass(row.issue)}">
+                    <td>
+                      <a href="${safeUrl(row.link)}" target="_blank">
+                        ${escapeHtml(row.displayChute || row.lowerChute || row.label || '')}
+                      </a>
+                    </td>
+                    <td class="defect-pkgs">${escapeHtml(row.packages || '0')}</td>
+                    <td>${getIssueBadge(row.issue || row.value || '')}</td>
+                    <td>${escapeHtml(row.reason || '')}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      `;
+    }
+
+    function getLocationStyle(location) {
+      const text = String(location || '').toLowerCase();
+
+      if (text.includes('east')) {
+        return { className:'location-east', order:10 };
+      }
+
+      if (text.includes('west')) {
+        return { className:'location-west', order:20 };
+      }
+
+      if (text.includes('jackpot')) {
+        return { className:'location-jackpot', order:30 };
+      }
+
+      if (text.includes('palletize') && text.includes('odd')) {
+        return { className:'location-odd', order:40 };
+      }
+
+      if (text.includes('palletize') && text.includes('even')) {
+        return { className:'location-even', order:50 };
+      }
+
+      return { className:'location-other', order:100 };
     }
 
     function normalizeDefectItem(item) {
@@ -874,7 +1116,7 @@
         issue = '100% Defect';
       }
 
-      let reason = value
+      const reason = value
         .replace(/^\d+\s*pkg\s*recirc\s*â¢?\s*/i, '')
         .trim();
 
