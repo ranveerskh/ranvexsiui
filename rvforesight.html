@@ -1,0 +1,1671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light" />
+  <title>RV Foresight Dashboard</title>
+
+  <style>
+    :root {
+      --bg:#eef2f7;
+      --panel:#ffffff;
+      --panel-soft:#f8fafc;
+      --ink:#172033;
+      --muted:#667085;
+      --line:#dfe5ed;
+      --navy:#101828;
+      --navy-2:#182230;
+      --orange:#f59e0b;
+      --orange-soft:#fff7e6;
+      --blue:#2563eb;
+      --blue-soft:#eff6ff;
+      --red:#dc2626;
+      --red-soft:#fef2f2;
+      --green:#059669;
+      --green-soft:#ecfdf5;
+      --purple:#7c3aed;
+      --purple-soft:#f5f3ff;
+      --teal:#0f766e;
+      --teal-soft:#f0fdfa;
+      --shadow:0 10px 26px rgba(15,23,42,.08);
+      --shadow-soft:0 4px 14px rgba(15,23,42,.06);
+    }
+
+    * {
+      box-sizing:border-box;
+    }
+
+    html {
+      min-height:100%;
+      background:var(--bg);
+    }
+
+    body {
+      min-height:100vh;
+      margin:0;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 80% -20%, rgba(37,99,235,.08), transparent 32rem),
+        var(--bg);
+      font-family:Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+    }
+
+    button,
+    input {
+      font:inherit;
+    }
+
+    button,
+    a {
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    button:focus-visible,
+    a:focus-visible {
+      outline:3px solid rgba(37,99,235,.3);
+      outline-offset:2px;
+    }
+
+    .app-shell {
+      min-height:100vh;
+      display:grid;
+      grid-template-columns:252px minmax(0,1fr);
+    }
+
+    .sidebar {
+      position:sticky;
+      top:0;
+      height:100vh;
+      display:flex;
+      flex-direction:column;
+      padding:24px 18px 20px;
+      color:#fff;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.025), transparent 32%),
+        var(--navy);
+      overflow-y:auto;
+    }
+
+    .brand-row {
+      display:flex;
+      align-items:center;
+      gap:11px;
+    }
+
+    .brand-mark {
+      width:38px;
+      height:38px;
+      display:grid;
+      place-items:center;
+      border-radius:11px;
+      color:#111827;
+      background:var(--orange);
+      font-size:15px;
+      font-weight:950;
+      box-shadow:0 8px 20px rgba(245,158,11,.24);
+    }
+
+    .brand-title {
+      font-size:18px;
+      font-weight:900;
+      letter-spacing:-.3px;
+    }
+
+    .brand-subtitle {
+      margin-top:2px;
+      color:#98a2b3;
+      font-size:11px;
+      font-weight:700;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+    }
+
+    .side-connection {
+      margin-top:24px;
+      padding:13px;
+      border:1px solid rgba(255,255,255,.1);
+      border-radius:13px;
+      background:rgba(255,255,255,.045);
+    }
+
+    .connection-row {
+      display:flex;
+      align-items:center;
+      gap:9px;
+      font-size:13px;
+      font-weight:850;
+    }
+
+    .connection-dot {
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:#98a2b3;
+      box-shadow:0 0 0 4px rgba(152,162,179,.12);
+    }
+
+    .connection-dot.live {
+      background:#34d399;
+      box-shadow:0 0 0 4px rgba(52,211,153,.14), 0 0 12px rgba(52,211,153,.7);
+    }
+
+    .connection-dot.stale {
+      background:#fbbf24;
+      box-shadow:0 0 0 4px rgba(251,191,36,.14);
+    }
+
+    .connection-dot.error {
+      background:#fb7185;
+      box-shadow:0 0 0 4px rgba(251,113,133,.14);
+    }
+
+    .connection-help {
+      margin-top:7px;
+      color:#98a2b3;
+      font-size:11px;
+      line-height:1.45;
+    }
+
+    .side-heading {
+      margin:26px 8px 9px;
+      color:#98a2b3;
+      font-size:10px;
+      font-weight:850;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+
+    .area-nav {
+      display:grid;
+      gap:4px;
+    }
+
+    .area-nav-item {
+      display:grid;
+      grid-template-columns:10px minmax(0,1fr) auto;
+      gap:9px;
+      align-items:center;
+      padding:9px 8px;
+      border-radius:9px;
+      color:#d0d5dd;
+      font-size:12px;
+      font-weight:750;
+    }
+
+    .area-nav-item:hover {
+      background:rgba(255,255,255,.055);
+    }
+
+    .area-nav-dot {
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:var(--area-color,#98a2b3);
+    }
+
+    .area-nav-count {
+      min-width:23px;
+      padding:3px 6px;
+      border-radius:999px;
+      color:#fff;
+      background:rgba(255,255,255,.1);
+      text-align:center;
+      font-size:10px;
+      font-weight:900;
+    }
+
+    .legend {
+      display:grid;
+      gap:10px;
+      padding:2px 8px;
+      color:#d0d5dd;
+      font-size:11px;
+      line-height:1.35;
+    }
+
+    .legend-item {
+      display:flex;
+      gap:9px;
+      align-items:flex-start;
+    }
+
+    .legend-swatch {
+      width:10px;
+      height:10px;
+      margin-top:2px;
+      border-radius:3px;
+      flex:0 0 auto;
+    }
+
+    .legend-swatch.blue {
+      background:#60a5fa;
+    }
+
+    .legend-swatch.red {
+      background:#fb7185;
+    }
+
+    .sidebar-footer {
+      margin-top:auto;
+      padding:20px 8px 0;
+      color:#667085;
+      font-size:10px;
+      line-height:1.45;
+    }
+
+    .main {
+      min-width:0;
+      padding:26px clamp(18px,3vw,38px) 40px;
+    }
+
+    .topbar {
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:18px;
+      margin-bottom:18px;
+    }
+
+    .eyebrow {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-bottom:7px;
+      color:var(--blue);
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.11em;
+      text-transform:uppercase;
+    }
+
+    .eyebrow::before {
+      content:"";
+      width:18px;
+      height:3px;
+      border-radius:999px;
+      background:var(--orange);
+    }
+
+    h1 {
+      margin:0;
+      color:#101828;
+      font-size:clamp(25px,3vw,36px);
+      line-height:1.12;
+      letter-spacing:-1.2px;
+    }
+
+    .top-subtitle {
+      margin:7px 0 0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.45;
+    }
+
+    .top-actions {
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      gap:9px;
+    }
+
+    .btn,
+    .window-pill {
+      min-height:38px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:7px;
+      padding:9px 13px;
+      border:1px solid var(--line);
+      border-radius:10px;
+      color:#344054;
+      background:#fff;
+      box-shadow:var(--shadow-soft);
+      font-size:12px;
+      font-weight:850;
+      white-space:nowrap;
+    }
+
+    .btn {
+      cursor:pointer;
+    }
+
+    .btn:hover {
+      border-color:#98a2b3;
+      transform:translateY(-1px);
+    }
+
+    .btn.primary {
+      border-color:#1d4ed8;
+      color:#fff;
+      background:var(--blue);
+    }
+
+    .btn.primary:hover {
+      background:#1d4ed8;
+    }
+
+    .window-pill {
+      color:#92400e;
+      border-color:#fcd34d;
+      background:#fffbeb;
+      box-shadow:none;
+    }
+
+    .status-strip {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      margin-bottom:16px;
+      padding:12px 14px;
+      border:1px solid var(--line);
+      border-left:4px solid #98a2b3;
+      border-radius:11px;
+      background:#fff;
+      box-shadow:var(--shadow-soft);
+      font-size:12px;
+    }
+
+    .status-strip.live {
+      border-left-color:var(--green);
+    }
+
+    .status-strip.stale {
+      border-left-color:var(--orange);
+    }
+
+    .status-strip.error {
+      border-left-color:var(--red);
+    }
+
+    .status-message {
+      display:flex;
+      align-items:center;
+      gap:9px;
+      min-width:0;
+      font-weight:800;
+    }
+
+    .status-message span:last-child {
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .status-meta {
+      flex:0 0 auto;
+      color:var(--muted);
+      font-size:11px;
+      font-weight:750;
+    }
+
+    .kpi-grid {
+      display:grid;
+      grid-template-columns:repeat(4,minmax(0,1fr));
+      gap:13px;
+      margin-bottom:25px;
+    }
+
+    .kpi {
+      position:relative;
+      min-width:0;
+      min-height:116px;
+      padding:15px 16px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#fff;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .kpi::after {
+      content:"";
+      position:absolute;
+      top:0;
+      right:0;
+      width:72px;
+      height:72px;
+      border-radius:0 0 0 72px;
+      background:var(--kpi-soft,#f2f4f7);
+      opacity:.9;
+    }
+
+    .kpi-label {
+      position:relative;
+      z-index:1;
+      color:var(--muted);
+      font-size:11px;
+      font-weight:850;
+      letter-spacing:.025em;
+      text-transform:uppercase;
+    }
+
+    .kpi-value {
+      position:relative;
+      z-index:1;
+      margin-top:9px;
+      color:var(--kpi-color,#344054);
+      font-size:34px;
+      line-height:1;
+      font-weight:950;
+      letter-spacing:-1.4px;
+    }
+
+    .kpi-note {
+      position:relative;
+      z-index:1;
+      margin-top:8px;
+      color:#98a2b3;
+      font-size:10px;
+      font-weight:700;
+    }
+
+    .kpi.blue {
+      --kpi-color:var(--blue);
+      --kpi-soft:var(--blue-soft);
+    }
+
+    .kpi.red {
+      --kpi-color:var(--red);
+      --kpi-soft:var(--red-soft);
+    }
+
+    .kpi.orange {
+      --kpi-color:#d97706;
+      --kpi-soft:var(--orange-soft);
+    }
+
+    .kpi.green {
+      --kpi-color:var(--green);
+      --kpi-soft:var(--green-soft);
+    }
+
+    .section-head {
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+      gap:16px;
+      margin-bottom:12px;
+    }
+
+    .section-title {
+      margin:0;
+      color:#101828;
+      font-size:20px;
+      letter-spacing:-.4px;
+    }
+
+    .section-copy {
+      margin:4px 0 0;
+      color:var(--muted);
+      font-size:11px;
+      line-height:1.45;
+    }
+
+    .section-summary {
+      color:var(--muted);
+      font-size:11px;
+      font-weight:800;
+      white-space:nowrap;
+    }
+
+    .area-grid {
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:15px;
+    }
+
+    .area-card {
+      --area:#64748b;
+      --area-soft:#f8fafc;
+      min-width:0;
+      border:1px solid var(--line);
+      border-top:5px solid var(--area);
+      border-radius:15px;
+      background:#fff;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+
+    .area-card.east {
+      --area:#2563eb;
+      --area-soft:#eff6ff;
+    }
+
+    .area-card.west {
+      --area:#f97316;
+      --area-soft:#fff7ed;
+    }
+
+    .area-card.jackpot {
+      --area:#dc2626;
+      --area-soft:#fef2f2;
+    }
+
+    .area-card.odd {
+      --area:#7c3aed;
+      --area-soft:#f5f3ff;
+    }
+
+    .area-card.even {
+      --area:#059669;
+      --area-soft:#ecfdf5;
+    }
+
+    .area-card.other {
+      --area:#64748b;
+      --area-soft:#f8fafc;
+    }
+
+    .area-card-head {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      padding:13px 14px;
+      border-bottom:1px solid var(--line);
+      background:var(--area-soft);
+    }
+
+    .area-title-wrap {
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+
+    .area-icon {
+      width:31px;
+      height:31px;
+      display:grid;
+      place-items:center;
+      border-radius:9px;
+      color:#fff;
+      background:var(--area);
+      font-size:12px;
+      font-weight:950;
+      flex:0 0 auto;
+    }
+
+    .area-title {
+      overflow:hidden;
+      color:#101828;
+      font-size:16px;
+      font-weight:950;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .area-health {
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:5px 8px;
+      border:1px solid #d0d5dd;
+      border-radius:999px;
+      color:#475467;
+      background:#fff;
+      font-size:10px;
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    .area-health.clear {
+      color:#047857;
+      border-color:#a7f3d0;
+      background:#f0fdf4;
+    }
+
+    .area-health.issue {
+      color:#b42318;
+      border-color:#fecaca;
+      background:#fff5f5;
+    }
+
+    .area-health-dot {
+      width:7px;
+      height:7px;
+      border-radius:50%;
+      background:currentColor;
+    }
+
+    .area-body {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      min-height:160px;
+    }
+
+    .issue-section {
+      min-width:0;
+      padding:12px 13px 13px;
+    }
+
+    .issue-section + .issue-section {
+      border-left:1px solid var(--line);
+    }
+
+    .issue-section-head {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      margin-bottom:9px;
+    }
+
+    .issue-title {
+      display:flex;
+      align-items:center;
+      gap:7px;
+      color:#475467;
+      font-size:10px;
+      font-weight:900;
+      letter-spacing:.055em;
+      text-transform:uppercase;
+    }
+
+    .issue-mark {
+      width:9px;
+      height:9px;
+      border-radius:3px;
+      background:#98a2b3;
+    }
+
+    .issue-mark.blue {
+      background:#3b82f6;
+      box-shadow:0 0 9px rgba(59,130,246,.55);
+    }
+
+    .issue-mark.red {
+      background:#ef4444;
+    }
+
+    .issue-count {
+      min-width:22px;
+      padding:3px 6px;
+      border-radius:999px;
+      color:#475467;
+      background:#f2f4f7;
+      text-align:center;
+      font-size:10px;
+      font-weight:950;
+    }
+
+    .issue-list {
+      display:grid;
+      gap:7px;
+    }
+
+    .issue-row {
+      min-width:0;
+      padding:9px;
+      border:1px solid #eaecf0;
+      border-radius:9px;
+      background:#fff;
+    }
+
+    .issue-row.blue-row {
+      border-left:3px solid #3b82f6;
+      background:#f8fbff;
+    }
+
+    .issue-row.recirc-row {
+      border-left:3px solid #ef4444;
+      background:#fffafa;
+    }
+
+    .issue-row-top {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+    }
+
+    .chute-link,
+    .chute-text {
+      min-width:0;
+      overflow:hidden;
+      color:#101828;
+      font-size:12px;
+      font-weight:950;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .chute-link:hover {
+      color:var(--blue);
+    }
+
+    .row-badge {
+      flex:0 0 auto;
+      padding:3px 6px;
+      border-radius:999px;
+      font-size:9px;
+      font-weight:950;
+      white-space:nowrap;
+    }
+
+    .row-badge.blue {
+      color:#1d4ed8;
+      background:#dbeafe;
+    }
+
+    .row-badge.red {
+      color:#b42318;
+      background:#fee4e2;
+    }
+
+    .issue-row-meta {
+      display:flex;
+      justify-content:space-between;
+      gap:8px;
+      margin-top:5px;
+      color:#667085;
+      font-size:9px;
+      font-weight:700;
+      line-height:1.35;
+    }
+
+    .issue-row-meta span {
+      min-width:0;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+
+    .issue-row-meta span:last-child {
+      text-align:right;
+    }
+
+    .empty-issue {
+      min-height:70px;
+      display:grid;
+      place-items:center;
+      padding:12px;
+      border:1px dashed #d0d5dd;
+      border-radius:9px;
+      color:#98a2b3;
+      background:#fcfcfd;
+      text-align:center;
+      font-size:10px;
+      font-weight:750;
+      line-height:1.4;
+    }
+
+    .waiting-card {
+      grid-column:1 / -1;
+      min-height:250px;
+      display:grid;
+      place-items:center;
+      padding:30px;
+      border:1px dashed #cbd5e1;
+      border-radius:15px;
+      background:rgba(255,255,255,.72);
+      text-align:center;
+    }
+
+    .waiting-icon {
+      width:50px;
+      height:50px;
+      display:grid;
+      place-items:center;
+      margin:0 auto 13px;
+      border-radius:15px;
+      color:#1d4ed8;
+      background:#dbeafe;
+      font-size:19px;
+      font-weight:950;
+    }
+
+    .waiting-title {
+      margin:0;
+      font-size:17px;
+    }
+
+    .waiting-copy {
+      max-width:470px;
+      margin:7px auto 0;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.55;
+    }
+
+    .page-footer {
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      margin-top:18px;
+      padding-top:13px;
+      border-top:1px solid #d8dee8;
+      color:#98a2b3;
+      font-size:9px;
+      line-height:1.4;
+    }
+
+    .hidden {
+      display:none!important;
+    }
+
+    @media(max-width:1180px) {
+      .kpi-grid {
+        grid-template-columns:repeat(2,minmax(0,1fr));
+      }
+
+      .area-grid {
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media(max-width:860px) {
+      .app-shell {
+        grid-template-columns:1fr;
+      }
+
+      .sidebar {
+        position:relative;
+        height:auto;
+        padding:15px 17px;
+      }
+
+      .side-connection {
+        margin-top:14px;
+      }
+
+      .side-heading,
+      .area-nav,
+      .legend,
+      .sidebar-footer {
+        display:none;
+      }
+
+      .main {
+        padding-top:20px;
+      }
+
+      .topbar {
+        flex-direction:column;
+      }
+
+      .top-actions {
+        justify-content:flex-start;
+      }
+    }
+
+    @media(max-width:640px) {
+      .main {
+        padding:17px 13px 28px;
+      }
+
+      .kpi-grid {
+        grid-template-columns:repeat(2,minmax(0,1fr));
+        gap:9px;
+      }
+
+      .kpi {
+        min-height:102px;
+        padding:13px;
+      }
+
+      .kpi-value {
+        font-size:28px;
+      }
+
+      .area-body {
+        grid-template-columns:1fr;
+      }
+
+      .issue-section + .issue-section {
+        border-top:1px solid var(--line);
+        border-left:0;
+      }
+
+      .status-strip,
+      .section-head {
+        align-items:flex-start;
+        flex-direction:column;
+      }
+
+      .status-meta,
+      .section-summary {
+        white-space:normal;
+      }
+
+      .page-footer {
+        flex-direction:column;
+      }
+    }
+
+    @media(prefers-reduced-motion:reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior:auto!important;
+        transition:none!important;
+        animation:none!important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand-row">
+        <div class="brand-mark">RV</div>
+        <div>
+          <div class="brand-title">Foresight Watch</div>
+          <div class="brand-subtitle">YXU1 Operations</div>
+        </div>
+      </div>
+
+      <div class="side-connection">
+        <div class="connection-row">
+          <span id="connectionDot" class="connection-dot"></span>
+          <span id="connectionText">Waiting for data</span>
+        </div>
+        <div id="connectionHelp" class="connection-help">
+          Keep the authorized Foresight source page open with the collector running.
+        </div>
+      </div>
+
+      <div class="side-heading">Work areas</div>
+      <nav id="areaNav" class="area-nav" aria-label="Work area status"></nav>
+
+      <div class="side-heading">Issue legend</div>
+      <div class="legend">
+        <div class="legend-item">
+          <span class="legend-swatch blue"></span>
+          <span><strong>Blue Light</strong><br>Lane full or unavailable</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-swatch red"></span>
+          <span><strong>High Recirc</strong><br>Failed diverts in rolling window</span>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        Data stays in this browser session. No internal credentials are stored in this page.
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <div class="eyebrow">Live operations</div>
+          <h1>YXU1 Foresight Watch</h1>
+          <p class="top-subtitle">Blue lights and high recirc grouped by physical work area.</p>
+        </div>
+
+        <div class="top-actions">
+          <div id="windowPill" class="window-pill">Rolling window: 3 min</div>
+          <button id="refreshBtn" class="btn primary" type="button">Refresh Data</button>
+          <button id="clearBtn" class="btn" type="button">Clear Cache</button>
+        </div>
+      </header>
+
+      <div id="statusStrip" class="status-strip" role="status" aria-live="polite">
+        <div class="status-message">
+          <span id="statusDot" class="connection-dot"></span>
+          <span id="statusText">Waiting for Tampermonkey connection...</span>
+        </div>
+        <div id="statusMeta" class="status-meta">No update received</div>
+      </div>
+
+      <section id="kpiGrid" class="kpi-grid" aria-label="Operations summary">
+        <article class="kpi blue">
+          <div class="kpi-label">Active Blue Lights</div>
+          <div id="blueKpi" class="kpi-value">--</div>
+          <div class="kpi-note">Lanes needing attention</div>
+        </article>
+        <article class="kpi red">
+          <div class="kpi-label">High Recirc Lanes</div>
+          <div id="recircKpi" class="kpi-value">--</div>
+          <div class="kpi-note">Sorted highest failure first</div>
+        </article>
+        <article class="kpi orange">
+          <div class="kpi-label">Failed Diverts</div>
+          <div id="failedKpi" class="kpi-value">--</div>
+          <div id="failedKpiNote" class="kpi-note">Current rolling window</div>
+        </article>
+        <article class="kpi green">
+          <div class="kpi-label">FPY</div>
+          <div id="fpyKpi" class="kpi-value">--</div>
+          <div id="fpyKpiNote" class="kpi-note">Successful / total diverts</div>
+        </article>
+      </section>
+
+      <section aria-labelledby="areaHeading">
+        <div class="section-head">
+          <div>
+            <h2 id="areaHeading" class="section-title">Issues by Location</h2>
+            <p class="section-copy">Every work area stays in its own box for quick recognition.</p>
+          </div>
+          <div id="sectionSummary" class="section-summary">Waiting for live data</div>
+        </div>
+
+        <div id="areaGrid" class="area-grid">
+          <div class="waiting-card">
+            <div>
+              <div class="waiting-icon">â»</div>
+              <h3 class="waiting-title">Waiting for Foresight data</h3>
+              <p class="waiting-copy">
+                Open the authorized Foresight page and keep the Tampermonkey collector running. This page will update automatically when the first payload arrives.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="page-footer">
+        <span>RV Foresight Dashboard Â· Operational view only</span>
+        <span id="footerUpdate">Last update: --</span>
+      </footer>
+    </main>
+  </div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const CACHE_KEY = 'rv-foresight-dashboard-cache-v1';
+      const EXPECTED_REFRESH_SECONDS = 30;
+
+      const LOCATION_META = [
+        { key:'east-flats', title:'East Flats', className:'east', short:'E', color:'#2563eb', order:10 },
+        { key:'west-flats', title:'West Flats', className:'west', short:'W', color:'#f97316', order:20 },
+        { key:'flats-jackpot', title:'Flats Jackpot', className:'jackpot', short:'J', color:'#dc2626', order:30 },
+        { key:'palletize-odd', title:'Palletize Odd', className:'odd', short:'O', color:'#7c3aed', order:40 },
+        { key:'palletize-even', title:'Palletize Even', className:'even', short:'E', color:'#059669', order:50 }
+      ];
+
+      let currentData = null;
+      let lastUpdateMs = null;
+
+      const elements = {
+        connectionDot:document.getElementById('connectionDot'),
+        connectionText:document.getElementById('connectionText'),
+        connectionHelp:document.getElementById('connectionHelp'),
+        areaNav:document.getElementById('areaNav'),
+        statusStrip:document.getElementById('statusStrip'),
+        statusDot:document.getElementById('statusDot'),
+        statusText:document.getElementById('statusText'),
+        statusMeta:document.getElementById('statusMeta'),
+        windowPill:document.getElementById('windowPill'),
+        refreshBtn:document.getElementById('refreshBtn'),
+        clearBtn:document.getElementById('clearBtn'),
+        blueKpi:document.getElementById('blueKpi'),
+        recircKpi:document.getElementById('recircKpi'),
+        failedKpi:document.getElementById('failedKpi'),
+        failedKpiNote:document.getElementById('failedKpiNote'),
+        fpyKpi:document.getElementById('fpyKpi'),
+        fpyKpiNote:document.getElementById('fpyKpiNote'),
+        sectionSummary:document.getElementById('sectionSummary'),
+        areaGrid:document.getElementById('areaGrid'),
+        footerUpdate:document.getElementById('footerUpdate')
+      };
+
+      elements.refreshBtn.addEventListener('click', requestRefresh);
+      elements.clearBtn.addEventListener('click', clearCache);
+
+      window.renderRvForesight = renderDashboard;
+      window.renderForesightDashboard = renderDashboard;
+
+      window.addEventListener('RV_FORESIGHT_DATA', event => {
+        renderDashboard(event.detail);
+      });
+
+      window.addEventListener('message', event => {
+        const message = event.data;
+        if (!message || typeof message !== 'object') return;
+
+        if (message.type === 'RV_FORESIGHT_DATA') {
+          renderDashboard(message.data || message.payload || message);
+        }
+      });
+
+      restoreCache();
+
+      const params = new URLSearchParams(location.search);
+      if (params.get('demo') === '1') {
+        renderDashboard(getDemoData(), { cache:false });
+      }
+
+      setInterval(updateFreshness, 1000);
+
+      function renderDashboard(input, options = {}) {
+        try {
+          const data = normalizePayload(input);
+          currentData = data;
+          lastUpdateMs = new Date(data.updatedAt).getTime();
+
+          if (!Number.isFinite(lastUpdateMs)) {
+            lastUpdateMs = Date.now();
+            data.updatedAt = new Date(lastUpdateMs).toISOString();
+          }
+
+          if (options.cache !== false) {
+            try {
+              localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+            } catch (_) {}
+          }
+
+          renderKpis(data);
+          renderAreas(data);
+          updateFreshness();
+        } catch (error) {
+          showError(error instanceof Error ? error.message : 'Unable to read Foresight data');
+        }
+      }
+
+      function normalizePayload(input) {
+        if (!input || typeof input !== 'object') {
+          throw new Error('No valid data payload received');
+        }
+
+        const source = input.data && typeof input.data === 'object' && !Array.isArray(input.data)
+          ? input.data
+          : input;
+
+        const blueSource = firstArray(source.blueLights, source.blue, source.unavailableLanes, source.laneStatus);
+        const recircSource = firstArray(source.highRecirc, source.recirc, source.recircData, source.failedDiverts);
+
+        const blueLights = blueSource
+          .map(normalizeBlueLight)
+          .filter(row => row.chute || row.lane)
+          .sort(sortByLocationThenChute);
+
+        const highRecirc = recircSource
+          .map(normalizeRecirc)
+          .filter(row => row.chute || row.lane)
+          .filter(row => row.failedDiverts > 0 || row.failPercent > 0)
+          .sort((a, b) => b.failedDiverts - a.failedDiverts || b.failPercent - a.failPercent);
+
+        const totals = highRecirc.reduce((acc, row) => {
+          acc.failed += row.failedDiverts;
+          acc.successful += row.successfulDiverts;
+          return acc;
+        }, { failed:0, successful:0 });
+
+        const totalDiverts = totals.failed + totals.successful;
+        const calculatedFpy = totalDiverts > 0
+          ? totals.successful / totalDiverts * 100
+          : null;
+
+        const suppliedFpy = parsePercent(
+          source.fpy ??
+          source.FPY ??
+          source.metrics?.fpy ??
+          source.summary?.fpy
+        );
+
+        return {
+          building:String(source.building || source.site || 'YXU1'),
+          updatedAt:source.updatedAt || source.timestamp || new Date().toISOString(),
+          windowMinutes:toNumber(source.windowMinutes ?? source.window ?? 3, 3),
+          blueLights,
+          highRecirc,
+          failedDiverts:toNumber(source.totalFailedDiverts ?? source.summary?.failedDiverts, totals.failed),
+          successfulDiverts:toNumber(source.totalSuccessfulDiverts ?? source.summary?.successfulDiverts, totals.successful),
+          fpy:suppliedFpy ?? calculatedFpy,
+          noRead:parsePercent(source.noRead ?? source.noReadPercent ?? source.metrics?.noRead)
+        };
+      }
+
+      function normalizeBlueLight(row) {
+        const chute = String(row?.chute ?? row?.Chute ?? row?.divertId ?? '').trim();
+        const lane = String(row?.lane ?? row?.Lane ?? row?.name ?? '').trim();
+        const rawLocation = row?.location ?? row?.Location ?? row?.area ?? row?.Area ?? lane;
+
+        return {
+          chute,
+          lane,
+          location:canonicalLocation(rawLocation, chute),
+          status:String(row?.status ?? row?.state ?? row?.fullness ?? row?.issue ?? 'Unavailable'),
+          reason:String(row?.reason ?? row?.Reason ?? row?.detail ?? 'Lane full / unavailable'),
+          statusTime:row?.statusTime ?? row?.time ?? row?.eventTime ?? row?.updatedAt ?? null,
+          link:safeUrl(row?.link ?? row?.url ?? '#')
+        };
+      }
+
+      function normalizeRecirc(row) {
+        const chute = String(row?.chute ?? row?.Chute ?? row?.divertId ?? '').trim();
+        const lane = String(row?.lane ?? row?.Lane ?? row?.name ?? '').trim();
+        const rawLocation = row?.location ?? row?.Location ?? row?.area ?? row?.Area ?? lane;
+        const failedDiverts = toNumber(
+          row?.failedDiverts ?? row?.['Failed Diverts'] ?? row?.failed ?? row?.recirc,
+          0
+        );
+        const successfulDiverts = toNumber(
+          row?.successfulDiverts ?? row?.['Successful Diverts'] ?? row?.successful ?? row?.success,
+          0
+        );
+        const total = failedDiverts + successfulDiverts;
+        const suppliedPercent = parsePercent(row?.failPercent ?? row?.['% Failed'] ?? row?.percentFailed);
+        const failPercent = suppliedPercent ?? (total > 0 ? failedDiverts / total * 100 : 0);
+
+        const reasons = {
+          laneFull:toNumber(row?.laneFull ?? row?.['Lane Full'] ?? row?.LANE_FULL, 0),
+          laneUnavailable:toNumber(row?.laneUnavailable ?? row?.['Lane Unavailable'] ?? row?.LANE_UNAVAILABLE, 0),
+          throughputLimit:toNumber(row?.throughputLimit ?? row?.['Throughput Limit'] ?? row?.THROUGHPUT_LIMIT, 0),
+          other:toNumber(row?.other ?? row?.Other, 0)
+        };
+
+        return {
+          chute,
+          lane,
+          location:canonicalLocation(rawLocation, chute),
+          failedDiverts,
+          successfulDiverts,
+          failPercent,
+          reason:String(row?.reason ?? row?.Reason ?? topReason(reasons)),
+          reasons,
+          cpt:String(row?.cpt ?? row?.CPT ?? ''),
+          link:safeUrl(row?.link ?? row?.url ?? '#')
+        };
+      }
+
+      function renderKpis(data) {
+        elements.blueKpi.textContent = String(data.blueLights.length);
+        elements.recircKpi.textContent = String(data.highRecirc.length);
+        elements.failedKpi.textContent = String(data.failedDiverts);
+        elements.failedKpiNote.textContent = `Last ${data.windowMinutes} minute${data.windowMinutes === 1 ? '' : 's'}`;
+        elements.fpyKpi.textContent = data.fpy == null ? '--' : `${formatNumber(data.fpy, 1)}%`;
+
+        const total = data.failedDiverts + data.successfulDiverts;
+        elements.fpyKpiNote.textContent = total > 0
+          ? `${data.successfulDiverts} successful / ${total} total`
+          : 'Successful / total diverts';
+
+        elements.windowPill.textContent = `Rolling window: ${data.windowMinutes} min`;
+      }
+
+      function renderAreas(data) {
+        const allLocations = new Map();
+
+        LOCATION_META.forEach(meta => {
+          allLocations.set(meta.key, {
+            ...meta,
+            blueLights:[],
+            highRecirc:[]
+          });
+        });
+
+        data.blueLights.forEach(row => addToArea(allLocations, row, 'blueLights'));
+        data.highRecirc.forEach(row => addToArea(allLocations, row, 'highRecirc'));
+
+        const areas = Array.from(allLocations.values())
+          .sort((a, b) => a.order - b.order || a.title.localeCompare(b.title));
+
+        elements.areaGrid.innerHTML = areas.map(renderAreaCard).join('');
+        elements.areaNav.innerHTML = areas.map(renderAreaNav).join('');
+
+        const issueAreas = areas.filter(area => area.blueLights.length || area.highRecirc.length).length;
+        elements.sectionSummary.textContent = `${issueAreas} issue area${issueAreas === 1 ? '' : 's'} Â· ${areas.length} areas monitored`;
+      }
+
+      function addToArea(map, row, bucket) {
+        const meta = getLocationMeta(row.location);
+
+        if (!map.has(meta.key)) {
+          map.set(meta.key, {
+            ...meta,
+            blueLights:[],
+            highRecirc:[]
+          });
+        }
+
+        map.get(meta.key)[bucket].push(row);
+      }
+
+      function renderAreaCard(area) {
+        const totalIssues = area.blueLights.length + area.highRecirc.length;
+        const isClear = totalIssues === 0;
+
+        return `
+          <article id="area-${escapeAttr(area.key)}" class="area-card ${escapeAttr(area.className)}">
+            <header class="area-card-head">
+              <div class="area-title-wrap">
+                <span class="area-icon">${escapeHtml(area.short)}</span>
+                <span class="area-title">${escapeHtml(area.title)}</span>
+              </div>
+              <span class="area-health ${isClear ? 'clear' : 'issue'}">
+                <span class="area-health-dot"></span>
+                ${isClear ? 'Clear' : `${totalIssues} issue${totalIssues === 1 ? '' : 's'}`}
+              </span>
+            </header>
+
+            <div class="area-body">
+              <section class="issue-section" aria-label="Blue lights in ${escapeAttr(area.title)}">
+                <div class="issue-section-head">
+                  <div class="issue-title">
+                    <span class="issue-mark blue"></span>
+                    Blue Lights
+                  </div>
+                  <span class="issue-count">${area.blueLights.length}</span>
+                </div>
+                <div class="issue-list">
+                  ${area.blueLights.length
+                    ? area.blueLights.map(renderBlueRow).join('')
+                    : '<div class="empty-issue">No active blue lights</div>'}
+                </div>
+              </section>
+
+              <section class="issue-section" aria-label="High recirc in ${escapeAttr(area.title)}">
+                <div class="issue-section-head">
+                  <div class="issue-title">
+                    <span class="issue-mark red"></span>
+                    High Recirc
+                  </div>
+                  <span class="issue-count">${area.highRecirc.length}</span>
+                </div>
+                <div class="issue-list">
+                  ${area.highRecirc.length
+                    ? area.highRecirc.map(renderRecircRow).join('')
+                    : '<div class="empty-issue">No high-recirc lanes</div>'}
+                </div>
+              </section>
+            </div>
+          </article>
+        `;
+      }
+
+      function renderBlueRow(row) {
+        const name = row.chute || row.lane || 'Unknown lane';
+        const time = row.statusTime ? formatTime(row.statusTime) : '';
+        const nameHtml = renderChute(name, row.link);
+
+        return `
+          <div class="issue-row blue-row">
+            <div class="issue-row-top">
+              ${nameHtml}
+              <span class="row-badge blue">Blue Light</span>
+            </div>
+            <div class="issue-row-meta">
+              <span>${escapeHtml(row.lane && row.lane !== name ? row.lane : row.reason)}</span>
+              <span>${escapeHtml(time ? `Since ${time}` : normalizeStatus(row.status))}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderRecircRow(row) {
+        const name = row.chute || row.lane || 'Unknown lane';
+        const nameHtml = renderChute(name, row.link);
+        const cpt = row.cpt ? `CPT ${row.cpt}` : row.reason;
+
+        return `
+          <div class="issue-row recirc-row">
+            <div class="issue-row-top">
+              ${nameHtml}
+              <span class="row-badge red">${row.failedDiverts} failed Â· ${formatNumber(row.failPercent, 0)}%</span>
+            </div>
+            <div class="issue-row-meta">
+              <span>${escapeHtml(row.lane && row.lane !== name ? row.lane : row.reason)}</span>
+              <span>${escapeHtml(cpt)}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderAreaNav(area) {
+        const count = area.blueLights.length + area.highRecirc.length;
+        return `
+          <a class="area-nav-item" href="#area-${escapeAttr(area.key)}" style="--area-color:${escapeAttr(area.color)}">
+            <span class="area-nav-dot"></span>
+            <span>${escapeHtml(area.title)}</span>
+            <span class="area-nav-count">${count}</span>
+          </a>
+        `;
+      }
+
+      function renderChute(name, link) {
+        if (link && link !== '#') {
+          return `<a class="chute-link" href="${escapeAttr(link)}" target="_blank" rel="noopener noreferrer">${escapeHtml(name)}</a>`;
+        }
+
+        return `<span class="chute-text">${escapeHtml(name)}</span>`;
+      }
+
+      function getLocationMeta(location) {
+        const canonical = canonicalLocation(location, '');
+        const text = canonical.toLowerCase();
+        const known = LOCATION_META.find(meta => meta.title.toLowerCase() === text);
+
+        if (known) return known;
+
+        const key = slugify(canonical || 'Other');
+        return {
+          key,
+          title:canonical || 'Other',
+          className:'other',
+          short:(canonical || 'O').charAt(0).toUpperCase(),
+          color:'#64748b',
+          order:100
+        };
+      }
+
+      function canonicalLocation(value, chute) {
+        const original = String(value || '').trim();
+        const text = `${original} ${chute || ''}`.toLowerCase();
+
+        if (text.includes('jackpot')) return 'Flats Jackpot';
+        if (text.includes('east') && text.includes('flat')) return 'East Flats';
+        if (text.includes('west') && text.includes('flat')) return 'West Flats';
+        if (text.includes('palletize') && text.includes('odd')) return 'Palletize Odd';
+        if (text.includes('palletize') && text.includes('even')) return 'Palletize Even';
+
+        if (/\bfr[-_ ]?1[12]\d{2}\b/i.test(chute)) return 'East Flats';
+        if (/\bfr[-_ ]?1[5-8]\d{2}\b/i.test(chute)) return 'West Flats';
+
+        if (original && !/^(fr|sr|dd)[-_ ]?\d+/i.test(original)) {
+          return titleCase(original);
+        }
+
+        if (/^fr/i.test(chute)) return 'Flats - Other';
+        if (/^sr/i.test(chute)) return 'Palletize - Other';
+        return 'Other';
+      }
+
+      function updateFreshness() {
+        if (!currentData || !lastUpdateMs) return;
+
+        const ageSeconds = Math.max(0, Math.floor((Date.now() - lastUpdateMs) / 1000));
+        const isDemo = new URLSearchParams(location.search).get('demo') === '1';
+        const state = ageSeconds <= 90 ? 'live' : 'stale';
+        const time = new Date(lastUpdateMs).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+        const next = Math.max(0, EXPECTED_REFRESH_SECONDS - ageSeconds % EXPECTED_REFRESH_SECONDS);
+
+        setConnectionState(state);
+        elements.connectionText.textContent = isDemo ? 'Sample data preview' : state === 'live' ? 'Live connection' : 'Connection stale';
+        elements.connectionHelp.textContent = isDemo
+          ? 'Preview mode is showing representative sample data.'
+          : state === 'live'
+            ? `Receiving ${currentData.building} operations data.`
+            : 'Keep the source tab open and refresh the collector.';
+
+        elements.statusText.textContent = isDemo
+          ? 'Sample layout preview Â· waiting for live collector'
+          : state === 'live'
+            ? `Connected Â· ${currentData.building} Foresight data received`
+            : `Last ${currentData.building} update is stale`;
+
+        elements.statusMeta.textContent = `Updated ${formatAge(ageSeconds)} Â· next check ${next}s`;
+        elements.footerUpdate.textContent = `Last update: ${time}`;
+      }
+
+      function setConnectionState(state) {
+        ['live','stale','error'].forEach(name => {
+          elements.connectionDot.classList.toggle(name, name === state);
+          elements.statusDot.classList.toggle(name, name === state);
+          elements.statusStrip.classList.toggle(name, name === state);
+        });
+      }
+
+      function showError(message) {
+        setConnectionState('error');
+        elements.connectionText.textContent = 'Data error';
+        elements.connectionHelp.textContent = message;
+        elements.statusText.textContent = message;
+        elements.statusMeta.textContent = 'Check collector payload';
+      }
+
+      function requestRefresh() {
+        const original = elements.refreshBtn.textContent;
+        elements.refreshBtn.textContent = 'Refresh sent...';
+        elements.refreshBtn.disabled = true;
+
+        const payload = {
+          type:'RV_FORESIGHT_MANUAL_REFRESH',
+          requestedAt:new Date().toISOString(),
+          nonce:Date.now()
+        };
+
+        window.dispatchEvent(new CustomEvent('RV_FORESIGHT_MANUAL_REFRESH', { detail:payload }));
+        window.postMessage(payload, '*');
+
+        setTimeout(() => {
+          elements.refreshBtn.textContent = original;
+          elements.refreshBtn.disabled = false;
+        }, 1400);
+      }
+
+      function clearCache() {
+        try {
+          localStorage.removeItem(CACHE_KEY);
+        } catch (_) {}
+
+        const payload = {
+          type:'RV_FORESIGHT_CLEAR_CACHE',
+          requestedAt:new Date().toISOString(),
+          nonce:Date.now()
+        };
+
+        window.dispatchEvent(new CustomEvent('RV_FORESIGHT_CLEAR_CACHE', { detail:payload }));
+        window.postMessage(payload, '*');
+        location.href = location.pathname;
+      }
+
+      function restoreCache() {
+        try {
+          const saved = localStorage.getItem(CACHE_KEY);
+          if (saved) renderDashboard(JSON.parse(saved), { cache:false });
+        } catch (_) {
+          try { localStorage.removeItem(CACHE_KEY); } catch (_) {}
+        }
+      }
+
+      function firstArray(...values) {
+        return values.find(Array.isArray) || [];
+      }
+
+      function sortByLocationThenChute(a, b) {
+        const aMeta = getLocationMeta(a.location);
+        const bMeta = getLocationMeta(b.location);
+        return aMeta.order - bMeta.order || a.chute.localeCompare(b.chute);
+      }
+
+      function topReason(reasons) {
+        const options = [
+          ['Lane Full', reasons.laneFull],
+          ['Lane Unavailable', reasons.laneUnavailable],
+          ['Throughput Limit', reasons.throughputLimit],
+          ['Other', reasons.other]
+        ].sort((a, b) => b[1] - a[1]);
+
+        return options[0][1] > 0 ? options[0][0] : 'Failed diverts';
+      }
+
+      function normalizeStatus(status) {
+        const text = String(status || '').toLowerCase();
+        if (text === '100') return 'Lane full';
+        if (text === '0') return 'Available';
+        return titleCase(String(status || 'Unavailable').replaceAll('_',' '));
+      }
+
+      function parsePercent(value) {
+        if (value == null || value === '') return null;
+        const number = Number(String(value).replace('%','').trim());
+        return Number.isFinite(number) ? number : null;
+      }
+
+      function toNumber(value, fallback = 0) {
+        const number = Number(value);
+        return Number.isFinite(number) ? number : fallback;
+      }
+
+      function formatNumber(value, decimals = 0) {
+        const number = Number(value);
+        return Number.isFinite(number) ? number.toFixed(decimals).replace(/\.0+$/,'') : '--';
+      }
+
+      function formatTime(value) {
+        const date = new Date(value);
+        if (!Number.isFinite(date.getTime())) return String(value || '');
+        return date.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+      }
+
+      function formatAge(seconds) {
+        if (seconds < 5) return 'just now';
+        if (seconds < 60) return `${seconds}s ago`;
+        const minutes = Math.floor(seconds / 60);
+        return `${minutes}m ago`;
+      }
+
+      function slugify(value) {
+        return String(value || 'other')
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g,'-')
+          .replace(/^-+|-+$/g,'') || 'other';
+      }
+
+      function titleCase(value) {
+        return String(value || '')
+          .toLowerCase()
+          .replace(/\b\w/g, char => char.toUpperCase());
+      }
+
+      function safeUrl(value) {
+        const url = String(value || '#').trim();
+        return /^(https?:|#)/i.test(url) ? url : '#';
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? '')
+          .replaceAll('&','&amp;')
+          .replaceAll('<','&lt;')
+          .replaceAll('>','&gt;')
+          .replaceAll('"','&quot;')
+          .replaceAll("'",'&#039;');
+      }
+
+      function escapeAttr(value) {
+        return escapeHtml(value);
+      }
+
+      function getDemoData() {
+        const now = Date.now();
+        return {
+          building:'YXU1',
+          updatedAt:new Date(now).toISOString(),
+          windowMinutes:3,
+          blueLights:[
+            { location:'Flats Jackpot', chute:'FR-1954', lane:'FR-1954', status:'UNAVAILABLE', reason:'Lane Full', statusTime:new Date(now - 61000).toISOString() },
+            { location:'East Flats', chute:'FR-1160', lane:'East Flats', status:100, reason:'Lane Full', statusTime:new Date(now - 43000).toISOString() },
+            { location:'Palletize Odd', chute:'SR-1059', lane:'Palletize Odd', status:100, reason:'Lane Full', statusTime:new Date(now - 82000).toISOString() },
+            { location:'East Flats', chute:'FR-1169', lane:'East Flats', status:100, reason:'Lane Full', statusTime:new Date(now - 27000).toISOString() },
+            { location:'West Flats', chute:'FR-1703', lane:'West Flats', status:'UNAVAILABLE', reason:'Lane Unavailable', statusTime:new Date(now - 35000).toISOString() },
+            { location:'Palletize Even', chute:'SR-1070', lane:'Palletize Even', status:100, reason:'Lane Full', statusTime:new Date(now - 51000).toISOString() }
+          ],
+          highRecirc:[
+            { location:'Flats Jackpot', Chute:'FR-1954', Lane:'Flats Jackpot', 'Successful Diverts':84, 'Failed Diverts':12, '% Failed':'13%', 'Lane Full':9, 'Lane Unavailable':3, CPT:'13:15' },
+            { location:'East Flats', Chute:'FR-1160', Lane:'East Flats', 'Successful Diverts':96, 'Failed Diverts':7, '% Failed':'7%', 'Lane Full':6, 'Lane Unavailable':1, CPT:'13:30' },
+            { location:'Palletize Odd', Chute:'SR-1059', Lane:'Palletize Odd', 'Successful Diverts':51, 'Failed Diverts':5, '% Failed':'9%', 'Lane Full':5, CPT:'13:25' },
+            { location:'West Flats', Chute:'FR-1703', Lane:'West Flats', 'Successful Diverts':72, 'Failed Diverts':3, '% Failed':'4%', 'Lane Unavailable':3, CPT:'13:40' }
+          ]
+        };
+      }
+    })();
+  </script>
+</body>
+</html>
