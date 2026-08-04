@@ -329,6 +329,7 @@
 
     .btn {
       cursor:pointer;
+      text-decoration:none;
     }
 
     .btn:hover {
@@ -344,6 +345,25 @@
 
     .btn.primary:hover {
       background:#1d4ed8;
+    }
+
+    .btn.install-script {
+      border-color:#fdba74;
+      color:#9a3412;
+      background:#fff7ed;
+    }
+
+    .btn.install-script:hover {
+      border-color:#f97316;
+      background:#ffedd5;
+    }
+
+    .btn.install-script.installed {
+      border-color:#6ee7b7;
+      color:#047857;
+      background:#ecfdf5;
+      cursor:default;
+      transform:none;
     }
 
     .window-pill {
@@ -998,6 +1018,7 @@
         </div>
 
         <div class="top-actions">
+          <a id="installScriptBtn" class="btn install-script" href="/rv-foresight-bridge.user.js" target="_blank" rel="noopener noreferrer">Script not installed - Install</a>
           <div id="windowPill" class="window-pill">Rolling window: 3 min</div>
           <button id="refreshBtn" class="btn primary" type="button">Refresh Data</button>
           <button id="clearBtn" class="btn" type="button">Clear Cache</button>
@@ -1058,7 +1079,7 @@
       </section>
 
       <footer class="page-footer">
-        <span>RV Foresight Dashboard Â· Operational view only</span>
+        <span>RV Foresight Dashboard | Operational view only</span>
         <span id="footerUpdate">Last update: --</span>
       </footer>
     </main>
@@ -1091,6 +1112,7 @@
         statusDot:document.getElementById('statusDot'),
         statusText:document.getElementById('statusText'),
         statusMeta:document.getElementById('statusMeta'),
+        installScriptBtn:document.getElementById('installScriptBtn'),
         windowPill:document.getElementById('windowPill'),
         refreshBtn:document.getElementById('refreshBtn'),
         clearBtn:document.getElementById('clearBtn'),
@@ -1107,12 +1129,21 @@
 
       elements.refreshBtn.addEventListener('click', requestRefresh);
       elements.clearBtn.addEventListener('click', clearCache);
+      elements.installScriptBtn.addEventListener('click', event => {
+        if (elements.installScriptBtn.dataset.installed === 'true') {
+          event.preventDefault();
+        }
+      });
 
       window.renderRvForesight = renderDashboard;
       window.renderForesightDashboard = renderDashboard;
 
       window.addEventListener('RV_FORESIGHT_DATA', event => {
         renderDashboard(event.detail);
+      });
+
+      window.addEventListener('RV_FORESIGHT_BRIDGE_STATUS', event => {
+        updateBridgeInstallStatus(event.detail);
       });
 
       window.addEventListener('message', event => {
@@ -1122,7 +1153,15 @@
         if (message.type === 'RV_FORESIGHT_DATA') {
           renderDashboard(message.data || message.payload || message);
         }
+
+        if (message.type === 'RV_FORESIGHT_BRIDGE_STATUS') {
+          updateBridgeInstallStatus(message);
+        }
       });
+
+      updateBridgeInstallStatus();
+      setTimeout(updateBridgeInstallStatus, 500);
+      setTimeout(updateBridgeInstallStatus, 2000);
 
       restoreCache();
 
@@ -1132,6 +1171,22 @@
       }
 
       setInterval(updateFreshness, 1000);
+
+      function updateBridgeInstallStatus(detail = {}) {
+        const root = document.documentElement;
+        const installed = detail.installed === true || root.dataset.rvForesightBridge === 'installed';
+
+        if (!installed) return;
+
+        const version = String(detail.version || root.dataset.rvForesightBridgeVersion || '').trim();
+        elements.installScriptBtn.dataset.installed = 'true';
+        elements.installScriptBtn.classList.add('installed');
+        elements.installScriptBtn.setAttribute('aria-disabled', 'true');
+        elements.installScriptBtn.textContent = version
+          ? `Script installed - v${version} â`
+          : 'Script installed â';
+        elements.installScriptBtn.title = 'RV Foresight Bridge is active on this page.';
+      }
 
       function renderDashboard(input, options = {}) {
         try {
@@ -1170,14 +1225,10 @@
         const blueSource = firstArray(source.blueLights, source.blue, source.unavailableLanes, source.laneStatus);
         const recircSource = firstArray(source.highRecirc, source.recirc, source.recircData, source.failedDiverts);
 
-        const blueLights = blueSource
-          .map(normalizeBlueLight)
-          .filter(row => row.chute || row.lane)
+        const blueLights = aggregateBlueLights(blueSource)
           .sort(sortByLocationThenChute);
 
-        const highRecirc = recircSource
-          .map(normalizeRecirc)
-          .filter(row => row.chute || row.lane)
+        const highRecirc = aggregateHighRecirc(recircSource)
           .filter(row => row.failedDiverts > 0 || row.failPercent > 0)
           .sort((a, b) => b.failedDiverts - a.failedDiverts || b.failPercent - a.failPercent);
 
@@ -1213,14 +1264,20 @@
       }
 
       function normalizeBlueLight(row) {
-        const chute = String(row?.chute ?? row?.Chute ?? row?.divertId ?? '').trim();
-        const lane = String(row?.lane ?? row?.Lane ?? row?.name ?? '').trim();
-        const rawLocation = row?.location ?? row?.Location ?? row?.area ?? row?.Area ?? lane;
+        const rawChute = String(row?.chute ?? row?.Chute ?? row?.divertId ?? '').trim();
+        const rawLane = String(row?.lane ?? row?.Lane ?? row?.name ?? '').trim();
+        const physicalLane = resolvePhysicalLane(rawLane, rawChute);
+        const rawLocation = row?.location ?? row?.Location ?? row?.area ?? row?.Area ?? rawLane;
+
+        if (!physicalLane) return null;
+
+        const location = canonicalLocation(rawLocation, `${rawLane} ${rawChute}`);
+        if (!location) return null;
 
         return {
-          chute,
-          lane,
-          location:canonicalLocation(rawLocation, chute),
+          chute:physicalLane.label,
+          lane:physicalLane.label,
+          location,
           status:String(row?.status ?? row?.state ?? row?.fullness ?? row?.issue ?? 'Unavailable'),
           reason:String(row?.reason ?? row?.Reason ?? row?.detail ?? 'Lane full / unavailable'),
           statusTime:row?.statusTime ?? row?.time ?? row?.eventTime ?? row?.updatedAt ?? null,
@@ -1229,9 +1286,16 @@
       }
 
       function normalizeRecirc(row) {
-        const chute = String(row?.chute ?? row?.Chute ?? row?.divertId ?? '').trim();
-        const lane = String(row?.lane ?? row?.Lane ?? row?.name ?? '').trim();
-        const rawLocation = row?.location ?? row?.Location ?? row?.area ?? row?.Area ?? lane;
+        const rawChute = String(row?.chute ?? row?.Chute ?? row?.divertId ?? '').trim();
+        const rawLane = String(row?.lane ?? row?.Lane ?? row?.name ?? '').trim();
+        const physicalLane = resolvePhysicalLane(rawLane, rawChute);
+        const rawLocation = row?.location ?? row?.Location ?? row?.area ?? row?.Area ?? rawLane;
+
+        if (!physicalLane) return null;
+
+        const location = canonicalLocation(rawLocation, `${rawLane} ${rawChute}`);
+        if (!location) return null;
+
         const failedDiverts = toNumber(
           row?.failedDiverts ?? row?.['Failed Diverts'] ?? row?.failed ?? row?.recirc,
           0
@@ -1252,17 +1316,84 @@
         };
 
         return {
-          chute,
-          lane,
-          location:canonicalLocation(rawLocation, chute),
+          chute:physicalLane.label,
+          lane:physicalLane.label,
+          location,
           failedDiverts,
           successfulDiverts,
           failPercent,
           reason:String(row?.reason ?? row?.Reason ?? topReason(reasons)),
           reasons,
           cpt:String(row?.cpt ?? row?.CPT ?? ''),
-          link:safeUrl(row?.link ?? row?.url ?? '#')
+          link:safeUrl(row?.link ?? row?.url ?? '#'),
+          __cptFailed:failedDiverts
         };
+      }
+
+      function aggregateBlueLights(rows) {
+        const grouped = new Map();
+
+        rows.map(normalizeBlueLight).filter(Boolean).forEach(row => {
+          const key = normalizeLaneKey(row.chute);
+          const existing = grouped.get(key);
+
+          if (!existing) {
+            grouped.set(key, row);
+            return;
+          }
+
+          if (row.location === 'Flats Jackpot') {
+            existing.location = row.location;
+          }
+
+          if (!existing.statusTime && row.statusTime) {
+            existing.statusTime = row.statusTime;
+          }
+
+          if (/full \/ unavailable/i.test(existing.reason) && !/full \/ unavailable/i.test(row.reason)) {
+            existing.reason = row.reason;
+          }
+        });
+
+        return Array.from(grouped.values());
+      }
+
+      function aggregateHighRecirc(rows) {
+        const grouped = new Map();
+
+        rows.map(normalizeRecirc).filter(Boolean).forEach(row => {
+          const key = normalizeLaneKey(row.chute);
+          const existing = grouped.get(key);
+
+          if (!existing) {
+            grouped.set(key, row);
+            return;
+          }
+
+          existing.failedDiverts += row.failedDiverts;
+          existing.successfulDiverts += row.successfulDiverts;
+          existing.reasons.laneFull += row.reasons.laneFull;
+          existing.reasons.laneUnavailable += row.reasons.laneUnavailable;
+          existing.reasons.throughputLimit += row.reasons.throughputLimit;
+          existing.reasons.other += row.reasons.other;
+
+          if (row.location === 'Flats Jackpot') {
+            existing.location = row.location;
+          }
+
+          if (row.cpt && (!existing.cpt || row.__cptFailed > existing.__cptFailed)) {
+            existing.cpt = row.cpt;
+            existing.__cptFailed = row.__cptFailed;
+          }
+        });
+
+        return Array.from(grouped.values()).map(row => {
+          const total = row.failedDiverts + row.successfulDiverts;
+          row.failPercent = total > 0 ? row.failedDiverts / total * 100 : 0;
+          row.reason = topReason(row.reasons);
+          delete row.__cptFailed;
+          return row;
+        });
       }
 
       function renderKpis(data) {
@@ -1301,7 +1432,7 @@
         elements.areaNav.innerHTML = areas.map(renderAreaNav).join('');
 
         const issueAreas = areas.filter(area => area.blueLights.length || area.highRecirc.length).length;
-        elements.sectionSummary.textContent = `${issueAreas} issue area${issueAreas === 1 ? '' : 's'} Â· ${areas.length} areas monitored`;
+        elements.sectionSummary.textContent = `${issueAreas} issue area${issueAreas === 1 ? '' : 's'} | ${areas.length} areas monitored`;
       }
 
       function addToArea(map, row, bucket) {
@@ -1398,7 +1529,7 @@
           <div class="issue-row recirc-row">
             <div class="issue-row-top">
               ${nameHtml}
-              <span class="row-badge red">${row.failedDiverts} failed Â· ${formatNumber(row.failPercent, 0)}%</span>
+              <span class="row-badge red">${row.failedDiverts} failed | ${formatNumber(row.failPercent, 0)}%</span>
             </div>
             <div class="issue-row-meta">
               <span>${escapeHtml(row.lane && row.lane !== name ? row.lane : row.reason)}</span>
@@ -1448,23 +1579,47 @@
       function canonicalLocation(value, chute) {
         const original = String(value || '').trim();
         const text = `${original} ${chute || ''}`.toLowerCase();
+        const code = resolvePhysicalLane(chute, original);
 
-        if (text.includes('jackpot')) return 'Flats Jackpot';
-        if (text.includes('east') && text.includes('flat')) return 'East Flats';
-        if (text.includes('west') && text.includes('flat')) return 'West Flats';
-        if (text.includes('palletize') && text.includes('odd')) return 'Palletize Odd';
-        if (text.includes('palletize') && text.includes('even')) return 'Palletize Even';
+        if (code) {
+          if (text.includes('jackpot')) return 'Flats Jackpot';
 
-        if (/\bfr[-_ ]?1[12]\d{2}\b/i.test(chute)) return 'East Flats';
-        if (/\bfr[-_ ]?1[5-8]\d{2}\b/i.test(chute)) return 'West Flats';
+          if (code.prefix === 'FR') {
+            if (code.number >= 1100 && code.number <= 1299) return 'East Flats';
+            if (code.number >= 1500 && code.number <= 1999) return 'West Flats';
+            return '';
+          }
 
-        if (original && !/^(fr|sr|dd)[-_ ]?\d+/i.test(original)) {
-          return titleCase(original);
+          return code.number % 2 === 0 ? 'Palletize Even' : 'Palletize Odd';
         }
 
-        if (/^fr/i.test(chute)) return 'Flats - Other';
-        if (/^sr/i.test(chute)) return 'Palletize - Other';
-        return 'Other';
+        const known = LOCATION_META.find(meta => meta.title.toLowerCase() === original.toLowerCase());
+        return known ? known.title : '';
+      }
+
+      function resolvePhysicalLane(preferredValue, fallbackValue) {
+        return findPhysicalLaneCode(preferredValue) || findPhysicalLaneCode(fallbackValue);
+      }
+
+      function findPhysicalLaneCode(value) {
+        const normalized = String(value || '')
+          .toUpperCase()
+          .replace(/[^A-Z0-9]/g, '');
+        const match = normalized.match(/(FR|SR)(\d{4})(?!\d)/);
+
+        if (!match) return null;
+
+        return {
+          prefix:match[1],
+          number:Number(match[2]),
+          digits:match[2],
+          label:`${match[1]}-${match[2]}`,
+          key:`${match[1]}${match[2]}`
+        };
+      }
+
+      function normalizeLaneKey(value) {
+        return String(value || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
       }
 
       function updateFreshness() {
@@ -1485,12 +1640,12 @@
             : 'Keep the source tab open and refresh the collector.';
 
         elements.statusText.textContent = isDemo
-          ? 'Sample layout preview Â· waiting for live collector'
+          ? 'Sample layout preview | waiting for live collector'
           : state === 'live'
-            ? `Connected Â· ${currentData.building} Foresight data received`
+            ? `Connected | ${currentData.building} Foresight data received`
             : `Last ${currentData.building} update is stale`;
 
-        elements.statusMeta.textContent = `Updated ${formatAge(ageSeconds)} Â· next check ${next}s`;
+        elements.statusMeta.textContent = `Updated ${formatAge(ageSeconds)} | next check ${next}s`;
         elements.footerUpdate.textContent = `Last update: ${time}`;
       }
 
