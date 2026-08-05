@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="light" />
-  <title>RV Foresight Dashboard</title>
+  <title>RV Foresight Dashboard - Compact UI 1.6</title>
 
   <style>
     :root {
@@ -419,9 +419,74 @@
 
     .top-actions {
       display:flex;
+      align-items:center;
       flex-wrap:wrap;
       justify-content:flex-end;
       gap:9px;
+    }
+
+    .home-button {
+      width:38px;
+      min-width:38px;
+      padding:0;
+      font-size:18px;
+      line-height:1;
+    }
+
+    .connection-badge {
+      min-height:30px;
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:6px 9px;
+      border:1px solid #d0d5dd;
+      border-radius:999px;
+      color:#475467;
+      background:#fff;
+      box-shadow:var(--shadow-soft);
+      cursor:pointer;
+      font-size:10px;
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    .connection-badge::before {
+      content:"";
+      width:7px;
+      height:7px;
+      border-radius:50%;
+      background:#98a2b3;
+    }
+
+    .connection-badge[data-state="live"] {
+      border-color:#a6f4c5;
+      color:#067647;
+      background:#ecfdf3;
+    }
+
+    .connection-badge[data-state="live"]::before {
+      background:#12b76a;
+      box-shadow:0 0 8px rgba(18,183,106,.65);
+    }
+
+    .connection-badge[data-state="warning"] {
+      border-color:#fedf89;
+      color:#b54708;
+      background:#fffaeb;
+    }
+
+    .connection-badge[data-state="warning"]::before {
+      background:#f79009;
+    }
+
+    .connection-badge[data-state="error"] {
+      border-color:#fda29b;
+      color:#b42318;
+      background:#fef3f2;
+    }
+
+    .connection-badge[data-state="error"]::before {
+      background:#f04438;
     }
 
     .btn,
@@ -584,6 +649,10 @@
       color:#7a271a;
       background:#fef3f2;
       box-shadow:var(--shadow-soft);
+    }
+
+    .setup-panel[hidden] {
+      display:none!important;
     }
 
     .setup-alert-icon {
@@ -1208,6 +1277,38 @@
       line-height:1.4;
     }
 
+    .floating-refresh {
+      position:fixed;
+      z-index:30;
+      right:17px;
+      bottom:17px;
+      width:32px;
+      height:32px;
+      display:grid;
+      place-items:center;
+      padding:0;
+      border:1px solid #1d4ed8;
+      border-radius:50%;
+      color:#fff;
+      background:var(--blue);
+      box-shadow:0 8px 20px rgba(37,99,235,.28);
+      cursor:pointer;
+      font-size:17px;
+      font-weight:900;
+      line-height:1;
+    }
+
+    .floating-refresh:hover {
+      transform:translateY(-1px);
+      background:#1d4ed8;
+    }
+
+    .floating-refresh:disabled {
+      opacity:.65;
+      cursor:wait;
+      transform:none;
+    }
+
     .hidden {
       display:none!important;
     }
@@ -1290,6 +1391,11 @@
 
       .top-actions {
         justify-content:flex-start;
+      }
+
+      .floating-refresh {
+        right:13px;
+        bottom:13px;
       }
     }
 
@@ -1412,12 +1518,16 @@
         </div>
 
         <div class="top-actions">
+          <a class="btn home-button" href="https://ranvexsi.netlify.app/" aria-label="Go to RANVEXSI home" title="RANVEXSI Home">&#8962;</a>
+          <button id="connectionBadge" class="connection-badge" data-state="waiting" type="button" title="Open Foresight source in a new window">
+            <span id="connectionBadgeText">Waiting</span>
+          </button>
           <button id="refreshBtn" class="btn primary" type="button">&#8635; Refresh</button>
           <details id="toolsMenu" class="tools-menu">
             <summary aria-label="Dashboard tools" title="Dashboard tools">&#8943;</summary>
             <div class="tools-popover">
               <button id="installScriptBtn" class="tool-action" type="button">Install / Update Bridge</button>
-              <button id="sourcePageBtn" class="tool-action" type="button">Open / Focus Source</button>
+              <button id="sourcePageBtn" class="tool-action" type="button">Open Source in New Window</button>
               <button id="clearBtn" class="tool-action danger" type="button">Clear Cached Data</button>
             </div>
           </details>
@@ -1489,11 +1599,13 @@
       </section>
 
       <footer class="page-footer">
-        <span>RV Foresight Dashboard | Operational view only</span>
+        <span>RV Foresight Dashboard | Compact UI 1.6 | Operational view only</span>
         <span id="footerUpdate">Last update: --</span>
       </footer>
     </main>
   </div>
+
+  <button id="floatingRefreshBtn" class="floating-refresh" type="button" aria-label="Refresh Foresight data" title="Refresh Foresight data">&#8635;</button>
 
   <script>
     (() => {
@@ -1538,6 +1650,8 @@
         statusDot:document.getElementById('statusDot'),
         statusText:document.getElementById('statusText'),
         statusMeta:document.getElementById('statusMeta'),
+        connectionBadge:document.getElementById('connectionBadge'),
+        connectionBadgeText:document.getElementById('connectionBadgeText'),
         sidebarToggle:document.getElementById('sidebarToggle'),
         installScriptBtn:document.getElementById('installScriptBtn'),
         sourcePageBtn:document.getElementById('sourcePageBtn'),
@@ -1551,6 +1665,7 @@
         setupPrimaryBtn:document.getElementById('setupPrimaryBtn'),
         windowPill:document.getElementById('windowPill'),
         refreshBtn:document.getElementById('refreshBtn'),
+        floatingRefreshBtn:document.getElementById('floatingRefreshBtn'),
         clearBtn:document.getElementById('clearBtn'),
         blueKpi:document.getElementById('blueKpi'),
         recircKpi:document.getElementById('recircKpi'),
@@ -1564,6 +1679,8 @@
       };
 
       elements.refreshBtn.addEventListener('click', requestRefresh);
+      elements.floatingRefreshBtn.addEventListener('click', requestRefresh);
+      elements.connectionBadge.addEventListener('click', handleConnectionBadgeAction);
       elements.clearBtn.addEventListener('click', clearCache);
       elements.installScriptBtn.addEventListener('click', openBridgeInstaller);
       elements.sourcePageBtn.addEventListener('click', openForesightSource);
@@ -1696,6 +1813,15 @@
         openBridgeInstaller();
       }
 
+      function handleConnectionBadgeAction() {
+        if (isBridgeCurrent()) {
+          openForesightSource();
+          return;
+        }
+
+        openBridgeInstaller();
+      }
+
       function restoreSidebarState() {
         let expanded = false;
 
@@ -1803,6 +1929,7 @@
         const sourceRecentlyOpened = Date.now() - sourceOpenedAt <= 15000;
         const versionLabel = bridgeDetectedVersion ? `v${bridgeDetectedVersion}` : 'active';
 
+        elements.setupPanel.hidden = false;
         elements.setupPanel.classList.remove('connected', 'source-required');
         elements.setupPrimaryBtn.hidden = false;
 
@@ -1814,7 +1941,9 @@
           elements.setupCopy.textContent = `Bridge ${versionLabel} + YXU1 source are sending data. Keep the source tab open.`;
           elements.setupOverallBadge.textContent = 'Live';
           elements.setupPrimaryBtn.hidden = true;
+          elements.setupPanel.hidden = true;
           elements.setupPanel.setAttribute('aria-label', 'RV Foresight setup complete and live');
+          setHeaderConnection('live', 'Connected', 'Connected. Open Foresight source in a new window.');
           return;
         }
 
@@ -1832,6 +1961,7 @@
           elements.setupPrimaryBtn.textContent = sourceRecentlyOpened ? 'Waiting for Data...' : 'Open Source Page';
           elements.setupPrimaryBtn.disabled = sourceRecentlyOpened;
           elements.setupPanel.setAttribute('aria-label', 'RV Foresight source page required');
+          setHeaderConnection('warning', currentData ? 'Source stale' : 'Open source', 'Open Foresight source in a new window.');
           return;
         }
 
@@ -1845,13 +1975,22 @@
         elements.setupOverallBadge.textContent = bridgeDetected ? 'Update required' : 'Not installed';
         elements.setupPrimaryBtn.textContent = bridgeDetected ? 'Update Bridge' : 'Install Bridge';
         elements.setupPanel.setAttribute('aria-label', 'RV Foresight bridge installation required');
+        setHeaderConnection('error', bridgeDetected ? 'Update script' : 'Script needed', 'Install or update the RV Foresight bridge.');
+      }
+
+      function setHeaderConnection(state, label, title) {
+        elements.connectionBadge.dataset.state = state;
+        elements.connectionBadgeText.textContent = label;
+        elements.connectionBadge.title = title;
+        elements.connectionBadge.setAttribute('aria-label', title);
       }
 
       function openForesightSource() {
         closeToolsMenu();
         const sourceTab = window.open(
           SOURCE_PAGE_URL,
-          'rvForesightSource'
+          'rvForesightSourceWindow',
+          'popup=yes,width=1280,height=900,left=80,top=50,resizable=yes,scrollbars=yes'
         );
 
         if (!sourceTab) {
@@ -1862,6 +2001,7 @@
         }
 
         sourceOpenedAt = Date.now();
+        try { sourceTab.opener = null; } catch (_) {}
         elements.sourcePageBtn.textContent = 'Source Opened \u2713';
         elements.setupPrimaryBtn.textContent = 'Waiting for Data...';
         elements.setupPrimaryBtn.disabled = true;
@@ -1874,7 +2014,7 @@
         setTimeout(returnToDashboard, 150);
         setTimeout(returnToDashboard, 700);
         setTimeout(() => {
-          elements.sourcePageBtn.textContent = 'Open / Focus Source';
+          elements.sourcePageBtn.textContent = 'Open Source in New Window';
           refreshSetupState();
         }, 2500);
 
@@ -2439,239 +2579,4 @@
 
       function findPhysicalLaneCode(value) {
         const normalized = String(value || '')
-          .toUpperCase()
-          .replace(/[^A-Z0-9]/g, '');
-        const match = normalized.match(/(FR|SR)(\d{4})(?!\d)/);
-
-        if (!match) return null;
-
-        return {
-          prefix:match[1],
-          number:Number(match[2]),
-          digits:match[2],
-          label:`${match[1]}-${match[2]}`,
-          key:`${match[1]}${match[2]}`
-        };
-      }
-
-      function normalizeLaneKey(value) {
-        return String(value || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
-      }
-
-      function updateFreshness() {
-        if (!currentData || !lastUpdateMs) {
-          refreshSetupState();
-          return;
-        }
-
-        const ageSeconds = Math.max(0, Math.floor((Date.now() - lastUpdateMs) / 1000));
-        const isDemo = new URLSearchParams(location.search).get('demo') === '1';
-        const holdingConfirmedData =
-          currentData.collectionState?.blueHeld === true ||
-          currentData.collectionState?.recircHeld === true;
-        const state = ageSeconds <= 90 ? 'live' : 'stale';
-        const time = new Date(lastUpdateMs).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' });
-        const next = Math.max(0, EXPECTED_REFRESH_SECONDS - ageSeconds % EXPECTED_REFRESH_SECONDS);
-
-        setConnectionState(state);
-        elements.connectionText.textContent = isDemo ? 'Sample data preview' : state === 'live' ? 'Live connection' : 'Connection stale';
-        elements.connectionHelp.textContent = isDemo
-          ? 'Preview mode is showing representative sample data.'
-          : holdingConfirmedData
-            ? 'Source is backgrounded; keeping the last confirmed issue list visible.'
-          : state === 'live'
-            ? `Receiving ${currentData.building} operations data.`
-            : 'Keep the source tab open and refresh the collector.';
-
-        elements.statusText.textContent = isDemo
-          ? 'Sample layout preview | waiting for live collector'
-          : holdingConfirmedData
-            ? `Connected | ${currentData.building} | holding last confirmed list`
-          : state === 'live'
-            ? `Connected | ${currentData.building} Foresight data received`
-            : `Last ${currentData.building} update is stale`;
-
-        elements.statusMeta.textContent = `Updated ${formatAge(ageSeconds)} | next check ${next}s`;
-        elements.footerUpdate.textContent = `Last update: ${time}`;
-        refreshSetupState();
-      }
-
-      function setConnectionState(state) {
-        ['live','stale','error'].forEach(name => {
-          elements.connectionDot.classList.toggle(name, name === state);
-          elements.statusDot.classList.toggle(name, name === state);
-          elements.statusStrip.classList.toggle(name, name === state);
-        });
-      }
-
-      function showError(message) {
-        setConnectionState('error');
-        elements.connectionText.textContent = 'Data error';
-        elements.connectionHelp.textContent = message;
-        elements.statusText.textContent = message;
-        elements.statusMeta.textContent = 'Check collector payload';
-        refreshSetupState();
-      }
-
-      function requestRefresh() {
-        const original = elements.refreshBtn.textContent;
-        elements.refreshBtn.textContent = 'Refreshing source...';
-        elements.refreshBtn.disabled = true;
-
-        const payload = {
-          type:'RV_FORESIGHT_MANUAL_REFRESH',
-          mode:'hard',
-          reason:'dashboard-refresh-button',
-          requestedAt:new Date().toISOString(),
-          nonce:Date.now()
-        };
-
-        window.dispatchEvent(new CustomEvent('RV_FORESIGHT_MANUAL_REFRESH', { detail:payload }));
-        window.postMessage(payload, '*');
-
-        setTimeout(() => {
-          elements.refreshBtn.textContent = original;
-          elements.refreshBtn.disabled = false;
-        }, 1400);
-      }
-
-      function clearCache() {
-        closeToolsMenu();
-        try {
-          localStorage.removeItem(CACHE_KEY);
-        } catch (_) {}
-
-        const payload = {
-          type:'RV_FORESIGHT_CLEAR_CACHE',
-          requestedAt:new Date().toISOString(),
-          nonce:Date.now()
-        };
-
-        window.dispatchEvent(new CustomEvent('RV_FORESIGHT_CLEAR_CACHE', { detail:payload }));
-        window.postMessage(payload, '*');
-        location.href = location.pathname;
-      }
-
-      function restoreCache() {
-        try {
-          const saved = localStorage.getItem(CACHE_KEY);
-          if (saved) renderDashboard(JSON.parse(saved), { cache:false });
-        } catch (_) {
-          try { localStorage.removeItem(CACHE_KEY); } catch (_) {}
-        }
-      }
-
-      function firstArray(...values) {
-        return values.find(Array.isArray) || [];
-      }
-
-      function sortByLocationThenChute(a, b) {
-        const aMeta = getLocationMeta(a.location);
-        const bMeta = getLocationMeta(b.location);
-        return aMeta.order - bMeta.order || a.chute.localeCompare(b.chute);
-      }
-
-      function topReason(reasons) {
-        const options = [
-          ['Lane Full', reasons.laneFull],
-          ['Lane Unavailable', reasons.laneUnavailable],
-          ['Throughput Limit', reasons.throughputLimit],
-          ['Other', reasons.other]
-        ].sort((a, b) => b[1] - a[1]);
-
-        return options[0][1] > 0 ? options[0][0] : 'Failed diverts';
-      }
-
-      function normalizeStatus(status) {
-        const text = String(status || '').toLowerCase();
-        if (text === '100') return 'Lane full';
-        if (text === '0') return 'Available';
-        return titleCase(String(status || 'Unavailable').replaceAll('_',' '));
-      }
-
-      function parsePercent(value) {
-        if (value == null || value === '') return null;
-        const number = Number(String(value).replace('%','').trim());
-        return Number.isFinite(number) ? number : null;
-      }
-
-      function toNumber(value, fallback = 0) {
-        const number = Number(value);
-        return Number.isFinite(number) ? number : fallback;
-      }
-
-      function formatNumber(value, decimals = 0) {
-        const number = Number(value);
-        return Number.isFinite(number) ? number.toFixed(decimals).replace(/\.0+$/,'') : '--';
-      }
-
-      function formatTime(value) {
-        const date = new Date(value);
-        if (!Number.isFinite(date.getTime())) return String(value || '');
-        return date.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
-      }
-
-      function formatAge(seconds) {
-        if (seconds < 5) return 'just now';
-        if (seconds < 60) return `${seconds}s ago`;
-        const minutes = Math.floor(seconds / 60);
-        return `${minutes}m ago`;
-      }
-
-      function slugify(value) {
-        return String(value || 'other')
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g,'-')
-          .replace(/^-+|-+$/g,'') || 'other';
-      }
-
-      function titleCase(value) {
-        return String(value || '')
-          .toLowerCase()
-          .replace(/\b\w/g, char => char.toUpperCase());
-      }
-
-      function safeUrl(value) {
-        const url = String(value || '#').trim();
-        return /^(https?:|#)/i.test(url) ? url : '#';
-      }
-
-      function escapeHtml(value) {
-        return String(value ?? '')
-          .replaceAll('&','&amp;')
-          .replaceAll('<','&lt;')
-          .replaceAll('>','&gt;')
-          .replaceAll('"','&quot;')
-          .replaceAll("'",'&#039;');
-      }
-
-      function escapeAttr(value) {
-        return escapeHtml(value);
-      }
-
-      function getDemoData() {
-        const now = Date.now();
-        return {
-          building:'YXU1',
-          updatedAt:new Date(now).toISOString(),
-          windowMinutes:3,
-          blueLights:[
-            { location:'Flats Jackpot', chute:'FR-1954', lane:'FR-1954', status:'UNAVAILABLE', reason:'Lane Full', statusTime:new Date(now - 61000).toISOString() },
-            { location:'East Flats', chute:'FR-1160', lane:'East Flats', status:100, reason:'Lane Full', statusTime:new Date(now - 43000).toISOString() },
-            { location:'Palletize Odd', chute:'SR-1059', lane:'Palletize Odd', status:100, reason:'Lane Full', statusTime:new Date(now - 82000).toISOString() },
-            { location:'East Flats', chute:'FR-1169', lane:'East Flats', status:100, reason:'Lane Full', statusTime:new Date(now - 27000).toISOString() },
-            { location:'West Flats', chute:'FR-1703', lane:'West Flats', status:'UNAVAILABLE', reason:'Lane Unavailable', statusTime:new Date(now - 35000).toISOString() },
-            { location:'Palletize Even', chute:'SR-1070', lane:'Palletize Even', status:100, reason:'Lane Full', statusTime:new Date(now - 51000).toISOString() }
-          ],
-          highRecirc:[
-            { location:'Flats Jackpot', Chute:'FR-1954', Lane:'Flats Jackpot', 'Successful Diverts':84, 'Failed Diverts':12, '% Failed':'13%', 'Lane Full':9, 'Lane Unavailable':3, CPT:'13:15' },
-            { location:'East Flats', Chute:'FR-1160', Lane:'East Flats', 'Successful Diverts':96, 'Failed Diverts':7, '% Failed':'7%', 'Lane Full':6, 'Lane Unavailable':1, CPT:'13:30' },
-            { location:'Palletize Odd', Chute:'SR-1059', Lane:'Palletize Odd', 'Successful Diverts':51, 'Failed Diverts':5, '% Failed':'9%', 'Lane Full':5, CPT:'13:25' },
-            { location:'West Flats', Chute:'FR-1703', Lane:'West Flats', 'Successful Diverts':72, 'Failed Diverts':3, '% Failed':'4%', 'Lane Unavailable':3, CPT:'13:40' }
-          ]
-        };
-      }
-    })();
-  </script>
-</body>
-</html>
+          .to
