@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- VERSION 2: Ship Dock-only employee controls and updated Manager page URL -->
+<!-- FIREBASE V3: secure Master PIN sign-in and automatic cloud publishing -->
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -44,7 +44,7 @@
     <section class="page" id="page-security">
       <div class="page-head"><div><h2>Security and page links</h2><p>Manage the shared Manager PIN, Master PIN and QR destination.</p></div><button class="primary save-settings">Save security settings</button></div>
       <div class="grid2">
-        <div class="card"><h3>PIN protection</h3><p>Use different PINs for Manager and Master Admin access.</p><div class="field"><label>Shared Manager PIN</label><input id="managerPinInput" type="password" inputmode="numeric"></div><div class="field"><label>Master Admin PIN</label><input id="masterPinInput" type="password" inputmode="numeric"></div></div>
+        <div class="card"><h3>PIN protection</h3><p>PINs are secured by Firebase Authentication and are never stored in the schedule database.</p><div class="stat"><small>Manager account</small><strong style="font-size:17px">manager@yxu1.app</strong></div><div class="stat" style="margin-top:10px"><small>Master account</small><strong style="font-size:17px">master@yxu1.app</strong></div><p class="hint" style="margin-top:12px">To change a PIN, update that user in Firebase Authentication → Users.</p></div>
         <div class="card"><h3>Links and QR</h3><p>The Manager link is encoded in the QR shown at the bottom-right of the dashboard.</p><div class="field"><label>Manager page link</label><input id="managerLinkInput" placeholder="http://ranvexsi.netlify.app/manager"></div><div class="field"><label>Secret dashboard key</label><input id="secretInput"></div><div style="display:flex;gap:13px;align-items:center"><canvas id="qr" width="96" height="96"></canvas><div class="hint" id="qrText"></div></div></div>
       </div>
     </section>
@@ -69,20 +69,22 @@
     'use strict';
     var KEY='critical-role-assignments-v1';
     var ROLES=[['ship-clerk','Ship Clerk'],['tdr','TDR'],['flats-ps','Flats PS'],['palletize-ps','Palletize PS'],['bounty-hunter','Bounty Hunter'],['quality','Quality'],['west-flats-pg','West Flats PG'],['east-flats-pg','East Flats PG'],['trans-pg','Trans PG'],['pit-driver','PIT Driver'],['rwc4-1','RWC4-1'],['rwc4-2','RWC4-2']];
-    function defaults(){return{version:1,settings:{title:'Critical Role Assignments',siteCode:'YXU1',primary:'#073763',accent:'#1298c8',managerPath:'http://ranvexsi.netlify.app/manager',dashboardSecret:'yxu1-live-board',maxQuarters:4,managerPin:'2468',masterPin:'8642'},employees:[],unavailability:[],schedules:{},audits:[],lastUpdated:new Date().toISOString()}}
+    function defaults(){return{version:1,settings:{title:'Critical Role Assignments',siteCode:'YXU1',primary:'#073763',accent:'#1298c8',managerPath:'http://ranvexsi.netlify.app/manager',dashboardSecret:'yxu1-live-board',maxQuarters:4},employees:[],unavailability:[],schedules:{},audits:[],lastUpdated:new Date().toISOString()}}
     function load(){try{var x=JSON.parse(localStorage.getItem(KEY));return x&&x.settings?x:defaults()}catch(e){return defaults()}}var state=load();
-    function persist(summary){state.version=(state.version||0)+1;state.lastUpdated=new Date().toISOString();if(summary){state.audits=state.audits||[];state.audits.unshift({id:String(Date.now())+Math.random(),actor:'master',summary:summary,createdAt:new Date().toISOString()})}state.audits=(state.audits||[]).filter(function(a){return Date.now()-new Date(a.createdAt).getTime()<604800000});localStorage.setItem(KEY,JSON.stringify(state))}
+    function persist(summary){state.version=(state.version||0)+1;state.lastUpdated=new Date().toISOString();if(summary){state.audits=state.audits||[];state.audits.unshift({id:String(Date.now())+Math.random(),actor:'master',summary:summary,createdAt:new Date().toISOString()})}state.audits=(state.audits||[]).filter(function(a){return Date.now()-new Date(a.createdAt).getTime()<604800000});localStorage.setItem(KEY,JSON.stringify(state));if(window.craFirebaseMaster)window.craFirebaseMaster.publish(state).catch(function(error){console.error('Firebase publish failed:',error);toast('Saved locally · cloud publish failed')})}
     function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
     function toast(t){var el=document.getElementById('toast');el.textContent=t;el.classList.add('show');setTimeout(function(){el.classList.remove('show')},2200)}
-    document.getElementById('pinForm').onsubmit=function(e){e.preventDefault();if(document.getElementById('pin').value===String(state.settings.masterPin||'8642')){sessionStorage.setItem('cra-master-ok','1');document.getElementById('pinGate').style.display='none'}else document.getElementById('pinError').textContent='Incorrect Master PIN.'};
-    if(sessionStorage.getItem('cra-master-ok')==='1')document.getElementById('pinGate').style.display='none';document.getElementById('lockBtn').onclick=function(){sessionStorage.removeItem('cra-master-ok');location.reload()};
+    document.getElementById('pinForm').onsubmit=async function(e){e.preventDefault();var button=e.submitter,error=document.getElementById('pinError');error.textContent='';if(!window.craFirebaseMaster){error.textContent='Firebase is still connecting. Try again in a moment.';return}button.disabled=true;button.textContent='Signing in…';try{await window.craFirebaseMaster.signIn(document.getElementById('pin').value);document.getElementById('pin').value='';document.getElementById('pinGate').style.display='none'}catch(err){error.textContent='Incorrect Master PIN or Firebase sign-in failed.'}finally{button.disabled=false;button.textContent='Open Master Admin'}};
+    window.addEventListener('cra:auth-ready',function(e){if(e.detail&&e.detail.email==='master@yxu1.app')document.getElementById('pinGate').style.display='none'});
+    window.addEventListener('cra:cloud-state',function(e){if(!e.detail)return;state=e.detail;localStorage.setItem(KEY,JSON.stringify(state));fill()});
+    document.getElementById('lockBtn').onclick=async function(){if(window.craFirebaseMaster)await window.craFirebaseMaster.signOut();location.reload()};
     document.querySelectorAll('.tab').forEach(function(b){b.onclick=function(){document.querySelectorAll('.tab').forEach(function(x){x.classList.toggle('active',x===b)});document.querySelectorAll('.page').forEach(function(x){x.classList.toggle('active',x.id==='page-'+b.dataset.page)});renderBlocks()}});
     function isShipDock(e){return String(e&&e.processPath||'').trim().toLowerCase()==='ship dock'}
-    function fill(){var s=state.settings;if(!s.managerPath||s.managerPath==='manager.html'||s.managerPath==='/manager')s.managerPath='http://ranvexsi.netlify.app/manager';document.documentElement.style.setProperty('--navy',s.primary);document.documentElement.style.setProperty('--blue',s.accent);document.getElementById('siteMark').textContent=s.siteCode;document.getElementById('titleInput').value=s.title;document.getElementById('siteInput').value=s.siteCode;document.getElementById('maxInput').value=s.maxQuarters;document.getElementById('primaryInput').value=s.primary;document.getElementById('accentInput').value=s.accent;document.getElementById('managerPinInput').value=s.managerPin;document.getElementById('masterPinInput').value=s.masterPin;document.getElementById('managerLinkInput').value=s.managerPath;document.getElementById('secretInput').value=s.dashboardSecret;document.getElementById('employeeCount').textContent=state.employees.filter(isShipDock).length;preview();renderPeople();renderBlocks()}
+    function fill(){var s=state.settings;if(!s.managerPath||s.managerPath==='manager.html'||s.managerPath==='/manager')s.managerPath='http://ranvexsi.netlify.app/manager';document.documentElement.style.setProperty('--navy',s.primary);document.documentElement.style.setProperty('--blue',s.accent);document.getElementById('siteMark').textContent=s.siteCode;document.getElementById('titleInput').value=s.title;document.getElementById('siteInput').value=s.siteCode;document.getElementById('maxInput').value=s.maxQuarters;document.getElementById('primaryInput').value=s.primary;document.getElementById('accentInput').value=s.accent;document.getElementById('managerLinkInput').value=s.managerPath;document.getElementById('secretInput').value=s.dashboardSecret;document.getElementById('employeeCount').textContent=state.employees.filter(isShipDock).length;preview();renderPeople();renderBlocks()}
     function preview(){var p=document.getElementById('primaryInput').value||'#073763',a=document.getElementById('accentInput').value||'#1298c8';document.documentElement.style.setProperty('--navy',p);document.documentElement.style.setProperty('--blue',a);document.getElementById('previewTitle').textContent=document.getElementById('titleInput').value||'Critical Role Assignments';document.getElementById('previewSite').textContent=document.getElementById('siteInput').value||'YXU1';var link=document.getElementById('managerLinkInput').value||'http://ranvexsi.netlify.app/manager',url=new URL(link,location.href).href;document.getElementById('qrText').textContent=url;if(window.QRCode)QRCode.toCanvas(document.getElementById('qr'),url,{width:96,margin:0,color:{dark:p}},function(){})}
     ['primaryInput','accentInput','titleInput','siteInput','managerLinkInput'].forEach(function(id){document.getElementById(id).addEventListener('input',preview)});
     document.getElementById('resetTheme').onclick=function(){document.getElementById('primaryInput').value='#073763';document.getElementById('accentInput').value='#1298c8';preview()};
-    document.querySelectorAll('.save-settings').forEach(function(b){b.onclick=function(){if(!confirm('Save these Master Admin settings and update the dashboard?'))return;var s=state.settings;s.title=document.getElementById('titleInput').value.trim()||'Critical Role Assignments';s.siteCode=document.getElementById('siteInput').value.trim()||'YXU1';s.maxQuarters=Math.max(1,Number(document.getElementById('maxInput').value)||4);s.primary=document.getElementById('primaryInput').value;s.accent=document.getElementById('accentInput').value;s.managerPin=document.getElementById('managerPinInput').value||'2468';s.masterPin=document.getElementById('masterPinInput').value||'8642';s.managerPath=document.getElementById('managerLinkInput').value.trim()||'http://ranvexsi.netlify.app/manager';s.dashboardSecret=document.getElementById('secretInput').value.trim()||'yxu1-live-board';persist('Updated system settings');fill();toast('Master settings saved')}});
+    document.querySelectorAll('.save-settings').forEach(function(b){b.onclick=function(){if(!confirm('Save these Master Admin settings and update every connected TV?'))return;var s=state.settings;s.title=document.getElementById('titleInput').value.trim()||'Critical Role Assignments';s.siteCode=document.getElementById('siteInput').value.trim()||'YXU1';s.maxQuarters=Math.max(1,Number(document.getElementById('maxInput').value)||4);s.primary=document.getElementById('primaryInput').value;s.accent=document.getElementById('accentInput').value;s.managerPath=document.getElementById('managerLinkInput').value.trim()||'http://ranvexsi.netlify.app/manager';s.dashboardSecret=document.getElementById('secretInput').value.trim()||'yxu1-live-board';persist('Updated system settings');fill();toast('Master settings published')}});
     function renderPeople(){document.getElementById('blockEmployee').innerHTML=state.employees.filter(isShipDock).slice().sort(function(a,b){return a.name.localeCompare(b.name)}).map(function(e){return'<option value="'+esc(e.login)+'">'+esc(e.name)+' · '+esc(e.login)+' · '+esc(e.cohort)+' · Ship Dock</option>'}).join('');document.getElementById('blockRole').innerHTML=ROLES.map(function(r){return'<option value="'+r[0]+'">'+r[1]+'</option>'}).join('')}
     document.getElementById('addBlock').onclick=function(){var login=document.getElementById('blockEmployee').value,role=document.getElementById('blockRole').value,e=state.employees.find(function(x){return x.login===login});if(!e){toast('No employee selected');return}e.blockedRoles=e.blockedRoles||[];if(e.blockedRoles.indexOf(role)<0)e.blockedRoles.push(role);persist('Blocked '+login+' from '+role);renderBlocks();toast('Accommodation block saved')};
     function renderBlocks(){var rows=[];state.employees.filter(isShipDock).forEach(function(e){(e.blockedRoles||[]).forEach(function(r){rows.push([e,r])})});var box=document.getElementById('blockList');box.innerHTML=rows.length?rows.map(function(row){var rn=(ROLES.find(function(r){return r[0]===row[1]})||[row[1],row[1]])[1];return'<div class="list-row"><div class="person"><strong>'+esc(row[0].name)+'</strong><small>'+esc(row[0].login)+' · '+esc(row[0].cohort)+' · Ship Dock · '+esc(rn)+'</small></div><button class="secondary allow" data-login="'+esc(row[0].login)+'" data-role="'+esc(row[1])+'">Allow again</button></div>'}).join(''):'<div class="empty">No active Ship Dock accommodation blocks.</div>';document.querySelectorAll('.allow').forEach(function(b){b.onclick=function(){var e=state.employees.find(function(x){return x.login===b.dataset.login});e.blockedRoles=e.blockedRoles.filter(function(r){return r!==b.dataset.role});persist('Allowed '+e.login+' for '+b.dataset.role+' again');renderBlocks();toast('Employee allowed again')}})}
@@ -91,6 +93,53 @@
     document.getElementById('resetAll').onclick=function(){if(!confirm('Reset ALL local app data? This removes employees, schedules, training, blocks and history from this browser.'))return;if(!confirm('Final confirmation: reset the application now?'))return;state=defaults();localStorage.setItem(KEY,JSON.stringify(state));fill();toast('Local application reset')};
     fill();
   })();
+  </script>
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js';
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js';
+    import { getDatabase, ref, onValue, set } from 'https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js';
+
+    const firebaseConfig = {
+      apiKey: 'AIzaSyDopxxbJOlUQdMfd-lM-a6Odb8Yux7jAkA',
+      authDomain: 'yxu1-critical-roles.firebaseapp.com',
+      databaseURL: 'https://yxu1-critical-roles-default-rtdb.firebaseio.com',
+      projectId: 'yxu1-critical-roles',
+      storageBucket: 'yxu1-critical-roles.firebasestorage.app',
+      messagingSenderId: '681933966768',
+      appId: '1:681933966768:web:327d36b8683db1f4fa1a75'
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+    let listening = false;
+
+    const safeState = (state) => {
+      const copy = JSON.parse(JSON.stringify(state));
+      if (copy.settings) {
+        delete copy.settings.managerPin;
+        delete copy.settings.masterPin;
+      }
+      return copy;
+    };
+
+    window.craFirebaseMaster = {
+      signIn: (pin) => signInWithEmailAndPassword(auth, 'master@yxu1.app', pin),
+      signOut: () => signOut(auth),
+      publish: (state) => set(ref(db, 'appState'), safeState(state))
+    };
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user || user.email !== 'master@yxu1.app') return;
+      window.dispatchEvent(new CustomEvent('cra:auth-ready', { detail: { email: user.email } }));
+      if (listening) return;
+      listening = true;
+      onValue(ref(db, 'appState'), (snapshot) => {
+        if (snapshot.exists()) {
+          window.dispatchEvent(new CustomEvent('cra:cloud-state', { detail: snapshot.val() }));
+        }
+      });
+    });
   </script>
 </body>
 </html>
