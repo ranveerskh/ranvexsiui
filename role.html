@@ -1,128 +1,1879 @@
 <!doctype html>
-<!-- FIREBASE V3.1: realtime TV sync, anonymous read access, local offline cache -->
+<!-- FIREBASE V3.2: realtime TV sync, today + rolling 10-day schedule -->
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="app-version" content="3.1">
+  <meta name="app-version" content="3.2">
   <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
+
   <title>Critical Role Assignments</title>
+
   <style>
-    :root{--navy:#073763;--blue:#1298c8;--pale:#eaf7fc;--line:#b9d1df;--ink:#10283b;--muted:#587083;--white:#fff;--warn:#fff1c2}
-    *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#dcecf4;color:var(--ink);font-family:Inter,Arial,sans-serif}
-    body{padding:6px}.shell{width:100%;height:calc(100vh - 12px);background:var(--white);border-radius:16px;box-shadow:0 14px 45px #173c5529;overflow:hidden;display:flex;flex-direction:column}
-    header{flex:0 0 72px;background:linear-gradient(115deg,var(--navy),#0b527d);color:#fff;padding:8px 18px;display:flex;align-items:center;justify-content:space-between;gap:16px}
-    .brand{display:flex;align-items:center;gap:13px}.site{display:grid;place-items:center;width:54px;height:54px;border:2px solid #ffffff66;border-radius:14px;font-size:18px;font-weight:900;background:#ffffff16}.eyebrow{margin:0 0 3px;text-transform:uppercase;letter-spacing:.12em;font-size:11px;font-weight:900;opacity:.75}.title-line{display:flex;align-items:baseline;gap:10px;min-width:0}h1{margin:0;font-size:clamp(26px,2vw,38px);line-height:1.05}.credit{flex:0 0 auto;font-size:9px;font-weight:800;letter-spacing:.05em;color:#d7f3ff;opacity:.82;white-space:nowrap}
-    .head-info{display:flex;gap:9px;justify-content:flex-end}.pill{display:flex;align-items:center;gap:9px;border:1px solid #ffffff2e;background:#ffffff14;border-radius:12px;padding:7px 11px;min-width:142px}.pill small,.pill strong{display:block}.pill small{font-size:10px;opacity:.72;text-transform:uppercase;letter-spacing:.08em}.pill strong{font-size:15px;margin-top:1px}.live{width:10px;height:10px;border-radius:50%;background:#64efaf;box-shadow:0 0 0 5px #64efaf22}
-    main{display:grid;grid-template-columns:minmax(0,33fr) minmax(0,67fr);gap:8px;padding:8px;flex:1;min-height:0;overflow:hidden}.panel{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;min-width:0;min-height:0;display:flex;flex-direction:column}.panel-title{flex:0 0 48px;display:flex;align-items:center;justify-content:space-between;padding:5px 12px;background:var(--pale);border-bottom:1px solid var(--line)}.panel-title h2{margin:0;font-size:20px;line-height:1}.tag{background:var(--navy);color:#fff;border-radius:999px;padding:6px 10px;font-size:11px;font-weight:900}
-    .today-grid{display:grid;grid-template-columns:1.35fr repeat(3,1fr);grid-template-rows:36px repeat(12,minmax(0,1fr));flex:1;min-height:0;font-size:clamp(13px,.88vw,17px)}.cell{padding:5px 7px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);min-width:0;min-height:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center}.today-grid .cell:nth-child(4n){border-right:0}.head{justify-content:center;background:var(--navy);color:#fff;text-transform:uppercase;font-size:12px;letter-spacing:.08em;font-weight:900;text-align:center}.role{font-weight:900;background:#f6fafc}.login{justify-content:center;text-align:center;font-weight:900;color:var(--navy)}.open{background:var(--warn)!important;color:#8c5200!important}
-    .week-wrap{overflow:hidden;flex:1;min-height:0}.week-table{width:100%;height:100%;table-layout:fixed;border-collapse:collapse;font-size:clamp(10px,.67vw,13px)}.week-table col.role-col{width:14.5%}.week-table thead{height:38px}.week-table tbody{height:calc(100% - 38px)}.week-table tbody tr{height:8.333%}.week-table th,.week-table td{border-right:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden}.week-table tr>*:last-child{border-right:0}.week-table tbody tr:last-child>*{border-bottom:0}.day-head{height:38px;padding:3px 2px;background:var(--navy);color:#fff;text-align:center;font-size:11px;font-weight:900}.day-head .day-name{display:block;text-transform:uppercase;letter-spacing:.05em}.day-head .day-date{display:block;margin-top:1px;font-size:9px;opacity:.75}.day-head.active-day{background:var(--blue);box-shadow:inset 3px 0 #fff,inset -3px 0 #fff}.week-role{padding:3px 7px;text-align:left;background:#f5f9fb;color:#092c4b;font-size:clamp(10px,.72vw,14px);font-weight:900;white-space:nowrap;text-overflow:ellipsis}.week-day{padding:0;vertical-align:middle;background:#fff}.triplet{height:100%;display:grid;grid-template-rows:repeat(3,minmax(0,1fr))}.qline{display:flex;gap:4px;align-items:center;min-width:0;min-height:0;padding:1px 4px;border-bottom:1px solid #e3ebf0;color:var(--navy)}.qline:last-child{border-bottom:0}.qline b{flex:0 0 auto;min-width:21px;text-align:center;font-size:8px;line-height:1;color:#fff;border-radius:4px;padding:3px 2px;background:#526f84}.qline:nth-child(2) b{background:var(--blue)}.qline:nth-child(3) b{background:#7657aa}.qline span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:clamp(10px,.65vw,13px);font-weight:900;line-height:1}.qline.is-empty{color:#91a2ae;background:#fbfdfe}.qline.is-empty b{background:#a6b5bf}.qline.is-empty span{font-weight:700}.week-day.today-col{background:#e9f8ff;box-shadow:inset 2px 0 var(--blue),inset -2px 0 var(--blue)}.week-day.today-col .qline{background:#e9f8ff}
-    footer{flex:0 0 90px;border-top:1px solid var(--line);background:#f7fbfd;padding:6px 13px;display:grid;grid-template-columns:minmax(260px,1fr) minmax(360px,1.25fr) 290px;align-items:center;gap:14px}.status{display:flex;align-items:center;gap:10px;min-width:0}.status-dot{width:12px;height:12px;border-radius:50%;background:#23b26d;box-shadow:0 0 0 5px #23b26d18}.status strong,.status span{display:block}.status strong{font-size:15px}.status span{font-size:12px;color:var(--muted);margin-top:2px}.note{font-size:13px;line-height:1.35;color:var(--muted);text-align:center}.manager{height:78px;display:flex;align-items:center;justify-content:flex-end;gap:10px;text-align:right;text-decoration:none;color:var(--ink);border:2px solid var(--blue);border-radius:14px;padding:5px 7px 5px 11px;background:#fff}.manager strong,.manager small,.manager em{display:block}.manager strong{font-size:15px;color:var(--navy)}.manager small{font-size:10px;color:var(--muted)}.manager em{font-style:normal;font-size:10px;color:var(--blue);font-weight:900}.qr-stack{flex:0 0 66px;width:66px;height:66px}.qr-stack img,.qr-stack canvas,.qr-stack svg{display:block;width:66px;height:66px;border-radius:5px;background:#fff}.qr-stack canvas{display:none}.empty{padding:30px;text-align:center;color:var(--muted)}
-    @media(max-width:1300px){.pill{min-width:120px}.pill:nth-child(2){display:none}.week-table{font-size:10px}.qline{gap:2px;padding-inline:2px}.qline b{min-width:18px;font-size:7px}.role,.week-role{font-size:10px}footer{grid-template-columns:1fr 1fr 270px}}
-    @media(max-width:850px){html,body{overflow:auto;height:auto}body{padding:0}.shell{height:auto;min-height:100vh;border-radius:0}header{height:auto;flex-basis:auto}.head-info{display:none}main{grid-template-columns:1fr;overflow:visible}.panel{min-height:650px}.week-panel{min-height:760px}.today-grid{grid-template-rows:36px repeat(12,52px)}.week-table{height:710px}footer{grid-template-columns:1fr}.note{display:none}}
+    :root{
+      --navy:#073763;
+      --blue:#1298c8;
+      --pale:#eaf7fc;
+      --line:#b9d1df;
+      --ink:#10283b;
+      --muted:#587083;
+      --white:#fff;
+      --warn:#fff1c2;
+    }
+
+    *{box-sizing:border-box}
+
+    html,body{
+      margin:0;
+      width:100%;
+      height:100%;
+      overflow:hidden;
+      background:#dcecf4;
+      color:var(--ink);
+      font-family:Inter,Arial,sans-serif;
+    }
+
+    body{padding:6px}
+
+    .shell{
+      width:100%;
+      height:calc(100vh - 12px);
+      background:var(--white);
+      border-radius:16px;
+      box-shadow:0 14px 45px #173c5529;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+    }
+
+    /* =========================
+       HEADER
+    ========================== */
+
+    header{
+      flex:0 0 72px;
+      background:linear-gradient(115deg,var(--navy),#0b527d);
+      color:#fff;
+      padding:8px 18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:13px;
+      min-width:0;
+    }
+
+    .site{
+      display:grid;
+      place-items:center;
+      width:54px;
+      height:54px;
+      flex:0 0 54px;
+      border:2px solid #ffffff66;
+      border-radius:14px;
+      font-size:18px;
+      font-weight:900;
+      background:#ffffff16;
+    }
+
+    .eyebrow{
+      margin:0 0 3px;
+      text-transform:uppercase;
+      letter-spacing:.12em;
+      font-size:11px;
+      font-weight:900;
+      opacity:.75;
+    }
+
+    .title-line{
+      display:flex;
+      align-items:baseline;
+      gap:10px;
+      min-width:0;
+    }
+
+    h1{
+      margin:0;
+      font-size:clamp(25px,2vw,38px);
+      line-height:1.05;
+      white-space:nowrap;
+    }
+
+    .credit{
+      flex:0 0 auto;
+      font-size:9px;
+      font-weight:800;
+      letter-spacing:.05em;
+      color:#d7f3ff;
+      opacity:.82;
+      white-space:nowrap;
+    }
+
+    .head-info{
+      display:flex;
+      gap:9px;
+      justify-content:flex-end;
+      align-items:center;
+    }
+
+    .pill{
+      display:flex;
+      align-items:center;
+      gap:9px;
+      border:1px solid #ffffff2e;
+      background:#ffffff14;
+      border-radius:12px;
+      padding:7px 11px;
+      min-width:132px;
+    }
+
+    .pill.range-pill{
+      min-width:210px;
+    }
+
+    .pill small,
+    .pill strong{
+      display:block;
+    }
+
+    .pill small{
+      font-size:10px;
+      opacity:.72;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .pill strong{
+      font-size:15px;
+      margin-top:1px;
+      white-space:nowrap;
+    }
+
+    .range-pill strong{
+      font-size:16px;
+      font-weight:900;
+      color:#fff;
+    }
+
+    .live{
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:#64efaf;
+      box-shadow:0 0 0 5px #64efaf22;
+    }
+
+    /* =========================
+       MAIN
+    ========================== */
+
+    main{
+      display:grid;
+      grid-template-columns:minmax(0,33fr) minmax(0,67fr);
+      gap:8px;
+      padding:8px;
+      flex:1;
+      min-height:0;
+      overflow:hidden;
+    }
+
+    .panel{
+      border:1px solid var(--line);
+      border-radius:14px;
+      overflow:hidden;
+      background:#fff;
+      min-width:0;
+      min-height:0;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .panel-title{
+      flex:0 0 48px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:5px 12px;
+      background:var(--pale);
+      border-bottom:1px solid var(--line);
+    }
+
+    .panel-title h2{
+      margin:0;
+      font-size:20px;
+      line-height:1;
+    }
+
+    .tag{
+      background:var(--navy);
+      color:#fff;
+      border-radius:999px;
+      padding:6px 10px;
+      font-size:11px;
+      font-weight:900;
+      white-space:nowrap;
+    }
+
+    /* =========================
+       TODAY - BIG LEFT PANEL
+    ========================== */
+
+    .today-grid{
+      display:grid;
+      grid-template-columns:1.35fr repeat(3,1fr);
+      grid-template-rows:36px repeat(12,minmax(0,1fr));
+      flex:1;
+      min-height:0;
+      font-size:clamp(13px,.88vw,17px);
+    }
+
+    .cell{
+      padding:5px 7px;
+      border-right:1px solid var(--line);
+      border-bottom:1px solid var(--line);
+      min-width:0;
+      min-height:0;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      display:flex;
+      align-items:center;
+    }
+
+    .today-grid .cell:nth-child(4n){
+      border-right:0;
+    }
+
+    .head{
+      justify-content:center;
+      background:var(--navy);
+      color:#fff;
+      text-transform:uppercase;
+      font-size:12px;
+      letter-spacing:.08em;
+      font-weight:900;
+      text-align:center;
+    }
+
+    .role{
+      font-weight:900;
+      background:#f6fafc;
+    }
+
+    .login{
+      justify-content:center;
+      text-align:center;
+      font-weight:900;
+      color:var(--navy);
+    }
+
+    .open{
+      background:var(--warn)!important;
+      color:#8c5200!important;
+    }
+
+    /* =========================
+       NEXT 10 DAYS
+    ========================== */
+
+    .week-wrap{
+      overflow:hidden;
+      flex:1;
+      min-height:0;
+    }
+
+    .week-table{
+      width:100%;
+      height:100%;
+      table-layout:fixed;
+      border-collapse:collapse;
+      font-size:clamp(8px,.54vw,11px);
+    }
+
+    /*
+      Role column + 10 day columns.
+      Role gets slightly more width because role names
+      such as Bounty Hunter / Palletize PS need space.
+    */
+    .week-table col.role-col{
+      width:13%;
+    }
+
+    .week-table thead{
+      height:42px;
+    }
+
+    .week-table tbody{
+      height:calc(100% - 42px);
+    }
+
+    .week-table tbody tr{
+      height:8.333%;
+    }
+
+    .week-table th,
+    .week-table td{
+      border-right:1px solid var(--line);
+      border-bottom:1px solid var(--line);
+      overflow:hidden;
+    }
+
+    .week-table tr>*:last-child{
+      border-right:0;
+    }
+
+    .week-table tbody tr:last-child>*{
+      border-bottom:0;
+    }
+
+    .day-head{
+      height:42px;
+      padding:3px 1px;
+      background:var(--navy);
+      color:#fff;
+      text-align:center;
+      font-size:10px;
+      font-weight:900;
+    }
+
+    .day-head .day-name{
+      display:block;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+      line-height:1.05;
+    }
+
+    .day-head .day-date{
+      display:block;
+      margin-top:3px;
+      font-size:9px;
+      opacity:.82;
+      line-height:1;
+    }
+
+    .day-head.active-day{
+      background:var(--blue);
+      box-shadow:
+        inset 2px 0 #fff,
+        inset -2px 0 #fff;
+    }
+
+    .week-role{
+      padding:3px 5px;
+      text-align:left;
+      background:#f5f9fb;
+      color:#092c4b;
+      font-size:clamp(9px,.62vw,12px);
+      font-weight:900;
+      white-space:nowrap;
+      text-overflow:ellipsis;
+    }
+
+    .week-day{
+      padding:0;
+      vertical-align:middle;
+      background:#fff;
+    }
+
+    .triplet{
+      height:100%;
+      display:grid;
+      grid-template-rows:repeat(3,minmax(0,1fr));
+    }
+
+    .qline{
+      display:flex;
+      gap:2px;
+      align-items:center;
+      min-width:0;
+      min-height:0;
+      padding:1px 2px;
+      border-bottom:1px solid #e3ebf0;
+      color:var(--navy);
+    }
+
+    .qline:last-child{
+      border-bottom:0;
+    }
+
+    .qline b{
+      flex:0 0 auto;
+      min-width:17px;
+      text-align:center;
+      font-size:7px;
+      line-height:1;
+      color:#fff;
+      border-radius:3px;
+      padding:3px 1px;
+      background:#526f84;
+    }
+
+    .qline:nth-child(2) b{
+      background:var(--blue);
+    }
+
+    .qline:nth-child(3) b{
+      background:#7657aa;
+    }
+
+    .qline span{
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      font-size:clamp(8px,.52vw,10px);
+      font-weight:900;
+      line-height:1;
+    }
+
+    .qline.is-empty{
+      color:#91a2ae;
+      background:#fbfdfe;
+    }
+
+    .qline.is-empty b{
+      background:#a6b5bf;
+    }
+
+    .qline.is-empty span{
+      font-weight:700;
+    }
+
+    .week-day.today-col{
+      background:#e9f8ff;
+      box-shadow:
+        inset 2px 0 var(--blue),
+        inset -2px 0 var(--blue);
+    }
+
+    .week-day.today-col .qline{
+      background:#e9f8ff;
+    }
+
+    /* =========================
+       FOOTER
+    ========================== */
+
+    footer{
+      flex:0 0 90px;
+      border-top:1px solid var(--line);
+      background:#f7fbfd;
+      padding:6px 13px;
+      display:grid;
+      grid-template-columns:minmax(260px,1fr) minmax(360px,1.25fr) 290px;
+      align-items:center;
+      gap:14px;
+    }
+
+    .status{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
+
+    .status-dot{
+      width:12px;
+      height:12px;
+      border-radius:50%;
+      background:#23b26d;
+      box-shadow:0 0 0 5px #23b26d18;
+    }
+
+    .status strong,
+    .status span{
+      display:block;
+    }
+
+    .status strong{
+      font-size:15px;
+    }
+
+    .status span{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:2px;
+    }
+
+    .note{
+      font-size:13px;
+      line-height:1.35;
+      color:var(--muted);
+      text-align:center;
+    }
+
+    .manager{
+      height:78px;
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      gap:10px;
+      text-align:right;
+      text-decoration:none;
+      color:var(--ink);
+      border:2px solid var(--blue);
+      border-radius:14px;
+      padding:5px 7px 5px 11px;
+      background:#fff;
+    }
+
+    .manager strong,
+    .manager small,
+    .manager em{
+      display:block;
+    }
+
+    .manager strong{
+      font-size:15px;
+      color:var(--navy);
+    }
+
+    .manager small{
+      font-size:10px;
+      color:var(--muted);
+    }
+
+    .manager em{
+      font-style:normal;
+      font-size:10px;
+      color:var(--blue);
+      font-weight:900;
+    }
+
+    .qr-stack{
+      flex:0 0 66px;
+      width:66px;
+      height:66px;
+    }
+
+    .qr-stack img,
+    .qr-stack canvas{
+      display:block;
+      width:66px;
+      height:66px;
+      border-radius:5px;
+      background:#fff;
+    }
+
+    .qr-stack canvas{
+      display:none;
+    }
+
+    /* =========================
+       SMALLER SCREENS
+    ========================== */
+
+    @media(max-width:1500px){
+      .pill{
+        min-width:115px;
+        padding-inline:8px;
+      }
+
+      .pill.range-pill{
+        min-width:185px;
+      }
+
+      .range-pill strong{
+        font-size:14px;
+      }
+
+      .qline{
+        gap:1px;
+        padding-inline:1px;
+      }
+
+      .qline b{
+        min-width:15px;
+        font-size:6.5px;
+      }
+
+      .qline span{
+        font-size:8px;
+      }
+
+      .week-role{
+        font-size:9px;
+      }
+    }
+
+    @media(max-width:1300px){
+      .pill:nth-child(2){
+        display:flex;
+      }
+
+      .pill:last-child{
+        display:none;
+      }
+
+      .week-table col.role-col{
+        width:14%;
+      }
+
+      footer{
+        grid-template-columns:1fr 1fr 270px;
+      }
+    }
+
+    @media(max-width:850px){
+      html,body{
+        overflow:auto;
+        height:auto;
+      }
+
+      body{
+        padding:0;
+      }
+
+      .shell{
+        height:auto;
+        min-height:100vh;
+        border-radius:0;
+      }
+
+      header{
+        height:auto;
+        flex-basis:auto;
+      }
+
+      .head-info{
+        display:none;
+      }
+
+      main{
+        grid-template-columns:1fr;
+        overflow:visible;
+      }
+
+      .panel{
+        min-height:650px;
+      }
+
+      .week-panel{
+        min-height:760px;
+        overflow-x:auto;
+      }
+
+      .today-grid{
+        grid-template-rows:36px repeat(12,52px);
+      }
+
+      .week-wrap{
+        overflow-x:auto;
+      }
+
+      .week-table{
+        height:710px;
+        min-width:1050px;
+      }
+
+      footer{
+        grid-template-columns:1fr;
+      }
+
+      .note{
+        display:none;
+      }
+    }
   </style>
 </head>
+
 <body>
-  <div class="shell">
-    <header>
-      <div class="brand"><div class="site" id="siteCode">YXU1</div><div><p class="eyebrow">Ship Dock Â· Live role board</p><div class="title-line"><h1 id="title">Critical Role Assignments</h1><span class="credit">Developed by Ranvexsi</span></div></div></div>
-      <div class="head-info">
-        <div class="pill"><span class="live"></span><div><small>Active board</small><strong id="shiftLabel">Day Shift</strong></div></div>
-        <div class="pill"><div><small>Schedule week</small><strong id="weekLabel">â</strong></div></div>
-        <div class="pill"><div><small id="dayLabel">Today</small><strong id="clock">â</strong></div></div>
+
+<div class="shell">
+
+  <!-- HEADER -->
+  <header>
+
+    <div class="brand">
+
+      <div class="site" id="siteCode">
+        YXU1
       </div>
-    </header>
-    <main>
-      <section class="panel">
-        <div class="panel-title"><div><p class="eyebrow" style="color:var(--navy)">All quarters visible</p><h2>Today's assignments</h2></div><span class="tag" id="coverage">0 / 36 filled</span></div>
-        <div class="today-grid" id="todayGrid"></div>
-      </section>
-      <section class="panel week-panel">
-        <div class="panel-title"><div><p class="eyebrow" style="color:var(--navy)">Sunday to Saturday</p><h2>Weekly schedule</h2></div><span class="tag">Q1 Â· Q2 Â· Q3</span></div>
-        <div class="week-wrap"><table class="week-table" id="weekGrid" aria-label="Sunday to Saturday critical-role schedule"></table></div>
-      </section>
-    </main>
-    <footer>
-      <div class="status"><span class="status-dot" id="syncDot"></span><div><strong id="syncTitle">Connecting to live scheduleâ¦</strong><span id="updated">Waiting for Manager to publish</span></div></div>
-      <div class="note">Assignments can change during the shift. Please contact a Manager if you are unavailable.</div>
-      <a class="manager" id="managerLink" href="http://ranvexsi.netlify.app/manager"><div><strong>Manager access</strong><small>Scan with phone camera</small><em>ranvexsi.netlify.app/manager</em></div><span class="qr-stack"><img id="qrFallback" alt="QR code for Manager page" src="data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjEyOCIgd2lkdGg9IjEyOCIgdmlld0JveD0iMCAwIDMxIDMxIiByb2xlPSJpbWciPjx0aXRsZT5NYW5hZ2VyIGFjY2VzcyBRUiBjb2RlPC90aXRsZT48cGF0aCBmaWxsPSIjZmZmZmZmIiBkPSJNMCwwIGgzMXYzMUgweiIgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZ2VzIj48L3BhdGg+PHBhdGggZmlsbD0iIzA3Mzc2MyIgZD0iTTEgMWg3djFIMXpNMTEgMWgzdjFIMTF6TTE2IDFoM3YxSDE2ek0yMCAxaDJ2MUgyMHpNMjMsMSBoN3YxSDIzek0xIDJoMXYxSDF6TTcgMmgxdjFIN3pNMTEgMmgydjFIMTF6TTE5IDJoMXYxSDE5ek0yMyAyaDF2MUgyM3pNMjksMiBoMXYxSDI5ek0xIDNoMXYxSDF6TTMgM2gzdjFIM3pNNyAzaDF2MUg3ek05IDNoMXYxSDl6TTE1IDNoMXYxSDE1ek0xNyAzaDF2MUgxN3pNMjAgM2gydjFIMjB6TTIzIDNoMXYxSDIzek0yNSAzaDN2MUgyNXpNMjksMyBoMXYxSDI5ek0xIDRoMXYxSDF6TTMgNGgzdjFIM3pNNyA0aDF2MUg3ek05IDRoMXYxSDl6TTEyIDRoMXYxSDEyek0xOCA0aDJ2MUgxOHpNMjMgNGgxdjFIMjN6TTI1IDRoM3YxSDI1ek0yOSw0IGgxdjFIMjl6TTEgNWgxdjFIMXpNMyA1aDN2MUgzek03IDVoMXYxSDd6TTkgNWgxdjFIOXpNMTIgNWgxdjFIMTJ6TTE0IDVoM3YxSDE0ek0xOCA1aDR2MUgxOHpNMjMgNWgxdjFIMjN6TTI1IDVoM3YxSDI1ek0yOSw1IGgxdjFIMjl6TTEgNmgxdjFIMXpNNyA2aDF2MUg3ek05IDZoMnYxSDl6TTE0IDZoM3YxSDE0ek0xOCA2aDF2MUgxOHpNMjEgNmgxdjFIMjF6TTIzIDZoMXYxSDIzek0yOSw2IGgxdjFIMjl6TTEgN2g3djFIMXpNOSA3aDF2MUg5ek0xMSA3aDF2MUgxMXpNMTMgN2gxdjFIMTN6TTE1IDdoMXYxSDE1ek0xNyA3aDF2MUgxN3pNMTkgN2gxdjFIMTl6TTIxIDdoMXYxSDIxek0yMyw3IGg3djFIMjN6TTkgOGgxdjFIOXpNMTIgOGgxdjFIMTJ6TTE0IDhoMXYxSDE0ek0xOSA4aDF2MUgxOXpNMSA5aDF2MUgxek0zIDloNXYxSDN6TTEwIDloMXYxSDEwek0xMyA5aDF2MUgxM3pNMTUgOWg0djFIMTV6TTIwIDloMXYxSDIwek0yMyA5aDV2MUgyM3pNMSAxMGgxdjFIMXpNNCAxMGgxdjFINHpNOSAxMGgxdjFIOXpNMTEgMTBoMXYxSDExek0xMyAxMGgxdjFIMTN6TTE3IDEwaDF2MUgxN3pNMTkgMTBoM3YxSDE5ek0yMyAxMGgzdjFIMjN6TTI5LDEwIGgxdjFIMjl6TTMgMTFoMXYxSDN6TTYgMTFoNHYxSDZ6TTEyIDExaDJ2MUgxMnpNMTYgMTFoMnYxSDE2ek0xOSAxMWgxdjFIMTl6TTIyIDExaDR2MUgyMnpNMSAxMmgxdjFIMXpNMyAxMmgxdjFIM3pNNSAxMmgxdjFINXpNOSAxMmgxdjFIOXpNMTEgMTJoM3YxSDExek0xNSAxMmgzdjFIMTV6TTIxIDEyaDJ2MUgyMXpNMjQgMTJoMnYxSDI0ek0yOCAxMmgxdjFIMjh6TTEgMTNoMXYxSDF6TTMgMTNoMnYxSDN6TTYgMTNoMnYxSDZ6TTkgMTNoNHYxSDl6TTE2IDEzaDF2MUgxNnpNMTggMTNoMXYxSDE4ek0yMCAxM2gxdjFIMjB6TTI2IDEzaDJ2MUgyNnpNMyAxNGgxdjFIM3pNNiAxNGgxdjFINnpNMTAgMTRoM3YxSDEwek0xNCAxNGgydjFIMTR6TTE3IDE0aDF2MUgxN3pNMjAgMTRoMnYxSDIwek0yMyAxNGgzdjFIMjN6TTI3IDE0aDF2MUgyN3pNMjksMTQgaDF2MUgyOXpNMiAxNWgxdjFIMnpNNCAxNWgxdjFINHpNNyAxNWgydjFIN3pNMTEgMTVoMXYxSDExek0xNCAxNWg0djFIMTR6TTE5IDE1aDF2MUgxOXpNMjIgMTVoMXYxSDIyek0yNyAxNWgxdjFIMjd6TTMgMTZoMnYxSDN6TTYgMTZoMXYxSDZ6TTggMTZoNHYxSDh6TTE0IDE2aDF2MUgxNHpNMTcgMTZoMXYxSDE3ek0xOSAxNmgxdjFIMTl6TTIxIDE2aDF2MUgyMXpNMjMgMTZoM3YxSDIzek0yOCAxNmgxdjFIMjh6TTEgMTdoM3YxSDF6TTUgMTdoMXYxSDV6TTcgMTdoNHYxSDd6TTEyIDE3aDJ2MUgxMnpNMTUgMTdoMnYxSDE1ek0xOCAxN2gxdjFIMTh6TTIxIDE3aDF2MUgyMXpNMjQgMTdoMXYxSDI0ek0yNyAxN2gxdjFIMjd6TTEgMThoMXYxSDF6TTQgMThoMXYxSDR6TTYgMThoMXYxSDZ6TTggMThoMXYxSDh6TTEwIDE4aDJ2MUgxMHpNMTMgMThoMXYxSDEzek0xNyAxOGgxdjFIMTd6TTIwIDE4aDh2MUgyMHpNMjksMTggaDF2MUgyOXpNMSAxOWgxdjFIMXpNNCAxOWgxdjFINHpNNyAxOWgxdjFIN3pNMTAgMTloMnYxSDEwek0xNiAxOWgydjFIMTZ6TTE5IDE5aDF2MUgxOXpNMjEgMTloM3YxSDIxek0yNiAxOWgydjFIMjZ6TTEgMjBoMXYxSDF6TTQgMjBoMnYxSDR6TTExIDIwaDN2MUgxMXpNMTUgMjBoMnYxSDE1ek0xOSAyMGgxdjFIMTl6TTIxIDIwaDF2MUgyMXpNMjQgMjBoMXYxSDI0ek0yOCAyMGgxdjFIMjh6TTEgMjFoMXYxSDF6TTUgMjFoM3YxSDV6TTkgMjFoMXYxSDl6TTExIDIxaDF2MUgxMXpNMTMgMjFoMXYxSDEzek0xNiAyMWgxdjFIMTZ6TTE4IDIxaDJ2MUgxOHpNMjEgMjFoNXYxSDIxek0yNywyMSBoM3YxSDI3ek05IDIyaDF2MUg5ek0xMSAyMmgxdjFIMTF6TTE0IDIyaDJ2MUgxNHpNMTcgMjJoM3YxSDE3ek0yMSAyMmgxdjFIMjF6TTI1LDIyIGg1djFIMjV6TTEgMjNoN3YxSDF6TTEwIDIzaDF2MUgxMHpNMTMgMjNoNHYxSDEzek0xOCAyM2gxdjFIMTh6TTIwIDIzaDJ2MUgyMHpNMjMgMjNoMXYxSDIzek0yNSAyM2gzdjFIMjV6TTEgMjRoMXYxSDF6TTcgMjRoMXYxSDd6TTkgMjRoMXYxSDl6TTExIDI0aDJ2MUgxMXpNMTQgMjRoMXYxSDE0ek0xNyAyNGgxdjFIMTd6TTIwIDI0aDJ2MUgyMHpNMjUgMjRoMnYxSDI1ek0yOSwyNCBoMXYxSDI5ek0xIDI1aDF2MUgxek0zIDI1aDN2MUgzek03IDI1aDF2MUg3ek05IDI1aDJ2MUg5ek0xMyAyNWgxdjFIMTN6TTE1IDI1aDF2MUgxNXpNMTggMjVoMXYxSDE4ek0yMSAyNWg4djFIMjF6TTEgMjZoMXYxSDF6TTMgMjZoM3YxSDN6TTcgMjZoMXYxSDd6TTkgMjZoMXYxSDl6TTExIDI2aDF2MUgxMXpNMTcgMjZoM3YxSDE3ek0yMSAyNmgydjFIMjF6TTI4LDI2IGgydjFIMjh6TTEgMjdoMXYxSDF6TTMgMjdoM3YxSDN6TTcgMjdoMXYxSDd6TTkgMjdoMXYxSDl6TTEzIDI3aDV2MUgxM3pNMjAgMjdoNnYxSDIwek0yNyAyN2gydjFIMjd6TTEgMjhoMXYxSDF6TTcgMjhoMXYxSDd6TTEwIDI4aDJ2MUgxMHpNMTQgMjhoMXYxSDE0ek0xNiAyOGgxdjFIMTZ6TTIxIDI4aDF2MUgyMXpNMjMgMjhoNHYxSDIzek0yOCAyOGgxdjFIMjh6TTEgMjloN3YxSDF6TTkgMjloMXYxSDl6TTExIDI5aDF2MUgxMXpNMTUgMjloMnYxSDE1ek0xOCAyOWgxdjFIMTh6TTIwIDI5aDF2MUgyMHpNMjIgMjloMnYxSDIyek0yNSAyOWgxdjFIMjV6TTI3IDI5aDF2MUgyN3oiIHNoYXBlLXJlbmRlcmluZz0iY3Jpc3BFZGdlcyI+PC9wYXRoPjwvc3ZnPg=="><canvas id="qrDynamic" width="78" height="78"></canvas></span></a>
-    </footer>
-  </div>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
-  <script>
-  (function(){
-    'use strict';
-    var KEY='critical-role-assignments-v1';
-    var ROLES=[['ship-clerk','Ship Clerk'],['tdr','TDR'],['flats-ps','Flats PS'],['palletize-ps','Palletize PS'],['bounty-hunter','Bounty Hunter'],['quality','Quality'],['west-flats-pg','West Flats PG'],['east-flats-pg','East Flats PG'],['trans-pg','Trans PG'],['pit-driver','PIT Driver'],['rwc4-1','RWC4-1'],['rwc4-2','RWC4-2']];
-    var DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], Q=['Q1','Q2','Q3'];
-    function defaults(){return{settings:{title:'Critical Role Assignments',siteCode:'YXU1',primary:'#073763',accent:'#1298c8',managerPath:'https://ranvexsi.netlify.app/manager',dashboardSecret:'yxu1-live-board',maxQuarters:4},employees:[],unavailability:[],schedules:{},audits:[],lastUpdated:new Date().toISOString()}}
-    function load(){try{var data=JSON.parse(localStorage.getItem(KEY));return data&&data.settings?data:defaults()}catch(e){return defaults()}}
-    function pad(n){return String(n).padStart(2,'0')}function dateKey(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
-    function sunday(d){var x=new Date(d);x.setHours(12,0,0,0);x.setDate(x.getDate()-x.getDay());return x}
-    function add(d,n){var x=new Date(d);x.setDate(x.getDate()+n);return x}function akey(date,shift,q,role){return date+'|'+shift+'|'+q+'|'+role}
-    function activeShift(d){var m=d.getHours()*60+d.getMinutes();return(m>=1085||m<305)?'night':'day'}
-    function value(schedule,date,shift,q,role){var a=schedule&&schedule.assignments&&schedule.assignments[akey(date,shift,q,role)];return a&&a.login?a.login:'OPEN'}
-    function fmt(d){return d.toLocaleDateString('en-CA',{month:'short',day:'numeric'})}
-    function esc(v){return String(v).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
-    function render(){
-      var s=load(), now=new Date(), shift=activeShift(now), start=sunday(now), wk=dateKey(start), schedule=s.schedules[wk]||s.schedules[Object.keys(s.schedules)[0]], today=dateKey(now);
-      document.documentElement.style.setProperty('--navy',s.settings.primary||'#073763');document.documentElement.style.setProperty('--blue',s.settings.accent||'#1298c8');
-      document.title=s.settings.title||'Critical Role Assignments';document.getElementById('title').textContent=s.settings.title;document.getElementById('siteCode').textContent=s.settings.siteCode;
-      document.getElementById('shiftLabel').textContent=shift==='day'?'Day Shift':'Night Shift';document.getElementById('weekLabel').textContent=fmt(start)+' â '+fmt(add(start,6));document.getElementById('dayLabel').textContent=now.toLocaleDateString('en-CA',{weekday:'long'});document.getElementById('clock').textContent=now.toLocaleTimeString('en-CA',{hour:'numeric',minute:'2-digit'});
-      var html='<div class="cell head">Role</div>'+Q.map(function(q){return'<div class="cell head">'+q+'</div>'}).join(''),filled=0;
-      ROLES.forEach(function(r){html+='<div class="cell role">'+esc(r[1])+'</div>';Q.forEach(function(q){var login=value(schedule,today,shift,q,r[0]);if(login!=='OPEN')filled++;html+='<div class="cell login '+(login==='OPEN'?'open':'')+'">'+esc(login)+'</div>'})});document.getElementById('todayGrid').innerHTML=html;document.getElementById('coverage').textContent=filled+' / 36 filled';
-      html='<colgroup><col class="role-col"><col span="7"></colgroup><thead><tr><th class="day-head" scope="col">Role</th>'+DAYS.map(function(day,i){var d=add(start,i);return'<th class="day-head '+(i===now.getDay()?'active-day':'')+'" scope="col"><span class="day-name">'+day+'</span><span class="day-date">'+d.getDate()+'</span></th>'}).join('')+'</tr></thead><tbody>';
-      ROLES.forEach(function(r){html+='<tr><th class="week-role" scope="row">'+esc(r[1])+'</th>';DAYS.forEach(function(day,i){var dk=dateKey(add(start,i));html+='<td class="week-day '+(i===now.getDay()?'today-col':'')+'"><div class="triplet">';Q.forEach(function(q){var login=value(schedule,dk,shift,q,r[0]),empty=login==='OPEN';html+='<div class="qline '+(empty?'is-empty':'')+'"><b>'+q+'</b><span>'+esc(empty?'â':login)+'</span></div>'});html+='</div></td>'});html+='</tr>'});html+='</tbody>';document.getElementById('weekGrid').innerHTML=html;
-      document.getElementById('updated').textContent=s.lastUpdated?'Updated '+new Date(s.lastUpdated).toLocaleString('en-CA',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'Waiting for Manager to publish';
-      var configured=s.settings.managerPath,link=(!configured||configured==='manager.html'||configured==='/manager')?'https://ranvexsi.netlify.app/manager':configured;document.getElementById('managerLink').href=link;var url=new URL(link,location.href).href,fallback=document.getElementById('qrFallbackInline')||document.getElementById('qrFallback');
-      if(fallback&&fallback.tagName==='IMG'){try{var raw=atob(fallback.src.split(',')[1]),template=document.createElement('template');template.innerHTML=raw.trim();var inline=template.content.firstElementChild;inline.id='qrFallbackInline';inline.setAttribute('aria-label','QR code for Manager page');fallback.replaceWith(inline);fallback=inline}catch(e){console.warn('Inline QR fallback unavailable',e)}}
-      var canvas=document.getElementById('qrDynamic');if(fallback)fallback.style.display='block';canvas.style.display='none';if(window.QRCode&&typeof QRCode.toCanvas==='function'){QRCode.toCanvas(canvas,url,{width:66,margin:1,color:{dark:s.settings.primary||'#073763'}},function(error){if(!error){if(fallback)fallback.style.display='none';canvas.style.display='block'}})}
+
+      <div>
+        <p class="eyebrow">Ship Dock · Live role board</p>
+
+        <div class="title-line">
+          <h1 id="title">Critical Role Assignments</h1>
+          <span class="credit">Developed by Ranvexsi</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="head-info">
+
+      <div class="pill">
+        <span class="live"></span>
+
+        <div>
+          <small>Active board</small>
+          <strong id="shiftLabel">Day Shift</strong>
+        </div>
+      </div>
+
+      <!-- NEW: rolling 10-day date range -->
+      <div class="pill range-pill">
+        <div>
+          <small>10 Day Schedule</small>
+          <strong id="rangeLabel">—</strong>
+        </div>
+      </div>
+
+      <div class="pill">
+        <div>
+          <small id="dayLabel">Today</small>
+          <strong id="clock">—</strong>
+        </div>
+      </div>
+
+    </div>
+
+  </header>
+
+
+  <!-- MAIN -->
+  <main>
+
+    <!-- TODAY -->
+    <section class="panel">
+
+      <div class="panel-title">
+
+        <div>
+          <p class="eyebrow" style="color:var(--navy)">
+            All quarters visible
+          </p>
+
+          <h2>Today's assignments</h2>
+        </div>
+
+        <span class="tag" id="coverage">
+          0 / 36 filled
+        </span>
+
+      </div>
+
+      <div
+        class="today-grid"
+        id="todayGrid">
+      </div>
+
+    </section>
+
+
+    <!-- NEXT 10 DAYS -->
+    <section class="panel week-panel">
+
+      <div class="panel-title">
+
+        <div>
+          <p
+            class="eyebrow"
+            id="tenDaySub"
+            style="color:var(--navy)">
+            Today + next 9 days
+          </p>
+
+          <h2>Next 10 Days</h2>
+        </div>
+
+        <span class="tag">
+          Q1 · Q2 · Q3
+        </span>
+
+      </div>
+
+      <div class="week-wrap">
+
+        <table
+          class="week-table"
+          id="weekGrid"
+          aria-label="Next 10 days critical-role schedule">
+        </table>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+  <!-- FOOTER -->
+  <footer>
+
+    <div class="status">
+
+      <span
+        class="status-dot"
+        id="syncDot">
+      </span>
+
+      <div>
+
+        <strong id="syncTitle">
+          Connecting to live schedule…
+        </strong>
+
+        <span id="updated">
+          Waiting for Manager to publish
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <div class="note">
+      Assignments can change during the shift.
+      Please contact a Manager if you are unavailable.
+    </div>
+
+
+    <a
+      class="manager"
+      id="managerLink"
+      href="https://ranvexsi.netlify.app/manager">
+
+      <div>
+
+        <strong>
+          Manager access
+        </strong>
+
+        <small>
+          Scan with phone camera
+        </small>
+
+        <em>
+          ranvexsi.netlify.app/manager
+        </em>
+
+      </div>
+
+      <span class="qr-stack">
+
+        <img
+          id="qrFallback"
+          alt="QR code for Manager page"
+          src="https://api.qrserver.com/v1/create-qr-code/?size=132x132&data=https%3A%2F%2Franvexsi.netlify.app%2Fmanager">
+
+        <canvas
+          id="qrDynamic"
+          width="78"
+          height="78">
+        </canvas>
+
+      </span>
+
+    </a>
+
+  </footer>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+
+
+<script>
+(function(){
+
+  'use strict';
+
+  var KEY='critical-role-assignments-v1';
+
+  var ROLES=[
+    ['ship-clerk','Ship Clerk'],
+    ['tdr','TDR'],
+    ['flats-ps','Flats PS'],
+    ['palletize-ps','Palletize PS'],
+    ['bounty-hunter','Bounty Hunter'],
+    ['quality','Quality'],
+    ['west-flats-pg','West Flats PG'],
+    ['east-flats-pg','East Flats PG'],
+    ['trans-pg','Trans PG'],
+    ['pit-driver','PIT Driver'],
+    ['rwc4-1','RWC4-1'],
+    ['rwc4-2','RWC4-2']
+  ];
+
+  var Q=['Q1','Q2','Q3'];
+
+
+  function defaults(){
+
+    return{
+      settings:{
+        title:'Critical Role Assignments',
+        siteCode:'YXU1',
+        primary:'#073763',
+        accent:'#1298c8',
+        managerPath:'https://ranvexsi.netlify.app/manager',
+        dashboardSecret:'yxu1-live-board',
+        maxQuarters:4
+      },
+
+      employees:[],
+      unavailability:[],
+      schedules:{},
+      audits:[],
+      lastUpdated:new Date().toISOString()
+    };
+
+  }
+
+
+  function load(){
+
+    try{
+
+      var data=JSON.parse(
+        localStorage.getItem(KEY)
+      );
+
+      return data && data.settings
+        ? data
+        : defaults();
+
+    }catch(e){
+
+      return defaults();
+
     }
-    render();setInterval(render,30000);window.addEventListener('storage',render);window.addEventListener('cra:cloud-state',render);
-  })();
-  </script>
-  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js';
-    import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js';
-    import { getDatabase, ref, onValue } from 'https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js';
 
-    const firebaseConfig = {
-      apiKey: 'AIzaSyDopxxbJOlUQdMfd-lM-a6Odb8Yux7jAkA',
-      authDomain: 'yxu1-critical-roles.firebaseapp.com',
-      databaseURL: 'https://yxu1-critical-roles-default-rtdb.firebaseio.com',
-      projectId: 'yxu1-critical-roles',
-      storageBucket: 'yxu1-critical-roles.firebasestorage.app',
-      messagingSenderId: '681933966768',
-      appId: '1:681933966768:web:327d36b8683db1f4fa1a75'
-    };
+  }
 
-    const syncTitle = document.getElementById('syncTitle');
-    const syncDot = document.getElementById('syncDot');
-    const setStatus = (title, online) => {
-      syncTitle.textContent = title;
-      syncDot.style.background = online ? '#23b26d' : '#d97706';
-    };
 
-    try {
-      const app = initializeApp(firebaseConfig);
-      const auth = getAuth(app);
-      const db = getDatabase(app);
-      await signInAnonymously(auth);
-      onValue(ref(db, 'appState'), (snapshot) => {
-        if (snapshot.exists()) {
-          localStorage.setItem('critical-role-assignments-v1', JSON.stringify(snapshot.val()));
-          window.dispatchEvent(new CustomEvent('cra:cloud-state'));
-          setStatus('Live schedule connected', true);
-        } else {
-          setStatus('Connected Â· waiting for first publish', true);
+  function pad(n){
+
+    return String(n).padStart(2,'0');
+
+  }
+
+
+  function dateKey(d){
+
+    return d.getFullYear()
+      +'-'
+      +pad(d.getMonth()+1)
+      +'-'
+      +pad(d.getDate());
+
+  }
+
+
+  /*
+    Manager schedules are still stored by week,
+    starting Sunday.
+
+    This remains important because the rolling
+    10-day board can cross into the next week.
+  */
+  function sunday(d){
+
+    var x=new Date(d);
+
+    x.setHours(12,0,0,0);
+
+    x.setDate(
+      x.getDate()-x.getDay()
+    );
+
+    return x;
+
+  }
+
+
+  function add(d,n){
+
+    var x=new Date(d);
+
+    x.setDate(
+      x.getDate()+n
+    );
+
+    return x;
+
+  }
+
+
+  function akey(date,shift,q,role){
+
+    return date
+      +'|'
+      +shift
+      +'|'
+      +q
+      +'|'
+      +role;
+
+  }
+
+
+  function activeShift(d){
+
+    var m=
+      d.getHours()*60
+      +d.getMinutes();
+
+    return(
+      m>=1085 ||
+      m<305
+    )
+      ?'night'
+      :'day';
+
+  }
+
+
+  /*
+    Find the correct schedule for the actual date.
+
+    This is different from the old weekly board
+    because the 10-day view may include dates
+    from TWO different schedule weeks.
+  */
+  function scheduleForDate(state,date){
+
+    var weekStart=sunday(date);
+
+    var weekKey=dateKey(weekStart);
+
+    return state.schedules[weekKey] || null;
+
+  }
+
+
+  function value(
+    state,
+    date,
+    shift,
+    q,
+    role
+  ){
+
+    var schedule=
+      scheduleForDate(
+        state,
+        date
+      );
+
+    var dk=dateKey(date);
+
+    var a=
+      schedule &&
+      schedule.assignments &&
+      schedule.assignments[
+        akey(
+          dk,
+          shift,
+          q,
+          role
+        )
+      ];
+
+    return(
+      a &&
+      a.login
+    )
+      ?a.login
+      :'OPEN';
+
+  }
+
+
+  function esc(v){
+
+    return String(v)
+      .replace(
+        /[&<>"']/g,
+        function(c){
+
+          return{
+            '&':'&amp;',
+            '<':'&lt;',
+            '>':'&gt;',
+            '"':'&quot;',
+            "'":'&#39;'
+          }[c];
+
         }
-      }, () => setStatus('Offline schedule cache', false));
-    } catch (error) {
-      console.error('Firebase dashboard connection failed:', error);
-      setStatus('Offline schedule cache', false);
+      );
+
+  }
+
+
+  function shortMonth(d){
+
+    return d.toLocaleDateString(
+      'en-CA',
+      {
+        month:'short'
+      }
+    );
+
+  }
+
+
+  function dayName(d){
+
+    return d.toLocaleDateString(
+      'en-CA',
+      {
+        weekday:'short'
+      }
+    );
+
+  }
+
+
+  /*
+    Example:
+    18 Aug to 27 Aug 2026
+  */
+  function rangeText(start,end){
+
+    var startDay=start.getDate();
+    var endDay=end.getDate();
+
+    var startMonth=shortMonth(start);
+    var endMonth=shortMonth(end);
+
+    var year=end.getFullYear();
+
+    /*
+      Same month:
+      18 Aug to 27 Aug 2026
+    */
+    if(
+      start.getMonth()===end.getMonth() &&
+      start.getFullYear()===end.getFullYear()
+    ){
+
+      return startDay
+        +' '
+        +startMonth
+        +' to '
+        +endDay
+        +' '
+        +endMonth
+        +' '
+        +year;
+
     }
-  </script>
+
+    /*
+      Different months:
+      28 Aug to 6 Sep 2026
+    */
+    if(
+      start.getFullYear()===end.getFullYear()
+    ){
+
+      return startDay
+        +' '
+        +startMonth
+        +' to '
+        +endDay
+        +' '
+        +endMonth
+        +' '
+        +year;
+
+    }
+
+    /*
+      Different years:
+      28 Dec 2026 to 6 Jan 2027
+    */
+    return startDay
+      +' '
+      +startMonth
+      +' '
+      +start.getFullYear()
+      +' to '
+      +endDay
+      +' '
+      +endMonth
+      +' '
+      +end.getFullYear();
+
+  }
+
+
+  function render(){
+
+    var s=load();
+
+    var now=new Date();
+
+    var shift=activeShift(now);
+
+    /*
+      Rolling schedule starts TODAY,
+      not Sunday.
+    */
+    var start=new Date(now);
+
+    start.setHours(12,0,0,0);
+
+    var end=add(start,9);
+
+    var today=dateKey(now);
+
+
+    /* -------------------------
+       THEME
+    -------------------------- */
+
+    document.documentElement
+      .style
+      .setProperty(
+        '--navy',
+        s.settings.primary || '#073763'
+      );
+
+    document.documentElement
+      .style
+      .setProperty(
+        '--blue',
+        s.settings.accent || '#1298c8'
+      );
+
+
+    document.title=
+      s.settings.title ||
+      'Critical Role Assignments';
+
+    document
+      .getElementById('title')
+      .textContent=
+      s.settings.title ||
+      'Critical Role Assignments';
+
+    document
+      .getElementById('siteCode')
+      .textContent=
+      s.settings.siteCode ||
+      'YXU1';
+
+
+    /* -------------------------
+       HEADER
+    -------------------------- */
+
+    document
+      .getElementById('shiftLabel')
+      .textContent=
+      shift==='day'
+        ?'Day Shift'
+        :'Night Shift';
+
+
+    /*
+      NEW:
+      18 Aug to 27 Aug 2026
+    */
+    document
+      .getElementById('rangeLabel')
+      .textContent=
+      rangeText(start,end);
+
+
+    document
+      .getElementById('tenDaySub')
+      .textContent=
+      rangeText(start,end);
+
+
+    document
+      .getElementById('dayLabel')
+      .textContent=
+      now.toLocaleDateString(
+        'en-CA',
+        {
+          weekday:'long'
+        }
+      );
+
+
+    document
+      .getElementById('clock')
+      .textContent=
+      now.toLocaleTimeString(
+        'en-CA',
+        {
+          hour:'numeric',
+          minute:'2-digit'
+        }
+      );
+
+
+    /* =========================
+       TODAY BIG SCHEDULE
+    ========================== */
+
+    var html=
+      '<div class="cell head">Role</div>'
+      +Q.map(
+        function(q){
+
+          return(
+            '<div class="cell head">'
+            +q
+            +'</div>'
+          );
+
+        }
+      ).join('');
+
+
+    var filled=0;
+
+
+    ROLES.forEach(
+      function(r){
+
+        html+=
+          '<div class="cell role">'
+          +esc(r[1])
+          +'</div>';
+
+
+        Q.forEach(
+          function(q){
+
+            var login=
+              value(
+                s,
+                now,
+                shift,
+                q,
+                r[0]
+              );
+
+
+            if(login!=='OPEN'){
+              filled++;
+            }
+
+
+            html+=
+              '<div class="cell login '
+              +(login==='OPEN'
+                ?'open'
+                :'')
+              +'">'
+              +esc(login)
+              +'</div>';
+
+          }
+        );
+
+      }
+    );
+
+
+    document
+      .getElementById('todayGrid')
+      .innerHTML=html;
+
+
+    document
+      .getElementById('coverage')
+      .textContent=
+      filled+' / 36 filled';
+
+
+    /* =========================
+       NEXT 10 DAYS
+    ========================== */
+
+    html=
+      '<colgroup>'
+      +'<col class="role-col">'
+      +'<col span="10">'
+      +'</colgroup>'
+
+      +'<thead>'
+      +'<tr>'
+
+      +'<th class="day-head" scope="col">'
+      +'Role'
+      +'</th>';
+
+
+    /*
+      Generate 10 day headers
+      starting TODAY.
+    */
+    for(var i=0;i<10;i++){
+
+      var headerDate=add(start,i);
+
+      var headerKey=
+        dateKey(headerDate);
+
+      var isToday=
+        headerKey===today;
+
+
+      html+=
+        '<th class="day-head '
+        +(isToday
+          ?'active-day'
+          :'')
+        +'" scope="col">'
+
+        +'<span class="day-name">'
+        +dayName(headerDate)
+        +'</span>'
+
+        +'<span class="day-date">'
+        +headerDate.getDate()
+        +' '
+        +shortMonth(headerDate)
+        +'</span>'
+
+        +'</th>';
+
+    }
+
+
+    html+=
+      '</tr>'
+      +'</thead>'
+      +'<tbody>';
+
+
+    /*
+      12 roles
+    */
+    ROLES.forEach(
+      function(r){
+
+        html+=
+          '<tr>'
+
+          +'<th class="week-role" scope="row">'
+          +esc(r[1])
+          +'</th>';
+
+
+        /*
+          Each role gets 10 days.
+        */
+        for(var i=0;i<10;i++){
+
+          var d=add(start,i);
+
+          var dk=dateKey(d);
+
+          var isToday=
+            dk===today;
+
+
+          html+=
+            '<td class="week-day '
+            +(isToday
+              ?'today-col'
+              :'')
+            +'">'
+
+            +'<div class="triplet">';
+
+
+          /*
+            Q1 / Q2 / Q3
+          */
+          Q.forEach(
+            function(q){
+
+              var login=
+                value(
+                  s,
+                  d,
+                  shift,
+                  q,
+                  r[0]
+                );
+
+              var empty=
+                login==='OPEN';
+
+
+              html+=
+                '<div class="qline '
+                +(empty
+                  ?'is-empty'
+                  :'')
+                +'">'
+
+                +'<b>'
+                +q
+                +'</b>'
+
+                +'<span>'
+                +esc(
+                  empty
+                    ?'—'
+                    :login
+                )
+                +'</span>'
+
+                +'</div>';
+
+            }
+          );
+
+
+          html+=
+            '</div>'
+            +'</td>';
+
+        }
+
+
+        html+=
+          '</tr>';
+
+      }
+    );
+
+
+    html+=
+      '</tbody>';
+
+
+    document
+      .getElementById('weekGrid')
+      .innerHTML=html;
+
+
+    /* =========================
+       LAST UPDATED
+    ========================== */
+
+    document
+      .getElementById('updated')
+      .textContent=
+      s.lastUpdated
+        ?
+        'Updated '
+        +new Date(
+          s.lastUpdated
+        ).toLocaleString(
+          'en-CA',
+          {
+            month:'short',
+            day:'numeric',
+            hour:'numeric',
+            minute:'2-digit'
+          }
+        )
+        :
+        'Waiting for Manager to publish';
+
+
+    /* =========================
+       MANAGER LINK + QR
+    ========================== */
+
+    var configured=
+      s.settings.managerPath;
+
+
+    var link=
+      (
+        !configured ||
+        configured==='manager.html' ||
+        configured==='/manager'
+      )
+      ?
+      'https://ranvexsi.netlify.app/manager'
+      :
+      configured;
+
+
+    document
+      .getElementById('managerLink')
+      .href=link;
+
+
+    var url=
+      new URL(
+        link,
+        location.href
+      ).href;
+
+
+    var fallback=
+      document
+        .getElementById('qrFallback');
+
+
+    var canvas=
+      document
+        .getElementById('qrDynamic');
+
+
+    if(fallback){
+      fallback.style.display='block';
+    }
+
+
+    canvas.style.display='none';
+
+
+    if(
+      window.QRCode &&
+      typeof QRCode.toCanvas==='function'
+    ){
+
+      QRCode.toCanvas(
+        canvas,
+        url,
+        {
+          width:66,
+          margin:1,
+
+          color:{
+            dark:
+              s.settings.primary ||
+              '#073763'
+          }
+        },
+
+        function(error){
+
+          if(!error){
+
+            if(fallback){
+              fallback.style.display='none';
+            }
+
+            canvas.style.display='block';
+
+          }
+
+        }
+      );
+
+    }
+
+  }
+
+
+  /* Initial render */
+  render();
+
+
+  /* Refresh clock / rolling view */
+  setInterval(
+    render,
+    30000
+  );
+
+
+  /* Local changes */
+  window.addEventListener(
+    'storage',
+    render
+  );
+
+
+  /* Firebase updates */
+  window.addEventListener(
+    'cra:cloud-state',
+    render
+  );
+
+})();
+</script>
+
+
+<!-- =========================
+     FIREBASE LIVE SYNC
+========================== -->
+
+<script type="module">
+
+import {
+  initializeApp
+}
+from
+'https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js';
+
+
+import {
+  getAuth,
+  signInAnonymously
+}
+from
+'https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js';
+
+
+import {
+  getDatabase,
+  ref,
+  onValue
+}
+from
+'https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js';
+
+
+const firebaseConfig={
+
+  apiKey:
+    'AIzaSyDopxxbJOlUQdMfd-lM-a6Odb8Yux7jAkA',
+
+  authDomain:
+    'yxu1-critical-roles.firebaseapp.com',
+
+  databaseURL:
+    'https://yxu1-critical-roles-default-rtdb.firebaseio.com',
+
+  projectId:
+    'yxu1-critical-roles',
+
+  storageBucket:
+    'yxu1-critical-roles.firebasestorage.app',
+
+  messagingSenderId:
+    '681933966768',
+
+  appId:
+    '1:681933966768:web:327d36b8683db1f4fa1a75'
+
+};
+
+
+const syncTitle=
+  document.getElementById(
+    'syncTitle'
+  );
+
+
+const syncDot=
+  document.getElementById(
+    'syncDot'
+  );
+
+
+const setStatus=(
+  title,
+  online
+)=>{
+
+  syncTitle.textContent=
+    title;
+
+  syncDot.style.background=
+    online
+      ?'#23b26d'
+      :'#d97706';
+
+};
+
+
+try{
+
+  const app=
+    initializeApp(
+      firebaseConfig
+    );
+
+
+  const auth=
+    getAuth(app);
+
+
+  const db=
+    getDatabase(app);
+
+
+  await signInAnonymously(
+    auth
+  );
+
+
+  onValue(
+    ref(
+      db,
+      'appState'
+    ),
+
+    (snapshot)=>{
+
+      if(
+        snapshot.exists()
+      ){
+
+        localStorage.setItem(
+          'critical-role-assignments-v1',
+          JSON.stringify(
+            snapshot.val()
+          )
+        );
+
+
+        window.dispatchEvent(
+          new CustomEvent(
+            'cra:cloud-state'
+          )
+        );
+
+
+        setStatus(
+          'Live schedule connected',
+          true
+        );
+
+      }else{
+
+        setStatus(
+          'Connected · waiting for first publish',
+          true
+        );
+
+      }
+
+    },
+
+    ()=>{
+
+      setStatus(
+        'Offline schedule cache',
+        false
+      );
+
+    }
+
+  );
+
+}catch(error){
+
+  console.error(
+    'Firebase dashboard connection failed:',
+    error
+  );
+
+
+  setStatus(
+    'Offline schedule cache',
+    false
+  );
+
+}
+
+</script>
+
 </body>
 </html>
