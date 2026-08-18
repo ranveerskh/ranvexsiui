@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- VERSION 2: 40-inch TV layout, no horizontal scroll, permanent QR fallback, Manager URL updated -->
+<!-- FIREBASE V3: realtime TV sync, anonymous read access, local offline cache -->
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -41,7 +41,7 @@
       </section>
     </main>
     <footer>
-      <div class="status"><span class="status-dot"></span><div><strong>Schedule ready</strong><span id="updated">Waiting for Manager to publish</span></div></div>
+      <div class="status"><span class="status-dot" id="syncDot"></span><div><strong id="syncTitle">Connecting to live schedule…</strong><span id="updated">Waiting for Manager to publish</span></div></div>
       <div class="note">Assignments can change during the shift. Please contact a Manager if you are unavailable.</div>
       <a class="manager" id="managerLink" href="http://ranvexsi.netlify.app/manager"><div><strong>Manager access</strong><small>Scan with phone camera</small><em>ranvexsi.netlify.app/manager</em></div><span class="qr-stack"><img id="qrFallback" alt="QR code for Manager page" src="data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjEyOCIgd2lkdGg9IjEyOCIgdmlld0JveD0iMCAwIDMxIDMxIiByb2xlPSJpbWciPjx0aXRsZT5NYW5hZ2VyIGFjY2VzcyBRUiBjb2RlPC90aXRsZT48cGF0aCBmaWxsPSIjZmZmZmZmIiBkPSJNMCwwIGgzMXYzMUgweiIgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZ2VzIj48L3BhdGg+PHBhdGggZmlsbD0iIzA3Mzc2MyIgZD0iTTEgMWg3djFIMXpNMTEgMWgzdjFIMTF6TTE2IDFoM3YxSDE2ek0yMCAxaDJ2MUgyMHpNMjMsMSBoN3YxSDIzek0xIDJoMXYxSDF6TTcgMmgxdjFIN3pNMTEgMmgydjFIMTF6TTE5IDJoMXYxSDE5ek0yMyAyaDF2MUgyM3pNMjksMiBoMXYxSDI5ek0xIDNoMXYxSDF6TTMgM2gzdjFIM3pNNyAzaDF2MUg3ek05IDNoMXYxSDl6TTE1IDNoMXYxSDE1ek0xNyAzaDF2MUgxN3pNMjAgM2gydjFIMjB6TTIzIDNoMXYxSDIzek0yNSAzaDN2MUgyNXpNMjksMyBoMXYxSDI5ek0xIDRoMXYxSDF6TTMgNGgzdjFIM3pNNyA0aDF2MUg3ek05IDRoMXYxSDl6TTEyIDRoMXYxSDEyek0xOCA0aDJ2MUgxOHpNMjMgNGgxdjFIMjN6TTI1IDRoM3YxSDI1ek0yOSw0IGgxdjFIMjl6TTEgNWgxdjFIMXpNMyA1aDN2MUgzek03IDVoMXYxSDd6TTkgNWgxdjFIOXpNMTIgNWgxdjFIMTJ6TTE0IDVoM3YxSDE0ek0xOCA1aDR2MUgxOHpNMjMgNWgxdjFIMjN6TTI1IDVoM3YxSDI1ek0yOSw1IGgxdjFIMjl6TTEgNmgxdjFIMXpNNyA2aDF2MUg3ek05IDZoMnYxSDl6TTE0IDZoM3YxSDE0ek0xOCA2aDF2MUgxOHpNMjEgNmgxdjFIMjF6TTIzIDZoMXYxSDIzek0yOSw2IGgxdjFIMjl6TTEgN2g3djFIMXpNOSA3aDF2MUg5ek0xMSA3aDF2MUgxMXpNMTMgN2gxdjFIMTN6TTE1IDdoMXYxSDE1ek0xNyA3aDF2MUgxN3pNMTkgN2gxdjFIMTl6TTIxIDdoMXYxSDIxek0yMyw3IGg3djFIMjN6TTkgOGgxdjFIOXpNMTIgOGgxdjFIMTJ6TTE0IDhoMXYxSDE0ek0xOSA4aDF2MUgxOXpNMSA5aDF2MUgxek0zIDloNXYxSDN6TTEwIDloMXYxSDEwek0xMyA5aDF2MUgxM3pNMTUgOWg0djFIMTV6TTIwIDloMXYxSDIwek0yMyA5aDV2MUgyM3pNMSAxMGgxdjFIMXpNNCAxMGgxdjFINHpNOSAxMGgxdjFIOXpNMTEgMTBoMXYxSDExek0xMyAxMGgxdjFIMTN6TTE3IDEwaDF2MUgxN3pNMTkgMTBoM3YxSDE5ek0yMyAxMGgzdjFIMjN6TTI5LDEwIGgxdjFIMjl6TTMgMTFoMXYxSDN6TTYgMTFoNHYxSDZ6TTEyIDExaDJ2MUgxMnpNMTYgMTFoMnYxSDE2ek0xOSAxMWgxdjFIMTl6TTIyIDExaDR2MUgyMnpNMSAxMmgxdjFIMXpNMyAxMmgxdjFIM3pNNSAxMmgxdjFINXpNOSAxMmgxdjFIOXpNMTEgMTJoM3YxSDExek0xNSAxMmgzdjFIMTV6TTIxIDEyaDJ2MUgyMXpNMjQgMTJoMnYxSDI0ek0yOCAxMmgxdjFIMjh6TTEgMTNoMXYxSDF6TTMgMTNoMnYxSDN6TTYgMTNoMnYxSDZ6TTkgMTNoNHYxSDl6TTE2IDEzaDF2MUgxNnpNMTggMTNoMXYxSDE4ek0yMCAxM2gxdjFIMjB6TTI2IDEzaDJ2MUgyNnpNMyAxNGgxdjFIM3pNNiAxNGgxdjFINnpNMTAgMTRoM3YxSDEwek0xNCAxNGgydjFIMTR6TTE3IDE0aDF2MUgxN3pNMjAgMTRoMnYxSDIwek0yMyAxNGgzdjFIMjN6TTI3IDE0aDF2MUgyN3pNMjksMTQgaDF2MUgyOXpNMiAxNWgxdjFIMnpNNCAxNWgxdjFINHpNNyAxNWgydjFIN3pNMTEgMTVoMXYxSDExek0xNCAxNWg0djFIMTR6TTE5IDE1aDF2MUgxOXpNMjIgMTVoMXYxSDIyek0yNyAxNWgxdjFIMjd6TTMgMTZoMnYxSDN6TTYgMTZoMXYxSDZ6TTggMTZoNHYxSDh6TTE0IDE2aDF2MUgxNHpNMTcgMTZoMXYxSDE3ek0xOSAxNmgxdjFIMTl6TTIxIDE2aDF2MUgyMXpNMjMgMTZoM3YxSDIzek0yOCAxNmgxdjFIMjh6TTEgMTdoM3YxSDF6TTUgMTdoMXYxSDV6TTcgMTdoNHYxSDd6TTEyIDE3aDJ2MUgxMnpNMTUgMTdoMnYxSDE1ek0xOCAxN2gxdjFIMTh6TTIxIDE3aDF2MUgyMXpNMjQgMTdoMXYxSDI0ek0yNyAxN2gxdjFIMjd6TTEgMThoMXYxSDF6TTQgMThoMXYxSDR6TTYgMThoMXYxSDZ6TTggMThoMXYxSDh6TTEwIDE4aDJ2MUgxMHpNMTMgMThoMXYxSDEzek0xNyAxOGgxdjFIMTd6TTIwIDE4aDh2MUgyMHpNMjksMTggaDF2MUgyOXpNMSAxOWgxdjFIMXpNNCAxOWgxdjFINHpNNyAxOWgxdjFIN3pNMTAgMTloMnYxSDEwek0xNiAxOWgydjFIMTZ6TTE5IDE5aDF2MUgxOXpNMjEgMTloM3YxSDIxek0yNiAxOWgydjFIMjZ6TTEgMjBoMXYxSDF6TTQgMjBoMnYxSDR6TTExIDIwaDN2MUgxMXpNMTUgMjBoMnYxSDE1ek0xOSAyMGgxdjFIMTl6TTIxIDIwaDF2MUgyMXpNMjQgMjBoMXYxSDI0ek0yOCAyMGgxdjFIMjh6TTEgMjFoMXYxSDF6TTUgMjFoM3YxSDV6TTkgMjFoMXYxSDl6TTExIDIxaDF2MUgxMXpNMTMgMjFoMXYxSDEzek0xNiAyMWgxdjFIMTZ6TTE4IDIxaDJ2MUgxOHpNMjEgMjFoNXYxSDIxek0yNywyMSBoM3YxSDI3ek05IDIyaDF2MUg5ek0xMSAyMmgxdjFIMTF6TTE0IDIyaDJ2MUgxNHpNMTcgMjJoM3YxSDE3ek0yMSAyMmgxdjFIMjF6TTI1LDIyIGg1djFIMjV6TTEgMjNoN3YxSDF6TTEwIDIzaDF2MUgxMHpNMTMgMjNoNHYxSDEzek0xOCAyM2gxdjFIMTh6TTIwIDIzaDJ2MUgyMHpNMjMgMjNoMXYxSDIzek0yNSAyM2gzdjFIMjV6TTEgMjRoMXYxSDF6TTcgMjRoMXYxSDd6TTkgMjRoMXYxSDl6TTExIDI0aDJ2MUgxMXpNMTQgMjRoMXYxSDE0ek0xNyAyNGgxdjFIMTd6TTIwIDI0aDJ2MUgyMHpNMjUgMjRoMnYxSDI1ek0yOSwyNCBoMXYxSDI5ek0xIDI1aDF2MUgxek0zIDI1aDN2MUgzek03IDI1aDF2MUg3ek05IDI1aDJ2MUg5ek0xMyAyNWgxdjFIMTN6TTE1IDI1aDF2MUgxNXpNMTggMjVoMXYxSDE4ek0yMSAyNWg4djFIMjF6TTEgMjZoMXYxSDF6TTMgMjZoM3YxSDN6TTcgMjZoMXYxSDd6TTkgMjZoMXYxSDl6TTExIDI2aDF2MUgxMXpNMTcgMjZoM3YxSDE3ek0yMSAyNmgydjFIMjF6TTI4LDI2IGgydjFIMjh6TTEgMjdoMXYxSDF6TTMgMjdoM3YxSDN6TTcgMjdoMXYxSDd6TTkgMjdoMXYxSDl6TTEzIDI3aDV2MUgxM3pNMjAgMjdoNnYxSDIwek0yNyAyN2gydjFIMjd6TTEgMjhoMXYxSDF6TTcgMjhoMXYxSDd6TTEwIDI4aDJ2MUgxMHpNMTQgMjhoMXYxSDE0ek0xNiAyOGgxdjFIMTZ6TTIxIDI4aDF2MUgyMXpNMjMgMjhoNHYxSDIzek0yOCAyOGgxdjFIMjh6TTEgMjloN3YxSDF6TTkgMjloMXYxSDl6TTExIDI5aDF2MUgxMXpNMTUgMjloMnYxSDE1ek0xOCAyOWgxdjFIMTh6TTIwIDI5aDF2MUgyMHpNMjIgMjloMnYxSDIyek0yNSAyOWgxdjFIMjV6TTI3IDI5aDF2MUgyN3oiIHNoYXBlLXJlbmRlcmluZz0iY3Jpc3BFZGdlcyI+PC9wYXRoPjwvc3ZnPg=="><canvas id="qrDynamic" width="78" height="78"></canvas></span></a>
     </footer>
@@ -53,7 +53,7 @@
     var KEY='critical-role-assignments-v1';
     var ROLES=[['ship-clerk','Ship Clerk'],['tdr','TDR'],['flats-ps','Flats PS'],['palletize-ps','Palletize PS'],['bounty-hunter','Bounty Hunter'],['quality','Quality'],['west-flats-pg','West Flats PG'],['east-flats-pg','East Flats PG'],['trans-pg','Trans PG'],['pit-driver','PIT Driver'],['rwc4-1','RWC4-1'],['rwc4-2','RWC4-2']];
     var DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], Q=['Q1','Q2','Q3'];
-    function defaults(){return{settings:{title:'Critical Role Assignments',siteCode:'YXU1',primary:'#073763',accent:'#1298c8',managerPath:'http://ranvexsi.netlify.app/manager',dashboardSecret:'yxu1-live-board',maxQuarters:4,managerPin:'2468',masterPin:'8642'},employees:[],unavailability:[],schedules:{},audits:[],lastUpdated:new Date().toISOString()}}
+    function defaults(){return{settings:{title:'Critical Role Assignments',siteCode:'YXU1',primary:'#073763',accent:'#1298c8',managerPath:'http://ranvexsi.netlify.app/manager',dashboardSecret:'yxu1-live-board',maxQuarters:4},employees:[],unavailability:[],schedules:{},audits:[],lastUpdated:new Date().toISOString()}}
     function load(){try{var data=JSON.parse(localStorage.getItem(KEY));return data&&data.settings?data:defaults()}catch(e){return defaults()}}
     function pad(n){return String(n).padStart(2,'0')}function dateKey(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
     function sunday(d){var x=new Date(d);x.setHours(12,0,0,0);x.setDate(x.getDate()-x.getDay());return x}
@@ -74,8 +74,49 @@
       document.getElementById('updated').textContent=s.lastUpdated?'Updated '+new Date(s.lastUpdated).toLocaleString('en-CA',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'Waiting for Manager to publish';
       var configured=s.settings.managerPath,link=(!configured||configured==='manager.html'||configured==='/manager')?'http://ranvexsi.netlify.app/manager':configured;document.getElementById('managerLink').href=link;var url=new URL(link,location.href).href;if(window.QRCode){QRCode.toCanvas(document.getElementById('qrDynamic'),url,{width:78,margin:1,color:{dark:s.settings.primary||'#073763'}},function(error){if(!error){document.getElementById('qrFallback').style.display='none';document.getElementById('qrDynamic').style.display='block'}})}
     }
-    render();setInterval(render,30000);window.addEventListener('storage',render);
+    render();setInterval(render,30000);window.addEventListener('storage',render);window.addEventListener('cra:cloud-state',render);
   })();
+  </script>
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js';
+    import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js';
+    import { getDatabase, ref, onValue } from 'https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js';
+
+    const firebaseConfig = {
+      apiKey: 'AIzaSyDopxxbJOlUQdMfd-lM-a6Odb8Yux7jAkA',
+      authDomain: 'yxu1-critical-roles.firebaseapp.com',
+      databaseURL: 'https://yxu1-critical-roles-default-rtdb.firebaseio.com',
+      projectId: 'yxu1-critical-roles',
+      storageBucket: 'yxu1-critical-roles.firebasestorage.app',
+      messagingSenderId: '681933966768',
+      appId: '1:681933966768:web:327d36b8683db1f4fa1a75'
+    };
+
+    const syncTitle = document.getElementById('syncTitle');
+    const syncDot = document.getElementById('syncDot');
+    const setStatus = (title, online) => {
+      syncTitle.textContent = title;
+      syncDot.style.background = online ? '#23b26d' : '#d97706';
+    };
+
+    try {
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getDatabase(app);
+      await signInAnonymously(auth);
+      onValue(ref(db, 'appState'), (snapshot) => {
+        if (snapshot.exists()) {
+          localStorage.setItem('critical-role-assignments-v1', JSON.stringify(snapshot.val()));
+          window.dispatchEvent(new CustomEvent('cra:cloud-state'));
+          setStatus('Live schedule connected', true);
+        } else {
+          setStatus('Connected · waiting for first publish', true);
+        }
+      }, () => setStatus('Offline schedule cache', false));
+    } catch (error) {
+      console.error('Firebase dashboard connection failed:', error);
+      setStatus('Offline schedule cache', false);
+    }
   </script>
 </body>
 </html>
