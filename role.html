@@ -1,92 +1,273 @@
 <!doctype html>
+<!-- FIREBASE V4.1: two-week TV board + Day / Night / Auto switch -->
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Critical Role Assignments</title>
-  <style>
-    :root{--navy:#073763;--blue:#1298c8;--pale:#eaf7fc;--line:#b9d1df;--ink:#10283b;--muted:#587083;--white:#fff;--warn:#fff1c2}
-    *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#dcecf4;color:var(--ink);font-family:Inter,Arial,sans-serif}
-    body{padding:8px}.shell{width:100%;height:calc(100vh - 16px);background:var(--white);border-radius:18px;box-shadow:0 14px 45px #173c5529;overflow:hidden;display:flex;flex-direction:column}
-    header{flex:0 0 78px;background:linear-gradient(115deg,var(--navy),#0b527d);color:#fff;padding:10px 18px;display:flex;align-items:center;justify-content:space-between;gap:16px}
-    .brand{display:flex;align-items:center;gap:13px}.site{display:grid;place-items:center;width:54px;height:54px;border:2px solid #ffffff66;border-radius:14px;font-size:18px;font-weight:900;background:#ffffff16}.eyebrow{margin:0 0 3px;text-transform:uppercase;letter-spacing:.12em;font-size:11px;font-weight:900;opacity:.75}h1{margin:0;font-size:clamp(26px,2vw,38px);line-height:1.05}
-    .head-info{display:flex;gap:9px;justify-content:flex-end;align-items:center}
-    .shift-switch{display:flex;align-items:center;gap:3px;padding:3px;border:1px solid #ffffff38;background:#ffffff12;border-radius:12px}.shift-switch button{border:0;background:transparent;color:#dcecf4;padding:7px 10px;border-radius:9px;font:800 11px/1 Inter,Arial,sans-serif;cursor:pointer;text-transform:uppercase;letter-spacing:.04em}.shift-switch button.active{background:#fff;color:var(--navy);box-shadow:0 2px 8px #001b2b35}.shift-switch button:hover:not(.active){background:#ffffff16}
-.pill{display:flex;align-items:center;gap:9px;border:1px solid #ffffff2e;background:#ffffff14;border-radius:12px;padding:7px 11px;min-width:142px}.pill small,.pill strong{display:block}.pill small{font-size:10px;opacity:.72;text-transform:uppercase;letter-spacing:.08em}.pill strong{font-size:15px;margin-top:1px}.live{width:10px;height:10px;border-radius:50%;background:#64efaf;box-shadow:0 0 0 5px #64efaf22}
-    main{display:grid;grid-template-columns:minmax(0,34fr) minmax(0,66fr);gap:8px;padding:8px;flex:1;min-height:0;overflow:hidden}.panel{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;min-width:0;min-height:0;display:flex;flex-direction:column}.panel-title{flex:0 0 55px;display:flex;align-items:center;justify-content:space-between;padding:7px 12px;background:var(--pale);border-bottom:1px solid var(--line)}.panel-title h2{margin:0;font-size:20px;line-height:1}.tag{background:var(--navy);color:#fff;border-radius:999px;padding:6px 10px;font-size:11px;font-weight:900}
-    .today-grid{display:grid;grid-template-columns:1.35fr repeat(3,1fr);grid-template-rows:36px repeat(12,minmax(0,1fr));flex:1;min-height:0;font-size:clamp(13px,.88vw,17px)}.cell{padding:5px 7px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);min-width:0;min-height:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center}.today-grid .cell:nth-child(4n){border-right:0}.head{justify-content:center;background:var(--navy);color:#fff;text-transform:uppercase;font-size:12px;letter-spacing:.08em;font-weight:900;text-align:center}.role{font-weight:900;background:#f6fafc}.login{justify-content:center;text-align:center;font-weight:900;color:var(--navy)}.open{background:var(--warn)!important;color:#8c5200!important}
-    .week-wrap{overflow:hidden;flex:1;min-height:0}.week-grid{height:100%;display:grid;grid-template-columns:15% repeat(7,minmax(0,1fr));grid-template-rows:36px repeat(12,minmax(0,1fr));font-size:clamp(10px,.72vw,14px);min-width:0}.week-grid .cell{padding:4px 5px;white-space:normal}.week-grid .cell:nth-child(8n){border-right:0}.day-head{justify-content:center;background:var(--navy);color:#fff;text-align:center;font-size:12px;font-weight:900}.active-day{background:var(--blue);box-shadow:inset 3px 0 #fff,inset -3px 0 #fff}.triplet{padding:0!important;display:grid;grid-template-rows:repeat(3,1fr)}.qline{display:flex;gap:4px;align-items:center;min-width:0;min-height:0;padding:2px 4px;border-bottom:1px solid #d8e4eb}.qline:last-child{border-bottom:0}.qline b{flex:0 0 auto;font-size:9px;line-height:1;color:#fff;border-radius:4px;padding:3px;background:#526f84}.qline:nth-child(2) b{background:var(--blue)}.qline:nth-child(3) b{background:#7657aa}.qline span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:900;line-height:1}.today-col{background:#dff5ff;box-shadow:inset 2px 0 var(--blue),inset -2px 0 var(--blue)}
-    footer{flex:0 0 104px;border-top:1px solid var(--line);background:#f7fbfd;padding:7px 13px;display:grid;grid-template-columns:minmax(260px,1fr) minmax(360px,1.25fr) 300px;align-items:center;gap:14px}.status{display:flex;align-items:center;gap:10px;min-width:0}.status-dot{width:12px;height:12px;border-radius:50%;background:#23b26d;box-shadow:0 0 0 5px #23b26d18}.status strong,.status span{display:block}.status strong{font-size:15px}.status span{font-size:12px;color:var(--muted);margin-top:2px}.note{font-size:13px;line-height:1.35;color:var(--muted);text-align:center}.manager{height:90px;display:flex;align-items:center;justify-content:flex-end;gap:12px;text-align:right;text-decoration:none;color:var(--ink);border:2px solid var(--blue);border-radius:14px;padding:6px 8px 6px 12px;background:#fff}.manager strong,.manager small,.manager em{display:block}.manager strong{font-size:16px;color:var(--navy)}.manager small{font-size:11px;color:var(--muted)}.manager em{font-style:normal;font-size:10px;color:var(--blue);font-weight:900}.qr-stack{flex:0 0 78px;width:78px;height:78px}.qr-stack img,.qr-stack canvas{display:block;width:78px;height:78px;border-radius:5px;background:#fff}.qr-stack canvas{display:none}.empty{padding:30px;text-align:center;color:var(--muted)}
-    @media(max-width:1300px){.pill{min-width:120px}.pill:nth-child(2){display:none}.week-grid{font-size:10px}.qline{gap:2px;padding-inline:2px}.qline b{font-size:8px}.role{font-size:11px}footer{grid-template-columns:1fr 1fr 270px}}
-    @media(max-width:850px){html,body{overflow:auto;height:auto}body{padding:0}.shell{height:auto;min-height:100vh;border-radius:0}header{height:auto;flex-basis:auto}.head-info{display:none}main{grid-template-columns:1fr;overflow:visible}.panel{min-height:650px}.week-panel{min-height:760px}.week-grid,.today-grid{grid-template-rows:36px repeat(12,52px)}footer{grid-template-columns:1fr}.note{display:none}}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="app-version" content="4.1">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Critical Role Assignments</title>
+<style>
+:root{--navy:#073763;--blue:#1298c8;--pale:#eaf7fc;--line:#b9d1df;--ink:#10283b;--muted:#587083;--white:#fff;--warn:#fff1c2}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#dcecf4;color:var(--ink);font-family:Inter,Arial,sans-serif}
+body{padding:6px}
+.shell{width:100%;height:calc(100vh - 12px);background:#fff;border-radius:14px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 12px 38px #173c5525}
+header{height:66px;flex:0 0 66px;background:linear-gradient(115deg,var(--navy),#0b527d);color:#fff;padding:7px 16px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}.site{display:grid;place-items:center;width:50px;height:50px;flex:0 0 50px;border:2px solid #ffffff66;border-radius:12px;font-size:17px;font-weight:900;background:#ffffff16}
+.eyebrow{margin:0 0 2px;text-transform:uppercase;letter-spacing:.11em;font-size:9px;font-weight:900;opacity:.75}
+.title-line{display:flex;align-items:baseline;gap:9px;min-width:0}h1{margin:0;font-size:clamp(22px,1.8vw,30px);line-height:1;white-space:nowrap}.credit{font-size:8px;font-weight:800;color:#d7f3ff;opacity:.82;white-space:nowrap}
+.head-info{display:flex;gap:8px;align-items:center}.pill{border:1px solid #ffffff2e;background:#ffffff14;border-radius:10px;padding:6px 10px;min-width:132px}.pill.range-pill{min-width:230px}.pill small,.pill strong{display:block}.pill small{font-size:8px;opacity:.72;text-transform:uppercase;letter-spacing:.08em}.pill strong{font-size:13px;margin-top:1px;white-space:nowrap}.live{display:inline-block;width:8px;height:8px;border-radius:50%;background:#64efaf;margin-right:6px}
+.shift-switch{display:flex;align-items:center;gap:2px;padding:3px;border:1px solid #ffffff35;background:#ffffff12;border-radius:10px}
+.shift-btn{border:0;background:transparent;color:#d8edf7;border-radius:7px;padding:7px 9px;font-size:10px;font-weight:900;cursor:pointer;line-height:1}
+.shift-btn.active{background:#fff;color:var(--navy);box-shadow:0 2px 8px #001b2d30}
+.shift-btn:hover{background:#ffffff22}.shift-btn.active:hover{background:#fff}
+main{flex:1;min-height:0;padding:7px;display:grid;grid-template-rows:1fr 1fr;gap:7px}
+.week-card{min-height:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;background:#fff}
+.week-title{height:36px;flex:0 0 36px;background:var(--pale);border-bottom:1px solid var(--line);padding:4px 10px;display:flex;align-items:center;justify-content:space-between}
+.week-title-left{display:flex;align-items:baseline;gap:10px}.week-title h2{margin:0;font-size:17px;color:var(--navy)}.range{font-size:11px;font-weight:800;color:var(--muted)}
+.tag{background:var(--navy);color:#fff;border-radius:999px;padding:4px 9px;font-size:9px;font-weight:900;white-space:nowrap}
+.table-wrap{flex:1;min-height:0;overflow:hidden}
+.schedule{width:100%;height:100%;border-collapse:collapse;table-layout:fixed}
+.schedule col.role-col{width:13%}
+.schedule th,.schedule td{border-right:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden}
+.schedule tr>*:last-child{border-right:0}.schedule tbody tr:last-child>*{border-bottom:0}
+.schedule thead{height:31px}.schedule tbody{height:calc(100% - 31px)}.schedule tbody tr{height:9.09%}
+.day-head{background:var(--navy);color:#fff;text-align:center;padding:2px;font-size:10px;font-weight:900}
+.day-head .dn{display:inline-block;text-transform:uppercase;letter-spacing:.04em}.day-head .dd{display:inline-block;margin-left:4px;font-size:9px;opacity:.82}
+.day-head.today{background:var(--blue);box-shadow:inset 3px 0 #fff,inset -3px 0 #fff}
+.role{background:#f4f8fa;color:#092c4b;text-align:left;padding:2px 7px;font-size:10px;font-weight:900;white-space:nowrap;text-overflow:ellipsis}
+.day-cell{padding:0;background:#fff}.day-cell.today{background:#e9f8ff;box-shadow:inset 2px 0 var(--blue),inset -2px 0 var(--blue)}
+.triplet{height:100%;display:grid;grid-template-rows:repeat(3,minmax(0,1fr))}
+.qline{min-height:0;display:grid;grid-template-columns:20px minmax(0,1fr);align-items:center;border-bottom:1px solid #e5edf2;padding:0 3px;gap:3px}
+.qline:last-child{border-bottom:0}.qline b{text-align:center;color:#fff;background:#526f84;border-radius:3px;font-size:7px;padding:2px 1px}.qline:nth-child(2) b{background:var(--blue)}.qline:nth-child(3) b{background:#7657aa}
+.qline span{font-size:clamp(8px,.58vw,11px);font-weight:900;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.qline.empty{background:#fbfdfe}.qline.empty b{background:#a6b5bf}.qline.empty span{color:#9aa9b4;font-weight:700}
+footer{height:38px;flex:0 0 38px;border-top:1px solid var(--line);background:#f7fbfd;padding:4px 12px;display:flex;align-items:center;justify-content:space-between;gap:15px}
+.status{display:flex;align-items:center;gap:8px;font-size:11px;min-width:0}.dot{width:9px;height:9px;flex:0 0 9px;border-radius:50%;background:#23b26d}.updated{font-size:10px;color:var(--muted)}.note{font-size:10px;color:var(--muted);text-align:right}
+@media(max-width:1350px){.shift-btn{padding:7px 7px}.pill.range-pill{min-width:205px}}
+@media(max-width:1200px){.schedule col.role-col{width:14%}.qline span{font-size:8px}.role{font-size:9px}.head-info .pill:last-child{display:none}}
+@media(max-width:850px){html,body{height:auto;overflow:auto}body{padding:0}.shell{height:auto;min-height:100vh;border-radius:0}header{height:auto;min-height:66px}.head-info{display:none}main{height:auto;grid-template-rows:auto;overflow:auto}.week-card{min-height:520px}.table-wrap{overflow-x:auto}.schedule{min-width:950px}footer{height:auto;min-height:42px}.note{display:none}}
+</style>
 </head>
 <body>
-  <div class="shell">
-    <header>
-      <div class="brand"><div class="site" id="siteCode">YXU1</div><div><p class="eyebrow">Ship Dock Â· Live role board</p><h1 id="title">Critical Role Assignments</h1></div></div>
-      <div class="head-info">
-        <div class="shift-switch" id="shiftSwitch" aria-label="Dashboard shift view">
-          <button type="button" data-shift-mode="day">Day</button>
-          <button type="button" data-shift-mode="night">Night</button>
-          <button type="button" data-shift-mode="auto">Auto</button>
-        </div>
-        <div class="pill"><span class="live"></span><div><small>Active board</small><strong id="shiftLabel">Day Shift</strong></div></div>
-        <div class="pill"><div><small>Schedule week</small><strong id="weekLabel">â</strong></div></div>
-        <div class="pill"><div><small id="dayLabel">Today</small><strong id="clock">â</strong></div></div>
-      </div>
-    </header>
-    <main>
-      <section class="panel">
-        <div class="panel-title"><div><p class="eyebrow" style="color:var(--navy)">All quarters visible</p><h2>Today's assignments</h2></div><span class="tag" id="coverage">0 / 36 filled</span></div>
-        <div class="today-grid" id="todayGrid"></div>
-      </section>
-      <section class="panel week-panel">
-        <div class="panel-title"><div><p class="eyebrow" style="color:var(--navy)">Sunday to Saturday</p><h2>Weekly schedule</h2></div><span class="tag">Q1 Â· Q2 Â· Q3</span></div>
-        <div class="week-wrap"><div class="week-grid" id="weekGrid"></div></div>
-      </section>
-    </main>
-    <footer>
-      <div class="status"><span class="status-dot"></span><div><strong>Schedule ready</strong><span id="updated">Waiting for Manager to publish</span></div></div>
-      <div class="note">Assignments can change during the shift. Please contact a Manager if you are unavailable.</div>
-      <a class="manager" id="managerLink" href="https://ranvexsi.netlify.app/manager"><div><strong>Manager access</strong><small>Scan with phone camera</small><em>ranvexsi.netlify.app/manager</em></div><span class="qr-stack"><img id="qrFallback" alt="QR code for Manager page" src="data:image/svg+xml;base64,PHN2ZyBoZWlnaHQ9IjEyOCIgd2lkdGg9IjEyOCIgdmlld0JveD0iMCAwIDMxIDMxIiByb2xlPSJpbWciPjx0aXRsZT5NYW5hZ2VyIGFjY2VzcyBRUiBjb2RlPC90aXRsZT48cGF0aCBmaWxsPSIjZmZmZmZmIiBkPSJNMCwwIGgzMXYzMUgweiIgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZ2VzIj48L3BhdGg+PHBhdGggZmlsbD0iIzA3Mzc2MyIgZD0iTTEgMWg3djFIMXpNMTEgMWgzdjFIMTF6TTE2IDFoM3YxSDE2ek0yMCAxaDJ2MUgyMHpNMjMsMSBoN3YxSDIzek0xIDJoMXYxSDF6TTcgMmgxdjFIN3pNMTEgMmgydjFIMTF6TTE5IDJoMXYxSDE5ek0yMyAyaDF2MUgyM3pNMjksMiBoMXYxSDI5ek0xIDNoMXYxSDF6TTMgM2gzdjFIM3pNNyAzaDF2MUg3ek05IDNoMXYxSDl6TTE1IDNoMXYxSDE1ek0xNyAzaDF2MUgxN3pNMjAgM2gydjFIMjB6TTIzIDNoMXYxSDIzek0yNSAzaDN2MUgyNXpNMjksMyBoMXYxSDI5ek0xIDRoMXYxSDF6TTMgNGgzdjFIM3pNNyA0aDF2MUg3ek05IDRoMXYxSDl6TTEyIDRoMXYxSDEyek0xOCA0aDJ2MUgxOHpNMjMgNGgxdjFIMjN6TTI1IDRoM3YxSDI1ek0yOSw0IGgxdjFIMjl6TTEgNWgxdjFIMXpNMyA1aDN2MUgzek03IDVoMXYxSDd6TTkgNWgxdjFIOXpNMTIgNWgxdjFIMTJ6TTE0IDVoM3YxSDE0ek0xOCA1aDR2MUgxOHpNMjMgNWgxdjFIMjN6TTI1IDVoM3YxSDI1ek0yOSw1IGgxdjFIMjl6TTEgNmgxdjFIMXpNNyA2aDF2MUg3ek05IDZoMnYxSDl6TTE0IDZoM3YxSDE0ek0xOCA2aDF2MUgxOHpNMjEgNmgxdjFIMjF6TTIzIDZoMXYxSDIzek0yOSw2IGgxdjFIMjl6TTEgN2g3djFIMXpNOSA3aDF2MUg5ek0xMSA3aDF2MUgxMXpNMTMgN2gxdjFIMTN6TTE1IDdoMXYxSDE1ek0xNyA3aDF2MUgxN3pNMTkgN2gxdjFIMTl6TTIxIDdoMXYxSDIxek0yMyw3IGg3djFIMjN6TTkgOGgxdjFIOXpNMTIgOGgxdjFIMTJ6TTE0IDhoMXYxSDE0ek0xOSA4aDF2MUgxOXpNMSA5aDF2MUgxek0zIDloNXYxSDN6TTEwIDloMXYxSDEwek0xMyA5aDF2MUgxM3pNMTUgOWg0djFIMTV6TTIwIDloMXYxSDIwek0yMyA5aDV2MUgyM3pNMSAxMGgxdjFIMXpNNCAxMGgxdjFINHpNOSAxMGgxdjFIOXpNMTEgMTBoMXYxSDExek0xMyAxMGgxdjFIMTN6TTE3IDEwaDF2MUgxN3pNMTkgMTBoM3YxSDE5ek0yMyAxMGgzdjFIMjN6TTI5LDEwIGgxdjFIMjl6TTMgMTFoMXYxSDN6TTYgMTFoNHYxSDZ6TTEyIDExaDJ2MUgxMnpNMTYgMTFoMnYxSDE2ek0xOSAxMWgxdjFIMTl6TTIyIDExaDR2MUgyMnpNMSAxMmgxdjFIMXpNMyAxMmgxdjFIM3pNNSAxMmgxdjFINXpNOSAxMmgxdjFIOXpNMTEgMTJoM3YxSDExek0xNSAxMmgzdjFIMTV6TTIxIDEyaDJ2MUgyMXpNMjQgMTJoMnYxSDI0ek0yOCAxMmgxdjFIMjh6TTEgMTNoMXYxSDF6TTMgMTNoMnYxSDN6TTYgMTNoMnYxSDZ6TTkgMTNoNHYxSDl6TTE2IDEzaDF2MUgxNnpNMTggMTNoMXYxSDE4ek0yMCAxM2gxdjFIMjB6TTI2IDEzaDJ2MUgyNnpNMyAxNGgxdjFIM3pNNiAxNGgxdjFINnpNMTAgMTRoM3YxSDEwek0xNCAxNGgydjFIMTR6TTE3IDE0aDF2MUgxN3pNMjAgMTRoMnYxSDIwek0yMyAxNGgzdjFIMjN6TTI3IDE0aDF2MUgyN3pNMjksMTQgaDF2MUgyOXpNMiAxNWgxdjFIMnpNNCAxNWgxdjFINHpNNyAxNWgydjFIN3pNMTEgMTVoMXYxSDExek0xNCAxNWg0djFIMTR6TTE5IDE1aDF2MUgxOXpNMjIgMTVoMXYxSDIyek0yNyAxNWgxdjFIMjd6TTMgMTZoMnYxSDN6TTYgMTZoMXYxSDZ6TTggMTZoNHYxSDh6TTE0IDE2aDF2MUgxNHpNMTcgMTZoMXYxSDE3ek0xOSAxNmgxdjFIMTl6TTIxIDE2aDF2MUgyMXpNMjMgMTZoM3YxSDIzek0yOCAxNmgxdjFIMjh6TTEgMTdoM3YxSDF6TTUgMTdoMXYxSDV6TTcgMTdoNHYxSDd6TTEyIDE3aDJ2MUgxMnpNMTUgMTdoMnYxSDE1ek0xOCAxN2gxdjFIMTh6TTIxIDE3aDF2MUgyMXpNMjQgMTdoMXYxSDI0ek0yNyAxN2gxdjFIMjd6TTEgMThoMXYxSDF6TTQgMThoMXYxSDR6TTYgMThoMXYxSDZ6TTggMThoMXYxSDh6TTEwIDE4aDJ2MUgxMHpNMTMgMThoMXYxSDEzek0xNyAxOGgxdjFIMTd6TTIwIDE4aDh2MUgyMHpNMjksMTggaDF2MUgyOXpNMSAxOWgxdjFIMXpNNCAxOWgxdjFINHpNNyAxOWgxdjFIN3pNMTAgMTloMnYxSDEwek0xNiAxOWgydjFIMTZ6TTE5IDE5aDF2MUgxOXpNMjEgMTloM3YxSDIxek0yNiAxOWgydjFIMjZ6TTEgMjBoMXYxSDF6TTQgMjBoMnYxSDR6TTExIDIwaDN2MUgxMXpNMTUgMjBoMnYxSDE1ek0xOSAyMGgxdjFIMTl6TTIxIDIwaDF2MUgyMXpNMjQgMjBoMXYxSDI0ek0yOCAyMGgxdjFIMjh6TTEgMjFoMXYxSDF6TTUgMjFoM3YxSDV6TTkgMjFoMXYxSDl6TTExIDIxaDF2MUgxMXpNMTMgMjFoMXYxSDEzek0xNiAyMWgxdjFIMTZ6TTE4IDIxaDJ2MUgxOHpNMjEgMjFoNXYxSDIxek0yNywyMSBoM3YxSDI3ek05IDIyaDF2MUg5ek0xMSAyMmgxdjFIMTF6TTE0IDIyaDJ2MUgxNHpNMTcgMjJoM3YxSDE3ek0yMSAyMmgxdjFIMjF6TTI1LDIyIGg1djFIMjV6TTEgMjNoN3YxSDF6TTEwIDIzaDF2MUgxMHpNMTMgMjNoNHYxSDEzek0xOCAyM2gxdjFIMTh6TTIwIDIzaDJ2MUgyMHpNMjMgMjNoMXYxSDIzek0yNSAyM2gzdjFIMjV6TTEgMjRoMXYxSDF6TTcgMjRoMXYxSDd6TTkgMjRoMXYxSDl6TTExIDI0aDJ2MUgxMXpNMTQgMjRoMXYxSDE0ek0xNyAyNGgxdjFIMTd6TTIwIDI0aDJ2MUgyMHpNMjUgMjRoMnYxSDI1ek0yOSwyNCBoMXYxSDI5ek0xIDI1aDF2MUgxek0zIDI1aDN2MUgzek03IDI1aDF2MUg3ek05IDI1aDJ2MUg5ek0xMyAyNWgxdjFIMTN6TTE1IDI1aDF2MUgxNXpNMTggMjVoMXYxSDE4ek0yMSAyNWg4djFIMjF6TTEgMjZoMXYxSDF6TTMgMjZoM3YxSDN6TTcgMjZoMXYxSDd6TTkgMjZoMXYxSDl6TTExIDI2aDF2MUgxMXpNMTcgMjZoM3YxSDE3ek0yMSAyNmgydjFIMjF6TTI4LDI2IGgydjFIMjh6TTEgMjdoMXYxSDF6TTMgMjdoM3YxSDN6TTcgMjdoMXYxSDd6TTkgMjdoMXYxSDl6TTEzIDI3aDV2MUgxM3pNMjAgMjdoNnYxSDIwek0yNyAyN2gydjFIMjd6TTEgMjhoMXYxSDF6TTcgMjhoMXYxSDd6TTEwIDI4aDJ2MUgxMHpNMTQgMjhoMXYxSDE0ek0xNiAyOGgxdjFIMTZ6TTIxIDI4aDF2MUgyMXpNMjMgMjhoNHYxSDIzek0yOCAyOGgxdjFIMjh6TTEgMjloN3YxSDF6TTkgMjloMXYxSDl6TTExIDI5aDF2MUgxMXpNMTUgMjloMnYxSDE1ek0xOCAyOWgxdjFIMTh6TTIwIDI5aDF2MUgyMHpNMjIgMjloMnYxSDIyek0yNSAyOWgxdjFIMjV6TTI3IDI5aDF2MUgyN3oiIHNoYXBlLXJlbmRlcmluZz0iY3Jpc3BFZGdlcyI+PC9wYXRoPjwvc3ZnPg=="><canvas id="qrDynamic" width="78" height="78"></canvas></span></a>
-    </footer>
+<div class="shell">
+<header>
+  <div class="brand">
+    <div class="site" id="siteCode">YXU1</div>
+    <div><p class="eyebrow">Ship Dock Â· Two-week role board</p><div class="title-line"><h1 id="title">Critical Role Assignments</h1><span class="credit">Developed by Ranvexsi</span></div></div>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
-  <script>
-  (function(){
-    'use strict';
-    var KEY='critical-role-assignments-v1';
-    var ROLES=[['ship-clerk','Ship Clerk'],['tdr','TDR'],['flats-ps','Flats PS'],['palletize-ps','Palletize PS'],['bounty-hunter','Bounty Hunter'],['quality','Quality'],['west-flats-pg','West Flats PG'],['east-flats-pg','East Flats PG'],['trans-pg','Trans PG'],['pit-driver','PIT Driver'],['rwc4-1','RWC4-1'],['rwc4-2','RWC4-2']];
-    var DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'], Q=['Q1','Q2','Q3'];
-    function defaults(){return{settings:{title:'Critical Role Assignments',siteCode:'YXU1',primary:'#073763',accent:'#1298c8',managerPath:'http://ranvexsi.netlify.app/manager',dashboardSecret:'yxu1-live-board',maxQuarters:4,managerPin:'2468',masterPin:'8642'},employees:[],unavailability:[],schedules:{},audits:[],lastUpdated:new Date().toISOString()}}
-    function load(){try{var data=JSON.parse(localStorage.getItem(KEY));return data&&data.settings?data:defaults()}catch(e){return defaults()}}
-    function pad(n){return String(n).padStart(2,'0')}function dateKey(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
-    function sunday(d){var x=new Date(d);x.setHours(12,0,0,0);x.setDate(x.getDate()-x.getDay());return x}
-    function add(d,n){var x=new Date(d);x.setDate(x.getDate()+n);return x}function akey(date,shift,q,role){return date+'|'+shift+'|'+q+'|'+role}
-    var SHIFT_MODE_KEY='critical-role-dashboard-shift-mode';
-    function activeShift(d){var m=d.getHours()*60+d.getMinutes();return(m>=1085||m<305)?'night':'day'}
-    function shiftMode(){var mode=localStorage.getItem(SHIFT_MODE_KEY)||'auto';return ['day','night','auto'].indexOf(mode)>=0?mode:'auto'}
-    function displayShift(d){var mode=shiftMode();return mode==='auto'?activeShift(d):mode}
-    function renderShiftSwitch(){var mode=shiftMode();document.querySelectorAll('[data-shift-mode]').forEach(function(b){b.classList.toggle('active',b.dataset.shiftMode===mode)})}
-    function value(schedule,date,shift,q,role){var a=schedule&&schedule.assignments&&schedule.assignments[akey(date,shift,q,role)];return a&&a.login?a.login:'OPEN'}
-    function fmt(d){return d.toLocaleDateString('en-CA',{month:'short',day:'numeric'})}
-    function esc(v){return String(v).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
-    function render(){
-      var s=load(), now=new Date(), shift=displayShift(now), start=sunday(now), wk=dateKey(start), schedule=s.schedules[wk]||s.schedules[Object.keys(s.schedules)[0]], today=dateKey(now);
-      document.documentElement.style.setProperty('--navy',s.settings.primary||'#073763');document.documentElement.style.setProperty('--blue',s.settings.accent||'#1298c8');
-      document.title=s.settings.title||'Critical Role Assignments';document.getElementById('title').textContent=s.settings.title;document.getElementById('siteCode').textContent=s.settings.siteCode;
-      renderShiftSwitch();document.getElementById('shiftLabel').textContent=(shift==='day'?'Day Shift':'Night Shift')+(shiftMode()==='auto'?' Â· Auto':'');document.getElementById('weekLabel').textContent=fmt(start)+' â '+fmt(add(start,6));document.getElementById('dayLabel').textContent=now.toLocaleDateString('en-CA',{weekday:'long'});document.getElementById('clock').textContent=now.toLocaleTimeString('en-CA',{hour:'numeric',minute:'2-digit'});
-      var html='<div class="cell head">Role</div>'+Q.map(function(q){return'<div class="cell head">'+q+'</div>'}).join(''),filled=0;
-      ROLES.forEach(function(r){html+='<div class="cell role">'+esc(r[1])+'</div>';Q.forEach(function(q){var login=value(schedule,today,shift,q,r[0]);if(login!=='OPEN')filled++;html+='<div class="cell login '+(login==='OPEN'?'open':'')+'">'+esc(login)+'</div>'})});document.getElementById('todayGrid').innerHTML=html;document.getElementById('coverage').textContent=filled+' / 36 filled';
-      html='<div class="cell day-head">Role</div>'+DAYS.map(function(day,i){return'<div class="cell day-head '+(i===now.getDay()?'active-day':'')+'">'+day+'</div>'}).join('');
-      ROLES.forEach(function(r){html+='<div class="cell role">'+esc(r[1])+'</div>';DAYS.forEach(function(day,i){var dk=dateKey(add(start,i));html+='<div class="cell triplet '+(i===now.getDay()?'today-col':'')+'>';Q.forEach(function(q){var login=value(schedule,dk,shift,q,r[0]);html+='<div class="qline '+(login==='OPEN'?'open':'')+'"><b>'+q+'</b><span>'+esc(login)+'</span></div>'});html+='</div>'})});document.getElementById('weekGrid').innerHTML=html;
-      document.getElementById('updated').textContent=s.lastUpdated?'Updated '+new Date(s.lastUpdated).toLocaleString('en-CA',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'Waiting for Manager to publish';
-      var configured=s.settings.managerPath,link=(!configured||configured==='manager.html'||configured==='/manager')?'http://ranvexsi.netlify.app/manager':configured;document.getElementById('managerLink').href=link;var url=new URL(link,location.href).href;if(window.QRCode){QRCode.toCanvas(document.getElementById('qrDynamic'),url,{width:78,margin:1,color:{dark:s.settings.primary||'#073763'}},function(error){if(!error){document.getElementById('qrFallback').style.display='none';document.getElementById('qrDynamic').style.display='block'}})}
-    }
-    document.querySelectorAll('[data-shift-mode]').forEach(function(b){b.addEventListener('click',function(){localStorage.setItem(SHIFT_MODE_KEY,b.dataset.shiftMode);render()})});
-    render();setInterval(render,30000);window.addEventListener('storage',render);
-  })();
-  </script>
+  <div class="head-info">
+    <div class="shift-switch" aria-label="Dashboard shift">
+      <button class="shift-btn" type="button" data-shift-mode="day">DAY</button>
+      <button class="shift-btn" type="button" data-shift-mode="night">NIGHT</button>
+      <button class="shift-btn active" type="button" data-shift-mode="auto">AUTO</button>
+    </div>
+    <div class="pill"><small>Active Board</small><strong><span class="live"></span><span id="shiftLabel">Day Shift Â· Auto</span></strong></div>
+    <div class="pill range-pill"><small>Two Week Schedule</small><strong id="twoWeekRange">â</strong></div>
+    <div class="pill"><small id="dayLabel">Today</small><strong id="clock">â</strong></div>
+  </div>
+</header>
+
+<main>
+  <section class="week-card">
+    <div class="week-title">
+      <div class="week-title-left"><h2>Current Week</h2><span class="range" id="currentRange">â</span></div>
+      <span class="tag">Q1 Â· Q2 Â· Q3</span>
+    </div>
+    <div class="table-wrap"><table class="schedule" id="currentWeek" aria-label="Current week critical-role schedule"></table></div>
+  </section>
+
+  <section class="week-card">
+    <div class="week-title">
+      <div class="week-title-left"><h2>Next Week</h2><span class="range" id="nextRange">â</span></div>
+      <span class="tag">Q1 Â· Q2 Â· Q3</span>
+    </div>
+    <div class="table-wrap"><table class="schedule" id="nextWeek" aria-label="Next week critical-role schedule"></table></div>
+  </section>
+</main>
+
+<footer>
+  <div class="status"><span class="dot" id="syncDot"></span><strong id="syncTitle">Connecting to live scheduleâ¦</strong><span class="updated" id="updated">Waiting for Manager to publish</span></div>
+  <div class="note">Current week + next week Â· assignments may change during the shift</div>
+</footer>
+</div>
+
+<script>
+(function(){
+'use strict';
+var KEY='critical-role-assignments-v1';
+var SHIFT_MODE_KEY='critical-role-dashboard-shift-mode';
+
+var ROLES=[
+ ['ship-clerk','Ship Clerk'],
+ ['tdr','TDR'],
+ ['flats-ps','Flats PS'],
+ ['palletize-ps','Palletize PS'],
+ ['bounty-hunter','Bounty Hunter'],
+ ['quality','Quality'],
+ ['west-flats-pg','West Flats PG'],
+ ['trans-pg','Trans PG'],
+ ['pit-driver','PIT Driver'],
+ ['rwc4-1','RWC4-1'],
+ ['rwc4-2','RWC4-2']
+];
+
+var Q=['Q1','Q2','Q3'];
+
+function defaults(){return{settings:{title:'Critical Role Assignments',siteCode:'YXU1',primary:'#073763',accent:'#1298c8',managerPath:'https://ranvexsi.netlify.app/manager',maxQuarters:6},employees:[],unavailability:[],schedules:{},audits:[],lastUpdated:new Date().toISOString()}}
+function load(){try{var d=JSON.parse(localStorage.getItem(KEY));return d&&d.settings?d:defaults()}catch(e){return defaults()}}
+function loadShiftMode(){var mode=localStorage.getItem(SHIFT_MODE_KEY);return mode==='day'||mode==='night'?mode:'auto'}
+var shiftMode=loadShiftMode();
+
+function pad(n){return String(n).padStart(2,'0')}
+function dateKey(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
+function sunday(d){var x=new Date(d);x.setHours(12,0,0,0);x.setDate(x.getDate()-x.getDay());return x}
+function add(d,n){var x=new Date(d);x.setDate(x.getDate()+n);return x}
+function akey(date,shift,q,role){return date+'|'+shift+'|'+q+'|'+role}
+function activeShift(d){var m=d.getHours()*60+d.getMinutes();return(m>=1085||m<305)?'night':'day'}
+function selectedShift(now){return shiftMode==='auto'?activeShift(now):shiftMode}
+function value(state,date,shift,q,role){
+ var wk=dateKey(sunday(date));
+ var sch=state.schedules&&state.schedules[wk];
+ var a=sch&&sch.assignments&&sch.assignments[akey(dateKey(date),shift,q,role)];
+ return a&&a.login?a.login:'OPEN';
+}
+function esc(v){return String(v).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function dayName(d){return d.toLocaleDateString('en-CA',{weekday:'short'})}
+function month(d){return d.toLocaleDateString('en-CA',{month:'short'})}
+function rangeText(a,b){
+ if(a.getFullYear()===b.getFullYear()) return a.getDate()+' '+month(a)+' â '+b.getDate()+' '+month(b)+' '+b.getFullYear();
+ return a.getDate()+' '+month(a)+' '+a.getFullYear()+' â '+b.getDate()+' '+month(b)+' '+b.getFullYear();
+}
+
+function updateSwitch(){
+ document.querySelectorAll('[data-shift-mode]').forEach(function(btn){
+   btn.classList.toggle('active',btn.dataset.shiftMode===shiftMode);
+ });
+}
+
+function setShiftMode(mode){
+ if(['day','night','auto'].indexOf(mode)<0)return;
+ shiftMode=mode;
+ localStorage.setItem(SHIFT_MODE_KEY,mode);
+ updateSwitch();
+ render();
+}
+
+document.querySelectorAll('[data-shift-mode]').forEach(function(btn){
+ btn.addEventListener('click',function(){setShiftMode(btn.dataset.shiftMode)});
+});
+
+function renderWeek(target,state,start,shift,today){
+ var html='<colgroup><col class="role-col"><col span="7"></colgroup><thead><tr><th class="day-head">Role</th>';
+ for(var i=0;i<7;i++){
+   var d=add(start,i),isToday=dateKey(d)===today;
+   html+='<th class="day-head '+(isToday?'today':'')+'"><span class="dn">'+dayName(d)+'</span><span class="dd">'+d.getDate()+' '+month(d)+'</span></th>';
+ }
+ html+='</tr></thead><tbody>';
+
+ ROLES.forEach(function(r){
+   html+='<tr><th class="role">'+esc(r[1])+'</th>';
+   for(var i=0;i<7;i++){
+     var d=add(start,i),isToday=dateKey(d)===today;
+     html+='<td class="day-cell '+(isToday?'today':'')+'"><div class="triplet">';
+     Q.forEach(function(q){
+       var login=value(state,d,shift,q,r[0]),empty=login==='OPEN';
+       html+='<div class="qline '+(empty?'empty':'')+'"><b>'+q+'</b><span>'+esc(empty?'â':login)+'</span></div>';
+     });
+     html+='</div></td>';
+   }
+   html+='</tr>';
+ });
+ html+='</tbody>';
+ document.getElementById(target).innerHTML=html;
+}
+
+function render(){
+ var s=load(),now=new Date(),shift=selectedShift(now),cur=sunday(now),next=add(cur,7),today=dateKey(now);
+
+ document.documentElement.style.setProperty('--navy',s.settings.primary||'#073763');
+ document.documentElement.style.setProperty('--blue',s.settings.accent||'#1298c8');
+ document.title=s.settings.title||'Critical Role Assignments';
+ document.getElementById('title').textContent=s.settings.title||'Critical Role Assignments';
+ document.getElementById('siteCode').textContent=s.settings.siteCode||'YXU1';
+
+ var label=shift==='day'?'Day Shift':'Night Shift';
+ if(shiftMode==='auto')label+=' Â· Auto';
+ document.getElementById('shiftLabel').textContent=label;
+
+ document.getElementById('currentRange').textContent=rangeText(cur,add(cur,6));
+ document.getElementById('nextRange').textContent=rangeText(next,add(next,6));
+ document.getElementById('twoWeekRange').textContent=rangeText(cur,add(next,6));
+ document.getElementById('dayLabel').textContent=now.toLocaleDateString('en-CA',{weekday:'long'});
+ document.getElementById('clock').textContent=now.toLocaleTimeString('en-CA',{hour:'numeric',minute:'2-digit'});
+
+ renderWeek('currentWeek',s,cur,shift,today);
+ renderWeek('nextWeek',s,next,shift,today);
+
+ document.getElementById('updated').textContent=s.lastUpdated
+   ? 'Updated '+new Date(s.lastUpdated).toLocaleString('en-CA',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})
+   : 'Waiting for Manager to publish';
+
+ updateSwitch();
+}
+
+render();
+setInterval(render,30000);
+window.addEventListener('storage',function(e){
+ if(e.key===SHIFT_MODE_KEY)shiftMode=loadShiftMode();
+ render();
+});
+window.addEventListener('cra:cloud-state',render);
+})();
+</script>
+
+<script type="module">
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js';
+import {getAuth,signInAnonymously} from 'https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js';
+import {getDatabase,ref,onValue} from 'https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js';
+
+const firebaseConfig={
+ apiKey:'AIzaSyDopxxbJOlUQdMfd-lM-a6Odb8Yux7jAkA',
+ authDomain:'yxu1-critical-roles.firebaseapp.com',
+ databaseURL:'https://yxu1-critical-roles-default-rtdb.firebaseio.com',
+ projectId:'yxu1-critical-roles',
+ storageBucket:'yxu1-critical-roles.firebasestorage.app',
+ messagingSenderId:'681933966768',
+ appId:'1:681933966768:web:327d36b8683db1f4fa1a75'
+};
+
+const syncTitle=document.getElementById('syncTitle');
+const syncDot=document.getElementById('syncDot');
+const setStatus=(title,online)=>{
+ syncTitle.textContent=title;
+ syncDot.style.background=online?'#23b26d':'#d97706';
+};
+
+try{
+ const app=initializeApp(firebaseConfig);
+ const auth=getAuth(app);
+ const db=getDatabase(app);
+ await signInAnonymously(auth);
+
+ onValue(ref(db,'appState'),snapshot=>{
+   if(snapshot.exists()){
+     localStorage.setItem('critical-role-assignments-v1',JSON.stringify(snapshot.val()));
+     window.dispatchEvent(new CustomEvent('cra:cloud-state'));
+     setStatus('Live schedule connected',true);
+   }else{
+     setStatus('Connected Â· waiting for first publish',true);
+   }
+ },()=>{
+   setStatus('Offline schedule cache',false);
+ });
+}catch(error){
+ console.error('Firebase dashboard connection failed:',error);
+ setStatus('Offline schedule cache',false);
+}
+</script>
 </body>
 </html>
