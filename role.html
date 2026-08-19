@@ -75,6 +75,23 @@ footer{min-height:44px;flex:0 0 auto;border-top:1px solid #b58b00;background:#f4
 .week-card.current-week .q-head{background:#0b628d}
 .week-card.next-week .q-head{background:#596b72}
 
+
+/* Distinct weekday colors - restored */
+.day-head.day-0,.q-head.day-0{background:#168bb5}
+.day-head.day-1,.q-head.day-1{background:#76923c}
+.day-head.day-2,.q-head.day-2{background:#1f9dbb}
+.day-head.day-3,.q-head.day-3{background:#718f55}
+.day-head.day-4,.q-head.day-4{background:#168bb5}
+.day-head.day-5,.q-head.day-5{background:#7b8f58}
+.day-head.day-6,.q-head.day-6{background:#168bb5}
+.week-card.next-week .day-head.day-0,.week-card.next-week .q-head.day-0{background:#2f879d}
+.week-card.next-week .day-head.day-1,.week-card.next-week .q-head.day-1{background:#7c8f5b}
+.week-card.next-week .day-head.day-2,.week-card.next-week .q-head.day-2{background:#348ca2}
+.week-card.next-week .day-head.day-3,.week-card.next-week .q-head.day-3{background:#839462}
+.week-card.next-week .day-head.day-4,.week-card.next-week .q-head.day-4{background:#2f879d}
+.week-card.next-week .day-head.day-5,.week-card.next-week .q-head.day-5{background:#89986a}
+.week-card.next-week .day-head.day-6,.week-card.next-week .q-head.day-6{background:#2f879d}
+
 </style>
 </head>
 <body>
@@ -187,9 +204,9 @@ document.querySelectorAll('[data-shift-mode]').forEach(function(btn){
 
 function renderWeek(target,state,start,shift,today){
  var html='<colgroup><col class="role-col"><col span="21"></colgroup><thead><tr><th class="role-head" rowspan="2">Role</th>';
- for(var i=0;i<7;i++){var d=add(start,i);html+='<th class="day-head" colspan="3"><span class="dn">'+dayName(d)+'</span><span class="dd">'+d.getDate()+' '+month(d)+'</span></th>';}
+ for(var i=0;i<7;i++){var d=add(start,i);html+='<th class="day-head day-'+i+'" colspan="3"><span class="dn">'+dayName(d)+'</span><span class="dd">'+d.getDate()+' '+month(d)+'</span></th>';}
  html+='</tr><tr>';
- for(var i=0;i<7;i++){Q.forEach(function(q){html+='<th class="q-head">'+q+'</th>';});}
+ for(var i=0;i<7;i++){Q.forEach(function(q){html+='<th class="q-head day-'+i+'">'+q+'</th>';});}
  html+='</tr></thead><tbody>';
  ROLES.forEach(function(r){
    html+='<tr><th class="role">'+esc(r[1])+'</th>';
