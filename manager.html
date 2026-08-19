@@ -164,7 +164,7 @@
       <section class="page" id="page-workdays">
         <div class="page-head"><div><h2>Workday overrides</h2><p>Reduce an AA's recurring weekly workdays without changing the original cohort. The override stays active until manually removed.</p></div></div>
         <div class="card">
-          <div class="field"><label>Ship Dock AA</label><select id="workdayEmployee"></select></div>
+          <div class="field"><label>Ship Dock AA</label><select id="workdayEmployee"><option value="">Choose an AA</option></select></div>
           <div class="field"><label>Regular cohort days</label><div id="workdayRegular" class="hint">Choose an AA</div></div>
           <div class="field"><label>Actually works each week</label><div id="workdayChecks" class="actions" style="margin-top:0"></div></div>
           <p class="hint">Only choose days inside the AA's original cohort. VET can still add the AA on an exceptional extra day.</p>
@@ -1124,8 +1124,8 @@
 
       document.getElementById('unEmployee').innerHTML=scheduled.length?scheduled.map(function(e){return'<option value="'+esc(e.login)+'">'+esc(e.name)+' · '+esc(e.login)+' · '+e.cohort+' · Ship Dock</option>'}).join(''):'<option value="">No available scheduled Ship Dock AAs</option>';
       document.getElementById('blockEmployee').innerHTML=employeeOptions('',false);
-      var wd=document.getElementById('workdayEmployee');
-      if(wd){var currentWd=lower(wd.value);wd.innerHTML=employeeOptions('',false);if(currentWd&&shipDockEmployees().some(function(e){return lower(e.login)===currentWd}))wd.value=currentWd;renderWorkdayEditor();setTimeout(renderWorkdayEditor,0)}
+      renderWorkdayEmployeeSelect();
+      renderWorkdayEditor();
 
       renderVetEmployees();
       renderTrainEmployees()
@@ -1314,15 +1314,35 @@
     }
 
     function dayLabel(day){return DAYS[day]||String(day)}
+    function renderWorkdayEmployeeSelect(){
+      var select=document.getElementById('workdayEmployee');
+      if(!select)return;
+      var current=String(select.value||'').trim().toLowerCase();
+      var people=shipDockEmployees().slice().sort(function(a,b){return a.name.localeCompare(b.name)});
+      select.innerHTML='<option value="">Choose an AA</option>'+people.map(function(e){
+        return '<option value="'+esc(e.login)+'" data-cohort="'+esc(e.cohort)+'">'+esc(e.name)+' · '+esc(e.login)+' · '+esc(e.cohort)+' · Ship Dock</option>';
+      }).join('');
+      if(current&&people.some(function(e){return String(e.login||'').trim().toLowerCase()===current}))select.value=current;
+    }
+
     function renderWorkdayEditor(){
       var select=document.getElementById('workdayEmployee'),checks=document.getElementById('workdayChecks'),regularEl=document.getElementById('workdayRegular');
       if(!select||!checks||!regularEl)return;
-      var selectedLogin=lower(select.value);
-      var e=shipDockEmployees().find(function(x){return lower(x.login)===selectedLogin});
-      if(!e){regularEl.textContent='Choose an AA';checks.innerHTML='';return}
-      var regular=COHORT_DAYS[e.cohort]||[],active=Array.isArray(e.workdayOverride)?e.workdayOverride:regular;
+      var login=String(select.value||'').trim().toLowerCase();
+      if(!login){regularEl.textContent='Choose an AA';checks.innerHTML='';return}
+      var people=shipDockEmployees();
+      var e=people.find(function(x){return String(x.login||'').trim().toLowerCase()===login});
+      if(!e){
+        regularEl.textContent='AA data could not be matched. Re-select the AA.';
+        checks.innerHTML='';
+        return;
+      }
+      var regular=(COHORT_DAYS[String(e.cohort||'').trim().toUpperCase()]||[]).slice();
+      var active=Array.isArray(e.workdayOverride)?e.workdayOverride.map(Number):regular.slice();
       regularEl.textContent=e.cohort+' · '+regular.map(dayLabel).join(' · ');
-      checks.innerHTML=regular.map(function(day){return'<label style="display:inline-flex;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-size:13px;color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:8px 10px;margin:0"><input class="workday-check" type="checkbox" value="'+day+'" '+(active.indexOf(day)>=0?'checked':'')+' style="width:auto">'+dayLabel(day)+'</label>'}).join('')
+      checks.innerHTML=regular.map(function(day){
+        return '<label style="display:inline-flex;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-size:13px;color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:8px 10px;margin:0"><input class="workday-check" type="checkbox" value="'+day+'" '+(active.indexOf(day)>=0?'checked':'')+' style="width:auto">'+dayLabel(day)+'</label>';
+      }).join('');
     }
     function renderWorkdayOverrides(){
       var el=document.getElementById('workdayOverrideList');if(!el)return;
