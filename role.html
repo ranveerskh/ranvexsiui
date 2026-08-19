@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- FIREBASE V4.4: clearly separated blue/cream weeks + ASCII-safe text + Day / Night / Auto -->
+<!-- FIREBASE V4.8: clearly separated blue/cream weeks + ASCII-safe text + Day / Night / Auto -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -92,23 +92,31 @@ footer{min-height:44px;flex:0 0 auto;border-top:1px solid #b58b00;background:#f4
 .week-card.next-week .day-head.day-5,.week-card.next-week .q-head.day-5{background:#89986a}
 .week-card.next-week .day-head.day-6,.week-card.next-week .q-head.day-6{background:#2f879d}
 
-/* Subtle day grouping for assigned AA cells */
-.login-cell.day-0{background:#f1f9fc}
-.login-cell.day-1{background:#f5f8ed}
-.login-cell.day-2{background:#eef9fb}
-.login-cell.day-3{background:#f4f8ef}
-.login-cell.day-4{background:#f1f9fc}
-.login-cell.day-5{background:#f6f8ef}
-.login-cell.day-6{background:#f1f9fc}
-.week-card.next-week .login-cell.day-0{background:#f3f8fa}
-.week-card.next-week .login-cell.day-1{background:#f8f8f0}
-.week-card.next-week .login-cell.day-2{background:#f2f8fa}
-.week-card.next-week .login-cell.day-3{background:#f7f8f1}
-.week-card.next-week .login-cell.day-4{background:#f3f8fa}
-.week-card.next-week .login-cell.day-5{background:#f8f8f2}
-.week-card.next-week .login-cell.day-6{background:#f3f8fa}
+/* V4.8 - VISIBLE weekday grouping across the actual AA assignment cells.
+   These selectors are intentionally more specific than the week-card defaults. */
+.week-card.current-week .login-cell.day-0{background:#e4f5fb}
+.week-card.current-week .login-cell.day-1{background:#edf4df}
+.week-card.current-week .login-cell.day-2{background:#def3f7}
+.week-card.current-week .login-cell.day-3{background:#eaf2e1}
+.week-card.current-week .login-cell.day-4{background:#e4f5fb}
+.week-card.current-week .login-cell.day-5{background:#eef3e3}
+.week-card.current-week .login-cell.day-6{background:#e4f5fb}
+.week-card.next-week .login-cell.day-0{background:#eaf3f6}
+.week-card.next-week .login-cell.day-1{background:#f1f1df}
+.week-card.next-week .login-cell.day-2{background:#e7f2f5}
+.week-card.next-week .login-cell.day-3{background:#eff1e2}
+.week-card.next-week .login-cell.day-4{background:#eaf3f6}
+.week-card.next-week .login-cell.day-5{background:#f2f1e2}
+.week-card.next-week .login-cell.day-6{background:#eaf3f6}
+
+/* Strong vertical separators make each day read as one 3-quarter block. */
+.schedule .login-cell.day-0,.schedule .login-cell.day-1,.schedule .login-cell.day-2,.schedule .login-cell.day-3,.schedule .login-cell.day-4,.schedule .login-cell.day-5,.schedule .login-cell.day-6{border-left-color:rgba(7,55,99,.12)}
+.schedule .login-cell.day-start{border-left:2px solid #8ca6b5}
+.schedule .q-head.day-0,.schedule .q-head.day-1,.schedule .q-head.day-2,.schedule .q-head.day-3,.schedule .q-head.day-4,.schedule .q-head.day-5,.schedule .q-head.day-6{border-left-color:rgba(255,255,255,.32)}
+
 /* OPEN cells stay muted but keep day grouping */
 .login-cell.empty{color:#9aa9b4;font-weight:700}
+.week-card.current-week .login-cell.empty,.week-card.next-week .login-cell.empty{filter:saturate(.72)}
 
 </style>
 </head>
@@ -228,7 +236,7 @@ function renderWeek(target,state,start,shift,today){
  html+='</tr></thead><tbody>';
  ROLES.forEach(function(r){
    html+='<tr><th class="role">'+esc(r[1])+'</th>';
-   for(var i=0;i<7;i++){var d=add(start,i);Q.forEach(function(q){var login=value(state,d,shift,q,r[0]),empty=login==='OPEN';html+='<td class="login-cell day-'+i+' '+(empty?'empty':'')+'">'+esc(empty?'-':login)+'</td>';});}
+   for(var i=0;i<7;i++){var d=add(start,i);Q.forEach(function(q){var login=value(state,d,shift,q,r[0]),empty=login==='OPEN';html+='<td class="login-cell day-'+i+' '+(q==='Q1'?'day-start ':'')+(empty?'empty':'')+'">'+esc(empty?'-':login)+'</td>';});}
    html+='</tr>';
  });
  html+='</tbody>';document.getElementById(target).innerHTML=html;
