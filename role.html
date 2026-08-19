@@ -92,6 +92,24 @@ footer{min-height:44px;flex:0 0 auto;border-top:1px solid #b58b00;background:#f4
 .week-card.next-week .day-head.day-5,.week-card.next-week .q-head.day-5{background:#89986a}
 .week-card.next-week .day-head.day-6,.week-card.next-week .q-head.day-6{background:#2f879d}
 
+/* Subtle day grouping for assigned AA cells */
+.login-cell.day-0{background:#f1f9fc}
+.login-cell.day-1{background:#f5f8ed}
+.login-cell.day-2{background:#eef9fb}
+.login-cell.day-3{background:#f4f8ef}
+.login-cell.day-4{background:#f1f9fc}
+.login-cell.day-5{background:#f6f8ef}
+.login-cell.day-6{background:#f1f9fc}
+.week-card.next-week .login-cell.day-0{background:#f3f8fa}
+.week-card.next-week .login-cell.day-1{background:#f8f8f0}
+.week-card.next-week .login-cell.day-2{background:#f2f8fa}
+.week-card.next-week .login-cell.day-3{background:#f7f8f1}
+.week-card.next-week .login-cell.day-4{background:#f3f8fa}
+.week-card.next-week .login-cell.day-5{background:#f8f8f2}
+.week-card.next-week .login-cell.day-6{background:#f3f8fa}
+/* OPEN cells stay muted but keep day grouping */
+.login-cell.empty{color:#9aa9b4;font-weight:700}
+
 </style>
 </head>
 <body>
@@ -210,7 +228,7 @@ function renderWeek(target,state,start,shift,today){
  html+='</tr></thead><tbody>';
  ROLES.forEach(function(r){
    html+='<tr><th class="role">'+esc(r[1])+'</th>';
-   for(var i=0;i<7;i++){var d=add(start,i);Q.forEach(function(q){var login=value(state,d,shift,q,r[0]),empty=login==='OPEN';html+='<td class="login-cell '+(empty?'empty':'')+'">'+esc(empty?'-':login)+'</td>';});}
+   for(var i=0;i<7;i++){var d=add(start,i);Q.forEach(function(q){var login=value(state,d,shift,q,r[0]),empty=login==='OPEN';html+='<td class="login-cell day-'+i+' '+(empty?'empty':'')+'">'+esc(empty?'-':login)+'</td>';});}
    html+='</tr>';
  });
  html+='</tbody>';document.getElementById(target).innerHTML=html;
