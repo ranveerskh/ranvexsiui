@@ -51,6 +51,7 @@
       <button class="nav-btn" data-page="unavailable">Today's absences</button>
       <button class="nav-btn" data-page="vet">VET AAs</button>
       <button class="nav-btn" data-page="blocks">Accommodation blocks</button>
+      <button class="nav-btn" data-page="workdays">Workday overrides</button>
       <button class="nav-btn" data-page="settings">Settings</button>
       <button class="nav-btn" data-page="history">Change history</button>
       <div class="nav-meta"><strong>Firebase auto-sync</strong>Every saved change is sent to Firebase automatically. Use Sync now only as a manual backup.</div>
@@ -89,7 +90,7 @@
 
         <div class="card">
           <h3>Reset data</h3>
-          <p>Reset Manual + Schedule keeps imported roster, Learning training and accommodation blocks. Reset All Data clears everything.</p>
+          <p>Reset Manual + Schedule keeps imported roster, Learning training, accommodation blocks and workday overrides. Reset All Data clears everything.</p>
           <div class="actions"><button class="danger" id="resetManualSchedule">Reset Manual + Schedule</button><button class="danger" id="resetAllData">Reset All Data</button></div>
         </div>
       </section>
@@ -158,6 +159,18 @@
         <div class="page-head"><div><h2>Accommodation role blocks</h2><p>Block an AA from a role until manually allowed again. Affected slots refill immediately.</p></div></div>
         <div class="card"><div class="grid2"><div class="field"><label>Employee</label><select id="blockEmployee"></select></div><div class="field"><label>Blocked role</label><select id="blockRole"></select></div></div><button class="primary" id="addBlock">Block role</button></div>
         <div class="card"><h3>Active role blocks</h3><div class="list" id="blockList"></div></div>
+      </section>
+
+      <section class="page" id="page-workdays">
+        <div class="page-head"><div><h2>Workday overrides</h2><p>Reduce an AA's recurring weekly workdays without changing the original cohort. The override stays active until manually removed.</p></div></div>
+        <div class="card">
+          <div class="field"><label>Ship Dock AA</label><select id="workdayEmployee"></select></div>
+          <div class="field"><label>Regular cohort days</label><div id="workdayRegular" class="hint">Choose an AA</div></div>
+          <div class="field"><label>Actually works each week</label><div id="workdayChecks" class="actions" style="margin-top:0"></div></div>
+          <p class="hint">Only choose days inside the AA's original cohort. VET can still add the AA on an exceptional extra day.</p>
+          <button class="primary" id="saveWorkdayOverride">Save workday override</button>
+        </div>
+        <div class="card"><h3>Active workday overrides</h3><div class="list" id="workdayOverrideList"></div></div>
       </section>
 
       <section class="page" id="page-settings">
@@ -260,6 +273,7 @@
         e.blockedRoles=e.blockedRoles||[];
         e.missingFromFiles=!!e.missingFromFiles;
         e.missingReason=e.missingReason||'';
+        e.workdayOverride=Array.isArray(e.workdayOverride)?e.workdayOverride.map(Number).filter(function(d){return d>=0&&d<=6}):null;
       });
 
       x.unavailability=x.unavailability||[];
@@ -326,7 +340,8 @@
 
     function isShipDock(e){return lower(e&&e.processPath)==='ship dock'}
     function shipDockEmployees(){return state.employees.filter(isShipDock)}
-    function isRegularWorkday(e,date,shift){var d=new Date(date+'T12:00:00'),days=COHORT_DAYS[e&&e.cohort]||[];return shiftOf(e&&e.cohort)===shift&&days.indexOf(d.getDay())>=0}
+    function effectiveWorkdays(e){var regular=COHORT_DAYS[e&&e.cohort]||[];return Array.isArray(e&&e.workdayOverride)?e.workdayOverride.filter(function(d){return regular.indexOf(d)>=0}):regular}
+    function isRegularWorkday(e,date,shift){var d=new Date(date+'T12:00:00'),days=effectiveWorkdays(e);return shiftOf(e&&e.cohort)===shift&&days.indexOf(d.getDay())>=0}
     function isVet(e,date,shift){return(state.vet||[]).some(function(v){return v.login===e.login&&v.date===date&&v.shift===shift})}
     function worksDate(e,date,shift){return isShipDock(e)&&(isRegularWorkday(e,date,shift)||isVet(e,date,shift))}
     function isUnavailable(login,date,shift,quarter){return(state.unavailability||[]).some(function(u){return u.login===login&&u.date===date&&u.shift===shift&&u.quarter===quarter})}
@@ -933,6 +948,7 @@
           trainedRoles:prev.trainedRoles||[],
           manualRoles:prev.manualRoles||[],
           blockedRoles:prev.blockedRoles||[],
+          workdayOverride:Array.isArray(prev.workdayOverride)?prev.workdayOverride.slice():null,
           missingFromFiles:false,
           missingReason:''
         })
@@ -1048,7 +1064,7 @@
         existing.missingFromFiles=true;
         existing.missingReason=reason
       }else{
-        state.employees.push({login:login,name:name,cohort:cohort,shiftPattern:cohort,processPath:'Ship Dock',trainedRoles:[],manualRoles:[],blockedRoles:[],missingFromFiles:true,missingReason:reason})
+        state.employees.push({login:login,name:name,cohort:cohort,shiftPattern:cohort,processPath:'Ship Dock',trainedRoles:[],manualRoles:[],blockedRoles:[],workdayOverride:null,missingFromFiles:true,missingReason:reason})
       }
 
       document.getElementById('missingLogin').value='';
@@ -1108,6 +1124,8 @@
 
       document.getElementById('unEmployee').innerHTML=scheduled.length?scheduled.map(function(e){return'<option value="'+esc(e.login)+'">'+esc(e.name)+' · '+esc(e.login)+' · '+e.cohort+' · Ship Dock</option>'}).join(''):'<option value="">No available scheduled Ship Dock AAs</option>';
       document.getElementById('blockEmployee').innerHTML=employeeOptions('',false);
+      var wd=document.getElementById('workdayEmployee');
+      if(wd){var currentWd=wd.value;wd.innerHTML=employeeOptions('',false);if(currentWd&&shipDockEmployees().some(function(e){return e.login===currentWd}))wd.value=currentWd}
 
       renderVetEmployees();
       renderTrainEmployees()
@@ -1295,6 +1313,32 @@
       }).join(''):'<div class="empty">No VET AAs today.</div>'
     }
 
+    function dayLabel(day){return DAYS[day]||String(day)}
+    function renderWorkdayEditor(){
+      var select=document.getElementById('workdayEmployee'),checks=document.getElementById('workdayChecks'),regularEl=document.getElementById('workdayRegular');
+      if(!select||!checks||!regularEl)return;
+      var e=shipDockEmployees().find(function(x){return x.login===select.value});
+      if(!e){regularEl.textContent='Choose an AA';checks.innerHTML='';return}
+      var regular=COHORT_DAYS[e.cohort]||[],active=Array.isArray(e.workdayOverride)?e.workdayOverride:regular;
+      regularEl.textContent=e.cohort+' · '+regular.map(dayLabel).join(' · ');
+      checks.innerHTML=regular.map(function(day){return'<label style="display:inline-flex;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-size:13px;color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:8px 10px;margin:0"><input class="workday-check" type="checkbox" value="'+day+'" '+(active.indexOf(day)>=0?'checked':'')+' style="width:auto">'+dayLabel(day)+'</label>'}).join('')
+    }
+    function renderWorkdayOverrides(){
+      var el=document.getElementById('workdayOverrideList');if(!el)return;
+      var rows=shipDockEmployees().filter(function(e){return Array.isArray(e.workdayOverride)}).sort(function(a,b){return a.name.localeCompare(b.name)});
+      el.innerHTML=rows.length?rows.map(function(e){var regular=COHORT_DAYS[e.cohort]||[],active=effectiveWorkdays(e);return'<div class="list-row"><div class="person"><strong>'+esc(e.name)+'</strong><small>'+esc(e.login)+' · '+e.cohort+' · Regular: '+regular.map(dayLabel).join('/')+' · Works: '+(active.length?active.map(dayLabel).join('/'):'No regular days')+'</small></div><button class="secondary remove-workday-override" data-login="'+esc(e.login)+'">Restore cohort days</button></div>'}).join(''):'<div class="empty">No active workday overrides.</div>';
+      document.querySelectorAll('.remove-workday-override').forEach(function(b){b.onclick=function(){var e=shipDockEmployees().find(function(x){return x.login===b.dataset.login});if(!e)return;if(!confirm('Restore '+e.login+' to all regular '+e.cohort+' cohort days?\n\nAffected 2-week schedule slots will be recalculated.'))return;e.workdayOverride=null;generateBoard(boardStartKey(),true,true);audit('Removed workday override for '+e.login+'; restored '+e.cohort+' cohort days');save();renderAll();toast('Regular cohort days restored · schedule updated')}})
+    }
+    document.getElementById('workdayEmployee').onchange=renderWorkdayEditor;
+    document.getElementById('saveWorkdayOverride').onclick=function(){
+      var login=document.getElementById('workdayEmployee').value,e=shipDockEmployees().find(function(x){return x.login===login});if(!e)return;
+      var regular=COHORT_DAYS[e.cohort]||[],selected=Array.from(document.querySelectorAll('.workday-check:checked')).map(function(x){return Number(x.value)}).filter(function(d){return regular.indexOf(d)>=0});
+      if(!selected.length){alert('Choose at least one regular workday. For a full absence, use the appropriate absence/time-off process instead.');return}
+      if(selected.length===regular.length&&regular.every(function(d){return selected.indexOf(d)>=0})){e.workdayOverride=null}else{e.workdayOverride=selected.slice().sort(function(a,b){return a-b})}
+      if(!confirm('Save recurring workdays for '+e.login+'?\n\nWorks each week: '+selected.map(dayLabel).join(', ')+'\n\nAssignments on removed days will be refilled immediately.'))return;
+      generateBoard(boardStartKey(),true,true);audit('Updated recurring workdays for '+e.login+' to '+selected.map(dayLabel).join(', '));save();renderAll();toast('Workday override saved · 2-week schedule updated')
+    };
+
     function blockImpact(login,roleId){
       var dates=boardDates(boardStartKey(),14);
       return dates.reduce(function(total,date){
@@ -1401,7 +1445,7 @@
     }
 
     document.getElementById('resetManualSchedule').onclick=function(){
-      if(!confirm('Reset MANUAL + SCHEDULE data?\n\nThis will keep:\n• Imported roster\n• Learning-file training\n• Accommodation role blocks\n\nThis will delete:\n• Manual trained-role additions\n• Generated/manual schedules\n• Today absences\n• VET entries\n• Manager role-setting changes\n\nFirebase and this browser cache will both be updated.'))return;
+      if(!confirm('Reset MANUAL + SCHEDULE data?\n\nThis will keep:\n• Imported roster\n• Learning-file training\n• Accommodation role blocks\n• Workday overrides\n\nThis will delete:\n• Manual trained-role additions\n• Generated/manual schedules\n• Today absences\n• VET entries\n• Manager role-setting changes\n\nFirebase and this browser cache will both be updated.'))return;
 
       state.employees.forEach(function(e){e.manualRoles=[]});
       state.schedules={};
@@ -1439,6 +1483,8 @@
       renderVet();
       renderOverviewToday();
       renderBlocks();
+      renderWorkdayEditor();
+      renderWorkdayOverrides();
       renderRoleSettings();
       renderHistory();
       renderMissingAAs()
