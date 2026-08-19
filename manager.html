@@ -166,7 +166,15 @@
         <div class="card">
           <div class="field"><label>Ship Dock AA</label><select id="workdayEmployee"><option value="">Choose an AA</option></select></div>
           <div class="field"><label>Regular cohort days</label><div id="workdayRegular" class="hint">Choose an AA</div></div>
-          <div class="field"><label>Actually works each week</label><div id="workdayChecks" class="actions" style="margin-top:0"></div></div>
+          <div class="field"><label>Actually works each week</label><div id="workdayChecks" class="actions" style="margin-top:0">
+            <label class="workday-day-option" data-day="0" style="display:none;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-size:13px;color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:8px 10px;margin:0"><input class="workday-check" type="checkbox" value="0" style="width:auto">Sun</label>
+            <label class="workday-day-option" data-day="1" style="display:none;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-size:13px;color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:8px 10px;margin:0"><input class="workday-check" type="checkbox" value="1" style="width:auto">Mon</label>
+            <label class="workday-day-option" data-day="2" style="display:none;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-size:13px;color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:8px 10px;margin:0"><input class="workday-check" type="checkbox" value="2" style="width:auto">Tue</label>
+            <label class="workday-day-option" data-day="3" style="display:none;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-size:13px;color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:8px 10px;margin:0"><input class="workday-check" type="checkbox" value="3" style="width:auto">Wed</label>
+            <label class="workday-day-option" data-day="4" style="display:none;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-size:13px;color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:8px 10px;margin:0"><input class="workday-check" type="checkbox" value="4" style="width:auto">Thu</label>
+            <label class="workday-day-option" data-day="5" style="display:none;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-size:13px;color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:8px 10px;margin:0"><input class="workday-check" type="checkbox" value="5" style="width:auto">Fri</label>
+            <label class="workday-day-option" data-day="6" style="display:none;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-size:13px;color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:8px 10px;margin:0"><input class="workday-check" type="checkbox" value="6" style="width:auto">Sat</label>
+          </div></div>
           <p class="hint">Only choose days inside the AA's original cohort. VET can still add the AA on an exceptional extra day.</p>
           <button class="primary" id="saveWorkdayOverride">Save workday override</button>
         </div>
@@ -1326,23 +1334,22 @@
     }
 
     function renderWorkdayEditor(){
-      var select=document.getElementById('workdayEmployee'),checks=document.getElementById('workdayChecks'),regularEl=document.getElementById('workdayRegular');
-      if(!select||!checks||!regularEl)return;
+      var select=document.getElementById('workdayEmployee'),regularEl=document.getElementById('workdayRegular');
+      if(!select||!regularEl)return;
       var login=String(select.value||'').trim().toLowerCase();
-      if(!login){regularEl.textContent='Choose an AA';checks.innerHTML='';return}
-      var people=shipDockEmployees();
-      var e=people.find(function(x){return String(x.login||'').trim().toLowerCase()===login});
-      if(!e){
-        regularEl.textContent='AA data could not be matched. Re-select the AA.';
-        checks.innerHTML='';
-        return;
-      }
-      var regular=(COHORT_DAYS[String(e.cohort||'').trim().toUpperCase()]||[]).slice();
+      var options=document.querySelectorAll('.workday-day-option');
+      options.forEach(function(label){label.style.display='none';var cb=label.querySelector('.workday-check');if(cb)cb.checked=false});
+      if(!login){regularEl.textContent='Choose an AA';return}
+      var e=shipDockEmployees().find(function(x){return String(x.login||'').trim().toLowerCase()===login});
+      if(!e){regularEl.textContent='AA data could not be matched. Re-select the AA.';return}
+      var cohort=String(e.cohort||'').trim().toUpperCase();
+      var regular=(COHORT_DAYS[cohort]||[]).slice();
       var active=Array.isArray(e.workdayOverride)?e.workdayOverride.map(Number):regular.slice();
-      regularEl.textContent=e.cohort+' · '+regular.map(dayLabel).join(' · ');
-      checks.innerHTML=regular.map(function(day){
-        return '<label style="display:inline-flex;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-size:13px;color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:8px 10px;margin:0"><input class="workday-check" type="checkbox" value="'+day+'" '+(active.indexOf(day)>=0?'checked':'')+' style="width:auto">'+dayLabel(day)+'</label>';
-      }).join('');
+      regularEl.textContent=cohort+' · '+regular.map(dayLabel).join(' · ');
+      options.forEach(function(label){
+        var day=Number(label.dataset.day),cb=label.querySelector('.workday-check');
+        if(regular.indexOf(day)>=0){label.style.display='inline-flex';if(cb)cb.checked=active.indexOf(day)>=0}
+      });
     }
     function renderWorkdayOverrides(){
       var el=document.getElementById('workdayOverrideList');if(!el)return;
@@ -1351,8 +1358,6 @@
       document.querySelectorAll('.remove-workday-override').forEach(function(b){b.onclick=function(){var e=shipDockEmployees().find(function(x){return x.login===b.dataset.login});if(!e)return;if(!confirm('Restore '+e.login+' to all regular '+e.cohort+' cohort days?\n\nAffected 2-week schedule slots will be recalculated.'))return;e.workdayOverride=null;generateBoard(boardStartKey(),true,true);audit('Removed workday override for '+e.login+'; restored '+e.cohort+' cohort days');save();renderAll();toast('Regular cohort days restored · schedule updated')}})
     }
     document.getElementById('workdayEmployee').onchange=function(){renderWorkdayEditor()};
-    document.getElementById('workdayEmployee').oninput=function(){renderWorkdayEditor()};
-    document.getElementById('workdayEmployee').onclick=function(){renderWorkdayEditor()};
     document.getElementById('saveWorkdayOverride').onclick=function(){
       var login=document.getElementById('workdayEmployee').value,e=shipDockEmployees().find(function(x){return x.login===login});if(!e)return;
       var regular=COHORT_DAYS[e.cohort]||[],selected=Array.from(document.querySelectorAll('.workday-check:checked')).map(function(x){return Number(x.value)}).filter(function(d){return regular.indexOf(d)>=0});
