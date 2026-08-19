@@ -1125,7 +1125,7 @@
       document.getElementById('unEmployee').innerHTML=scheduled.length?scheduled.map(function(e){return'<option value="'+esc(e.login)+'">'+esc(e.name)+' · '+esc(e.login)+' · '+e.cohort+' · Ship Dock</option>'}).join(''):'<option value="">No available scheduled Ship Dock AAs</option>';
       document.getElementById('blockEmployee').innerHTML=employeeOptions('',false);
       var wd=document.getElementById('workdayEmployee');
-      if(wd){var currentWd=wd.value;wd.innerHTML=employeeOptions('',false);if(currentWd&&shipDockEmployees().some(function(e){return e.login===currentWd}))wd.value=currentWd}
+      if(wd){var currentWd=wd.value;wd.innerHTML=employeeOptions('',false);if(currentWd&&shipDockEmployees().some(function(e){return e.login===currentWd}))wd.value=currentWd;renderWorkdayEditor()}
 
       renderVetEmployees();
       renderTrainEmployees()
@@ -1329,13 +1329,14 @@
       el.innerHTML=rows.length?rows.map(function(e){var regular=COHORT_DAYS[e.cohort]||[],active=effectiveWorkdays(e);return'<div class="list-row"><div class="person"><strong>'+esc(e.name)+'</strong><small>'+esc(e.login)+' · '+e.cohort+' · Regular: '+regular.map(dayLabel).join('/')+' · Works: '+(active.length?active.map(dayLabel).join('/'):'No regular days')+'</small></div><button class="secondary remove-workday-override" data-login="'+esc(e.login)+'">Restore cohort days</button></div>'}).join(''):'<div class="empty">No active workday overrides.</div>';
       document.querySelectorAll('.remove-workday-override').forEach(function(b){b.onclick=function(){var e=shipDockEmployees().find(function(x){return x.login===b.dataset.login});if(!e)return;if(!confirm('Restore '+e.login+' to all regular '+e.cohort+' cohort days?\n\nAffected 2-week schedule slots will be recalculated.'))return;e.workdayOverride=null;generateBoard(boardStartKey(),true,true);audit('Removed workday override for '+e.login+'; restored '+e.cohort+' cohort days');save();renderAll();toast('Regular cohort days restored · schedule updated')}})
     }
-    document.getElementById('workdayEmployee').onchange=renderWorkdayEditor;
+    document.getElementById('workdayEmployee').addEventListener('change',renderWorkdayEditor);
+    document.getElementById('workdayEmployee').addEventListener('input',renderWorkdayEditor);
     document.getElementById('saveWorkdayOverride').onclick=function(){
       var login=document.getElementById('workdayEmployee').value,e=shipDockEmployees().find(function(x){return x.login===login});if(!e)return;
       var regular=COHORT_DAYS[e.cohort]||[],selected=Array.from(document.querySelectorAll('.workday-check:checked')).map(function(x){return Number(x.value)}).filter(function(d){return regular.indexOf(d)>=0});
       if(!selected.length){alert('Choose at least one regular workday. For a full absence, use the appropriate absence/time-off process instead.');return}
-      if(selected.length===regular.length&&regular.every(function(d){return selected.indexOf(d)>=0})){e.workdayOverride=null}else{e.workdayOverride=selected.slice().sort(function(a,b){return a-b})}
       if(!confirm('Save recurring workdays for '+e.login+'?\n\nWorks each week: '+selected.map(dayLabel).join(', ')+'\n\nAssignments on removed days will be refilled immediately.'))return;
+      if(selected.length===regular.length&&regular.every(function(d){return selected.indexOf(d)>=0})){e.workdayOverride=null}else{e.workdayOverride=selected.slice().sort(function(a,b){return a-b})}
       generateBoard(boardStartKey(),true,true);audit('Updated recurring workdays for '+e.login+' to '+selected.map(dayLabel).join(', '));save();renderAll();toast('Workday override saved · 2-week schedule updated')
     };
 
