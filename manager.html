@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="app-version" content="3.7">
+  <meta name="app-version" content="3.8">
   <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
@@ -95,11 +95,11 @@
   (function(){
     'use strict';
     var KEY='critical-role-assignments-v1';
-    var ROLES=[{id:'ship-clerk',name:'Ship Clerk',source:'manual'},{id:'tdr',name:'TDR',source:'gtdr'},{id:'flats-ps',name:'Flats PS',source:'prism'},{id:'palletize-ps',name:'Palletize PS',source:'prism'},{id:'bounty-hunter',name:'Bounty Hunter',source:'manual'},{id:'quality',name:'Quality',source:'manual'},{id:'west-flats-pg',name:'West Flats PG',source:'manual'},{id:'east-flats-pg',name:'East Flats PG',source:'manual'},{id:'trans-pg',name:'Trans PG',source:'manual'},{id:'pit-driver',name:'PIT Driver',source:'pit-noba'},{id:'rwc4-1',name:'RWC4-1',source:'rwc4'},{id:'rwc4-2',name:'RWC4-2',source:'rwc4'}];
+    var ROLES=[{id:'ship-clerk',name:'Ship Clerk',source:'manual'},{id:'tdr',name:'TDR',source:'gtdr'},{id:'flats-ps',name:'Flats PS',source:'prism'},{id:'palletize-ps',name:'Palletize PS',source:'prism'},{id:'bounty-hunter',name:'Bounty Hunter',source:'manual'},{id:'quality',name:'Quality',source:'manual'},{id:'west-flats-pg',name:'West Flats PG',source:'manual'},{id:'trans-pg',name:'Trans PG',source:'manual'},{id:'pit-driver',name:'PIT Driver',source:'pit-noba'},{id:'rwc4-1',name:'RWC4-1',source:'rwc4'},{id:'rwc4-2',name:'RWC4-2',source:'rwc4'}];
     var COHORTS=['DA','DB','DC','DL','DN','NA','NB','NC','NL','NN'],Q=['Q1','Q2','Q3'],DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
     var COHORT_DAYS={DA:[0,1,2,3],NA:[0,1,2,3],DB:[3,4,5,6],NB:[3,4,5,6],DC:[1,2,4,5],NC:[1,2,4,5],DL:[6,0,1,2],NL:[6,0,1,2],DN:[4,5,6],NN:[4,5,6]};
-    var DEFAULT_ROLE_MODES={'ship-clerk':'full-day','east-flats-pg':'full-day','west-flats-pg':'full-day','trans-pg':'full-day',quality:'full-day','bounty-hunter':'full-day',tdr:'shuffle','flats-ps':'shuffle','palletize-ps':'shuffle','pit-driver':'shuffle','rwc4-1':'shuffle','rwc4-2':'shuffle'};
-    function defaults(){return{version:5,settings:{title:'Critical Role Assignments',siteCode:'YXU1',primary:'#073763',accent:'#1298c8',managerPath:'https://ranvexsi.netlify.app/manager',dashboardSecret:'yxu1-live-board',maxQuarters:4,roleModeSchema:2,scheduleSchema:5,roleModes:Object.assign({},DEFAULT_ROLE_MODES)},employees:[],unavailability:[],vet:[],schedules:{},audits:[],lastUpdated:new Date().toISOString()}}
+    var DEFAULT_ROLE_MODES={'ship-clerk':'full-day','west-flats-pg':'full-day','trans-pg':'full-day',quality:'full-day','bounty-hunter':'full-day',tdr:'shuffle','flats-ps':'shuffle','palletize-ps':'shuffle','pit-driver':'shuffle','rwc4-1':'shuffle','rwc4-2':'shuffle'};
+    function defaults(){return{version:5,settings:{title:'Critical Role Assignments',siteCode:'YXU1',primary:'#073763',accent:'#1298c8',managerPath:'https://ranvexsi.netlify.app/manager',dashboardSecret:'yxu1-live-board',maxQuarters:6,roleModeSchema:2,scheduleSchema:5,roleModes:Object.assign({},DEFAULT_ROLE_MODES)},employees:[],unavailability:[],vet:[],schedules:{},audits:[],lastUpdated:new Date().toISOString()}}
     function normalizeState(x){x=x&&x.settings?x:defaults();x.settings=x.settings||{};if(x.settings.roleModeSchema!==2){x.settings.roleModes=Object.assign({},DEFAULT_ROLE_MODES);x.settings.roleModeSchema=2}else{x.settings.roleModes=Object.assign({},DEFAULT_ROLE_MODES,x.settings.roleModes||{})}if(typeof x.settings.scheduleSchema!=='number')x.settings.scheduleSchema=0;x.employees=x.employees||[];x.employees.forEach(function(e){e.trainedRoles=e.trainedRoles||[];e.manualRoles=e.manualRoles||[];e.blockedRoles=e.blockedRoles||[];e.missingFromFiles=!!e.missingFromFiles;e.missingReason=e.missingReason||''});x.unavailability=x.unavailability||[];x.vet=x.vet||[];x.schedules=x.schedules||{};x.audits=x.audits||[];return x}
     function load(){try{return normalizeState(JSON.parse(localStorage.getItem(KEY)))}catch(e){return defaults()}}var state=load();
     var cloudTimer,cloudPending=false,cloudSyncing=false;
