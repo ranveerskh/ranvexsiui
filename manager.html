@@ -1313,63 +1313,80 @@
       }).join(''):'<div class="empty">No VET AAs today.</div>'
     }
 
-    function dayLabel(day){return DAYS[day]||String(day)}
-    function selectedWorkdayInfo(){
-      var select=document.getElementById('workdayEmployee');
-      if(!select||select.selectedIndex<0)return null;
-      var option=select.options[select.selectedIndex];
-      var login=String((option&&option.value)||select.value||'').trim().toLowerCase();
-      if(!login)return null;
-      var employee=shipDockEmployees().find(function(x){return String(x.login||'').trim().toLowerCase()===login})||null;
-      var cohort=String((employee&&employee.cohort)||(option&&option.getAttribute('data-cohort'))||'').trim().toUpperCase();
-      return {login:login,employee:employee,cohort:cohort};
+    // WORKDAY OVERRIDES V5.0 — self-contained rewrite.
+    // The employee dropdown is the only source of the selected AA. Cohort days always come
+    // from that employee's saved cohort and the global COHORT_DAYS map.
+    var workdayDraftLogin='';
+    var workdayDraftDays=[];
+    function dayLabel(day){return DAYS[Number(day)]||String(day)}
+    function workdayEmployeeByLogin(login){
+      login=String(login||'').trim().toLowerCase();
+      return shipDockEmployees().find(function(e){return String(e.login||'').trim().toLowerCase()===login})||null
     }
-    function selectedWorkdayEmployee(){
-      var info=selectedWorkdayInfo();
-      return info&&info.employee?info.employee:null;
+    function cohortDaysForEmployee(e){
+      var cohort=String(e&&e.cohort||'').trim().toUpperCase();
+      return (COHORT_DAYS[cohort]||[]).map(Number)
     }
     function renderWorkdayEmployeeSelect(){
-      var select=document.getElementById('workdayEmployee');
-      if(!select)return;
-      var current=String(select.value||'').trim().toLowerCase();
-      var people=shipDockEmployees().slice().sort(function(a,b){return a.name.localeCompare(b.name)});
+      var select=document.getElementById('workdayEmployee');if(!select)return;
+      var wanted=workdayDraftLogin||String(select.value||'').trim().toLowerCase();
+      var people=shipDockEmployees().slice().sort(function(a,b){return String(a.name||'').localeCompare(String(b.name||''))});
       select.innerHTML='<option value="">Choose an AA</option>'+people.map(function(e){
-        return '<option value="'+esc(String(e.login||'').trim().toLowerCase())+'" data-login="'+esc(String(e.login||'').trim().toLowerCase())+'" data-cohort="'+esc(String(e.cohort||'').trim().toUpperCase())+'">'+esc(e.name)+' · '+esc(e.login)+' · '+esc(e.cohort)+' · Ship Dock</option>';
+        var login=String(e.login||'').trim().toLowerCase();
+        return '<option value="'+esc(login)+'">'+esc(e.name)+' · '+esc(e.login)+' · '+esc(e.cohort)+' · Ship Dock</option>'
       }).join('');
-      if(current&&people.some(function(e){return String(e.login||'').trim().toLowerCase()===current}))select.value=current;
+      if(wanted&&workdayEmployeeByLogin(wanted)){select.value=wanted;workdayDraftLogin=wanted}
+    }
+    function loadWorkdayDraft(login){
+      var e=workdayEmployeeByLogin(login);
+      workdayDraftLogin=e?String(e.login||'').trim().toLowerCase():'';
+      if(!e){workdayDraftDays=[];return}
+      var regular=cohortDaysForEmployee(e);
+      workdayDraftDays=Array.isArray(e.workdayOverride)?e.workdayOverride.map(Number).filter(function(d){return regular.indexOf(d)>=0}):regular.slice()
     }
     function renderWorkdayEditor(){
-      var regularEl=document.getElementById('workdayRegular'),daysEl=document.getElementById('workdayDays');
-      if(!regularEl||!daysEl)return;
-      var info=selectedWorkdayInfo();
-      daysEl.innerHTML='';
-      if(!info){regularEl.textContent='Choose an AA';return}
-      var cohort=info.cohort;
-      var regular=(COHORT_DAYS[cohort]||[]).map(Number);
-      if(!regular.length){regularEl.textContent=cohort+' · No cohort-day mapping found';return}
-      var e=info.employee;
-      var active=e&&Array.isArray(e.workdayOverride)?e.workdayOverride.map(Number):regular.slice();
+      var select=document.getElementById('workdayEmployee'),regularEl=document.getElementById('workdayRegular'),daysEl=document.getElementById('workdayDays');
+      if(!select||!regularEl||!daysEl)return;
+      var login=String(select.value||workdayDraftLogin||'').trim().toLowerCase();
+      var e=workdayEmployeeByLogin(login);
+      if(!e){regularEl.textContent='Choose an AA';daysEl.innerHTML='<div class="hint">Select an AA above to load the regular cohort workdays.</div>';return}
+      if(workdayDraftLogin!==login)loadWorkdayDraft(login);
+      var cohort=String(e.cohort||'').trim().toUpperCase(),regular=cohortDaysForEmployee(e);
+      if(!regular.length){regularEl.textContent=cohort+' · Cohort days are not configured';daysEl.innerHTML='<div class="hint">No workdays found for this cohort.</div>';return}
       regularEl.textContent=cohort+' · '+regular.map(dayLabel).join(' · ');
       daysEl.innerHTML=regular.map(function(day){
-        var checked=active.indexOf(day)>=0?' checked':'';
-        return '<label style="display:inline-flex;align-items:center;gap:7px;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:#fff;color:var(--ink);font-size:12px;font-weight:800;text-transform:none;letter-spacing:0;margin:0;cursor:pointer"><input class="workday-check" type="checkbox" value="'+day+'"'+checked+' style="width:auto;margin:0">'+dayLabel(day)+'</label>';
+        var on=workdayDraftDays.indexOf(day)>=0;
+        return '<button type="button" class="workday-day-btn '+(on?'primary':'secondary')+'" data-day="'+day+'" aria-pressed="'+(on?'true':'false')+'">'+(on?'✓ ':'')+dayLabel(day)+'</button>'
       }).join('');
+      daysEl.querySelectorAll('.workday-day-btn').forEach(function(btn){btn.onclick=function(){
+        var day=Number(btn.dataset.day),i=workdayDraftDays.indexOf(day);
+        if(i>=0)workdayDraftDays.splice(i,1);else workdayDraftDays.push(day);
+        workdayDraftDays.sort(function(a,b){return regular.indexOf(a)-regular.indexOf(b)});
+        renderWorkdayEditor()
+      }})
     }
     function renderWorkdayOverrides(){
       var el=document.getElementById('workdayOverrideList');if(!el)return;
-      var rows=shipDockEmployees().filter(function(e){return Array.isArray(e.workdayOverride)}).sort(function(a,b){return a.name.localeCompare(b.name)});
-      el.innerHTML=rows.length?rows.map(function(e){var regular=(COHORT_DAYS[String(e.cohort||'').trim().toUpperCase()]||[]),active=effectiveWorkdays(e);return'<div class="list-row"><div class="person"><strong>'+esc(e.name)+'</strong><small>'+esc(e.login)+' · '+esc(e.cohort)+' · Regular: '+regular.map(dayLabel).join('/')+' · Works: '+(active.length?active.map(dayLabel).join('/'):'No regular days')+'</small></div><button class="secondary remove-workday-override" data-login="'+esc(e.login)+'">Restore cohort days</button></div>'}).join(''):'<div class="empty">No active workday overrides.</div>';
-      document.querySelectorAll('.remove-workday-override').forEach(function(b){b.onclick=function(){var e=shipDockEmployees().find(function(x){return x.login===b.dataset.login});if(!e)return;if(!confirm('Restore '+e.login+' to all regular '+e.cohort+' cohort days?\n\nAffected 2-week schedule slots will be recalculated.'))return;e.workdayOverride=null;generateBoard(boardStartKey(),true,true);audit('Removed workday override for '+e.login+'; restored '+e.cohort+' cohort days');save();renderAll();toast('Regular cohort days restored · schedule updated')}})
+      var rows=shipDockEmployees().filter(function(e){return Array.isArray(e.workdayOverride)}).sort(function(a,b){return String(a.name||'').localeCompare(String(b.name||''))});
+      el.innerHTML=rows.length?rows.map(function(e){
+        var regular=cohortDaysForEmployee(e),active=effectiveWorkdays(e);
+        return '<div class="list-row"><div class="person"><strong>'+esc(e.name)+'</strong><small>'+esc(e.login)+' · '+esc(e.cohort)+' · Regular: '+regular.map(dayLabel).join('/')+' · Works: '+active.map(dayLabel).join('/')+'</small></div><button class="secondary remove-workday-override" data-login="'+esc(e.login)+'">Restore cohort days</button></div>'
+      }).join(''):'<div class="empty">No active workday overrides.</div>';
+      document.querySelectorAll('.remove-workday-override').forEach(function(b){b.onclick=function(){
+        var e=workdayEmployeeByLogin(b.dataset.login);if(!e)return;
+        if(!confirm('Restore '+e.login+' to all regular '+e.cohort+' cohort days?\n\nAffected 2-week schedule slots will be recalculated.'))return;
+        e.workdayOverride=null;
+        if(workdayDraftLogin===String(e.login||'').trim().toLowerCase())loadWorkdayDraft(e.login);
+        generateBoard(boardStartKey(),true,true);audit('Removed workday override for '+e.login+'; restored '+e.cohort+' cohort days');save();renderAll();toast('Regular cohort days restored · schedule updated')
+      }})
     }
-    document.getElementById('workdayEmployee').addEventListener('change',renderWorkdayEditor);
-    document.getElementById('workdayEmployee').addEventListener('input',renderWorkdayEditor);
+    document.getElementById('workdayEmployee').onchange=function(){loadWorkdayDraft(this.value);renderWorkdayEditor()};
     document.getElementById('saveWorkdayOverride').onclick=function(){
-      var info=selectedWorkdayInfo(),e=info&&info.employee;if(!e){alert('Choose a Ship Dock AA first.');return}
-      var cohort=info.cohort,regular=(COHORT_DAYS[cohort]||[]).map(Number);
-      var selected=Array.from(document.querySelectorAll('#workdayDays .workday-check:checked')).map(function(x){return Number(x.value)}).filter(function(d){return regular.indexOf(d)>=0});
+      var e=workdayEmployeeByLogin(workdayDraftLogin||document.getElementById('workdayEmployee').value);if(!e){alert('Choose a Ship Dock AA first.');return}
+      var cohort=String(e.cohort||'').trim().toUpperCase(),regular=cohortDaysForEmployee(e),selected=workdayDraftDays.filter(function(d){return regular.indexOf(d)>=0});
       if(!selected.length){alert('Choose at least one regular workday. For a full absence, use the appropriate absence/time-off process instead.');return}
       if(!confirm('Save recurring workdays for '+e.login+'?\n\nRegular '+cohort+': '+regular.map(dayLabel).join(', ')+'\nActually works: '+selected.map(dayLabel).join(', ')+'\n\nAssignments on removed days will be refilled immediately.'))return;
-      if(selected.length===regular.length&&regular.every(function(d){return selected.indexOf(d)>=0}))e.workdayOverride=null;else e.workdayOverride=selected.slice().sort(function(a,b){return a-b});
+      e.workdayOverride=(selected.length===regular.length&&regular.every(function(d){return selected.indexOf(d)>=0}))?null:selected.slice();
       generateBoard(boardStartKey(),true,true);audit('Updated recurring workdays for '+e.login+' to '+selected.map(dayLabel).join(', '));save();renderAll();toast('Workday override saved · 2-week schedule updated')
     };
 
