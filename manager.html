@@ -1,10 +1,10 @@
 <!doctype html>
-<!-- FIREBASE V4.6: 2-week board + all-role manual training + centralized role settings + RWC4 alternating rotation -->
+<!-- FIREBASE V4.8: 2-week board + all-role manual training + centralized role settings + RWC4 alternating rotation -->
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="app-version" content="4.6">
+  <meta name="app-version" content="4.8">
   <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
@@ -424,8 +424,23 @@
     }
 
     var generationSalt='';
+    // Fairness rule: spread work evenly toward 4 quarters first, then use 5th/6th
+    // quarters only when needed to keep eligible role slots filled. The previous week's
+    // load is used as a tie-breaker so heavier AAs get preference relief next week.
+    var generationWeek='';
+    function previousWeekCounts(week){
+      var out={};
+      if(!week)return out;
+      var prev=dateKey(add(new Date(week+'T12:00:00'),-7)),sc=state.schedules[prev];
+      if(!sc||!sc.assignments)return out;
+      Object.values(sc.assignments).forEach(function(a){
+        if(a&&named(a.login))out[a.login]=(out[a.login]||0)+1
+      });
+      return out
+    }
+    var priorWeekLoad={};
     function choose(candidates,counts,needed,key,allowOverLimit,role,date,shift,quarter){
-      var max=Number(state.settings.maxQuarters)||6;
+      var max=6;
       candidates.sort(function(a,b){
         if(role&&isRwc4Role(role.id)){
           var ap=rwc4PreferredFor(a.login,date,shift,quarter||'Q1',role.id)?0:1;
@@ -434,6 +449,8 @@
         }
         var countDiff=(counts[a.login]||0)-(counts[b.login]||0);
         if(countDiff!==0)return countDiff;
+        var priorDiff=(priorWeekLoad[a.login]||0)-(priorWeekLoad[b.login]||0);
+        if(priorDiff!==0)return priorDiff;
         return hash(key+'|'+generationSalt+'|'+a.login)-hash(key+'|'+generationSalt+'|'+b.login)
       });
       var within=candidates.find(function(e){return(counts[e.login]||0)+needed<=max});
@@ -530,7 +547,8 @@
       }
     }
     function generate(week,preserve,deferSave){
-      var old=state.schedules[week],as={},counts={},start=new Date(week+'T12:00:00'),max=Number(state.settings.maxQuarters)||6;
+      var old=state.schedules[week],as={},counts={},start=new Date(week+'T12:00:00'),max=6;
+      generationWeek=week;priorWeekLoad=previousWeekCounts(week);
 
       for(var di=0;di<7;di++){
         var dk=dateKey(add(start,di));
@@ -618,13 +636,14 @@
       repairOpenAssignments(as,week,max,counts);
 
       state.schedules[week]={weekStart:week,updatedAt:new Date().toISOString(),assignments:as};
+      generationWeek='';priorWeekLoad={};
       if(!deferSave)save();
       return state.schedules[week]
     }
 
     function generateBoard(start,preserve,deferSave){
       boardWeeks(start,14).forEach(function(week){generate(week,!!preserve,true)});
-      state.settings.scheduleSchema=8;
+      state.settings.scheduleSchema=9;
       if(!deferSave)save()
     }
     function boardHasData(start){return boardWeeks(start,14).some(function(week){return!!state.schedules[week]})}
@@ -1391,7 +1410,7 @@
       state.audits=[];
       state.settings.roleModes=Object.assign({},DEFAULT_ROLE_MODES);
       state.settings.roleModeSchema=4;
-      state.settings.scheduleSchema=8;
+      state.settings.scheduleSchema=9;
 
       audit('Reset manual training and schedule data');
       save();
