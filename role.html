@@ -1,10 +1,10 @@
 <!doctype html>
-<!-- FIREBASE V4.1: two-week TV board + Day / Night / Auto switch -->
+<!-- FIREBASE V4.2: spreadsheet-style two-week TV board + Day / Night / Auto -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="app-version" content="4.1">
+<meta name="app-version" content="4.2">
 <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -31,20 +31,18 @@ main{flex:1;min-height:0;padding:7px;display:grid;grid-template-rows:1fr 1fr;gap
 .tag{background:var(--navy);color:#fff;border-radius:999px;padding:4px 9px;font-size:9px;font-weight:900;white-space:nowrap}
 .table-wrap{flex:1;min-height:0;overflow:hidden}
 .schedule{width:100%;height:100%;border-collapse:collapse;table-layout:fixed}
-.schedule col.role-col{width:13%}
+.schedule col.role-col{width:11%}
 .schedule th,.schedule td{border-right:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden}
 .schedule tr>*:last-child{border-right:0}.schedule tbody tr:last-child>*{border-bottom:0}
-.schedule thead{height:31px}.schedule tbody{height:calc(100% - 31px)}.schedule tbody tr{height:9.09%}
-.day-head{background:var(--navy);color:#fff;text-align:center;padding:2px;font-size:10px;font-weight:900}
-.day-head .dn{display:inline-block;text-transform:uppercase;letter-spacing:.04em}.day-head .dd{display:inline-block;margin-left:4px;font-size:9px;opacity:.82}
-.day-head.today{background:var(--blue);box-shadow:inset 3px 0 #fff,inset -3px 0 #fff}
-.role{background:#f4f8fa;color:#092c4b;text-align:left;padding:2px 7px;font-size:10px;font-weight:900;white-space:nowrap;text-overflow:ellipsis}
-.day-cell{padding:0;background:#fff}.day-cell.today{background:#e9f8ff;box-shadow:inset 2px 0 var(--blue),inset -2px 0 var(--blue)}
-.triplet{height:100%;display:grid;grid-template-rows:repeat(3,minmax(0,1fr))}
-.qline{min-height:0;display:grid;grid-template-columns:20px minmax(0,1fr);align-items:center;border-bottom:1px solid #e5edf2;padding:0 3px;gap:3px}
-.qline:last-child{border-bottom:0}.qline b{text-align:center;color:#fff;background:#526f84;border-radius:3px;font-size:7px;padding:2px 1px}.qline:nth-child(2) b{background:var(--blue)}.qline:nth-child(3) b{background:#7657aa}
-.qline span{font-size:clamp(8px,.58vw,11px);font-weight:900;color:var(--navy);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.qline.empty{background:#fbfdfe}.qline.empty b{background:#a6b5bf}.qline.empty span{color:#9aa9b4;font-weight:700}
+.schedule thead tr:first-child{height:22px}.schedule thead tr:last-child{height:18px}
+.schedule tbody{height:calc(100% - 40px)}.schedule tbody tr{height:9.09%}
+.role-head{background:var(--navy);color:#fff;text-align:center;font-size:9px;font-weight:900;text-transform:uppercase}
+.day-head{background:var(--navy);color:#fff;text-align:center;padding:2px 1px;font-size:9px;font-weight:900}
+.day-head .dn{display:inline-block;text-transform:uppercase;letter-spacing:.04em}.day-head .dd{display:inline-block;margin-left:4px;font-size:8px;opacity:.82}
+.q-head{background:#0b527d;color:#fff;text-align:center;padding:1px;font-size:7px;font-weight:900}
+.role{background:#f4f8fa;color:#092c4b;text-align:left;padding:2px 6px;font-size:9px;font-weight:900;white-space:nowrap;text-overflow:ellipsis}
+.login-cell{padding:1px 2px;text-align:center;background:#fff;color:var(--navy);font-size:clamp(7px,.48vw,9px);font-weight:900;white-space:nowrap;text-overflow:ellipsis}
+.login-cell.empty{background:#fbfdfe;color:#9aa9b4;font-weight:700}
 footer{height:38px;flex:0 0 38px;border-top:1px solid var(--line);background:#f7fbfd;padding:4px 12px;display:flex;align-items:center;justify-content:space-between;gap:15px}
 .status{display:flex;align-items:center;gap:8px;font-size:11px;min-width:0}.dot{width:9px;height:9px;flex:0 0 9px;border-radius:50%;background:#23b26d}.updated{font-size:10px;color:var(--muted)}.note{font-size:10px;color:var(--muted);text-align:right}
 @media(max-width:1350px){.shift-btn{padding:7px 7px}.pill.range-pill{min-width:205px}}
@@ -162,28 +160,17 @@ document.querySelectorAll('[data-shift-mode]').forEach(function(btn){
 });
 
 function renderWeek(target,state,start,shift,today){
- var html='<colgroup><col class="role-col"><col span="7"></colgroup><thead><tr><th class="day-head">Role</th>';
- for(var i=0;i<7;i++){
-   var d=add(start,i),isToday=dateKey(d)===today;
-   html+='<th class="day-head '+(isToday?'today':'')+'"><span class="dn">'+dayName(d)+'</span><span class="dd">'+d.getDate()+' '+month(d)+'</span></th>';
- }
+ var html='<colgroup><col class="role-col"><col span="21"></colgroup><thead><tr><th class="role-head" rowspan="2">Role</th>';
+ for(var i=0;i<7;i++){var d=add(start,i);html+='<th class="day-head" colspan="3"><span class="dn">'+dayName(d)+'</span><span class="dd">'+d.getDate()+' '+month(d)+'</span></th>';}
+ html+='</tr><tr>';
+ for(var i=0;i<7;i++){Q.forEach(function(q){html+='<th class="q-head">'+q+'</th>';});}
  html+='</tr></thead><tbody>';
-
  ROLES.forEach(function(r){
    html+='<tr><th class="role">'+esc(r[1])+'</th>';
-   for(var i=0;i<7;i++){
-     var d=add(start,i),isToday=dateKey(d)===today;
-     html+='<td class="day-cell '+(isToday?'today':'')+'"><div class="triplet">';
-     Q.forEach(function(q){
-       var login=value(state,d,shift,q,r[0]),empty=login==='OPEN';
-       html+='<div class="qline '+(empty?'empty':'')+'"><b>'+q+'</b><span>'+esc(empty?'â':login)+'</span></div>';
-     });
-     html+='</div></td>';
-   }
+   for(var i=0;i<7;i++){var d=add(start,i);Q.forEach(function(q){var login=value(state,d,shift,q,r[0]),empty=login==='OPEN';html+='<td class="login-cell '+(empty?'empty':'')+'">'+esc(empty?'â':login)+'</td>';});}
    html+='</tr>';
  });
- html+='</tbody>';
- document.getElementById(target).innerHTML=html;
+ html+='</tbody>';document.getElementById(target).innerHTML=html;
 }
 
 function render(){
