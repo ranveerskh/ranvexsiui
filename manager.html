@@ -445,6 +445,90 @@
       as[key]={key:key,date:date,shift:shift,quarter:quarter,roleId:role.id,login:login,source:source,overLimit:!!overLimit}
     }
 
+    function repairOpenAssignments(as,week,max,counts){
+      function currentCount(login){return counts[login]||0}
+      function roleById(id){return ROLES.find(function(r){return r.id===id})}
+      function occupiedLogin(date,shift,quarter,login,ignoreRoleId){
+        return Object.values(as).some(function(a){return a.date===date&&a.shift===shift&&a.quarter===quarter&&a.login===login&&a.roleId!==ignoreRoleId})
+      }
+      function replacementFor(oldAssignment,donorLogin,targetRoleId,planned){
+        var oldRole=roleById(oldAssignment.roleId);if(!oldRole)return null;
+        var candidates=shipDockEmployees().filter(function(e){
+          if(e.login===donorLogin)return false;
+          if(!worksDate(e,oldAssignment.date,oldAssignment.shift)||!eligible(e,oldRole)||isUnavailable(e.login,oldAssignment.date,oldAssignment.shift,oldAssignment.quarter))return false;
+          if(currentCount(e.login)>=max)return false;
+          if(occupiedLogin(oldAssignment.date,oldAssignment.shift,oldAssignment.quarter,e.login,oldRole.id))return false;
+          return !planned.some(function(p){return p.quarter===oldAssignment.quarter&&p.login===e.login})
+        });
+        return choose(candidates,counts,1,'repair|'+oldAssignment.key,false,oldRole,oldAssignment.date,oldAssignment.shift,oldAssignment.quarter)
+      }
+      var start=new Date(week+'T12:00:00');
+      for(var di=0;di<7;di++){
+        var date=dateKey(add(start,di));
+        ['day','night'].forEach(function(shift){
+          // Repeat a few times because one successful repair can make another OPEN repair possible.
+          for(var pass=0;pass<3;pass++){
+            var changed=false;
+            ROLES.forEach(function(targetRole){
+              if(roleRule(targetRole.id)==='pa-only')return;
+              var targetQs=roleRule(targetRole.id)==='full-day'?Q:Q.slice();
+              targetQs.forEach(function(targetQuarter){
+                var quarters=roleRule(targetRole.id)==='full-day'?Q:[targetQuarter];
+                if(roleRule(targetRole.id)==='full-day'&&targetQuarter!=='Q1')return;
+                var targets=quarters.map(function(q){return as[akey(date,shift,q,targetRole.id)]});
+                if(!targets.length||targets.some(function(a){return !a||a.login!=='OPEN'||a.source==='manual'}))return;
+
+                // First try a genuinely free eligible AA. Normally generation already did this,
+                // but this also catches availability created by an earlier repair in this pass.
+                var direct=shipDockEmployees().filter(function(e){
+                  if(!worksDate(e,date,shift)||!eligible(e,targetRole))return false;
+                  if(quarters.some(function(q){return isUnavailable(e.login,date,shift,q)||occupiedLogin(date,shift,q,e.login,targetRole.id)}))return false;
+                  return currentCount(e.login)+quarters.length<=max
+                });
+                var directPick=choose(direct,counts,quarters.length,'repair-direct|'+date+'|'+shift+'|'+targetRole.id,false,targetRole,date,shift,quarters[0]);
+                if(directPick){
+                  quarters.forEach(function(q){put(as,date,shift,q,targetRole,directPick.login,'auto-repair',false)});
+                  counts[directPick.login]=currentCount(directPick.login)+quarters.length;changed=true;return
+                }
+
+                // Otherwise borrow an eligible AA from automatic Quarterly work only, and only
+                // when every displaced slot has a real replacement. Manual and Full-Day work is protected.
+                var donors=shipDockEmployees().filter(function(e){
+                  if(!worksDate(e,date,shift)||!eligible(e,targetRole))return false;
+                  return quarters.every(function(q){
+                    if(isUnavailable(e.login,date,shift,q))return false;
+                    var current=Object.values(as).find(function(a){return a.date===date&&a.shift===shift&&a.quarter===q&&a.login===e.login&&a.roleId!==targetRole.id});
+                    return current&&current.source!=='manual'&&roleRule(current.roleId)==='quarterly'
+                  })
+                });
+                donors.sort(function(a,b){return currentCount(a.login)-currentCount(b.login)||hash('repair-donor|'+date+'|'+shift+'|'+targetRole.id+'|'+a.login)-hash('repair-donor|'+date+'|'+shift+'|'+targetRole.id+'|'+b.login)});
+
+                for(var d=0;d<donors.length;d++){
+                  var donor=donors[d],planned=[],ok=true;
+                  for(var qi=0;qi<quarters.length;qi++){
+                    var q=quarters[qi];
+                    var oldA=Object.values(as).find(function(a){return a.date===date&&a.shift===shift&&a.quarter===q&&a.login===donor.login&&a.roleId!==targetRole.id});
+                    var repl=oldA&&replacementFor(oldA,donor.login,targetRole.id,planned);
+                    if(!repl){ok=false;break}
+                    planned.push({quarter:q,old:oldA,login:repl.login,employee:repl})
+                  }
+                  if(!ok)continue;
+                  planned.forEach(function(p){
+                    var oldRole=roleById(p.old.roleId);
+                    put(as,date,shift,p.quarter,oldRole,p.login,'auto-repair',false);
+                    counts[p.login]=currentCount(p.login)+1;
+                    counts[donor.login]=Math.max(0,currentCount(donor.login)-1)
+                  });
+                  quarters.forEach(function(q){put(as,date,shift,q,targetRole,donor.login,'auto-repair',false);counts[donor.login]=currentCount(donor.login)+1});
+                  changed=true;break
+                }
+              })
+            });
+            if(!changed)break
+          }
+        })
+      }
+    }
     function generate(week,preserve,deferSave){
       var old=state.schedules[week],as={},counts={},start=new Date(week+'T12:00:00'),max=Number(state.settings.maxQuarters)||6;
 
@@ -526,6 +610,12 @@
           })
         })
       }
+
+      // OPEN repair pass: try to fill any remaining OPEN slot without giving a specific role priority.
+      // Manual assignments and Full-Day donor assignments stay protected. If an eligible AA is
+      // already on an automatic Quarterly role, move that AA only when the old slot can be
+      // immediately backfilled by another eligible/free AA.
+      repairOpenAssignments(as,week,max,counts);
 
       state.schedules[week]={weekStart:week,updatedAt:new Date().toISOString(),assignments:as};
       if(!deferSave)save();
