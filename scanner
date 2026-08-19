@@ -1,441 +1,369 @@
-<!DOCTYPE html>
+<!doctype html>
+<!-- FIREBASE V4.5: v4.2 + RWC4-1/RWC4-2 alternating AA rotation -->
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="viewport-fit=cover,width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>ranvexsi barcode scanner</title>
-<link rel="manifest" href="data:application/manifest+json,{&quot;name&quot;:&quot;ranvexsi barcode scanner&quot;,&quot;short_name&quot;:&quot;RBS&quot;,&quot;start_url&quot;:&quot;.&quot;,&quot;display&quot;:&quot;standalone&quot;,&quot;background_color&quot;:&quot;#0f1220&quot;,&quot;theme_color&quot;:&quot;#5e7bff&quot;}">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<style>
-:root{
-  --bg:#0f1220; --card:#171b2e; --ink:#eaf0ff; --muted:#a8b2d1; --line:#262c46; --accent:#5e7bff;
-  --safe-top: env(safe-area-inset-top,0px);
-  --safe-bottom: env(safe-area-inset-bottom,0px);
-}
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
-  -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-}
-header{
-  position:sticky;top:0;z-index:10;background:linear-gradient(180deg,#121633,rgba(18,22,51,.7));
-  padding: calc(8px + var(--safe-top)) 14px 10px; border-bottom:1px solid var(--line);
-  display:flex; align-items:center; gap:10px; justify-content:space-between;
-}
-h1{font-size:16px;margin:0;font-weight:700;letter-spacing:.2px}
-.badge{font-size:11px;color:#cfd7ff;opacity:.8}
-.wrap{padding:14px}
-.card{
-  background:var(--card); border:1px solid var(--line); border-radius:14px; overflow:hidden;
-}
-.toolbar{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border-bottom:1px solid var(--line);background:#141836}
-button{
-  appearance:none;border:1px solid transparent;background:var(--accent);color:#fff;
-  padding:9px 12px;border-radius:10px;font-weight:600;font-size:14px;cursor:pointer
-}
-button.ghost{background:transparent;border-color:#2f3761;color:#cbd3ff}
-button.warn{background:#b54747}
-button:disabled{opacity:.5;pointer-events:none}
-.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-.input{
-  background:#0f1330;border:1px solid #2b3261;border-radius:10px;padding:10px 12px;color:var(--ink);
-}
-.video-wrap{position:relative;background:#0b0e22}
-video{width:100%;height:auto;background:#000}
-.scan-frame{
-  position:absolute;inset:10% 15%;border:2px solid rgba(94,123,255,.8);border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,.35) inset;
-  pointer-events:none
-}
-.status{padding:10px;font-size:12px;color:#c5ccef;border-top:1px dashed var(--line)}
-.table-wrap{max-height:40vh;overflow:auto;border-top:1px solid var(--line)}
-table{width:100%;border-collapse:collapse;font-size:14px}
-th,td{padding:10px;border-bottom:1px solid var(--line)}
-th{text-align:left;color:#cfd6ff;background:#141836;position:sticky;top:0;z-index:1}
-td.qty input{width:70px;text-align:center}
-footer{height:calc(12px + var(--safe-bottom))}
-.kv{display:flex;gap:6px;align-items:center}
-.kv code{background:#0f1330;border:1px solid #2b3261;border-radius:6px;padding:3px 6px;color:#cbd3ff}
-.small{font-size:12px;color:var(--muted)}
-hr.split{border:0;border-top:1px solid var(--line);margin:12px 0}
-.notice{padding:10px;color:#e9edff;background:#262f5e;border-left:3px solid var(--accent)}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="app-version" content="4.5">
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Manager · Critical Role Assignments</title>
+  <style>
+    :root{--navy:#073763;--blue:#1298c8;--pale:#eaf7fc;--line:#c8dce8;--ink:#12263a;--muted:#607789;--white:#fff;--danger:#b42318;--good:#137a4b}
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#eef5f8;color:var(--ink);font:14px/1.4 Inter,Arial,sans-serif}button,input,select{font:inherit}
+    header{background:var(--navy);color:#fff;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;gap:15px}.brand{display:flex;align-items:center;gap:12px}.mark{display:grid;place-items:center;width:45px;height:45px;border-radius:12px;background:#ffffff17;border:1px solid #ffffff40;font-weight:900}.eyebrow{margin:0 0 3px;text-transform:uppercase;letter-spacing:.12em;font-size:10px;font-weight:900;opacity:.7}h1{font-size:22px;margin:0}.header-actions{display:flex;align-items:center;gap:8px}
+    button,.btn{border:0;border-radius:9px;padding:9px 13px;font-weight:800;cursor:pointer}.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}.primary{background:var(--blue);color:#fff}.secondary{background:#e5f2f8;color:var(--navy)}.ghost{background:transparent;color:inherit;border:1px solid currentColor}.home-link{background:#fff;color:var(--navy);border-color:#fff}.danger{background:#fee4e2;color:var(--danger)}button:disabled{opacity:.5;cursor:not-allowed}
+    .layout{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 77px)}nav{background:#fff;border-right:1px solid var(--line);padding:14px 10px}.nav-btn{width:100%;text-align:left;background:transparent;color:var(--muted);margin-bottom:5px;padding:11px 12px}.nav-btn.active{background:var(--pale);color:var(--navy)}.nav-meta{margin:20px 8px 0;padding-top:15px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}.nav-meta strong{display:block;color:var(--ink);margin-bottom:3px}
+    main{padding:18px;min-width:0}.page{display:none}.page.active{display:block}.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:14px}.page-head h2{font-size:25px;margin:0}.page-head p{margin:4px 0 0;color:var(--muted)}
+    .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:15px;margin-bottom:13px;box-shadow:0 5px 20px #173c550b}.card h3{margin:0 0 5px;font-size:16px}.card>p{margin:0 0 13px;color:var(--muted)}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.stat{background:var(--pale);border-radius:12px;padding:14px}.stat small,.stat strong{display:block}.stat small{color:var(--muted);text-transform:uppercase;font-size:10px;letter-spacing:.08em}.stat strong{font-size:25px;color:var(--navy);margin-top:3px}
+    label{display:block;font-size:11px;font-weight:900;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}input,select{width:100%;border:1px solid #b8ccd8;border-radius:9px;padding:9px 10px;background:#fff;color:var(--ink)}.field{margin-bottom:11px}.inline{display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap}.inline .field{flex:1;min-width:140px;margin:0}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .upload{border:2px dashed #bad5e2;border-radius:12px;padding:18px;text-align:center;background:#fbfdfe}.upload input{margin:10px auto 0;max-width:350px}.hint{font-size:11px;color:var(--muted)}
+    .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:11px}table{width:100%;border-collapse:collapse;min-width:720px}th{background:var(--navy);color:#fff;font-size:10px;letter-spacing:.06em;text-transform:uppercase;text-align:left;padding:9px}td{padding:8px 9px;border-bottom:1px solid var(--line)}tbody tr:nth-child(even){background:#f8fbfd}td select{min-width:170px;padding:6px}.fixed{font-weight:900;color:var(--navy)}.open{color:#9a5b00;font-weight:900}.source{font-size:10px;color:var(--muted)}
+    .list{display:grid;gap:7px}.list-row{display:flex;align-items:center;justify-content:space-between;gap:10px;border:1px solid var(--line);border-radius:10px;padding:9px 10px}.person strong,.person small{display:block}.person small{color:var(--muted)}.badge{border-radius:999px;padding:4px 8px;font-size:10px;font-weight:900;background:var(--pale);color:var(--navy)}.badge.absent{background:#fee4e2;color:var(--danger)}.badge.vet{background:#dcfae6;color:var(--good)}.empty{padding:20px;text-align:center;color:var(--muted)}.overview-list{max-height:190px;overflow:auto}.assignment-picker{min-width:190px}.search-note{display:block;margin-top:4px;color:var(--muted);font-size:10px}
+    .pin-gate{position:fixed;inset:0;background:linear-gradient(135deg,var(--navy),#0a638e);z-index:10;display:grid;place-items:center;padding:20px}.pin-card{width:min(390px,100%);background:#fff;border-radius:20px;padding:25px;box-shadow:0 25px 70px #001a2b66}.pin-card h2{margin:0 0 7px;font-size:25px}.pin-card p{color:var(--muted)}.pin-card input{font-size:24px;text-align:center;letter-spacing:.25em}.error{color:var(--danger);min-height:20px;font-size:12px}.toast{position:fixed;right:20px;bottom:20px;background:#102f45;color:#fff;border-radius:10px;padding:11px 15px;font-weight:800;opacity:0;transform:translateY(15px);transition:.2s;pointer-events:none;z-index:20}.toast.show{opacity:1;transform:none}
+    @media(max-width:800px){.layout{grid-template-columns:1fr}nav{display:flex;overflow:auto;border-right:0;border-bottom:1px solid var(--line);padding:8px}.nav-btn{width:auto;white-space:nowrap;margin:0 4px 0 0}.nav-meta{display:none}.grid2,.grid3{grid-template-columns:1fr}main{padding:12px}.page-head{align-items:flex-start;flex-direction:column}header{padding:12px}.header-actions .dashboard-link{display:none}.home-link{font-size:11px;padding:8px 9px}}
+  </style>
 </head>
 <body>
-<header>
-  <div>
-    <h1>ranvexsi barcode scanner</h1>
-    <div class="badge">Scan. Count. Copy. Today only.</div>
+  <div class="pin-gate" id="pinGate">
+    <form class="pin-card" id="pinForm"><p class="eyebrow" style="color:var(--navy)">Protected access</p><h2>Manager sign in</h2><p>Scan the dashboard QR, then enter the shared Manager password.</p><div class="field"><label for="managerPassword">Manager password</label><input id="managerPassword" type="password" autocomplete="current-password" autocapitalize="none" spellcheck="false" placeholder="Enter manager password" required></div><div class="error" id="pinError"></div><button class="primary" style="width:100%" type="submit">Open Manager Page</button></form>
   </div>
-  <div class="kv small"><span>Today:</span><code id="today"></code></div>
-</header>
-
-<div class="wrap">
-  <div class="card" id="scannerCard">
-    <div class="toolbar">
-      <div class="row">
-        <button id="startBtn">Start camera</button>
-        <button id="stopBtn" class="ghost" disabled>Stop</button>
-        <button id="flipBtn" class="ghost" disabled>Flip camera</button>
-        <button id="torchBtn" class="ghost" disabled>Toggle torch</button>
-      </div>
-      <div class="row">
-        <input id="manualInput" class="input" placeholder="Enter barcode manually" inputmode="numeric" autocomplete="off">
-        <button id="addManualBtn" class="ghost">Add</button>
-      </div>
-    </div>
-    <div class="video-wrap">
-      <video id="video" playsinline muted></video>
-      <div class="scan-frame"></div>
-    </div>
-    <div class="status" id="status">Idle. No camera yet.</div>
+  <header><div class="brand"><div class="mark" id="siteCode">YXU1</div><div><p class="eyebrow">Critical Role Assignments</p><h1>Manager workspace</h1></div></div><div class="header-actions"><a class="btn ghost home-link" href="https://ranvexsi.netlify.app">Go to Ranvexsi Home</a><a class="btn ghost dashboard-link" href="role.html">Open dashboard</a><button class="ghost" id="lockBtn">Lock</button></div></header>
+  <div class="layout">
+    <nav>
+      <button class="nav-btn active" data-page="overview">Overview</button>
+      <button class="nav-btn" data-page="imports">Files</button>
+      <button class="nav-btn" data-page="schedule">Schedule</button>
+      <button class="nav-btn" data-page="training">Manual training</button>
+      <button class="nav-btn" data-page="unavailable">Today's absences</button>
+      <button class="nav-btn" data-page="vet">VET AAs</button>
+      <button class="nav-btn" data-page="blocks">Accommodation blocks</button>
+      <button class="nav-btn" data-page="settings">Settings</button>
+      <button class="nav-btn" data-page="history">Change history</button>
+      <div class="nav-meta"><strong>Firebase auto-sync</strong>Every saved change is sent to Firebase automatically. Use Sync now only as a manual backup.</div>
+    </nav>
+    <main>
+      <section class="page active" id="page-overview">
+        <div class="page-head"><div><h2>Manager overview</h2><p>Upload, generate and edit. Saved changes update the TV automatically.</p></div><button class="primary" data-go="schedule">Review schedule</button></div>
+        <div class="grid3"><div class="stat"><small>Ship Dock AAs</small><strong id="statEmployees">0</strong></div><div class="stat"><small>This week + next week filled</small><strong id="statFilled">0%</strong></div><div class="stat"><small>Manual changes</small><strong id="statChanges">0</strong></div></div>
+        <div class="card" style="margin-top:13px"><h3>On Site AAs Today <span class="badge" id="overviewOnSiteCount">0</span></h3><p>Based only on today's regular Ship Dock cohort schedule + VET, excluding AAs manually marked absent today. No LOA, time-off or accommodation status is guessed.</p><div class="list overview-list" id="overviewOnSite"></div></div>
+        <div class="grid2"><div class="card"><h3>Absent today</h3><p>Ship Dock AAs marked absent for all three quarters today.</p><div class="list overview-list" id="overviewAbsent"></div><div class="actions"><button class="secondary" data-go="unavailable">Manage absences</button></div></div><div class="card"><h3>VET today</h3><p>Extra Ship Dock AAs added outside their regular cohort schedule.</p><div class="list overview-list" id="overviewVet"></div><div class="actions"><button class="secondary" data-go="vet">Manage VET AAs</button></div></div></div>
+        <div class="card"><h3>Current workflow</h3><p>Roster + learning upload → Generate this week and next week → Review or override → Automatic Firebase/TV sync.</p><div class="actions"><button class="secondary" data-go="imports">1. Upload files</button><button class="secondary" id="quickGenerate">2. Generate 2-week board</button><button class="primary" data-go="schedule">3. Review schedule</button><button class="primary" id="shuffleRepublish">Shuffle &amp; Republish 2 Weeks</button></div></div>
+        <div class="card"><h3>Reset data</h3><p>Use <strong>Reset Manual + Schedule</strong> to keep imported roster/Learning training and accommodation blocks. Use <strong>Reset All Data</strong> only for a completely fresh start. Both reset Firebase and this browser cache.</p><div class="actions"><button class="danger" id="resetManualSchedule">Reset Manual + Schedule</button><button class="danger" id="resetAllData">Reset All Data</button></div></div>
+      </section>
+      <section class="page" id="page-imports">
+        <div class="page-head"><div><h2>Roster and training files</h2><p>This section only imports files. Today's VET AAs have their own separate page.</p></div></div>
+        <div class="grid2">
+          <div class="card upload"><h3>1. Employee roster</h3><p>User ID, Employee Name and Shift Pattern are required.</p><input id="rosterFile" type="file" accept=".xlsx,.xls,.csv"><div class="hint" id="rosterStatus">No roster uploaded</div></div>
+          <div class="card upload"><h3>2. Learning file</h3><p>Filters Process Path = Ship Dock, then matches GTDR, PIT NOBA, PRISM and RWC4 Operator by login.</p><input id="learningFile" type="file" accept=".xlsx,.xls,.csv"><div class="hint" id="learningStatus">Required for Ship Dock filtering</div></div>
+        </div>
+        <div class="card"><h3>Add AA missing from files</h3><p>If a Ship Dock AA is missing from the roster or Learning files, add the AA here. The AA stays available after future file imports until removed here.</p><div class="grid2"><div class="field"><label>Login</label><input id="missingLogin" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="AA login"></div><div class="field"><label>Name</label><input id="missingName" autocomplete="off" placeholder="Employee name"></div></div><div class="grid2"><div class="field"><label>Cohort</label><select id="missingCohort"></select></div><div class="field"><label>Reason</label><input id="missingReason" autocomplete="off" placeholder="Reason AA is missing from files"></div></div><button class="primary" id="addMissingAA">Add AA</button><div class="list" id="missingAAList" style="margin-top:12px"></div></div>
+        <div class="card"><h3>Import action</h3><p>Only AAs whose Learning-file Process Path is exactly Ship Dock are retained, plus any missing AAs added above. Uploading new data regenerates this week and next week after you choose preserve or reset.</p><button class="primary" id="importBtn">Import selected files</button></div>
+      </section>
+      <section class="page" id="page-schedule">
+        <div class="page-head"><div><h2>Schedule editor</h2><p>Edit any day in this week or next week. Existing valid assignments stay protected.</p></div><button class="primary" id="publishBtn">Sync to TV now</button></div>
+        <div class="card"><div class="inline"><div class="field"><label>Week starts</label><input id="weekStart" type="date"></div><div class="field"><label>Schedule date</label><select id="editDay"></select></div><div class="field"><label>Shift</label><select id="editShift"><option value="day">Day</option><option value="night">Night</option></select></div><div class="field"><label>Quarter</label><select id="editQuarter"><option>Q1</option><option>Q2</option><option>Q3</option></select></div></div><div class="actions"><button class="secondary" id="generateBtn">Generate / Regenerate 2 weeks</button><button class="primary" id="saveAssignments">Save selected date</button></div></div>
+        <div class="table-wrap"><table><thead><tr><th>Role</th><th>Assigned employee</th><th>Source</th></tr></thead><tbody id="assignmentRows"></tbody></table></div>
+      </section>
+      <section class="page" id="page-training">
+        <div class="page-head"><div><h2>Manual trained lists</h2><p>Choose Day or Night, then one cohort or ALL. ALL lets you search and add any AA from that shift while preserving the AA's actual cohort.</p></div></div>
+        <div class="card"><div class="grid3"><div class="field"><label>Training shift</label><select id="trainShift"><option value="day">Day AAs</option><option value="night">Night AAs</option></select></div><div class="field"><label>Cohort</label><select id="trainCohort"></select></div><div class="field"><label>Role</label><select id="trainRole"></select></div></div><div class="grid2"><div class="field"><label>Ship Dock AA · type login to search</label><input id="trainEmployee" list="trainEmployeeList" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Type AA login"><datalist id="trainEmployeeList"></datalist></div><div class="field"><label>Assignment mode</label><select id="trainMode"><option value="quarterly">Quarterly · AA may change each quarter</option><option value="full-day">Full Day · same AA for Q1–Q3</option><option value="pa-only">PA Only · no AA assigned</option></select></div></div><button class="primary" id="addTraining">Add to trained list</button></div>
+        <div class="card"><h3>Current trained list</h3><div class="list" id="trainingList"></div></div>
+      </section>
+      <section class="page" id="page-unavailable">
+        <div class="page-head"><div><h2>Today's absences</h2><p>One click removes a scheduled Ship Dock AA from all Q1, Q2 and Q3 assignments for today only.</p></div></div>
+        <div class="card"><div class="field"><label>Scheduled Ship Dock AA</label><select id="unEmployee"></select></div><button class="primary" id="addUnavailable">Mark absent today</button></div>
+        <div class="card"><h3>Absent today</h3><div class="list" id="unavailableList"></div></div>
+      </section>
+      <section class="page" id="page-vet">
+        <div class="page-head"><div><h2>VET AAs</h2><p>Add a Ship Dock AA who is not on today's regular cohort schedule.</p></div></div>
+        <div class="card"><div class="grid2"><div class="field"><label>Unscheduled Ship Dock AA</label><select id="vetEmployee"></select></div><div class="field"><label>VET shift</label><select id="vetShift"><option value="day">Day</option><option value="night">Night</option></select></div></div><button class="primary" id="addVet">Add VET for today</button></div>
+        <div class="card"><h3>VET working today</h3><div class="list" id="vetList"></div></div>
+      </section>
+      <section class="page" id="page-blocks">
+        <div class="page-head"><div><h2>Accommodation role blocks</h2><p>Block an AA from a role until manually allowed again. Affected slots in this week and next week refill immediately.</p></div></div>
+        <div class="card"><div class="grid2"><div class="field"><label>Employee</label><select id="blockEmployee"></select></div><div class="field"><label>Blocked role</label><select id="blockRole"></select></div></div><button class="primary" id="addBlock">Block role</button></div>
+        <div class="card"><h3>Active role blocks</h3><div class="list" id="blockList"></div></div>
+      </section>
+      <section class="page" id="page-settings">
+        <div class="page-head"><div><h2>Manager settings</h2><p>Control how every critical role is assigned. Settings are saved to Firebase and can be changed whenever the operation changes.</p></div></div>
+        <div class="card"><h3>Role assignment rules</h3><p><strong>Full Day</strong> keeps the same AA for Q1–Q3. <strong>Quarterly</strong> allows a different AA each quarter. <strong>PA Only</strong> reserves the role for PA in all three quarters and removes AAs from that role.</p><div class="table-wrap"><table><thead><tr><th>Role</th><th>Assignment type</th><th>Effect</th></tr></thead><tbody id="roleSettingsRows"></tbody></table></div><div class="actions"><button class="primary" id="saveRoleSettings">Save role settings</button></div><p class="hint" style="margin-top:10px">Changing a role rule recalculates only affected role assignments across the current 2-week board. Unrelated assignments remain protected.</p></div>
+      </section>
+      <section class="page" id="page-history">
+        <div class="page-head"><div><h2>Manual change history</h2><p>Only the most recent seven days of manual changes are kept.</p></div></div><div class="card"><div class="list" id="historyList"></div></div>
+      </section>
+    </main>
   </div>
-
-  <div class="card" style="margin-top:12px;">
-    <div class="toolbar">
-      <button id="copyBtn">Copy for Excel</button>
-      <button id="csvBtn" class="ghost">Download CSV</button>
-      <button id="clearBtn" class="warn">Clear today</button>
-      <span class="small" id="totals" style="margin-left:auto">0 items, 0 scans</span>
-    </div>
-    <div class="table-wrap">
-      <table id="table">
-        <thead><tr><th style="width:60%">Barcode</th><th style="width:20%">Qty</th><th style="width:20%">Actions</th></tr></thead>
-        <tbody id="tbody"></tbody>
-      </table>
-    </div>
-    <div class="status small">Tip: quantities auto-save. Copy uses tab-separated values that paste cleanly into Excel or Sheets.</div>
-  </div>
-
-  <p class="notice small" style="margin-top:12px">
-    Uses the built-in BarcodeDetector when available. If your browser is being fussy, it falls back to ZXing. All data is saved locally per day: nothing leaves the device.
-  </p>
-  <footer></footer>
-</div>
-
-<!-- ZXing fallback (loaded but only used if BarcodeDetector is missing) -->
-<script src="https://unpkg.com/@zxing/browser@0.1.5/umd/index.min.js"></script>
-<script>
-(function(){
-  const el = id => document.getElementById(id);
-  const $today = el('today');
-  const $video = el('video');
-  const $status = el('status');
-  const $tbody = el('tbody');
-  const $totals = el('totals');
-  const $start = el('startBtn'), $stop = el('stopBtn'), $flip = el('flipBtn'), $torch = el('torchBtn');
-  const $manual = el('manualInput'), $addManual = el('addManualBtn');
-  const $copy = el('copyBtn'), $csv = el('csvBtn'), $clear = el('clearBtn');
-
-  const todayKey = () => new Date().toISOString().slice(0,10);
-  const storeKey = () => 'rbscan:' + todayKey();
-
-  const state = {
-    counts: {}, // { code: qty }
-    totalScans: 0,
-    running: false,
-    usingZXing: false,
-    currentDeviceId: null,
-    stream: null,
-    detector: null,
-    zxingReader: null,
-    scanCooldowns: new Map(), // code -> timestamp
-    torchOn: false
-  };
-
-  function fmtToday(){
-    const d = new Date();
-    return d.toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'});
-  }
-  function load(){
-    const raw = localStorage.getItem(storeKey());
-    if(raw){
-      try {
-        const obj = JSON.parse(raw);
-        state.counts = obj.counts || {};
-        state.totalScans = obj.totalScans || 0;
-      } catch { /* sigh */ }
-    }
-    $today.textContent = fmtToday();
-    render();
-  }
-  function save(){
-    localStorage.setItem(storeKey(), JSON.stringify({counts:state.counts,totalScans:state.totalScans}));
-  }
-  function bump(code, delta=1){
-    if(!code) return;
-    state.counts[code] = (state.counts[code]||0) + delta;
-    if(state.counts[code] <= 0) delete state.counts[code];
-    if(delta>0) state.totalScans += delta;
-    save(); render();
-  }
-  function render(){
-    const entries = Object.entries(state.counts).sort((a,b)=>a[0].localeCompare(b[0]));
-    $tbody.innerHTML = '';
-    for(const [code,qty] of entries){
-      const tr = document.createElement('tr');
-      const tdCode = document.createElement('td');
-      tdCode.textContent = code;
-      const tdQty = document.createElement('td'); tdQty.className='qty';
-      const input = document.createElement('input');
-      input.type='number'; input.min='0'; input.value=qty;
-      input.addEventListener('change', ()=>{
-        const v = Math.max(0, Number(input.value|0));
-        const prev = state.counts[code]||0;
-        state.counts[code] = v;
-        state.totalScans += Math.max(0, v - prev);
-        if(v===0) delete state.counts[code];
-        save(); render();
-      });
-      tdQty.appendChild(input);
-      const tdAct = document.createElement('td');
-      const minus = document.createElement('button'); minus.className='ghost'; minus.textContent='−1';
-      minus.addEventListener('click', ()=>bump(code,-1));
-      const del = document.createElement('button'); del.className='warn'; del.style.marginLeft='6px'; del.textContent='Delete';
-      del.addEventListener('click', ()=>{ delete state.counts[code]; save(); render(); });
-      tdAct.append(minus, del);
-      tr.append(tdCode, tdQty, tdAct);
-      $tbody.appendChild(tr);
-    }
-    const totalItems = entries.length;
-    const totalQty = entries.reduce((s, [,q])=>s+q,0);
-    $totals.textContent = `${totalItems} items, ${totalQty} total`;
-  }
-
-  // Copy in Excel-friendly tab-separated format: Code [TAB] Qty [NEWLINE]
-  function copyForExcel(){
-    const rows = Object.entries(state.counts)
-      .sort((a,b)=>a[0].localeCompare(b[0]))
-      .map(([c,q])=>`${c}\t${q}`)
-      .join('\n');
-    navigator.clipboard.writeText(rows || '').then(()=>{
-      setStatus('Copied list to clipboard.');
-    }).catch(()=>{
-      // Fallback: create a hidden textarea
-      const ta = document.createElement('textarea');
-      ta.value = rows; document.body.appendChild(ta);
-      ta.select(); document.execCommand('copy'); ta.remove();
-      setStatus('Copied list to clipboard.');
-    });
-  }
-  function downloadCSV(){
-    const lines = [['Date','Barcode','Qty']];
-    const date = todayKey();
-    for(const [c,q] of Object.entries(state.counts).sort((a,b)=>a[0].localeCompare(b[0]))){
-      lines.push([date,c,String(q)]);
-    }
-    const csv = lines.map(r=>r.map(v=>/([",\n])/.test(v)?`"${v.replace(/"/g,'""')}"`:v).join(',')).join('\n');
-    const blob = new Blob([csv],{type:'text/csv'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = `rbscan_${date}.csv`; a.click();
-    setTimeout(()=>URL.revokeObjectURL(url), 1500);
-  }
-  function clearToday(){
-    if(confirm('Clear all scans for today?')){
-      state.counts = {}; state.totalScans = 0; save(); render();
-    }
-  }
-  function setStatus(msg){
-    $status.textContent = msg;
-  }
-
-  // Camera helpers
-  async function listCameras(){
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    return devices.filter(d=>d.kind==='videoinput');
-  }
-  async function startCamera(facingMode='environment', deviceId=null){
-    if(state.stream){
-      stopCamera();
-    }
-    const constraints = deviceId ? {video:{deviceId:{exact:deviceId}}}
-      : {video:{facingMode}};
-    const stream = await navigator.mediaDevices.getUserMedia(constraints);
-    state.stream = stream;
-    $video.srcObject = stream;
-    await $video.play();
-    $stop.disabled = false;
-    $flip.disabled = (await listCameras()).length < 2;
-    // Torch availability check
-    const track = stream.getVideoTracks()[0];
-    const caps = track.getCapabilities?.() || {};
-    $torch.disabled = !('torch' in caps);
-    state.torchOn = false;
-  }
-  function stopCamera(){
-    if(state.stream){
-      state.stream.getTracks().forEach(t=>t.stop());
-      state.stream = null;
-    }
-    $video.srcObject = null;
-    $stop.disabled = true; $flip.disabled = true; $torch.disabled = true;
-  }
-  function toggleTorch(){
-    if(!state.stream) return;
-    const track = state.stream.getVideoTracks()[0];
-    const caps = track.getCapabilities?.() || {};
-    if(!('torch' in caps)) return;
-    state.torchOn = !state.torchOn;
-    track.applyConstraints({advanced:[{torch: state.torchOn}]});
-    setStatus(state.torchOn ? 'Torch on' : 'Torch off');
-  }
-
-  // Debounce duplicate rapid scans
-  function acceptScan(code){
-    const now = Date.now();
-    const last = state.scanCooldowns.get(code) || 0;
-    if(now - last < 800) return false; // ignore duplicates within 0.8s
-    state.scanCooldowns.set(code, now);
-    return true;
-  }
-
-  // Native BarcodeDetector path
-  let rafId = null;
-  async function startNativeLoop(){
-    if(!state.detector) return;
-    state.running = true;
-    $start.disabled = true;
-    setStatus('Scanning with BarcodeDetector…');
-    const loop = async ()=>{
-      if(!state.running) return;
-      try{
-        const codes = await state.detector.detect($video);
-        if(codes && codes.length){
-          for(const c of codes){
-            const code = String(c.rawValue || '').trim();
-            if(code && acceptScan(code)){
-              bump(code,1);
-              setStatus(`Scanned: ${code}`);
+  <div class="toast" id="toast">Saved</div>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script>
+  (function(){
+    'use strict';
+    var KEY='critical-role-assignments-v1';
+    var ROLES=[{id:'ship-clerk',name:'Ship Clerk',source:'manual'},{id:'tdr',name:'TDR',source:'gtdr'},{id:'flats-ps',name:'Flats PS',source:'prism'},{id:'palletize-ps',name:'Palletize PS',source:'prism'},{id:'bounty-hunter',name:'Bounty Hunter',source:'manual'},{id:'quality',name:'Quality',source:'manual'},{id:'west-flats-pg',name:'West Flats PG',source:'manual'},{id:'trans-pg',name:'Trans PG',source:'manual'},{id:'pit-driver',name:'PIT Driver',source:'pit-noba'},{id:'rwc4-1',name:'RWC4-1',source:'rwc4'},{id:'rwc4-2',name:'RWC4-2',source:'rwc4'}];
+    var COHORTS=['DA','DB','DC','DL','DN','NA','NB','NC','NL','NN'],Q=['Q1','Q2','Q3'],DAYS=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    var COHORT_DAYS={DA:[0,1,2,3],NA:[0,1,2,3],DB:[3,4,5,6],NB:[3,4,5,6],DC:[1,2,4,5],NC:[1,2,4,5],DL:[6,0,1,2],NL:[6,0,1,2],DN:[4,5,6],NN:[4,5,6]};
+    var DEFAULT_ROLE_MODES={'ship-clerk':'pa-only','west-flats-pg':'full-day','trans-pg':'full-day',quality:'full-day','bounty-hunter':'full-day',tdr:'quarterly','flats-ps':'quarterly','palletize-ps':'quarterly','pit-driver':'quarterly','rwc4-1':'quarterly','rwc4-2':'quarterly'};
+    function defaults(){return{version:5,settings:{title:'Critical Role Assignments',siteCode:'YXU1',primary:'#073763',accent:'#1298c8',managerPath:'https://ranvexsi.netlify.app/manager',dashboardSecret:'yxu1-live-board',maxQuarters:6,roleModeSchema:3,scheduleSchema:7,roleModes:Object.assign({},DEFAULT_ROLE_MODES)},employees:[],unavailability:[],vet:[],schedules:{},audits:[],lastUpdated:new Date().toISOString()}}
+    function normalizeState(x){x=x&&x.settings?x:defaults();x.settings=x.settings||{};if(x.settings.roleModeSchema!==3){var previous=x.settings.roleModes||{};x.settings.roleModes=Object.assign({},DEFAULT_ROLE_MODES);Object.keys(previous).forEach(function(k){var v=previous[k];if(v==='shuffle')v='quarterly';if(v==='full-day'||v==='quarterly'||v==='pa-only')x.settings.roleModes[k]=v});if(!previous['ship-clerk']||previous['ship-clerk']==='full-day')x.settings.roleModes['ship-clerk']='pa-only';x.settings.roleModeSchema=3}else{x.settings.roleModes=Object.assign({},DEFAULT_ROLE_MODES,x.settings.roleModes||{})}if(typeof x.settings.scheduleSchema!=='number')x.settings.scheduleSchema=0;x.employees=x.employees||[];x.employees.forEach(function(e){e.trainedRoles=e.trainedRoles||[];e.manualRoles=e.manualRoles||[];e.blockedRoles=e.blockedRoles||[];e.missingFromFiles=!!e.missingFromFiles;e.missingReason=e.missingReason||''});x.unavailability=x.unavailability||[];x.vet=x.vet||[];x.schedules=x.schedules||{};x.audits=x.audits||[];return x}
+    function load(){try{return normalizeState(JSON.parse(localStorage.getItem(KEY)))}catch(e){return defaults()}}var state=load();
+    var cloudTimer,cloudPending=false,cloudSyncing=false;
+    function queueCloudSync(){cloudPending=true;clearTimeout(cloudTimer);cloudTimer=setTimeout(function(){syncCloud(false)},180)}
+    async function syncCloud(showSuccess){if(cloudSyncing)return;if(!window.craFirebaseManager){cloudPending=true;return}cloudSyncing=true;cloudPending=false;try{await window.craFirebaseManager.publish(state);if(showSuccess)toast('Firebase synced · TV updated')}catch(error){console.error(error);toast('Firebase sync failed · use Sync to TV now')}finally{cloudSyncing=false;if(cloudPending)queueCloudSync()}}
+    function save(){state=normalizeState(state);state.version=(state.version||0)+1;state.lastUpdated=new Date().toISOString();state.audits=state.audits.filter(function(a){return Date.now()-new Date(a.createdAt).getTime()<604800000});localStorage.setItem(KEY,JSON.stringify(state));renderStats();queueCloudSync()}
+    function audit(text){state.audits.unshift({id:String(Date.now())+Math.random(),actor:'manager',summary:text,createdAt:new Date().toISOString()})}
+    function toast(text){var el=document.getElementById('toast');el.textContent=text;el.classList.add('show');setTimeout(function(){el.classList.remove('show')},2200)}
+    function pad(n){return String(n).padStart(2,'0')}function dateKey(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
+    function sunday(d){var x=new Date(d);x.setHours(12,0,0,0);x.setDate(x.getDate()-x.getDay());return x}function add(d,n){var x=new Date(d);x.setDate(x.getDate()+n);return x}
+    function akey(d,s,q,r){return d+'|'+s+'|'+q+'|'+r}function shiftOf(c){return c&&c.charAt(0)==='D'?'day':'night'}
+    function hash(v){var h=2166136261;for(var i=0;i<v.length;i++){h^=v.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+    function isShipDock(e){return lower(e&&e.processPath)==='ship dock'}function shipDockEmployees(){return state.employees.filter(isShipDock)}
+    function isRegularWorkday(e,date,shift){var d=new Date(date+'T12:00:00'),days=COHORT_DAYS[e&&e.cohort]||[];return shiftOf(e&&e.cohort)===shift&&days.indexOf(d.getDay())>=0}
+    function isVet(e,date,shift){return(state.vet||[]).some(function(v){return v.login===e.login&&v.date===date&&v.shift===shift})}
+    function worksDate(e,date,shift){return isShipDock(e)&&(isRegularWorkday(e,date,shift)||isVet(e,date,shift))}
+    function isUnavailable(login,date,shift,quarter){return(state.unavailability||[]).some(function(u){return u.login===login&&u.date===date&&u.shift===shift&&u.quarter===quarter})}
+    function eligible(e,r){if(!isShipDock(e)||(e.blockedRoles||[]).indexOf(r.id)>=0)return false;return r.source==='manual'?(e.manualRoles||[]).indexOf(r.id)>=0:(e.trainedRoles||[]).indexOf(r.id)>=0}
+    function roleMode(roleId){var mode=state.settings.roleModes[roleId];return mode==='full-day'||mode==='pa-only'?'full-day':mode==='quarterly'?'quarterly':'quarterly'}
+    function roleRule(roleId){var mode=state.settings.roleModes[roleId];return mode==='pa-only'?'pa-only':mode==='full-day'?'full-day':'quarterly'}
+    function named(login){return!!login&&login!=='OPEN'&&login!=='PA'}
+    function isRwc4Role(roleId){return roleId==='rwc4-1'||roleId==='rwc4-2'}
+    function oppositeRwc4Role(roleId){return roleId==='rwc4-1'?'rwc4-2':'rwc4-1'}
+    function rwc4HistoryBefore(login,date,shift,quarter){
+      var targetDate=new Date(date+'T12:00:00'),targetQuarterIndex=Q.indexOf(quarter),history=[];
+      Object.values(state.schedules||{}).forEach(function(schedule){
+        Object.values((schedule&&schedule.assignments)||{}).forEach(function(a){
+          if(!a||a.login!==login||!isRwc4Role(a.roleId)||!named(a.login))return;
+          var aDate=new Date(a.date+'T12:00:00');
+          if(aDate.getTime()>targetDate.getTime())return;
+          if(aDate.getTime()===targetDate.getTime()){
+            if(a.shift===shift){
+              var ai=Q.indexOf(a.quarter);
+              if(ai>=targetQuarterIndex)return;
+            }else{
+              if(shift==='day')return;
+              if(a.shift!=='day')return;
             }
           }
+          history.push(a);
+        });
+      });
+      history.sort(function(a,b){
+        var ad=new Date(a.date+'T12:00:00').getTime(),bd=new Date(b.date+'T12:00:00').getTime();
+        if(ad!==bd)return ad-bd;
+        var ash=a.shift==='day'?0:1,bsh=b.shift==='day'?0:1;
+        if(ash!==bsh)return ash-bsh;
+        return Q.indexOf(a.quarter)-Q.indexOf(b.quarter);
+      });
+      return history;
+    }
+    function lastRwc4Role(login,date,shift,quarter){var history=rwc4HistoryBefore(login,date,shift,quarter);return history.length?history[history.length-1].roleId:null}
+    function rwc4PreferredFor(login,date,shift,quarter,roleId){if(!isRwc4Role(roleId))return true;var lastRole=lastRwc4Role(login,date,shift,quarter);return !lastRole||oppositeRwc4Role(lastRole)===roleId}
+    function scheduleKeyForDate(date){var d=typeof date==='string'?new Date(date+'T12:00:00'):date;return dateKey(sunday(d))}
+    function scheduleForDate(date,create){var week=scheduleKeyForDate(date);if(create&&!state.schedules[week])state.schedules[week]={weekStart:week,updatedAt:new Date().toISOString(),assignments:{}};return state.schedules[week]}
+    function boardDates(start,count){var first=typeof start==='string'?new Date(start+'T12:00:00'):new Date(start);return Array.from({length:count||14},function(_,i){return dateKey(add(first,i))})}
+    function boardWeeks(start,count){var seen={},out=[];boardDates(start,count).forEach(function(d){var w=scheduleKeyForDate(d);if(!seen[w]){seen[w]=1;out.push(w)}});return out}
+    function validEmployee(login,role,date,shift,quarters){var e=shipDockEmployees().find(function(x){return x.login===login});return e&&worksDate(e,date,shift)&&eligible(e,role)&&quarters.every(function(q){return!isUnavailable(login,date,shift,q)})?e:null}
+    function oldRecord(old,date,shift,quarter,roleId){return old&&old.assignments&&old.assignments[akey(date,shift,quarter,roleId)]}
+    function oldFullChoice(old,date,shift,role,preserve){if(!preserve||!old)return null;var rows=Q.map(function(q){return oldRecord(old,date,shift,q,role.id)}).filter(Boolean),preferred=rows.find(function(a){return a.source==='manual'&&named(a.login)})||rows.find(function(a){return named(a.login)});if(!preferred)return null;var e=validEmployee(preferred.login,role,date,shift,Q);return e?{employee:e,source:preferred.source==='manual'?'manual':'full-day'}:null}
+    var generationSalt='';
+    function choose(candidates,counts,needed,key,allowOverLimit,role,date,shift,quarter){
+      var max=Number(state.settings.maxQuarters)||6;
+      candidates.sort(function(a,b){
+        if(role&&isRwc4Role(role.id)){
+          var ap=rwc4PreferredFor(a.login,date,shift,quarter||'Q1',role.id)?0:1;
+          var bp=rwc4PreferredFor(b.login,date,shift,quarter||'Q1',role.id)?0:1;
+          if(ap!==bp)return ap-bp;
         }
-      }catch(e){ /* ignored */ }
-      rafId = requestAnimationFrame(loop);
+        var countDiff=(counts[a.login]||0)-(counts[b.login]||0);
+        if(countDiff!==0)return countDiff;
+        return hash(key+'|'+generationSalt+'|'+a.login)-hash(key+'|'+generationSalt+'|'+b.login);
+      });
+      var within=candidates.find(function(e){return(counts[e.login]||0)+needed<=max});
+      return within||(allowOverLimit?candidates[0]:null)
+    }
+    function put(as,date,shift,quarter,role,login,source,overLimit){var key=akey(date,shift,quarter,role.id);as[key]={key:key,date:date,shift:shift,quarter:quarter,roleId:role.id,login:login,source:source,overLimit:!!overLimit}}
+    function generate(week,preserve,deferSave){
+      var old=state.schedules[week],as={},counts={},start=new Date(week+'T12:00:00'),max=Number(state.settings.maxQuarters)||6;
+      for(var di=0;di<7;di++){
+        var dk=dateKey(add(start,di));
+        ['day','night'].forEach(function(sh){
+          var reserved={},paRoles=ROLES.filter(function(r){return roleRule(r.id)==='pa-only'}),fullRoles=ROLES.filter(function(r){return roleRule(r.id)==='full-day'}),shuffleRoles=ROLES.filter(function(r){return roleRule(r.id)==='quarterly'});
+          paRoles.forEach(function(role){Q.forEach(function(q){put(as,dk,sh,q,role,'PA','pa-only',false)})});
+          fullRoles.sort(function(a,b){var am=oldFullChoice(old,dk,sh,a,preserve),bm=oldFullChoice(old,dk,sh,b,preserve);return Number(!!bm)-Number(!!am)||ROLES.indexOf(a)-ROLES.indexOf(b)});
+          fullRoles.forEach(function(role){
+            var prior=oldFullChoice(old,dk,sh,role,preserve),chosen=null,source='full-day';
+            if(prior&&!reserved[prior.employee.login]){chosen=prior.employee;source=prior.source}
+            if(!chosen){var candidates=shipDockEmployees().filter(function(e){return!reserved[e.login]&&worksDate(e,dk,sh)&&eligible(e,role)&&Q.every(function(q){return!isUnavailable(e.login,dk,sh,q)})}),limitedFull=(role.id==='quality'||role.id==='bounty-hunter');chosen=choose(candidates,counts,3,dk+'|'+sh+'|'+role.id,!limitedFull,role,dk,sh,'Q1')}
+            if(!chosen){Q.forEach(function(q){put(as,dk,sh,q,role,'OPEN','auto',false)});return}
+            var before=counts[chosen.login]||0;reserved[chosen.login]=role.id;Q.forEach(function(q){put(as,dk,sh,q,role,chosen.login,source,before+3>max)});counts[chosen.login]=before+3
+          });
+          Q.forEach(function(q){
+            var occupied=Object.assign({},reserved),kept={};
+            if(preserve&&old){
+              shuffleRoles.map(function(role){return{role:role,record:oldRecord(old,dk,sh,q,role.id)}}).filter(function(x){return x.record&&named(x.record.login)&&validEmployee(x.record.login,x.role,dk,sh,[q])}).sort(function(a,b){return Number(b.record.source==='manual')-Number(a.record.source==='manual')||ROLES.indexOf(a.role)-ROLES.indexOf(b.role)}).forEach(function(x){if(occupied[x.record.login])return;put(as,dk,sh,q,x.role,x.record.login,x.record.source||'auto',false);occupied[x.record.login]=x.role.id;kept[x.role.id]=1;counts[x.record.login]=(counts[x.record.login]||0)+1})
+            }
+            shuffleRoles.forEach(function(role){
+              if(kept[role.id])return;
+              var key=akey(dk,sh,q,role.id),candidates=shipDockEmployees().filter(function(e){return!occupied[e.login]&&worksDate(e,dk,sh)&&eligible(e,role)&&!isUnavailable(e.login,dk,sh,q)}),chosen=choose(candidates,counts,1,key,false,role,dk,sh,q),before=chosen?(counts[chosen.login]||0):0;
+              put(as,dk,sh,q,role,chosen?chosen.login:'OPEN','auto',!!(chosen&&before>=max));if(chosen){occupied[chosen.login]=role.id;counts[chosen.login]=before+1}
+            })
+          })
+        })
+      }
+      state.schedules[week]={weekStart:week,updatedAt:new Date().toISOString(),assignments:as};if(!deferSave)save();return state.schedules[week]
+    }
+    function generateBoard(start,preserve,deferSave){boardWeeks(start,14).forEach(function(week){generate(week,!!preserve,true)});state.settings.scheduleSchema=7;if(!deferSave)save()}
+    function boardHasData(start){return boardWeeks(start,14).some(function(week){return!!state.schedules[week]})}
+    function boardReady(start){return boardWeeks(start,14).every(function(week){return!!state.schedules[week]})}
+    function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+    function employeeOptions(selected,includeOpen){var h=includeOpen?'<option value="OPEN">OPEN — no selection</option>':'';shipDockEmployees().slice().sort(function(a,b){return a.name.localeCompare(b.name)}).forEach(function(e){h+='<option value="'+esc(e.login)+'" '+(e.login===selected?'selected':'')+'>'+esc(e.name)+' · '+esc(e.login)+' · '+esc(e.cohort)+' · Ship Dock</option>'});return h}
+    function assignmentConflicts(login,date,shift,quarters,roleId){var sc=scheduleForDate(date,false);return sc?Object.values(sc.assignments||{}).filter(function(a){return a.date===date&&a.shift===shift&&a.login===login&&a.roleId!==roleId&&quarters.indexOf(a.quarter)>=0}):[]}
+    function assignmentCandidates(role,date,shift,quarter){var quarters=roleMode(role.id)==='full-day'?Q:[quarter];return shipDockEmployees().filter(function(e){return worksDate(e,date,shift)&&eligible(e,role)&&quarters.every(function(q){return!isUnavailable(e.login,date,shift,q)})&&!assignmentConflicts(e.login,date,shift,quarters,role.id).length}).sort(function(a,b){return a.login.localeCompare(b.login)})}
+    function assignmentEditor(role,date,shift,quarter,selected){var rule=roleRule(role.id);if(rule==='pa-only')return'<input class="assignment-picker" data-role="'+role.id+'" value="PA" readonly><span class="search-note">PA Only · fixed by Manager Settings</span>';var id='eligible-'+role.id,options='<option value="OPEN">No assignment</option>';assignmentCandidates(role,date,shift,quarter).forEach(function(e){options+='<option value="'+esc(e.login)+'">'+esc(e.name)+' · '+esc(e.cohort)+' · Ship Dock</option>'});var mode=rule==='full-day'?'Full Day: save applies to Q1–Q3':'Quarterly: save applies to selected quarter';return'<input class="assignment-picker" data-role="'+role.id+'" list="'+id+'" value="'+esc(selected)+'" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Type trained AA login"><datalist id="'+id+'">'+options+'</datalist><span class="search-note">'+mode+' · trained '+shift+' Ship Dock AAs only</span>'}
+    function go(page){document.querySelectorAll('.page').forEach(function(x){x.classList.toggle('active',x.id==='page-'+page)});document.querySelectorAll('.nav-btn').forEach(function(x){x.classList.toggle('active',x.dataset.page===page)});renderAll()}
+    document.querySelectorAll('[data-page]').forEach(function(b){b.onclick=function(){go(b.dataset.page)}});document.querySelectorAll('[data-go]').forEach(function(b){b.onclick=function(){go(b.dataset.go)}});
+    document.getElementById('pinForm').onsubmit=async function(e){e.preventDefault();var button=e.submitter,error=document.getElementById('pinError');error.textContent='';if(!window.craFirebaseManager){error.textContent='Firebase is still connecting. Try again in a moment.';return}button.disabled=true;button.textContent='Signing in…';try{await window.craFirebaseManager.signIn(document.getElementById('managerPassword').value);document.getElementById('managerPassword').value='';document.getElementById('pinGate').style.display='none'}catch(err){error.textContent='Incorrect Manager password or Firebase sign-in failed.'}finally{button.disabled=false;button.textContent='Open Manager Page'}};
+    window.addEventListener('cra:auth-ready',function(e){if(e.detail&&['manager@yxu1.app','master@yxu1.app'].indexOf(e.detail.email)>=0){document.getElementById('pinGate').style.display='none';if(cloudPending)queueCloudSync()}});
+    window.addEventListener('cra:cloud-state',function(e){if(!e.detail)return;state=normalizeState(e.detail);localStorage.setItem(KEY,JSON.stringify(state));renderAll()});
+    document.getElementById('lockBtn').onclick=async function(){if(window.craFirebaseManager)await window.craFirebaseManager.signOut();location.reload()};
+    function renderStats(){document.documentElement.style.setProperty('--navy',state.settings.primary||'#073763');document.documentElement.style.setProperty('--blue',state.settings.accent||'#1298c8');document.getElementById('siteCode').textContent=state.settings.siteCode;document.getElementById('statEmployees').textContent=shipDockEmployees().length;var all=[];boardDates(boardStartKey(),14).forEach(function(date){var sc=scheduleForDate(date,false);if(sc)all=all.concat(Object.values(sc.assignments||{}).filter(function(a){return a.date===date}))});var filled=all.filter(function(a){return a.login!=='OPEN'}).length;document.getElementById('statFilled').textContent=(all.length?Math.round(filled/all.length*100):0)+'%';document.getElementById('statChanges').textContent=(state.audits||[]).length}
+    function renderEditDays(){var start=document.getElementById('weekStart').value||boardStartKey(),select=document.getElementById('editDay'),current=Number(select.value)||0;select.innerHTML=boardDates(start,14).map(function(d,i){var date=new Date(d+'T12:00:00'),prefix=i<7?'This week':'Next week';return'<option value="'+i+'">'+prefix+' · '+date.toLocaleDateString('en-CA',{weekday:'short',month:'short',day:'numeric'})+'</option>'}).join('');select.value=String(Math.min(current,13))}
+    function selectedEditDate(){var start=document.getElementById('weekStart').value||boardStartKey(),day=Number(document.getElementById('editDay').value)||0;return dateKey(add(new Date(start+'T12:00:00'),day))}
+    function initInputs(){document.getElementById('missingCohort').innerHTML=COHORTS.map(function(c){return'<option value="'+c+'">'+c+'</option>'}).join('');if(!document.getElementById('weekStart').value)document.getElementById('weekStart').value=boardStartKey();renderEditDays();document.getElementById('editDay').value='0';document.getElementById('trainRole').innerHTML=ROLES.filter(function(r){return r.source==='manual'}).map(function(r){return'<option value="'+r.id+'">'+r.name+'</option>'}).join('');document.getElementById('blockRole').innerHTML=ROLES.map(function(r){return'<option value="'+r.id+'">'+r.name+'</option>'}).join('');renderTrainCohorts();renderTrainMode()}
+    function renderAssignments(){var date=selectedEditDate(),shift=document.getElementById('editShift').value,q=document.getElementById('editQuarter').value,sc=scheduleForDate(date,false),html='';ROLES.forEach(function(r){var a=sc&&sc.assignments[akey(date,shift,q,r.id)],rule=roleRule(r.id),login=a?a.login:(rule==='pa-only'?'PA':'OPEN'),mode=rule==='pa-only'?'PA Only':rule==='full-day'?'Full Day':'Quarterly';html+='<tr><td><strong>'+r.name+'</strong><span class="search-note">'+mode+'</span></td><td>'+assignmentEditor(r,date,shift,q,login)+'</td><td><span class="source">'+esc(a?a.source:(login==='PA'?'PA Only':'Not generated'))+'</span></td></tr>'});document.getElementById('assignmentRows').innerHTML=html}
+    document.getElementById('weekStart').onchange=function(){renderEditDays();renderAssignments()};['editDay','editShift','editQuarter'].forEach(function(id){document.getElementById(id).onchange=renderAssignments});
+    document.getElementById('generateBtn').onclick=function(){var start=document.getElementById('weekStart').value||todayKey(),preserve=boardHasData(start)?confirm('Keep every valid existing assignment?\\n\\nOK = Keep existing and fill only open/invalid slots\\nCancel = Reset and regenerate both weeks'):false;generateBoard(start,preserve);renderAssignments();toast('2-week board generated · Firebase updating')};document.getElementById('quickGenerate').onclick=function(){var start=boardStartKey(),preserve=boardHasData(start)?confirm('Keep every valid existing assignment?\\n\\nOK = Keep existing and fill only open/invalid slots\\nCancel = Reset and regenerate both weeks'):false;generateBoard(start,preserve);renderAll();toast('This week + next week generated')};
+    document.getElementById('saveAssignments').onclick=function(){var date=selectedEditDate();if(!confirm('Save '+date+' assignments and update Firebase/TV?'))return;var sh=document.getElementById('editShift').value,q=document.getElementById('editQuarter').value,week=scheduleKeyForDate(date),entries=[],errors=[],used={};document.querySelectorAll('.assignment-picker').forEach(function(p){var role=ROLES.find(function(r){return r.id===p.dataset.role}),raw=String(p.value||'').trim(),upper=raw.toUpperCase(),login=!raw||upper==='OPEN'?'OPEN':(upper==='PA'?'PA':lower(raw)),employee,targetQs=roleRule(role.id)==='full-day'||roleRule(role.id)==='pa-only'?Q:[q];if(roleRule(role.id)==='pa-only')login='PA';if(login==='PA'&&roleRule(role.id)!=='pa-only')errors.push(role.name+': PA is only valid when this role is set to PA Only in Manager Settings.');if(named(login)){employee=shipDockEmployees().find(function(x){return x.login===login});if(!employee)errors.push(role.name+': '+raw+' is not a Ship Dock AA.');else if((employee.blockedRoles||[]).indexOf(role.id)>=0)errors.push(role.name+': '+login+' is blocked from this role.');else if(!worksDate(employee,date,sh))errors.push(role.name+': '+login+' is not scheduled for this shift; add the AA under VET first.');else if(targetQs.some(function(targetQ){return isUnavailable(login,date,sh,targetQ)}))errors.push(role.name+': '+login+' is absent/unavailable for '+(targetQs.length===3?'part of this full day':q)+'.');else if(!eligible(employee,role)&&role.id!=='quality'&&role.id!=='ship-clerk')errors.push(role.name+': '+login+' is not trained for this role.');var conflicts=assignmentConflicts(login,date,sh,targetQs,role.id);if(conflicts.length)errors.push(role.name+': '+login+' already has '+(ROLES.find(function(r){return r.id===conflicts[0].roleId})||{name:conflicts[0].roleId}).name+' on this date. Existing assignment has priority.');targetQs.forEach(function(targetQ){var useKey=login+'|'+targetQ;if(used[useKey]&&used[useKey]!==role.name)errors.push(role.name+': '+login+' is also selected for '+used[useKey]+' in '+targetQ+'.');else used[useKey]=role.name})}entries.push({role:role,login:login,employee:employee,targetQs:targetQs})});if(errors.length){alert('Assignments were not saved:\n\n• '+Array.from(new Set(errors)).join('\n• '));return}if(!state.schedules[week])generate(week,false,true);var sc=state.schedules[week];entries.forEach(function(entry){if(entry.employee&&(entry.role.id==='quality'||entry.role.id==='ship-clerk')){entry.employee.manualRoles=entry.employee.manualRoles||[];if(entry.employee.manualRoles.indexOf(entry.role.id)<0)entry.employee.manualRoles.push(entry.role.id)}entry.targetQs.forEach(function(targetQ){var k=akey(date,sh,targetQ,entry.role.id),old=sc.assignments[k],source=entry.login==='PA'?'default':(old&&old.login===entry.login?old.source:'manual');sc.assignments[k]={key:k,date:date,shift:sh,quarter:targetQ,roleId:entry.role.id,login:entry.login,source:source}})});sc.updatedAt=new Date().toISOString();audit('Updated '+date+' '+sh.toUpperCase()+' '+q+' assignments');save();renderAssignments();renderTraining();renderHistory();toast('Selected date saved · Firebase updating')};
+    function trueShuffleTwoWeeks(start){
+      generationSalt=String(Date.now())+'|'+String(Math.random());
+      boardWeeks(start,14).forEach(function(week){
+        var old=state.schedules[week],manualOnly={weekStart:week,updatedAt:new Date().toISOString(),assignments:{}};
+        if(old&&old.assignments){Object.keys(old.assignments).forEach(function(k){var a=old.assignments[k];if(a&&a.source==='manual')manualOnly.assignments[k]=JSON.parse(JSON.stringify(a))})}
+        state.schedules[week]=manualOnly;
+        generate(week,true,true);
+      });
+      generationSalt='';
+      state.settings.scheduleSchema=7;
+    }
+    document.getElementById('shuffleRepublish').onclick=async function(){if(!confirm('TRUE SHUFFLE THIS WEEK + NEXT WEEK?\n\n• Manual assignments stay protected\n• Auto/full-day assignments are reshuffled\n• Training, blocks, absences, VET and cohort rules stay enforced\n• Weekly 6-quarter limit stays enforced\n\nFirebase/TV will update immediately.'))return;var start=boardStartKey();trueShuffleTwoWeeks(start);audit('True-shuffled auto assignments and republished this week + next week');save();renderAll();await syncCloud(false);toast('2-week board truly shuffled · TV updated')};
+    document.getElementById('publishBtn').onclick=async function(){if(!confirm('Sync the latest schedule to every connected TV now?'))return;if(!window.craFirebaseManager){toast('Firebase is still connecting');return}state.lastUpdated=new Date().toISOString();localStorage.setItem(KEY,JSON.stringify(state));await syncCloud(true)};
+    function readRows(file){return file.arrayBuffer().then(function(buf){var wb=XLSX.read(buf,{type:'array'}),rows=[];wb.SheetNames.forEach(function(name){rows=rows.concat(XLSX.utils.sheet_to_json(wb.Sheets[name],{header:1,raw:false,defval:''}))});return rows})}
+    function norm(v){return String(v||'').trim()}function lower(v){return norm(v).toLowerCase().replace(/\s+/g,' ')}
+    function parseRoster(rows){var hi=rows.findIndex(function(row){return row.some(function(v){return lower(v)==='user id'})});if(hi<0)throw Error('Roster needs a User ID column.');var heads=rows[hi].map(lower),li=heads.indexOf('user id'),ni=heads.indexOf('employee name'),si=heads.indexOf('shift pattern')>=0?heads.indexOf('shift pattern'):heads.indexOf('shift'),old={};state.employees.forEach(function(e){old[e.login]=e});var out=[];rows.slice(hi+1).forEach(function(row){var login=lower(row[li]),sp=norm(row[si]),match=sp.toUpperCase().match(/^(DA|DB|DC|DL|DN|NA|NB|NC|NL|NN)/);if(!login||!match)return;var raw=norm(row[ni]),parts=raw.split(',').map(function(x){return x.trim()}).filter(Boolean),name=parts.length>1?parts.slice(1).join(' ')+' '+parts[0]:(raw||login),prev=old[login]||{};out.push({login:login,name:name,cohort:match[1],shiftPattern:sp,processPath:prev.processPath||'',trainedRoles:prev.trainedRoles||[],manualRoles:prev.manualRoles||[],blockedRoles:prev.blockedRoles||[]})});state.employees.filter(function(e){return e.missingFromFiles&&!out.some(function(x){return x.login===e.login})}).forEach(function(e){out.push(e)});return out}
+    function applyLearning(rows){var hi=rows.findIndex(function(row){return row.some(function(v){return lower(v)==='user id'})});if(hi<0)throw Error('Learning file needs a User ID column.');var heads=rows[hi].map(lower),li=heads.indexOf('user id'),pi=heads.indexOf('process path'),cols=[];if(pi<0)throw Error('Learning file needs a Process Path column for Ship Dock filtering.');heads.forEach(function(h,i){if(h.indexOf('gtdr training')>=0)cols.push([i,['tdr']]);if(h.indexOf('pit noba')>=0)cols.push([i,['pit-driver']]);if(h.indexOf('nacf prism training')>=0||h==='prism')cols.push([i,['flats-ps','palletize-ps']]);if(h.indexOf('nacf ars rwc4')>=0||h.indexOf('rwc4 operator')>=0)cols.push([i,['rwc4-1','rwc4-2']])});var map={};rows.slice(hi+1).forEach(function(row){var login=lower(row[li]);if(!login)return;var record=map[login]||{processPath:norm(row[pi]),trained:[]};record.processPath=norm(row[pi])||record.processPath;cols.forEach(function(c){var val=lower(row[c[0]]);if(val==='trained'||val==='yes'||val==='1'||val==='true'||val==='complete')c[1].forEach(function(r){if(record.trained.indexOf(r)<0)record.trained.push(r)})});map[login]=record});state.employees=state.employees.filter(function(e){return e.missingFromFiles||(map[e.login]&&lower(map[e.login].processPath)==='ship dock')}).map(function(e){e.processPath='Ship Dock';if(map[e.login]&&lower(map[e.login].processPath)==='ship dock')e.trainedRoles=map[e.login].trained;else e.trainedRoles=e.trainedRoles||[];return e});if(!state.employees.length)throw Error('No roster logins matched Process Path = Ship Dock. Please check both files.')}
+    document.getElementById('importBtn').onclick=async function(){var rf=document.getElementById('rosterFile').files[0],lf=document.getElementById('learningFile').files[0];if(!rf&&!lf){toast('Choose at least one file');return}if(rf&&!lf){alert('Please select the Learning file too. Its Process Path column is required to keep only Ship Dock AAs.');return}try{if(rf){state.employees=parseRoster(await readRows(rf));state.rosterFileName=rf.name}if(lf){applyLearning(await readRows(lf));state.learningFileName=lf.name;document.getElementById('learningStatus').textContent=lf.name+' · '+shipDockEmployees().length+' Ship Dock AAs matched'}if(rf)document.getElementById('rosterStatus').textContent=rf.name+' · '+shipDockEmployees().length+' Ship Dock AAs retained';var start=boardStartKey(),preserve=boardHasData(start)?confirm('Files imported. Keep valid existing assignments?\\n\\nOK = Keep valid assignments\\nCancel = Reset both weeks'):false;generateBoard(start,preserve,true);audit('Imported Ship Dock roster/training data and regenerated this week + next week');save();renderAll();toast('Ship Dock files imported · 2-week board updated')}catch(e){alert(e.message||String(e))}};
+    function renderMissingAAs(){var rows=state.employees.filter(function(e){return e.missingFromFiles}).sort(function(a,b){return a.login.localeCompare(b.login)}),el=document.getElementById('missingAAList');if(!el)return;el.innerHTML=rows.length?rows.map(function(e){return'<div class="list-row"><div class="person"><strong>'+esc(e.name)+'</strong><small>'+esc(e.login)+' · '+e.cohort+(e.missingReason?' · '+esc(e.missingReason):'')+'</small></div><button class="danger remove-missing-aa" data-login="'+esc(e.login)+'">Remove</button></div>'}).join(''):'<div class="empty">No extra AAs added.</div>';document.querySelectorAll('.remove-missing-aa').forEach(function(b){b.onclick=function(){var login=b.dataset.login;if(!confirm('Remove '+login+' from the system?\n\nAny current assignments for this AA will be regenerated.'))return;state.employees=state.employees.filter(function(e){return e.login!==login});generateBoard(boardStartKey(),true,true);audit('Removed '+login+' from missing-AA list and regenerated 2-week board');save();renderAll();toast('AA removed · schedule updated')}})}
+    document.getElementById('addMissingAA').onclick=function(){var login=lower(document.getElementById('missingLogin').value),name=norm(document.getElementById('missingName').value),cohort=document.getElementById('missingCohort').value,reason=norm(document.getElementById('missingReason').value);if(!login){alert('Enter the AA login.');return}if(!name){alert('Enter the employee name.');return}if(COHORTS.indexOf(cohort)<0){alert('Choose a valid cohort.');return}var existing=state.employees.find(function(e){return e.login===login});if(existing){existing.name=name||existing.name;existing.cohort=cohort;existing.shiftPattern=cohort;existing.processPath='Ship Dock';existing.missingFromFiles=true;existing.missingReason=reason}else{state.employees.push({login:login,name:name,cohort:cohort,shiftPattern:cohort,processPath:'Ship Dock',trainedRoles:[],manualRoles:[],blockedRoles:[],missingFromFiles:true,missingReason:reason})}document.getElementById('missingLogin').value='';document.getElementById('missingName').value='';document.getElementById('missingReason').value='';audit('Added/updated '+login+' as Ship Dock AA missing from source files');generateBoard(boardStartKey(),true,true);save();renderAll();toast('AA added · now available for training and scheduling')};
+    function todayKey(){return dateKey(new Date())}
+    function boardStartKey(){return dateKey(sunday(new Date()))}
+    function todayAbsenceGroups(){var today=todayKey(),map={};(state.unavailability||[]).filter(function(u){return u.date===today}).forEach(function(u){var key=u.login+'|'+u.shift;if(!map[key])map[key]={login:u.login,shift:u.shift,quarters:[]};if(map[key].quarters.indexOf(u.quarter)<0)map[key].quarters.push(u.quarter)});return Object.values(map)}
+    function todayVet(){var today=todayKey();return(state.vet||[]).filter(function(v){return v.date===today})}
+    function refreshAfterTodayChange(message){if(confirm(message+'\n\nRefresh affected slots now?\n\nOK = Refill and auto-update TV\nCancel = Keep the current board')){generateBoard(boardStartKey(),true,true);save();renderAll();toast('Affected slots refreshed · Firebase updating')}else{save();renderAll();toast('Change synced · schedule not regenerated')}}
+    function renderVetEmployees(){var today=todayKey(),current=document.getElementById('vetEmployee').value,already={};todayVet().forEach(function(v){already[v.login]=1});var people=shipDockEmployees().filter(function(e){return!isRegularWorkday(e,today,shiftOf(e.cohort))&&!already[e.login]}).sort(function(a,b){return a.name.localeCompare(b.name)}),select=document.getElementById('vetEmployee');select.innerHTML=people.length?people.map(function(e){return'<option value="'+esc(e.login)+'">'+esc(e.name)+' · '+esc(e.login)+' · '+e.cohort+' · Ship Dock</option>'}).join(''):'<option value="">No unscheduled Ship Dock AAs available</option>';if(current&&people.some(function(e){return e.login===current}))select.value=current;var chosen=people.find(function(e){return e.login===select.value});if(chosen)document.getElementById('vetShift').value=shiftOf(chosen.cohort)}
+    function renderPeopleSelects(){var today=todayKey(),absent={};todayAbsenceGroups().forEach(function(a){absent[a.login]=1});var scheduled=shipDockEmployees().filter(function(e){return(['day','night'].some(function(sh){return worksDate(e,today,sh)}))&&!absent[e.login]}).sort(function(a,b){return a.name.localeCompare(b.name)});document.getElementById('unEmployee').innerHTML=scheduled.length?scheduled.map(function(e){return'<option value="'+esc(e.login)+'">'+esc(e.name)+' · '+esc(e.login)+' · '+e.cohort+' · Ship Dock</option>'}).join(''):'<option value="">No available scheduled Ship Dock AAs</option>';document.getElementById('blockEmployee').innerHTML=employeeOptions('',false);renderVetEmployees();renderTrainEmployees()}
+    function renderTrainCohorts(){var shift=document.getElementById('trainShift').value||'day',select=document.getElementById('trainCohort'),current=select.value,cohorts=COHORTS.filter(function(c){return shiftOf(c)===shift});select.innerHTML='<option value="ALL">ALL '+(shift==='day'?'Day':'Night')+' cohorts</option>'+cohorts.map(function(c){return'<option value="'+c+'">'+c+'</option>'}).join('');if(current==='ALL'||cohorts.indexOf(current)>=0)select.value=current;else select.value='ALL';document.getElementById('trainEmployee').value=''}
+    function renderTrainEmployees(){var shift=document.getElementById('trainShift').value||'day',cohort=document.getElementById('trainCohort').value,input=document.getElementById('trainEmployee'),current=lower(input.value),people=shipDockEmployees().filter(function(e){return shiftOf(e.cohort)===shift&&(cohort==='ALL'||e.cohort===cohort)}).sort(function(a,b){return a.cohort.localeCompare(b.cohort)||a.login.localeCompare(b.login)});document.getElementById('trainEmployeeList').innerHTML=people.map(function(e){return'<option value="'+esc(e.login)+'">'+esc(e.name)+' · '+e.cohort+' · Ship Dock</option>'}).join('');if(!people.some(function(e){return e.login===current}))input.value=''}
+    function renderTrainMode(){var role=document.getElementById('trainRole').value;if(role)document.getElementById('trainMode').value=roleRule(role)}
+    document.getElementById('trainShift').onchange=function(){renderTrainCohorts();renderTrainEmployees();renderTraining()};document.getElementById('trainCohort').onchange=function(){document.getElementById('trainEmployee').value='';renderTrainEmployees();renderTraining()};document.getElementById('trainRole').onchange=function(){renderTrainMode();renderTraining()};
+    document.getElementById('trainMode').onchange=function(){var roleId=document.getElementById('trainRole').value,role=ROLES.find(function(r){return r.id===roleId}),mode=this.value;state.settings.roleModes[roleId]=mode;audit('Changed '+role.name+' assignment mode to '+(mode==='pa-only'?'PA Only':mode==='full-day'?'Full Day':'Quarterly'));if(boardHasData(boardStartKey())&&confirm('Assignment mode saved. Rebuild this week + next week while keeping valid assignments?'))generateBoard(boardStartKey(),true,true);save();renderAssignments();renderHistory();toast('Role mode saved · Firebase updating')};
+    // Recalculate only the affected role after manual training changes. Manual schedule picks stay protected;
+    // auto/full-day picks for this role are cleared across the two-week board, then the generator
+    // preserves every unrelated valid assignment and redistributes this role using the updated trained list.
+    function refreshRoleAfterTrainingChange(roleId){
+      var start=boardStartKey();
+      boardDates(start,14).forEach(function(date){
+        var sc=scheduleForDate(date,false);if(!sc)return;
+        Object.keys(sc.assignments||{}).forEach(function(k){
+          var a=sc.assignments[k];
+          if(a&&a.date===date&&a.roleId===roleId&&a.source!=='manual')delete sc.assignments[k]
+        })
+      });
+      generateBoard(start,true,true);
+      save();
+      renderAll();
+    }
+    document.getElementById('addTraining').onclick=function(){var login=lower(document.getElementById('trainEmployee').value),role=document.getElementById('trainRole').value,shift=document.getElementById('trainShift').value,cohort=document.getElementById('trainCohort').value,e=shipDockEmployees().find(function(x){return x.login===login&&shiftOf(x.cohort)===shift&&(cohort==='ALL'||x.cohort===cohort)});if(!e){alert('Choose a '+shift+' Ship Dock AA from the login list.');return}e.manualRoles=e.manualRoles||[];if(e.manualRoles.indexOf(role)<0)e.manualRoles.push(role);audit('Added '+login+' ('+e.cohort+') to '+role+' trained list and recalculated its 2-week rotation');refreshRoleAfterTrainingChange(role);toast('Training added · '+e.cohort+' cohort preserved · TV updating')};
+    function renderTraining(){var c=document.getElementById('trainCohort').value,r=document.getElementById('trainRole').value,shift=document.getElementById('trainShift').value,role=ROLES.find(function(x){return x.id===r}),people=shipDockEmployees().filter(function(e){return shiftOf(e.cohort)===shift&&(c==='ALL'||e.cohort===c)&&(e.manualRoles||[]).indexOf(r)>=0}).sort(function(a,b){return a.cohort.localeCompare(b.cohort)||a.login.localeCompare(b.login)});document.getElementById('trainingList').innerHTML=people.length?people.map(function(e){return'<div class="list-row"><div class="person"><strong>'+esc(e.name)+'</strong><small>'+esc(e.login)+' · '+e.cohort+' · Ship Dock · '+esc(role.name)+'</small></div><button class="danger remove-training" data-login="'+esc(e.login)+'">Remove</button></div>'}).join(''):'<div class="empty">No Ship Dock employees in this trained list.</div>';document.querySelectorAll('.remove-training').forEach(function(b){b.onclick=function(){var e=state.employees.find(function(x){return x.login===b.dataset.login});e.manualRoles=e.manualRoles.filter(function(x){return x!==r});audit('Removed '+e.login+' from '+r+' trained list and recalculated its 2-week rotation');refreshRoleAfterTrainingChange(r);toast('Training removed · affected role recalculated · TV updating')}})}
+    document.getElementById('addUnavailable').onclick=function(){var login=document.getElementById('unEmployee').value,today=todayKey(),employee=shipDockEmployees().find(function(e){return e.login===login});if(!employee)return;var shifts=['day','night'].filter(function(sh){return worksDate(employee,today,sh)});if(!shifts.length){alert(login+' is not scheduled today. Add the AA under VET first.');return}shifts.forEach(function(shift){Q.forEach(function(quarter){if(!isUnavailable(login,today,shift,quarter))state.unavailability.push({login:login,date:today,shift:shift,quarter:quarter,reason:'absent-today'})})});audit('Marked '+login+' absent today');refreshAfterTodayChange(login+' is marked absent for today only.')};
+    function renderUnavailable(){var groups=todayAbsenceGroups();document.getElementById('unavailableList').innerHTML=groups.length?groups.map(function(u){var e=state.employees.find(function(x){return x.login===u.login});return'<div class="list-row"><div class="person"><strong>'+esc(e?e.name:u.login)+'</strong><small>'+esc(u.login)+' · '+u.shift.toUpperCase()+' · '+u.quarters.sort().join(' · ')+' · Today only</small></div><button class="danger remove-un" data-login="'+esc(u.login)+'" data-shift="'+u.shift+'">Remove absence</button></div>'}).join(''):'<div class="empty">No Ship Dock AAs marked absent today.</div>';document.querySelectorAll('.remove-un').forEach(function(b){b.onclick=function(){var today=todayKey(),login=b.dataset.login,shift=b.dataset.shift;state.unavailability=state.unavailability.filter(function(u){return!(u.login===login&&u.date===today&&u.shift===shift)});audit('Removed today absence for '+login);refreshAfterTodayChange(login+' is available again today.')}})}
+    document.getElementById('vetEmployee').onchange=function(){var e=shipDockEmployees().find(function(x){return x.login===this.value});if(e)document.getElementById('vetShift').value=shiftOf(e.cohort)};
+    document.getElementById('addVet').onclick=function(){var login=document.getElementById('vetEmployee').value,shift=document.getElementById('vetShift').value,today=todayKey(),employee=shipDockEmployees().find(function(e){return e.login===login});if(!employee)return;if(isRegularWorkday(employee,today,shiftOf(employee.cohort))){alert(login+' is already on today\'s regular schedule.');return}if(todayVet().some(function(v){return v.login===login})){alert(login+' is already added as VET today.');return}state.vet.push({login:login,date:today,shift:shift,addedAt:new Date().toISOString()});audit('Added '+login+' as '+shift.toUpperCase()+' VET today');refreshAfterTodayChange(login+' was added as VET for today.')};
+    function renderVet(){var rows=todayVet();document.getElementById('vetList').innerHTML=rows.length?rows.map(function(v){var e=state.employees.find(function(x){return x.login===v.login});return'<div class="list-row"><div class="person"><strong>'+esc(e?e.name:v.login)+'</strong><small>'+esc(v.login)+' · '+(e?e.cohort+' · ':'')+v.shift.toUpperCase()+' VET · Today only</small></div><button class="danger remove-vet" data-login="'+esc(v.login)+'" data-shift="'+v.shift+'">Remove VET</button></div>'}).join(''):'<div class="empty">No VET Ship Dock AAs added today.</div>';document.querySelectorAll('.remove-vet').forEach(function(b){b.onclick=function(){var today=todayKey(),login=b.dataset.login,shift=b.dataset.shift;state.vet=state.vet.filter(function(v){return!(v.login===login&&v.date===today&&v.shift===shift)});audit('Removed '+login+' from today VET');refreshAfterTodayChange(login+' was removed from today VET.')}})}
+    function renderOverviewToday(){var today=todayKey(),absent=todayAbsenceGroups(),vet=todayVet(),absentLogins={};absent.forEach(function(a){absentLogins[a.login]=1});var vetMap={};vet.forEach(function(v){vetMap[v.login]=v});var onsite=shipDockEmployees().filter(function(e){var regular=isRegularWorkday(e,today,shiftOf(e.cohort)),extra=!!vetMap[e.login];return(regular||extra)&&!absentLogins[e.login]}).sort(function(a,b){return shiftOf(a.cohort).localeCompare(shiftOf(b.cohort))||a.cohort.localeCompare(b.cohort)||a.login.localeCompare(b.login)});document.getElementById('overviewOnSiteCount').textContent=onsite.length;document.getElementById('overviewOnSite').innerHTML=onsite.length?onsite.map(function(e){var v=vetMap[e.login],shift=v?v.shift:shiftOf(e.cohort),tag=v?'<span class="badge vet">VET</span>':'<span class="badge">SCHEDULED</span>';return'<div class="list-row"><div class="person"><strong>'+esc(e.login)+'</strong><small>'+esc(e.name)+' · '+e.cohort+' · '+shift.toUpperCase()+'</small></div>'+tag+'</div>'}).join(''):'<div class="empty">No on-site Ship Dock AAs found from today\'s schedule/VET data.</div>';document.getElementById('overviewAbsent').innerHTML=absent.length?absent.map(function(a){var e=state.employees.find(function(x){return x.login===a.login});return'<div class="list-row"><div class="person"><strong>'+esc(a.login)+'</strong><small>'+esc(e?e.name:'Ship Dock AA')+' · '+a.shift.toUpperCase()+'</small></div><span class="badge absent">ABSENT</span></div>'}).join(''):'<div class="empty">No absences today.</div>';document.getElementById('overviewVet').innerHTML=vet.length?vet.map(function(v){var e=state.employees.find(function(x){return x.login===v.login});return'<div class="list-row"><div class="person"><strong>'+esc(v.login)+'</strong><small>'+esc(e?e.name:'Ship Dock AA')+' · '+v.shift.toUpperCase()+'</small></div><span class="badge vet">VET</span></div>'}).join(''):'<div class="empty">No VET AAs today.</div>'}
+    function blockImpact(login,roleId){var dates=boardDates(boardStartKey(),14);return dates.reduce(function(total,date){var sc=scheduleForDate(date,false);return total+(sc?Object.values(sc.assignments||{}).filter(function(a){return a.date===date&&a.login===login&&a.roleId===roleId}).length:0)},0)}
+    document.getElementById('addBlock').onclick=function(){var login=document.getElementById('blockEmployee').value,roleId=document.getElementById('blockRole').value,e=shipDockEmployees().find(function(x){return x.login===login}),role=ROLES.find(function(r){return r.id===roleId});if(!e||!role)return;e.blockedRoles=e.blockedRoles||[];if(e.blockedRoles.indexOf(roleId)>=0){toast(login+' is already blocked from '+role.name);return}var impacted=blockImpact(login,roleId);if(!confirm('Block '+login+' from '+role.name+' until manually unblocked?\n\n'+impacted+' current board slot'+(impacted===1?'':'s')+' will be refilled. Other valid assignments stay unchanged.'))return;e.blockedRoles.push(roleId);generateBoard(boardStartKey(),true,true);audit('Blocked '+login+' from '+role.name+' and refilled '+impacted+' board slots');save();renderAll();toast('Block active · schedule and Firebase updated')};
+    function renderBlocks(){var rows=[];shipDockEmployees().forEach(function(e){(e.blockedRoles||[]).forEach(function(r){rows.push([e,r])})});document.getElementById('blockList').innerHTML=rows.length?rows.map(function(row){var role=ROLES.find(function(r){return r.id===row[1]})||{name:row[1]};return'<div class="list-row"><div class="person"><strong>'+esc(row[0].name)+'</strong><small>'+esc(row[0].login)+' · '+row[0].cohort+' · '+esc(role.name)+' · Until manually unblocked</small></div><button class="secondary unblock" data-login="'+esc(row[0].login)+'" data-role="'+row[1]+'">Allow again</button></div>'}).join(''):'<div class="empty">No active accommodation blocks.</div>';document.querySelectorAll('.unblock').forEach(function(b){b.onclick=function(){var e=shipDockEmployees().find(function(x){return x.login===b.dataset.login}),role=ROLES.find(function(r){return r.id===b.dataset.role})||{name:b.dataset.role};if(!e)return;if(!confirm('Allow '+e.login+' to work '+role.name+' again?'))return;e.blockedRoles=e.blockedRoles.filter(function(r){return r!==b.dataset.role});generateBoard(boardStartKey(),true,true);audit('Allowed '+e.login+' for '+role.name+' again');save();renderAll();toast('Role allowed again · OPEN slots checked')}})}
+    function renderRoleSettings(){var el=document.getElementById('roleSettingsRows');if(!el)return;el.innerHTML=ROLES.map(function(role){var rule=roleRule(role.id),effect=rule==='pa-only'?'PA is shown in Q1–Q3; no AA is assigned.':rule==='full-day'?'One eligible AA is kept for Q1–Q3.':'Eligible AAs can rotate between Q1, Q2 and Q3.';return'<tr><td><strong>'+esc(role.name)+'</strong></td><td><select class="role-setting-select" data-role="'+role.id+'"><option value="full-day" '+(rule==='full-day'?'selected':'')+'>Full Day</option><option value="quarterly" '+(rule==='quarterly'?'selected':'')+'>Quarterly</option><option value="pa-only" '+(rule==='pa-only'?'selected':'')+'>PA Only</option></select></td><td><span class="source">'+effect+'</span></td></tr>'}).join('')}
+    document.getElementById('saveRoleSettings').onclick=function(){var changes=[];document.querySelectorAll('.role-setting-select').forEach(function(sel){var roleId=sel.dataset.role,next=sel.value,prev=roleRule(roleId);if(next!==prev)changes.push({roleId:roleId,prev:prev,next:next})});if(!changes.length){toast('No role setting changes');return}var names=changes.map(function(c){var r=ROLES.find(function(x){return x.id===c.roleId});return (r?r.name:c.roleId)+': '+(c.next==='pa-only'?'PA Only':c.next==='full-day'?'Full Day':'Quarterly')}).join('\n• ');if(!confirm('Save these role rules?\n\n• '+names+'\n\nAffected roles will be recalculated across the current 2-week board. Unrelated assignments stay protected.'))return;changes.forEach(function(c){state.settings.roleModes[c.roleId]=c.next;boardDates(boardStartKey(),14).forEach(function(date){var sc=scheduleForDate(date,false);if(!sc)return;Object.keys(sc.assignments||{}).forEach(function(k){var a=sc.assignments[k];if(a&&a.date===date&&a.roleId===c.roleId)delete sc.assignments[k]})})});generateBoard(boardStartKey(),true,true);audit('Updated Manager role settings: '+changes.map(function(c){var r=ROLES.find(function(x){return x.id===c.roleId});return (r?r.name:c.roleId)+' → '+c.next}).join(', '));save();renderAll();toast('Role settings saved · 2-week board updated')};
+    function renderHistory(){var rows=(state.audits||[]).filter(function(a){return Date.now()-new Date(a.createdAt).getTime()<604800000});document.getElementById('historyList').innerHTML=rows.length?rows.map(function(a){return'<div class="list-row"><div class="person"><strong>'+esc(a.summary)+'</strong><small>'+new Date(a.createdAt).toLocaleString('en-CA')+' · '+esc(a.actor)+'</small></div><span class="badge">MANUAL</span></div>'}).join(''):'<div class="empty">No manual changes in the last seven days.</div>'}
+    document.getElementById('resetManualSchedule').onclick=function(){
+      if(!confirm('Reset MANUAL + SCHEDULE data?\n\nThis will keep:\n• Imported roster\n• Learning-file training\n• Accommodation role blocks\n\nThis will delete:\n• Manual trained-role additions\n• Generated/manual schedules\n• Today absences\n• VET entries\n• Manual role-mode changes\n\nFirebase and this browser cache will both be updated.'))return;
+      state.employees.forEach(function(e){e.manualRoles=[]});
+      state.schedules={};state.unavailability=[];state.vet=[];state.audits=[];
+      state.settings.roleModes=Object.assign({},DEFAULT_ROLE_MODES);
+      state.settings.roleModeSchema=3;state.settings.scheduleSchema=7;
+      audit('Reset manual training and schedule data');
+      save();renderAll();toast('Manual + schedule data reset · imported training kept');
     };
-    loop();
-  }
-  function stopNativeLoop(){
-    state.running = false;
-    if(rafId) cancelAnimationFrame(rafId), rafId=null;
-    $start.disabled = false;
-    setStatus('Stopped.');
-  }
+    document.getElementById('resetAllData').onclick=function(){
+      if(!confirm('RESET ALL DATA?\n\nThis permanently clears imported roster/Learning data, manual training, schedules, VET, absences, accommodation blocks and history from Firebase and this browser.\n\nClick OK only if you want a completely fresh start.'))return;
+      if(!confirm('Final confirmation: erase ALL Critical Role Assignment data?'))return;
+      state=defaults();state.settings.scheduleSchema=7;
+      localStorage.removeItem(KEY);
+      save();initInputs();renderAll();toast('All data reset · fresh start synced to Firebase');
+    };
 
-  // ZXing fallback path
-  async function startZXing(){
-    state.usingZXing = true;
-    $start.disabled = true;
-    const { BrowserMultiFormatReader } = window.ZXingBrowser || window.ZXing;
-    state.zxingReader = new BrowserMultiFormatReader();
-    await startCamera('environment', state.currentDeviceId);
-    setStatus('Scanning with ZXing…');
-    const videoElem = $video;
-    const onResult = (result, err, controls) =>{
-      if(result && result.getText){
-        const code = String(result.getText()).trim();
-        if(code && acceptScan(code)){
-          bump(code,1);
-          setStatus(`Scanned: ${code}`);
+    function renderAll(){renderStats();renderPeopleSelects();renderTrainMode();renderAssignments();renderTraining();renderUnavailable();renderVet();renderOverviewToday();renderBlocks();renderRoleSettings();renderHistory();renderMissingAAs()}
+    initInputs();renderAll();
+  })();
+  </script>
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js';
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js';
+    import { getDatabase, ref, onValue, set } from 'https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js';
+
+    const firebaseConfig = {
+      apiKey: 'AIzaSyDopxxbJOlUQdMfd-lM-a6Odb8Yux7jAkA',
+      authDomain: 'yxu1-critical-roles.firebaseapp.com',
+      databaseURL: 'https://yxu1-critical-roles-default-rtdb.firebaseio.com',
+      projectId: 'yxu1-critical-roles',
+      storageBucket: 'yxu1-critical-roles.firebasestorage.app',
+      messagingSenderId: '681933966768',
+      appId: '1:681933966768:web:327d36b8683db1f4fa1a75'
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+    let listening = false;
+
+    const safeState = (state) => {
+      const copy = JSON.parse(JSON.stringify(state));
+      if (copy.settings) {
+        delete copy.settings.managerPin;
+        delete copy.settings.masterPin;
+      }
+      return copy;
+    };
+
+    window.craFirebaseManager = {
+      signIn: (password) => signInWithEmailAndPassword(auth, 'manager@yxu1.app', password),
+      signOut: () => signOut(auth),
+      publish: (state) => set(ref(db, 'appState'), safeState(state))
+    };
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user || !['manager@yxu1.app', 'master@yxu1.app'].includes(user.email || '')) return;
+      window.dispatchEvent(new CustomEvent('cra:auth-ready', { detail: { email: user.email } }));
+      if (listening) return;
+      listening = true;
+      onValue(ref(db, 'appState'), (snapshot) => {
+        if (snapshot.exists()) {
+          window.dispatchEvent(new CustomEvent('cra:cloud-state', { detail: snapshot.val() }));
         }
-      }
-      // errors are noisy; we ignore them to keep loop running
-    };
-    state.zxingReader.decodeFromVideoDevice(state.currentDeviceId, videoElem, onResult);
-    $stop.disabled = false;
-  }
-  function stopZXing(){
-    if(state.zxingReader){
-      try{ state.zxingReader.reset(); }catch{}
-      state.zxingReader = null;
-    }
-    stopCamera();
-    $start.disabled = false;
-    setStatus('Stopped.');
-  }
-
-  async function start(){
-    try{
-      // Try native detector first
-      const supported = ('BarcodeDetector' in window);
-      if(supported){
-        const formats = [
-          'code_128','code_39','ean_13','ean_8','upc_a','upc_e','itf','codabar','qr_code','pdf417','aztec','data_matrix'
-        ].filter(Boolean);
-        state.detector = new window.BarcodeDetector({formats});
-        await startCamera('environment', state.currentDeviceId);
-        await startNativeLoop();
-        setStatus('Scanning…');
-      }else{
-        await startZXing();
-      }
-    }catch(err){
-      console.error(err);
-      setStatus('Failed to start camera. Check permissions.');
-      $start.disabled = false;
-      stopCamera();
-    }
-  }
-  function stop(){
-    if(state.detector){
-      stopNativeLoop();
-      stopCamera();
-    }
-    if(state.usingZXing){
-      stopZXing();
-      state.usingZXing = false;
-    }
-  }
-
-  async function flipCamera(){
-    const cams = await listCameras();
-    if(!cams.length) return;
-    // rotate through devices
-    const idx = cams.findIndex(c=>c.deviceId===state.currentDeviceId);
-    const next = cams[(idx+1) % cams.length];
-    state.currentDeviceId = next.deviceId;
-    // restart scanning with selected device
-    const wasZX = state.usingZXing;
-    stop();
-    if(wasZX || !('BarcodeDetector' in window)){
-      await startZXing();
-    }else{
-      await startCamera('environment', state.currentDeviceId);
-      await startNativeLoop();
-    }
-  }
-
-  // Events
-  $start.addEventListener('click', start);
-  $stop.addEventListener('click', stop);
-  $flip.addEventListener('click', flipCamera);
-  $torch.addEventListener('click', toggleTorch);
-  $addManual.addEventListener('click', ()=>{
-    const v = $manual.value.trim();
-    if(!v) return;
-    bump(v,1);
-    setStatus(`Added manually: ${v}`);
-    $manual.value='';
-    $manual.focus();
-  });
-  $manual.addEventListener('keydown', e=>{
-    if(e.key==='Enter'){ e.preventDefault(); $addManual.click(); }
-  });
-  $copy.addEventListener('click', copyForExcel);
-  $csv.addEventListener('click', downloadCSV);
-  $clear.addEventListener('click', clearToday);
-
-  // Init
-  load();
-
-  // iOS quirk: ensure video resumes after visibility changes
-  document.addEventListener('visibilitychange', ()=>{
-    if(document.visibilityState==='visible' && state.stream && $video.paused){
-      $video.play().catch(()=>{});
-    }
-  });
-})();
-</script>
+      });
+    });
+  </script>
 </body>
 </html>
