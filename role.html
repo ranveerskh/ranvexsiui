@@ -1,10 +1,10 @@
 <!doctype html>
-<!-- FIREBASE V4.2: spreadsheet-style two-week TV board + Day / Night / Auto -->
+<!-- FIREBASE V4.3: professional two-tone weeks + UTF-8 fixes + Day / Night / Auto -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="app-version" content="4.2">
+<meta name="app-version" content="4.3">
 <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -26,6 +26,16 @@ header{height:66px;flex:0 0 66px;background:linear-gradient(115deg,var(--navy),#
 .shift-btn:hover{background:#ffffff22}.shift-btn.active:hover{background:#fff}
 main{flex:1;min-height:0;padding:7px;display:grid;grid-template-rows:1fr 1fr;gap:7px}
 .week-card{min-height:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;background:#fff}
+.week-card.current-week{background:#f8fcfe;border-color:#a9cedf}
+.week-card.next-week{background:#f7f8fa;border-color:#c7d0d7}
+.week-card.current-week .week-title{background:#e7f5fb}
+.week-card.next-week .week-title{background:#eef1f4}
+.week-card.current-week .login-cell{background:#fbfeff}
+.week-card.next-week .login-cell{background:#fafbfc}
+.week-card.current-week .login-cell.empty{background:#f4fafc}
+.week-card.next-week .login-cell.empty{background:#f4f5f6}
+.week-card.current-week .role{background:#edf7fb}
+.week-card.next-week .role{background:#f0f2f4}
 .week-title{height:36px;flex:0 0 36px;background:var(--pale);border-bottom:1px solid var(--line);padding:4px 10px;display:flex;align-items:center;justify-content:space-between}
 .week-title-left{display:flex;align-items:baseline;gap:10px}.week-title h2{margin:0;font-size:17px;color:var(--navy)}.range{font-size:11px;font-weight:800;color:var(--muted)}
 .tag{background:var(--navy);color:#fff;border-radius:999px;padding:4px 9px;font-size:9px;font-weight:900;white-space:nowrap}
@@ -70,7 +80,7 @@ footer{height:38px;flex:0 0 38px;border-top:1px solid var(--line);background:#f7
 </header>
 
 <main>
-  <section class="week-card">
+  <section class="week-card current-week">
     <div class="week-title">
       <div class="week-title-left"><h2>Current Week</h2><span class="range" id="currentRange">â</span></div>
       <span class="tag">Q1 Â· Q2 Â· Q3</span>
@@ -78,7 +88,7 @@ footer{height:38px;flex:0 0 38px;border-top:1px solid var(--line);background:#f7
     <div class="table-wrap"><table class="schedule" id="currentWeek" aria-label="Current week critical-role schedule"></table></div>
   </section>
 
-  <section class="week-card">
+  <section class="week-card next-week">
     <div class="week-title">
       <div class="week-title-left"><h2>Next Week</h2><span class="range" id="nextRange">â</span></div>
       <span class="tag">Q1 Â· Q2 Â· Q3</span>
