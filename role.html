@@ -1,10 +1,10 @@
 <!doctype html>
-<!-- FIREBASE V4.3: professional two-tone weeks + UTF-8 fixes + Day / Night / Auto -->
+<!-- FIREBASE V4.4: clearly separated blue/cream weeks + ASCII-safe text + Day / Night / Auto -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="app-version" content="4.3">
+<meta name="app-version" content="4.4">
 <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -58,6 +58,23 @@ footer{height:38px;flex:0 0 38px;border-top:1px solid var(--line);background:#f7
 @media(max-width:1350px){.shift-btn{padding:7px 7px}.pill.range-pill{min-width:205px}}
 @media(max-width:1200px){.schedule col.role-col{width:14%}.qline span{font-size:8px}.role{font-size:9px}.head-info .pill:last-child{display:none}}
 @media(max-width:850px){html,body{height:auto;overflow:auto}body{padding:0}.shell{height:auto;min-height:100vh;border-radius:0}header{height:auto;min-height:66px}.head-info{display:none}main{height:auto;grid-template-rows:auto;overflow:auto}.week-card{min-height:520px}.table-wrap{overflow-x:auto}.schedule{min-width:950px}footer{height:auto;min-height:42px}.note{display:none}}
+
+/* V4.4 - stronger visual separation between weeks */
+.week-card.current-week{border:2px solid #7fbdd7;background:#eef8fc}
+.week-card.next-week{border:2px solid #c9b875;background:#fbf8e9}
+.week-card.current-week .week-title{background:#d9f0f9;border-bottom-color:#8fc7dd}
+.week-card.next-week .week-title{background:#f3edcf;border-bottom-color:#d4c68a}
+.week-card.current-week .week-title h2{color:#064d73}
+.week-card.next-week .week-title h2{color:#665718}
+.week-card.current-week .role{background:#dff2f9}
+.week-card.next-week .role{background:#f4efd8}
+.week-card.current-week .login-cell{background:#f7fcfe}
+.week-card.next-week .login-cell{background:#fffdf5}
+.week-card.current-week .login-cell.empty{background:#edf7fa}
+.week-card.next-week .login-cell.empty{background:#f8f4e5}
+.week-card.current-week .q-head{background:#0b628d}
+.week-card.next-week .q-head{background:#596b72}
+
 </style>
 </head>
 <body>
@@ -65,7 +82,7 @@ footer{height:38px;flex:0 0 38px;border-top:1px solid var(--line);background:#f7
 <header>
   <div class="brand">
     <div class="site" id="siteCode">YXU1</div>
-    <div><p class="eyebrow">Ship Dock Â· Two-week role board</p><div class="title-line"><h1 id="title">Critical Role Assignments</h1><span class="credit">Developed by Ranvexsi</span></div></div>
+    <div><p class="eyebrow">Ship Dock - Two-week role board</p><div class="title-line"><h1 id="title">Critical Role Assignments</h1><span class="credit">Developed by Ranvexsi</span></div></div>
   </div>
   <div class="head-info">
     <div class="shift-switch" aria-label="Dashboard shift">
@@ -73,33 +90,33 @@ footer{height:38px;flex:0 0 38px;border-top:1px solid var(--line);background:#f7
       <button class="shift-btn" type="button" data-shift-mode="night">NIGHT</button>
       <button class="shift-btn active" type="button" data-shift-mode="auto">AUTO</button>
     </div>
-    <div class="pill"><small>Active Board</small><strong><span class="live"></span><span id="shiftLabel">Day Shift Â· Auto</span></strong></div>
-    <div class="pill range-pill"><small>Two Week Schedule</small><strong id="twoWeekRange">â</strong></div>
-    <div class="pill"><small id="dayLabel">Today</small><strong id="clock">â</strong></div>
+    <div class="pill"><small>Active Board</small><strong><span class="live"></span><span id="shiftLabel">Day Shift - Auto</span></strong></div>
+    <div class="pill range-pill"><small>Two Week Schedule</small><strong id="twoWeekRange">-</strong></div>
+    <div class="pill"><small id="dayLabel">Today</small><strong id="clock">-</strong></div>
   </div>
 </header>
 
 <main>
   <section class="week-card current-week">
     <div class="week-title">
-      <div class="week-title-left"><h2>Current Week</h2><span class="range" id="currentRange">â</span></div>
-      <span class="tag">Q1 Â· Q2 Â· Q3</span>
+      <div class="week-title-left"><h2>Current Week</h2><span class="range" id="currentRange">-</span></div>
+      <span class="tag">Q1 - Q2 - Q3</span>
     </div>
     <div class="table-wrap"><table class="schedule" id="currentWeek" aria-label="Current week critical-role schedule"></table></div>
   </section>
 
   <section class="week-card next-week">
     <div class="week-title">
-      <div class="week-title-left"><h2>Next Week</h2><span class="range" id="nextRange">â</span></div>
-      <span class="tag">Q1 Â· Q2 Â· Q3</span>
+      <div class="week-title-left"><h2>Next Week</h2><span class="range" id="nextRange">-</span></div>
+      <span class="tag">Q1 - Q2 - Q3</span>
     </div>
     <div class="table-wrap"><table class="schedule" id="nextWeek" aria-label="Next week critical-role schedule"></table></div>
   </section>
 </main>
 
 <footer>
-  <div class="status"><span class="dot" id="syncDot"></span><strong id="syncTitle">Connecting to live scheduleâ¦</strong><span class="updated" id="updated">Waiting for Manager to publish</span></div>
-  <div class="note">Current week + next week Â· assignments may change during the shift</div>
+  <div class="status"><span class="dot" id="syncDot"></span><strong id="syncTitle">Connecting to live schedule...</strong><span class="updated" id="updated">Waiting for Manager to publish</span></div>
+  <div class="note">Current week + next week - assignments may change during the shift</div>
 </footer>
 </div>
 
@@ -147,8 +164,8 @@ function esc(v){return String(v).replace(/[&<>"']/g,function(c){return{'&':'&amp
 function dayName(d){return d.toLocaleDateString('en-CA',{weekday:'short'})}
 function month(d){return d.toLocaleDateString('en-CA',{month:'short'})}
 function rangeText(a,b){
- if(a.getFullYear()===b.getFullYear()) return a.getDate()+' '+month(a)+' â '+b.getDate()+' '+month(b)+' '+b.getFullYear();
- return a.getDate()+' '+month(a)+' '+a.getFullYear()+' â '+b.getDate()+' '+month(b)+' '+b.getFullYear();
+ if(a.getFullYear()===b.getFullYear()) return a.getDate()+' '+month(a)+' - '+b.getDate()+' '+month(b)+' '+b.getFullYear();
+ return a.getDate()+' '+month(a)+' '+a.getFullYear()+' - '+b.getDate()+' '+month(b)+' '+b.getFullYear();
 }
 
 function updateSwitch(){
@@ -177,7 +194,7 @@ function renderWeek(target,state,start,shift,today){
  html+='</tr></thead><tbody>';
  ROLES.forEach(function(r){
    html+='<tr><th class="role">'+esc(r[1])+'</th>';
-   for(var i=0;i<7;i++){var d=add(start,i);Q.forEach(function(q){var login=value(state,d,shift,q,r[0]),empty=login==='OPEN';html+='<td class="login-cell '+(empty?'empty':'')+'">'+esc(empty?'â':login)+'</td>';});}
+   for(var i=0;i<7;i++){var d=add(start,i);Q.forEach(function(q){var login=value(state,d,shift,q,r[0]),empty=login==='OPEN';html+='<td class="login-cell '+(empty?'empty':'')+'">'+esc(empty?'-':login)+'</td>';});}
    html+='</tr>';
  });
  html+='</tbody>';document.getElementById(target).innerHTML=html;
@@ -193,7 +210,7 @@ function render(){
  document.getElementById('siteCode').textContent=s.settings.siteCode||'YXU1';
 
  var label=shift==='day'?'Day Shift':'Night Shift';
- if(shiftMode==='auto')label+=' Â· Auto';
+ if(shiftMode==='auto')label+=' - Auto';
  document.getElementById('shiftLabel').textContent=label;
 
  document.getElementById('currentRange').textContent=rangeText(cur,add(cur,6));
@@ -256,7 +273,7 @@ try{
      window.dispatchEvent(new CustomEvent('cra:cloud-state'));
      setStatus('Live schedule connected',true);
    }else{
-     setStatus('Connected Â· waiting for first publish',true);
+     setStatus('Connected - waiting for first publish',true);
    }
  },()=>{
    setStatus('Offline schedule cache',false);
