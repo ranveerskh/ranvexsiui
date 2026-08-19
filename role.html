@@ -1,10 +1,10 @@
 <!doctype html>
-<!-- FIREBASE V4.4: clearly separated blue/cream weeks + ASCII-safe text + Day / Night / Auto -->
+<!-- FIREBASE V4.5: alternating day groups + blue/cream weeks + ASCII-safe text + Day / Night / Auto -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="app-version" content="4.4">
+<meta name="app-version" content="4.5">
 <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -74,6 +74,25 @@ footer{height:38px;flex:0 0 38px;border-top:1px solid var(--line);background:#f7
 .week-card.next-week .login-cell.empty{background:#f8f4e5}
 .week-card.current-week .q-head{background:#0b628d}
 .week-card.next-week .q-head{background:#596b72}
+
+
+/* V4.5 - alternate adjacent day groups for faster TV reading */
+.schedule .day-head.day-a{background:#073763}
+.schedule .day-head.day-b{background:#176b87}
+.schedule .q-head.day-a{background:#0b527d}
+.schedule .q-head.day-b{background:#2b7f94}
+.week-card.next-week .day-head.day-a{background:#4f626a}
+.week-card.next-week .day-head.day-b{background:#7a7043}
+.week-card.next-week .q-head.day-a{background:#60737a}
+.week-card.next-week .q-head.day-b{background:#8a7d4b}
+.week-card.current-week .login-cell.day-a{background:#f7fcfe}
+.week-card.current-week .login-cell.day-b{background:#e8f5fa}
+.week-card.next-week .login-cell.day-a{background:#fffdf5}
+.week-card.next-week .login-cell.day-b{background:#f3eed8}
+.week-card.current-week .login-cell.day-a.empty{background:#edf7fa}
+.week-card.current-week .login-cell.day-b.empty{background:#dfeff5}
+.week-card.next-week .login-cell.day-a.empty{background:#f8f4e5}
+.week-card.next-week .login-cell.day-b.empty{background:#eae4ca}
 
 </style>
 </head>
@@ -188,13 +207,13 @@ document.querySelectorAll('[data-shift-mode]').forEach(function(btn){
 
 function renderWeek(target,state,start,shift,today){
  var html='<colgroup><col class="role-col"><col span="21"></colgroup><thead><tr><th class="role-head" rowspan="2">Role</th>';
- for(var i=0;i<7;i++){var d=add(start,i);html+='<th class="day-head" colspan="3"><span class="dn">'+dayName(d)+'</span><span class="dd">'+d.getDate()+' '+month(d)+'</span></th>';}
+ for(var i=0;i<7;i++){var d=add(start,i),dayClass=i%2===0?'day-a':'day-b';html+='<th class="day-head '+dayClass+'" colspan="3"><span class="dn">'+dayName(d)+'</span><span class="dd">'+d.getDate()+' '+month(d)+'</span></th>';}
  html+='</tr><tr>';
- for(var i=0;i<7;i++){Q.forEach(function(q){html+='<th class="q-head">'+q+'</th>';});}
+ for(var i=0;i<7;i++){var dayClass=i%2===0?'day-a':'day-b';Q.forEach(function(q){html+='<th class="q-head '+dayClass+'">'+q+'</th>';});}
  html+='</tr></thead><tbody>';
  ROLES.forEach(function(r){
    html+='<tr><th class="role">'+esc(r[1])+'</th>';
-   for(var i=0;i<7;i++){var d=add(start,i);Q.forEach(function(q){var login=value(state,d,shift,q,r[0]),empty=login==='OPEN';html+='<td class="login-cell '+(empty?'empty':'')+'">'+esc(empty?'-':login)+'</td>';});}
+   for(var i=0;i<7;i++){var d=add(start,i),dayClass=i%2===0?'day-a':'day-b';Q.forEach(function(q){var login=value(state,d,shift,q,r[0]),empty=login==='OPEN';html+='<td class="login-cell '+dayClass+' '+(empty?'empty':'')+'">'+esc(empty?'-':login)+'</td>';});}
    html+='</tr>';
  });
  html+='</tbody>';document.getElementById(target).innerHTML=html;
