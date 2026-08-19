@@ -1,1150 +1,286 @@
-<!DOCTYPE html>
+<!doctype html>
+<!-- FIREBASE V4.5: two-week board + bottom assignment warning + YXU1 fit fix -->
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Live Operations Dashboard v4.8 - Grouped Defects</title>
-
-  <style>
-    :root {
-      --bg:#f4f6f8;
-      --panel:#ffffff;
-      --text:#17202a;
-      --muted:#667085;
-      --line:#e4e7ec;
-      --accent:#ff9900;
-      --blue:#2563eb;
-      --shadow:0 10px 30px rgba(16,24,40,.10);
-      --sidebar:#111827;
-    }
-
-    * { box-sizing:border-box; }
-
-    body {
-      margin:0;
-      font-family:Arial, sans-serif;
-      background:var(--bg);
-      color:var(--text);
-    }
-
-    .app {
-      min-height:100vh;
-      display:grid;
-      grid-template-columns:250px 1fr;
-    }
-
-    aside {
-      background:var(--sidebar);
-      color:#fff;
-      padding:20px 16px;
-    }
-
-    .brand { font-size:20px; font-weight:800; margin-bottom:8px; }
-
-    .sub {
-      font-size:13px;
-      color:#9ca3af;
-      margin-bottom:20px;
-      line-height:1.45;
-    }
-
-    .feature {
-      display:flex;
-      gap:10px;
-      align-items:center;
-      padding:10px 8px;
-      border-radius:8px;
-      font-size:14px;
-      cursor:pointer;
-    }
-
-    .feature:hover { background:#1f2937; }
-    .feature input { accent-color:var(--accent); }
-
-    main { padding:24px; min-width:0; }
-
-    .topbar {
-      display:flex;
-      justify-content:space-between;
-      gap:15px;
-      align-items:flex-start;
-      margin-bottom:15px;
-    }
-
-    h1 { margin:0; font-size:26px; }
-
-    .subtitle {
-      margin-top:5px;
-      color:var(--muted);
-      font-size:13px;
-    }
-
-    .actions {
-      display:flex;
-      align-items:center;
-      justify-content:flex-end;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-
-    .pill, .btn {
-      background:#fff;
-      border:1px solid var(--line);
-      color:var(--text);
-      padding:9px 12px;
-      border-radius:999px;
-      font-size:13px;
-      text-decoration:none;
-      cursor:pointer;
-      box-shadow:0 3px 10px rgba(16,24,40,.05);
-      white-space:nowrap;
-    }
-
-    .btn { font-weight:700; }
-
-    .btn-small {
-      padding:6px 9px;
-      font-size:12px;
-      background:#fff;
-      color:#667085;
-      font-weight:700;
-    }
-
-    .btn:hover, .pill:hover { border-color:var(--accent); }
-
-    .refresh-pill {
-      font-weight:800;
-      color:#111827;
-      background:#fff7ed;
-      border-color:#fed7aa;
-    }
-
-    .status {
-      background:#fff;
-      border:1px solid var(--line);
-      padding:11px 13px;
-      border-radius:10px;
-      margin-bottom:14px;
-      font-size:13px;
-      box-shadow:0 4px 16px rgba(16,24,40,.05);
-    }
-
-    .kpi-grid {
-      display:grid;
-      grid-template-columns:repeat(4,minmax(0,1fr));
-      gap:14px;
-      margin-bottom:18px;
-    }
-
-    .kpi {
-      background:#fff;
-      border:1px solid var(--line);
-      border-radius:14px;
-      box-shadow:var(--shadow);
-      padding:15px;
-      min-height:125px;
-    }
-
-    .kpi-label {
-      color:var(--muted);
-      font-size:14px;
-      font-weight:800;
-      margin-bottom:8px;
-    }
-
-    .kpi-value {
-      font-size:42px;
-      font-weight:900;
-      letter-spacing:-1px;
-    }
-
-    .kpi-note { margin-top:8px; font-size:12px; color:var(--muted); }
-
-    .good { border-left:7px solid #43a047; }
-    .warn { border-left:7px solid #f59e0b; }
-    .bad { border-left:7px solid #e11d48; }
-    .neutral { border-left:7px solid #98a2b3; }
-
-    .section-title {
-      margin:8px 0 12px;
-      font-size:19px;
-      font-weight:900;
-    }
-
-    .grid {
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:14px;
-    }
-
-    .card {
-      background:var(--panel);
-      border:1px solid var(--line);
-      border-radius:14px;
-      box-shadow:var(--shadow);
-      overflow:hidden;
-    }
-
-    .card.dock-wide, .card.defect-wide { grid-column:1 / -1; }
-
-    .card-head {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      padding:14px 16px;
-      border-bottom:1px solid var(--line);
-      background:#fff;
-    }
-
-    .card-title-wrap {
-      display:flex;
-      align-items:center;
-      gap:9px;
-      min-width:0;
-      cursor:pointer;
-      flex:1;
-    }
-
-    .card-title {
-      font-weight:800;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-
-    .card-right {
-      display:flex;
-      align-items:center;
-      gap:8px;
-      flex-shrink:0;
-    }
-
-    .badge {
-      font-size:12px;
-      padding:4px 8px;
-      border-radius:999px;
-      background:#f2f4f7;
-      white-space:nowrap;
-    }
-
-    .card-refresh {
-      border:1px solid #bfdbfe;
-      background:#eff6ff;
-      color:#1d4ed8;
-      border-radius:999px;
-      padding:5px 9px;
-      font-size:12px;
-      font-weight:800;
-      cursor:pointer;
-    }
-
-    .card-refresh:hover { border-color:#2563eb; }
-
-    .card-body { padding:8px 16px 14px; }
-
-    .item {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-      padding:10px 0;
-      border-bottom:1px solid #f0f2f5;
-      font-size:13px;
-      border-radius:8px;
-    }
-
-    .item:last-child { border-bottom:0; }
-
-    .item-main {
-      display:flex;
-      align-items:center;
-      min-width:0;
-      gap:8px;
-    }
-
-    .item a {
-      color:var(--text);
-      text-decoration:none;
-      font-weight:700;
-    }
-
-    .item a:hover { text-decoration:underline; }
-
-    .meta {
-      color:var(--muted);
-      text-align:right;
-      max-width:58%;
-      overflow-wrap:anywhere;
-    }
-
-    .status-light {
-      width:13px;
-      height:13px;
-      border-radius:999px;
-      display:inline-block;
-      flex:0 0 auto;
-    }
-
-    .light-blue {
-      background:#2563eb;
-      box-shadow:0 0 10px rgba(37,99,235,.75);
-    }
-
-    .light-orange { background:#f97316; animation:blinkOrange 1s infinite; }
-    .light-sky {
-      background:#38bdf8;
-      box-shadow:0 0 10px rgba(56,189,248,.75);
-    }
-    .light-green { background:#22c55e; animation:blinkGreen 1s infinite; }
-    .light-red { background:#ef4444; animation:blinkRed 1s infinite; }
-
-    @keyframes blinkOrange {
-      0%,100% { opacity:1; box-shadow:0 0 12px rgba(249,115,22,.9); }
-      50% { opacity:.25; box-shadow:none; }
-    }
-
-    @keyframes blinkGreen {
-      0%,100% { opacity:1; box-shadow:0 0 12px rgba(34,197,94,.9); }
-      50% { opacity:.25; box-shadow:none; }
-    }
-
-    @keyframes blinkRed {
-      0%,100% { opacity:1; box-shadow:0 0 12px rgba(239,68,68,.9); }
-      50% { opacity:.25; box-shadow:none; }
-    }
-
-    .dock-table {
-      width:100%;
-      border-collapse:collapse;
-      font-size:14px;
-    }
-
-    .dock-table th {
-      text-align:left;
-      color:#667085;
-      font-size:12px;
-      padding:9px 10px;
-      border-bottom:1px solid #e4e7ec;
-      background:#f9fafb;
-      white-space:nowrap;
-    }
-
-    .dock-table td {
-      padding:11px 10px;
-      border-bottom:1px solid #f0f2f5;
-      font-weight:700;
-      vertical-align:top;
-    }
-
-    .dock-table tr:last-child td { border-bottom:0; }
-    .dock-status { font-weight:800; }
-    .dock-time { white-space:nowrap; }
-    .dock-cpt-soon { background:#fff7ed; }
-    .dock-cpt-soon td { color:#c2410c; }
-
-    .defect-groups {
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:14px;
-      padding-top:6px;
-    }
-
-    .defect-location-box {
-      --group-color:#64748b;
-      --group-soft:#f8fafc;
-      border:2px solid var(--group-color);
-      border-radius:13px;
-      overflow:hidden;
-      background:#fff;
-      min-width:0;
-      box-shadow:0 4px 14px rgba(16,24,40,.07);
-    }
-
-    .location-east { --group-color:#2563eb; --group-soft:#eff6ff; }
-    .location-west { --group-color:#f97316; --group-soft:#fff7ed; }
-    .location-jackpot { --group-color:#dc2626; --group-soft:#fef2f2; }
-    .location-odd { --group-color:#7c3aed; --group-soft:#f5f3ff; }
-    .location-even { --group-color:#059669; --group-soft:#ecfdf5; }
-    .location-other { --group-color:#64748b; --group-soft:#f8fafc; }
-
-    .defect-location-head {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:10px;
-      padding:11px 12px;
-      color:var(--group-color);
-      background:var(--group-soft);
-      border-bottom:1px solid color-mix(in srgb, var(--group-color) 30%, white);
-    }
-
-    .defect-location-title {
-      display:flex;
-      align-items:center;
-      gap:8px;
-      min-width:0;
-      font-size:16px;
-      font-weight:900;
-    }
-
-    .location-dot {
-      width:11px;
-      height:11px;
-      border-radius:999px;
-      background:var(--group-color);
-      box-shadow:0 0 0 4px color-mix(in srgb, var(--group-color) 16%, transparent);
-      flex:0 0 auto;
-    }
-
-    .location-summary {
-      display:flex;
-      gap:6px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-    }
-
-    .location-count {
-      border:1px solid color-mix(in srgb, var(--group-color) 32%, white);
-      background:#fff;
-      color:var(--group-color);
-      border-radius:999px;
-      padding:4px 7px;
-      font-size:11px;
-      font-weight:900;
-      white-space:nowrap;
-    }
-
-    .defect-table-wrap { width:100%; overflow-x:auto; }
-
-    .defect-group-table {
-      width:100%;
-      border-collapse:collapse;
-      table-layout:fixed;
-      font-size:13px;
-    }
-
-    .defect-group-table th {
-      text-align:left;
-      color:#667085;
-      font-size:11px;
-      padding:8px;
-      border-bottom:1px solid #e4e7ec;
-      background:#fff;
-      white-space:nowrap;
-    }
-
-    .defect-group-table td {
-      padding:10px 8px;
-      border-bottom:1px solid #f0f2f5;
-      font-weight:700;
-      vertical-align:top;
-      overflow-wrap:anywhere;
-    }
-
-    .defect-group-table tr:last-child td { border-bottom:0; }
-    .defect-group-table th:nth-child(1), .defect-group-table td:nth-child(1) { width:24%; }
-    .defect-group-table th:nth-child(2), .defect-group-table td:nth-child(2) { width:11%; text-align:center; }
-    .defect-group-table th:nth-child(3), .defect-group-table td:nth-child(3) { width:28%; }
-    .defect-group-table th:nth-child(4), .defect-group-table td:nth-child(4) { width:37%; }
-    .defect-group-table a { color:#17202a; font-weight:900; }
-    .defect-pkgs { text-align:center; font-size:15px; font-weight:900; }
-
-    .issue-badge {
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      padding:5px 9px;
-      border-radius:999px;
-      font-weight:900;
-      white-space:nowrap;
-      font-size:12px;
-      margin:2px 4px 2px 0;
-    }
-
-    .issue-blue { background:#dbeafe; color:#1d4ed8; }
-    .issue-disabled { background:#e0f2fe; color:#0369a1; }
-    .issue-jam { background:#fef9c3; color:#a16207; }
-    .issue-other { background:#f2f4f7; color:#344054; }
-    .defect-row-blue { background:#eff6ff; }
-    .defect-row-disabled { background:#f0f9ff; }
-    .defect-row-jam { background:#fefce8; }
-    .hidden { display:none!important; }
-    .empty { padding:24px; text-align:center; color:var(--muted); }
-
-    /* Critical-role assignment note from the floor board */
-    .assignment-warning {
-      margin-top:18px;
-      display:grid;
-      grid-template-columns:110px 1fr;
-      background:#facc15;
-      border:1px solid #d6a900;
-      color:#111827;
-      min-height:58px;
-      box-shadow:0 4px 14px rgba(16,24,40,.08);
-    }
-
-    .assignment-warning-label {
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:12px;
-      border-right:1px solid #d6a900;
-      font-size:16px;
-      font-weight:900;
-    }
-
-    .assignment-warning-text {
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:10px 18px;
-      text-align:center;
-      font-size:14px;
-      line-height:1.45;
-      font-weight:700;
-    }
-
-    @media(max-width:1100px) {
-      .kpi-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
-      .defect-groups { grid-template-columns:1fr; }
-    }
-
-    @media(max-width:900px) {
-      .app { grid-template-columns:1fr; }
-      .grid { grid-template-columns:1fr; }
-      .topbar { flex-direction:column; align-items:flex-start; }
-      .actions { justify-content:flex-start; }
-      .card.dock-wide, .card.defect-wide { grid-column:auto; }
-    }
-
-    @media(max-width:560px) {
-      main { padding:16px; }
-      .kpi-grid { grid-template-columns:1fr; }
-      .item { flex-direction:column; align-items:flex-start; gap:4px; }
-      .meta { max-width:100%; text-align:left; }
-      .defect-location-head { align-items:flex-start; flex-direction:column; }
-      .location-summary { justify-content:flex-start; }
-      .defect-group-table, .dock-table { font-size:12px; }
-      .defect-group-table th, .defect-group-table td, .dock-table th, .dock-table td { padding:8px 6px; }
-      .issue-badge { white-space:normal; text-align:center; }
-
-      .assignment-warning { grid-template-columns:1fr; }
-      .assignment-warning-label {
-        border-right:0;
-        border-bottom:1px solid #d6a900;
-      }
-      .assignment-warning-text { padding:12px; }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="app-version" content="4.5">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Critical Role Assignments</title>
+<style>
+:root{--navy:#073763;--blue:#1298c8;--pale:#eaf7fc;--line:#b9d1df;--ink:#10283b;--muted:#587083;--white:#fff;--warn:#fff1c2}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#dcecf4;color:var(--ink);font-family:Inter,Arial,sans-serif}
+body{padding:6px}
+.shell{width:100%;height:calc(100vh - 12px);background:#fff;border-radius:14px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 12px 38px #173c5525}
+header{height:66px;flex:0 0 66px;background:linear-gradient(115deg,var(--navy),#0b527d);color:#fff;padding:7px 16px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}.site{display:flex;align-items:center;justify-content:center;width:54px;height:50px;flex:0 0 54px;border:2px solid #ffffff66;border-radius:12px;font-size:15px;line-height:1;font-weight:900;letter-spacing:-.3px;background:#ffffff16;white-space:nowrap;overflow:hidden;padding:0 4px}
+.eyebrow{margin:0 0 2px;text-transform:uppercase;letter-spacing:.11em;font-size:9px;font-weight:900;opacity:.75}
+.title-line{display:flex;align-items:baseline;gap:9px;min-width:0}h1{margin:0;font-size:clamp(22px,1.8vw,30px);line-height:1;white-space:nowrap}.credit{font-size:8px;font-weight:800;color:#d7f3ff;opacity:.82;white-space:nowrap}
+.head-info{display:flex;gap:8px;align-items:center}.pill{border:1px solid #ffffff2e;background:#ffffff14;border-radius:10px;padding:6px 10px;min-width:132px}.pill.range-pill{min-width:230px}.pill small,.pill strong{display:block}.pill small{font-size:8px;opacity:.72;text-transform:uppercase;letter-spacing:.08em}.pill strong{font-size:13px;margin-top:1px;white-space:nowrap}.live{display:inline-block;width:8px;height:8px;border-radius:50%;background:#64efaf;margin-right:6px}
+.shift-switch{display:flex;align-items:center;gap:2px;padding:3px;border:1px solid #ffffff35;background:#ffffff12;border-radius:10px}
+.shift-btn{border:0;background:transparent;color:#d8edf7;border-radius:7px;padding:7px 9px;font-size:10px;font-weight:900;cursor:pointer;line-height:1}
+.shift-btn.active{background:#fff;color:var(--navy);box-shadow:0 2px 8px #001b2d30}
+.shift-btn:hover{background:#ffffff22}.shift-btn.active:hover{background:#fff}
+main{flex:1;min-height:0;padding:7px;display:grid;grid-template-rows:1fr 1fr;gap:7px}
+.week-card{min-height:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;background:#fff}
+.week-card.current-week{background:#f8fcfe;border-color:#a9cedf}
+.week-card.next-week{background:#f7f8fa;border-color:#c7d0d7}
+.week-card.current-week .week-title{background:#e7f5fb}
+.week-card.next-week .week-title{background:#eef1f4}
+.week-card.current-week .login-cell{background:#fbfeff}
+.week-card.next-week .login-cell{background:#fafbfc}
+.week-card.current-week .login-cell.empty{background:#f4fafc}
+.week-card.next-week .login-cell.empty{background:#f4f5f6}
+.week-card.current-week .role{background:#edf7fb}
+.week-card.next-week .role{background:#f0f2f4}
+.week-title{height:36px;flex:0 0 36px;background:var(--pale);border-bottom:1px solid var(--line);padding:4px 10px;display:flex;align-items:center;justify-content:space-between}
+.week-title-left{display:flex;align-items:baseline;gap:10px}.week-title h2{margin:0;font-size:17px;color:var(--navy)}.range{font-size:11px;font-weight:800;color:var(--muted)}
+.tag{background:var(--navy);color:#fff;border-radius:999px;padding:4px 9px;font-size:9px;font-weight:900;white-space:nowrap}
+.table-wrap{flex:1;min-height:0;overflow:hidden}
+.schedule{width:100%;height:100%;border-collapse:collapse;table-layout:fixed}
+.schedule col.role-col{width:11%}
+.schedule th,.schedule td{border-right:1px solid var(--line);border-bottom:1px solid var(--line);overflow:hidden}
+.schedule tr>*:last-child{border-right:0}.schedule tbody tr:last-child>*{border-bottom:0}
+.schedule thead tr:first-child{height:22px}.schedule thead tr:last-child{height:18px}
+.schedule tbody{height:calc(100% - 40px)}.schedule tbody tr{height:9.09%}
+.role-head{background:var(--navy);color:#fff;text-align:center;font-size:9px;font-weight:900;text-transform:uppercase}
+.day-head{background:var(--navy);color:#fff;text-align:center;padding:2px 1px;font-size:9px;font-weight:900}
+.day-head .dn{display:inline-block;text-transform:uppercase;letter-spacing:.04em}.day-head .dd{display:inline-block;margin-left:4px;font-size:8px;opacity:.82}
+.q-head{background:#0b527d;color:#fff;text-align:center;padding:1px;font-size:7px;font-weight:900}
+.role{background:#f4f8fa;color:#092c4b;text-align:left;padding:2px 6px;font-size:9px;font-weight:900;white-space:nowrap;text-overflow:ellipsis}
+.login-cell{padding:1px 2px;text-align:center;background:#fff;color:var(--navy);font-size:clamp(7px,.48vw,9px);font-weight:900;white-space:nowrap;text-overflow:ellipsis}
+.login-cell.empty{background:#fbfdfe;color:#9aa9b4;font-weight:700}
+footer{height:38px;flex:0 0 38px;border-top:1px solid #f1c453;background:#fff8df;padding:4px 14px;display:flex;align-items:center;justify-content:center}.status{display:none}.note{width:100%;font-size:12px;line-height:1.2;color:#7a4b00;text-align:center;font-weight:900;letter-spacing:.01em}.note::before{content:"â   ";color:#d97706}
+@media(max-width:1350px){.shift-btn{padding:7px 7px}.pill.range-pill{min-width:205px}}
+@media(max-width:1200px){.schedule col.role-col{width:14%}.qline span{font-size:8px}.role{font-size:9px}.head-info .pill:last-child{display:none}}
+@media(max-width:850px){html,body{height:auto;overflow:auto}body{padding:0}.shell{height:auto;min-height:100vh;border-radius:0}header{height:auto;min-height:66px}.head-info{display:none}main{height:auto;grid-template-rows:auto;overflow:auto}.week-card{min-height:520px}.table-wrap{overflow-x:auto}.schedule{min-width:950px}footer{height:auto;min-height:42px;padding:7px 10px}.note{display:block;font-size:10px}}
+
+/* V4.4 - stronger visual separation between weeks */
+.week-card.current-week{border:2px solid #7fbdd7;background:#eef8fc}
+.week-card.next-week{border:2px solid #c9b875;background:#fbf8e9}
+.week-card.current-week .week-title{background:#d9f0f9;border-bottom-color:#8fc7dd}
+.week-card.next-week .week-title{background:#f3edcf;border-bottom-color:#d4c68a}
+.week-card.current-week .week-title h2{color:#064d73}
+.week-card.next-week .week-title h2{color:#665718}
+.week-card.current-week .role{background:#dff2f9}
+.week-card.next-week .role{background:#f4efd8}
+.week-card.current-week .login-cell{background:#f7fcfe}
+.week-card.next-week .login-cell{background:#fffdf5}
+.week-card.current-week .login-cell.empty{background:#edf7fa}
+.week-card.next-week .login-cell.empty{background:#f8f4e5}
+.week-card.current-week .q-head{background:#0b628d}
+.week-card.next-week .q-head{background:#596b72}
+
+</style>
 </head>
-
 <body>
-  <div class="app">
-    <aside>
-      <div class="brand">Ops Dashboard</div>
-      <div class="sub">
-        Live data from source tabs.<br>
-        Auto pages refresh every 30 sec.<br>
-        Dock OB is manual only.
-      </div>
-      <div id="featureList"></div>
-    </aside>
-
-    <main>
-      <div class="topbar">
-        <div>
-          <h1>YXU1 Live Operations Dashboard</h1>
-          <div class="subtitle">MySPD â¢ Lane Watch â¢ Routing â¢ Recirc â¢ Dock OB</div>
-        </div>
-
-        <div class="actions">
-          <div id="refreshCounter" class="pill refresh-pill">Auto refresh: 30s</div>
-          <button id="dockTopRefreshBtn" class="btn" type="button">Refresh Dock OB</button>
-          <button id="clearCacheBtn" class="btn btn-small" type="button">Clear Cache</button>
-          <a id="sourceLink" class="pill" href="#" target="_blank">Open Source Page</a>
-        </div>
-      </div>
-
-      <div id="status" class="status">Waiting for Tampermonkey connection...</div>
-
-      <section id="kpis" class="kpi-grid">
-        <div class="kpi neutral">
-          <div class="kpi-label">Ops Defect %</div>
-          <div class="kpi-value">--</div>
-          <div class="kpi-note">Waiting</div>
-        </div>
-        <div class="kpi neutral">
-          <div class="kpi-label">Total Scan Defect %</div>
-          <div class="kpi-value">--</div>
-          <div class="kpi-note">Waiting</div>
-        </div>
-        <div class="kpi neutral">
-          <div class="kpi-label">Load Balance Defect %</div>
-          <div class="kpi-value">--</div>
-          <div class="kpi-note">Waiting</div>
-        </div>
-        <div class="kpi neutral">
-          <div class="kpi-label">FPY Success/Total</div>
-          <div class="kpi-value">--</div>
-          <div class="kpi-note">Waiting</div>
-        </div>
-      </section>
-
-      <div class="section-title">Deep Dive</div>
-
-      <section id="dashboard" class="grid">
-        <div class="card empty">Keep source pages open in other tabs.</div>
-      </section>
-
-      <div class="assignment-warning">
-        <div class="assignment-warning-label">Notes</div>
-        <div class="assignment-warning-text">
-          In the event that you're unable to make it to site on the day of your assignment,
-          please do not assume that you'll be assigned the next day.
-          First preference will be given to AAs assigned to critical roles for that day.
-          This is to ensure a fair chance for all.
-        </div>
-      </div>
-    </main>
+<div class="shell">
+<header>
+  <div class="brand">
+    <div class="site" id="siteCode">YXU1</div>
+    <div><p class="eyebrow">Ship Dock - Two-week role board</p><div class="title-line"><h1 id="title">Critical Role Assignments</h1><span class="credit">Developed by Ranvexsi</span></div></div>
   </div>
-
-  <script>
-    const AUTO_REFRESH_SECONDS = 30;
-
-    let lastOpsData = null;
-    let lastUpdateMs = null;
-
-    document.getElementById('dockTopRefreshBtn').addEventListener('click', () => {
-      requestDockOBRefresh();
-    });
-
-    document.getElementById('clearCacheBtn').addEventListener('click', () => {
-      clearDashboardCache();
-    });
-
-    window.renderOpsDashboard = function(data) {
-      lastOpsData = data;
-      lastUpdateMs = Date.now();
-
-      const dashboard = document.getElementById('dashboard');
-      const featureList = document.getElementById('featureList');
-      const status = document.getElementById('status');
-      const sourceLink = document.getElementById('sourceLink');
-
-      dashboard.innerHTML = '';
-      featureList.innerHTML = '';
-
-      const selected = JSON.parse(localStorage.getItem('ops-selected-clean-v9') || '{}');
-
-      if (!data || !Array.isArray(data.sections)) {
-        renderEmptyKpis();
-        dashboard.innerHTML = '<div class="card empty">No live data received yet.</div>';
-        status.textContent = 'Waiting for Tampermonkey connection...';
-        return;
-      }
-
-      renderKpis(data);
-
-      const firstLink = getFirstLink(data);
-      if (firstLink && firstLink !== '#') {
-        sourceLink.href = firstLink;
-        sourceLink.style.display = 'inline-flex';
-      } else {
-        sourceLink.style.display = 'none';
-      }
-
-      data.sections.forEach(section => {
-        if (selected[section.id] === undefined) selected[section.id] = true;
-
-        const option = document.createElement('label');
-        option.className = 'feature';
-        option.innerHTML = `
-          <input type="checkbox" data-id="${escapeAttr(section.id)}" ${selected[section.id] ? 'checked' : ''}>
-          <span>${section.icon || 'ð'} ${escapeHtml(section.title)}</span>
-        `;
-
-        option.querySelector('input').addEventListener('change', e => {
-          selected[section.id] = e.target.checked;
-          localStorage.setItem('ops-selected-clean-v9', JSON.stringify(selected));
-          window.renderOpsDashboard(lastOpsData);
-        });
-
-        featureList.appendChild(option);
-
-        if (!selected[section.id]) return;
-
-        dashboard.appendChild(renderCard(section));
-      });
-
-      localStorage.setItem('ops-selected-clean-v9', JSON.stringify(selected));
-
-      const updated = data.updatedAt ? new Date(data.updatedAt).toLocaleTimeString() : 'Unknown';
-      status.textContent = `Connected â¢ Last update: ${updated} â¢ ${data.sections.length} source${data.sections.length === 1 ? '' : 's'}`;
-
-      updateCounter();
-    };
-
-    function renderCard(section) {
-      const items = Array.isArray(section.items) ? section.items : [];
-      const isDock = section.id === 'next-5-vrid-releasing';
-      const isDefectTable =
-        section.id === 'lane-watch-defects' ||
-        section.id === 'lane-watch-100-defect';
-
-      const card = document.createElement('article');
-
-      if (isDock) {
-        card.className = 'card dock-wide';
-      } else if (isDefectTable) {
-        card.className = 'card defect-wide';
-      } else {
-        card.className = 'card';
-      }
-
-      card.innerHTML = `
-        <div class="card-head">
-          <div class="card-title-wrap" data-toggle="1">
-            <span class="card-title">${isDefectTable ? escapeHtml(section.title) : `${section.icon || 'ð'} ${escapeHtml(section.title)}`}</span>
-          </div>
-          <div class="card-right">
-            <button class="card-refresh" data-section-refresh="${escapeAttr(section.id)}" type="button">Refresh</button>
-            <span class="badge">${items.length} items</span>
-          </div>
-        </div>
-        <div class="card-body">
-          ${
-            isDock
-              ? renderDockTable(items)
-              : isDefectTable
-                ? renderDefectGroups(items)
-                : items.length
-                  ? items.map(item => renderDashboardItem(item, section.id)).join('')
-                  : '<div class="empty">No items</div>'
-          }
-        </div>
-      `;
-
-      card.querySelector('[data-toggle="1"]').addEventListener('click', () => {
-        card.querySelector('.card-body').classList.toggle('hidden');
-      });
-
-      const refreshBtn = card.querySelector('[data-section-refresh]');
-      if (refreshBtn) {
-        refreshBtn.addEventListener('click', e => {
-          e.stopPropagation();
-          requestSectionRefresh(section.id, refreshBtn);
-        });
-      }
-
-      return card;
-    }
-
-    function renderDockTable(items) {
-      if (!items.length) {
-        return '<div class="empty">No Dock OB trailers</div>';
-      }
-
-      return `
-        <table class="dock-table">
-          <thead>
-            <tr>
-              <th>Destination</th>
-              <th>DD</th>
-              <th>Status</th>
-              <th>SDT</th>
-              <th>CPT</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${items.map(item => {
-              const d = item.dock || {};
-              const cptSoon = isCptWithinNextMinutes('CPT ' + (d.cpt || ''), 10);
-
-              return `
-                <tr class="${cptSoon ? 'dock-cpt-soon' : ''}">
-                  <td>${escapeHtml(d.destination || item.label || '')}</td>
-                  <td>${escapeHtml(d.door || '')}</td>
-                  <td class="dock-status">${escapeHtml(d.status || '')}</td>
-                  <td class="dock-time">${escapeHtml(d.sdt || '')}</td>
-                  <td class="dock-time">${escapeHtml(d.cpt || '')}</td>
-                </tr>
-              `;
-            }).join('')}
-          </tbody>
-        </table>
-      `;
-    }
-
-    function renderDefectGroups(items) {
-      if (!items.length) {
-        return '<div class="empty">No active defect / recirc lanes</div>';
-      }
-
-      const rows = items
-        .map(item => normalizeDefectItem(item))
-        .sort((a, b) => Number(b.packages || 0) - Number(a.packages || 0));
-
-      const groups = new Map();
-
-      rows.forEach(row => {
-        const location = String(row.location || 'Other').trim() || 'Other';
-        const key = location.toLowerCase();
-
-        if (!groups.has(key)) {
-          groups.set(key, {
-            location,
-            rows:[],
-            totalPackages:0,
-            style:getLocationStyle(location)
-          });
-        }
-
-        const group = groups.get(key);
-        group.rows.push(row);
-        group.totalPackages += Number(row.packages || 0);
-      });
-
-      const orderedGroups = Array.from(groups.values()).sort((a, b) => {
-        if (a.style.order !== b.style.order) return a.style.order - b.style.order;
-        return a.location.localeCompare(b.location);
-      });
-
-      return `
-        <div class="defect-groups">
-          ${orderedGroups.map(group => renderDefectLocationBox(group)).join('')}
-        </div>
-      `;
-    }
-
-    function renderDefectLocationBox(group) {
-      const laneWord = group.rows.length === 1 ? 'lane' : 'lanes';
-      const packageWord = group.totalPackages === 1 ? 'pkg' : 'pkgs';
-
-      return `
-        <section class="defect-location-box ${escapeAttr(group.style.className)}">
-          <div class="defect-location-head">
-            <div class="defect-location-title">
-              <span class="location-dot" aria-hidden="true"></span>
-              <span>${escapeHtml(group.location)}</span>
-            </div>
-            <div class="location-summary">
-              <span class="location-count">${group.rows.length} ${laneWord}</span>
-              <span class="location-count">${group.totalPackages} ${packageWord}</span>
-            </div>
-          </div>
-
-          <div class="defect-table-wrap">
-            <table class="defect-group-table">
-              <thead>
-                <tr>
-                  <th>Chute</th>
-                  <th>Pkgs</th>
-                  <th>Issue</th>
-                  <th>Reason</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${group.rows.map(row => `
-                  <tr class="${getDefectRowClass(row.issue)}">
-                    <td>
-                      <a href="${safeUrl(row.link)}" target="_blank">
-                        ${escapeHtml(row.displayChute || row.lowerChute || row.label || '')}
-                      </a>
-                    </td>
-                    <td class="defect-pkgs">${escapeHtml(row.packages || '0')}</td>
-                    <td>${getIssueBadge(row.issue || row.value || '')}</td>
-                    <td>${escapeHtml(row.reason || '')}</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
-        </section>
-      `;
-    }
-
-    function getLocationStyle(location) {
-      const text = String(location || '').toLowerCase();
-
-      if (text.includes('east')) return { className:'location-east', order:10 };
-      if (text.includes('west')) return { className:'location-west', order:20 };
-      if (text.includes('jackpot')) return { className:'location-jackpot', order:30 };
-      if (text.includes('palletize') && text.includes('odd')) return { className:'location-odd', order:40 };
-      if (text.includes('palletize') && text.includes('even')) return { className:'location-even', order:50 };
-
-      return { className:'location-other', order:100 };
-    }
-
-    function normalizeDefectItem(item) {
-      const parsed = parseOldDefectListItem(item);
-
-      return {
-        location: item.location || parsed.location || '',
-        lowerChute: item.lowerChute || item.chute || item.label || parsed.lowerChute || '',
-        displayChute: item.displayChute || item.display || item.lowerDisplay || '',
-        packages: item.packages ?? item.pkg ?? item.count ?? parsed.packages ?? '',
-        issue: item.issue || parsed.issue || item.value || '',
-        reason: item.reason || parsed.reason || '',
-        link: item.link || '#',
-        label: item.label || ''
-      };
-    }
-
-    function parseOldDefectListItem(item) {
-      const label = String(item.label || '');
-      const value = String(item.value || '');
-
-      const pkgMatch = value.match(/(\d+)\s*pkg/i);
-      const packages = pkgMatch ? pkgMatch[1] : '';
-
-      let issue = '';
-
-      if (/blue light/i.test(value)) issue += issue ? ' + Blue Light' : 'Blue Light';
-      if (/disabled|failed to divert/i.test(value)) issue += issue ? ' + Disabled' : 'Disabled';
-      if (/jam/i.test(value)) issue += issue ? ' + Jam' : 'Jam';
-      if (!issue && /100% defect/i.test(value)) issue = '100% Defect';
-
-      const reason = value
-        .replace(/^\d+\s*pkg\s*recirc\s*â¢?\s*/i, '')
-        .trim();
-
-      return { lowerChute: label, packages, issue, reason };
-    }
-
-    function getIssueBadge(issue) {
-      const text = String(issue || '').toLowerCase();
-      const badges = [];
-
-      if (text.includes('blue')) badges.push('<span class="issue-badge issue-blue">Blue Light</span>');
-      if (text.includes('disabled') || text.includes('failed to divert')) badges.push('<span class="issue-badge issue-disabled">Disabled</span>');
-      if (text.includes('jam')) badges.push('<span class="issue-badge issue-jam">Jam</span>');
-      if (!badges.length && text.includes('100%')) badges.push('<span class="issue-badge issue-other">100% Defect</span>');
-      if (!badges.length) badges.push(`<span class="issue-badge issue-other">${escapeHtml(issue || 'Issue')}</span>`);
-
-      return badges.join(' ');
-    }
-
-    function getDefectRowClass(issue) {
-      const text = String(issue || '').toLowerCase();
-
-      if (text.includes('jam')) return 'defect-row-jam';
-      if (text.includes('blue')) return 'defect-row-blue';
-      if (text.includes('disabled') || text.includes('failed')) return 'defect-row-disabled';
-
-      return '';
-    }
-
-    function renderDashboardItem(item, sectionId) {
-      const value = String(item.value || '');
-      const label = String(item.label || '');
-      const light = getStatusLight(value, sectionId);
-
-      return `
-        <div class="item">
-          <div class="item-main">
-            ${light}
-            <a href="${safeUrl(item.link)}" target="_blank">${escapeHtml(label)}</a>
-          </div>
-          <span class="meta">${escapeHtml(value)}</span>
-        </div>
-      `;
-    }
-
-    function getStatusLight(value, sectionId) {
-      if (sectionId !== 'lane-watch-100-defect' && sectionId !== 'foresight-blue-lights') return '';
-
-      const text = String(value || '').toLowerCase();
-
-      if (text.includes('blue light')) return '<span class="status-light light-blue" title="Blue Light"></span>';
-      if (text.includes('jam')) return '<span class="status-light light-orange" title="Jam"></span>';
-      if (text.includes('disabled')) return '<span class="status-light light-sky" title="Disabled"></span>';
-      if (text.includes('100% defect')) return '<span class="status-light light-red" title="100% Defect"></span>';
-
-      return '';
-    }
-
-    function isCptWithinNextMinutes(value, minutes) {
-      const text = String(value || '');
-      const match = text.match(/\bCPT\s+(\d{1,2}):(\d{2})\b/i);
-      if (!match) return false;
-
-      const hour = Number(match[1]);
-      const minute = Number(match[2]);
-
-      if (!Number.isFinite(hour) || !Number.isFinite(minute)) return false;
-
-      const now = new Date();
-      const cpt = new Date(now);
-      cpt.setHours(hour, minute, 0, 0);
-
-      if (cpt.getTime() < now.getTime() - 6 * 60 * 60 * 1000) {
-        cpt.setDate(cpt.getDate() + 1);
-      }
-
-      const diffMs = cpt.getTime() - now.getTime();
-      const limitMs = minutes * 60 * 1000;
-
-      return diffMs >= 0 && diffMs <= limitMs;
-    }
-
-    function requestSectionRefresh(sectionId, button) {
-      const btn = button || document.getElementById('dockTopRefreshBtn');
-      const old = btn.textContent;
-
-      btn.textContent = 'Sent...';
-
-      const payload = {
-        type: 'OPS_MANUAL_SECTION_REFRESH',
-        sectionId,
-        requestedAt: new Date().toISOString(),
-        nonce: Date.now()
-      };
-
-      window.dispatchEvent(new CustomEvent('OPS_MANUAL_SECTION_REFRESH', { detail: payload }));
-      window.postMessage(payload, '*');
-
-      setTimeout(() => { btn.textContent = old; }, 1600);
-    }
-
-    function requestDockOBRefresh(button) {
-      requestSectionRefresh('next-5-vrid-releasing', button);
-    }
-
-    function clearDashboardCache() {
-      localStorage.clear();
-
-      const payload = {
-        type: 'OPS_CLEAR_CACHE',
-        requestedAt: new Date().toISOString(),
-        nonce: Date.now()
-      };
-
-      window.dispatchEvent(new CustomEvent('OPS_CLEAR_CACHE', { detail: payload }));
-      window.postMessage(payload, '*');
-
-      document.getElementById('status').textContent = 'Cache cleared. Reloading...';
-
-      setTimeout(() => { location.reload(); }, 700);
-    }
-
-    function renderKpis(data) {
-      const kpis = document.getElementById('kpis');
-
-      const cards = [
-        { title:'Ops Defect %', value:findMetric(data, ['Ops Defect %']), type:'ops', note:'Operational sorter defects' },
-        { title:'Total Scan Defect %', value:findMetric(data, ['Total Scan Defect %', 'Scan Defect %']), type:'scan', note:'Scanner defect rate' },
-        { title:'Load Balance Defect %', value:findMetric(data, ['Load Balance Defect %']), type:'load', note:'Load balance defects' },
-        { title:'FPY Success/Total', value:findMetric(data, ['FPY Success/Total', 'FPY (Success/Total)', 'FPY']), type:'fpy', note:'First pass yield' }
-      ];
-
-      kpis.innerHTML = cards.map(card => `
-        <article class="kpi ${getKpiClass(card.type, card.value)}">
-          <div class="kpi-label">${escapeHtml(card.title)}</div>
-          <div class="kpi-value">${escapeHtml(card.value || '--')}</div>
-          <div class="kpi-note">${escapeHtml(card.note)}</div>
-        </article>
-      `).join('');
-    }
-
-    function renderEmptyKpis() {
-      document.getElementById('kpis').innerHTML = ['Ops Defect %','Total Scan Defect %','Load Balance Defect %','FPY Success/Total'].map(title => `
-        <article class="kpi neutral">
-          <div class="kpi-label">${escapeHtml(title)}</div>
-          <div class="kpi-value">--</div>
-          <div class="kpi-note">Waiting</div>
-        </article>
-      `).join('');
-    }
-
-    function findMetric(data, labelOptions) {
-      for (const section of data.sections || []) {
-        for (const item of section.items || []) {
-          const label = String(item.label || '').toLowerCase().trim();
-
-          for (const wanted of labelOptions) {
-            if (label === wanted.toLowerCase().trim()) {
-              return String(item.value || '').trim();
-            }
-          }
-        }
-      }
-
-      return '--';
-    }
-
-    function getKpiClass(type, value) {
-      const n = Number(String(value || '').replace('%','').trim());
-
-      if (Number.isNaN(n)) return 'neutral';
-
-      if (type === 'fpy') {
-        if (n >= 85) return 'good';
-        if (n >= 75) return 'warn';
-        return 'bad';
-      }
-
-      if (type === 'ops') {
-        if (n <= 3) return 'good';
-        if (n <= 8) return 'warn';
-        return 'bad';
-      }
-
-      if (type === 'scan') {
-        if (n <= 1) return 'good';
-        if (n <= 5) return 'warn';
-        return 'bad';
-      }
-
-      if (type === 'load') {
-        if (n <= 5) return 'good';
-        if (n <= 10) return 'warn';
-        return 'bad';
-      }
-
-      return 'neutral';
-    }
-
-    function updateCounter() {
-      const el = document.getElementById('refreshCounter');
-
-      if (!lastUpdateMs) {
-        el.textContent = `Auto refresh: ${AUTO_REFRESH_SECONDS}s`;
-        return;
-      }
-
-      const elapsed = Math.floor((Date.now() - lastUpdateMs) / 1000);
-      const left = Math.max(0, AUTO_REFRESH_SECONDS - elapsed);
-
-      el.textContent = `Auto refresh: ${left}s`;
-    }
-
-    setInterval(updateCounter, 1000);
-
-    function getFirstLink(data) {
-      for (const section of data.sections || []) {
-        for (const item of section.items || []) {
-          if (item.link) return safeUrl(item.link);
-        }
-      }
-
-      return '#';
-    }
-
-    function escapeHtml(value) {
-      const div = document.createElement('div');
-      div.textContent = String(value ?? '');
-      return div.innerHTML;
-    }
-
-    function escapeAttr(value) {
-      return String(value ?? '').replace(/"/g, '&quot;');
-    }
-
-    function safeUrl(value) {
-      const url = String(value || '#');
-      return /^(https?:|#)/i.test(url) ? url : '#';
-    }
-  </script>
+  <div class="head-info">
+    <div class="shift-switch" aria-label="Dashboard shift">
+      <button class="shift-btn" type="button" data-shift-mode="day">DAY</button>
+      <button class="shift-btn" type="button" data-shift-mode="night">NIGHT</button>
+      <button class="shift-btn active" type="button" data-shift-mode="auto">AUTO</button>
+    </div>
+    <div class="pill"><small>Active Board</small><strong><span class="live"></span><span id="shiftLabel">Day Shift - Auto</span></strong></div>
+    <div class="pill range-pill"><small>Two Week Schedule</small><strong id="twoWeekRange">-</strong></div>
+    <div class="pill"><small id="dayLabel">Today</small><strong id="clock">-</strong></div>
+  </div>
+</header>
+
+<main>
+  <section class="week-card current-week">
+    <div class="week-title">
+      <div class="week-title-left"><h2>Current Week</h2><span class="range" id="currentRange">-</span></div>
+      <span class="tag">Q1 - Q2 - Q3</span>
+    </div>
+    <div class="table-wrap"><table class="schedule" id="currentWeek" aria-label="Current week critical-role schedule"></table></div>
+  </section>
+
+  <section class="week-card next-week">
+    <div class="week-title">
+      <div class="week-title-left"><h2>Next Week</h2><span class="range" id="nextRange">-</span></div>
+      <span class="tag">Q1 - Q2 - Q3</span>
+    </div>
+    <div class="table-wrap"><table class="schedule" id="nextWeek" aria-label="Next week critical-role schedule"></table></div>
+  </section>
+</main>
+
+<footer>
+  <div class="status"><span class="dot" id="syncDot"></span><strong id="syncTitle">Connecting to live schedule...</strong><span class="updated" id="updated">Waiting for Manager to publish</span></div>
+  <div class="note">Assignments can change during the shift. Please contact a Manager if you are unavailable.</div>
+</footer>
+</div>
+
+<script>
+(function(){
+'use strict';
+var KEY='critical-role-assignments-v1';
+var SHIFT_MODE_KEY='critical-role-dashboard-shift-mode';
+
+var ROLES=[
+ ['ship-clerk','Ship Clerk'],
+ ['tdr','TDR'],
+ ['flats-ps','Flats PS'],
+ ['palletize-ps','Palletize PS'],
+ ['bounty-hunter','Bounty Hunter'],
+ ['quality','Quality'],
+ ['west-flats-pg','West Flats PG'],
+ ['trans-pg','Trans PG'],
+ ['pit-driver','PIT Driver'],
+ ['rwc4-1','RWC4-1'],
+ ['rwc4-2','RWC4-2']
+];
+
+var Q=['Q1','Q2','Q3'];
+
+function defaults(){return{settings:{title:'Critical Role Assignments',siteCode:'YXU1',primary:'#073763',accent:'#1298c8',managerPath:'https://ranvexsi.netlify.app/manager',maxQuarters:6},employees:[],unavailability:[],schedules:{},audits:[],lastUpdated:new Date().toISOString()}}
+function load(){try{var d=JSON.parse(localStorage.getItem(KEY));return d&&d.settings?d:defaults()}catch(e){return defaults()}}
+function loadShiftMode(){var mode=localStorage.getItem(SHIFT_MODE_KEY);return mode==='day'||mode==='night'?mode:'auto'}
+var shiftMode=loadShiftMode();
+
+function pad(n){return String(n).padStart(2,'0')}
+function dateKey(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
+function sunday(d){var x=new Date(d);x.setHours(12,0,0,0);x.setDate(x.getDate()-x.getDay());return x}
+function add(d,n){var x=new Date(d);x.setDate(x.getDate()+n);return x}
+function akey(date,shift,q,role){return date+'|'+shift+'|'+q+'|'+role}
+function activeShift(d){var m=d.getHours()*60+d.getMinutes();return(m>=1085||m<305)?'night':'day'}
+function selectedShift(now){return shiftMode==='auto'?activeShift(now):shiftMode}
+function value(state,date,shift,q,role){
+ var wk=dateKey(sunday(date));
+ var sch=state.schedules&&state.schedules[wk];
+ var a=sch&&sch.assignments&&sch.assignments[akey(dateKey(date),shift,q,role)];
+ return a&&a.login?a.login:'OPEN';
+}
+function esc(v){return String(v).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function dayName(d){return d.toLocaleDateString('en-CA',{weekday:'short'})}
+function month(d){return d.toLocaleDateString('en-CA',{month:'short'})}
+function rangeText(a,b){
+ if(a.getFullYear()===b.getFullYear()) return a.getDate()+' '+month(a)+' - '+b.getDate()+' '+month(b)+' '+b.getFullYear();
+ return a.getDate()+' '+month(a)+' '+a.getFullYear()+' - '+b.getDate()+' '+month(b)+' '+b.getFullYear();
+}
+
+function updateSwitch(){
+ document.querySelectorAll('[data-shift-mode]').forEach(function(btn){
+   btn.classList.toggle('active',btn.dataset.shiftMode===shiftMode);
+ });
+}
+
+function setShiftMode(mode){
+ if(['day','night','auto'].indexOf(mode)<0)return;
+ shiftMode=mode;
+ localStorage.setItem(SHIFT_MODE_KEY,mode);
+ updateSwitch();
+ render();
+}
+
+document.querySelectorAll('[data-shift-mode]').forEach(function(btn){
+ btn.addEventListener('click',function(){setShiftMode(btn.dataset.shiftMode)});
+});
+
+function renderWeek(target,state,start,shift,today){
+ var html='<colgroup><col class="role-col"><col span="21"></colgroup><thead><tr><th class="role-head" rowspan="2">Role</th>';
+ for(var i=0;i<7;i++){var d=add(start,i);html+='<th class="day-head" colspan="3"><span class="dn">'+dayName(d)+'</span><span class="dd">'+d.getDate()+' '+month(d)+'</span></th>';}
+ html+='</tr><tr>';
+ for(var i=0;i<7;i++){Q.forEach(function(q){html+='<th class="q-head">'+q+'</th>';});}
+ html+='</tr></thead><tbody>';
+ ROLES.forEach(function(r){
+   html+='<tr><th class="role">'+esc(r[1])+'</th>';
+   for(var i=0;i<7;i++){var d=add(start,i);Q.forEach(function(q){var login=value(state,d,shift,q,r[0]),empty=login==='OPEN';html+='<td class="login-cell '+(empty?'empty':'')+'">'+esc(empty?'-':login)+'</td>';});}
+   html+='</tr>';
+ });
+ html+='</tbody>';document.getElementById(target).innerHTML=html;
+}
+
+function render(){
+ var s=load(),now=new Date(),shift=selectedShift(now),cur=sunday(now),next=add(cur,7),today=dateKey(now);
+
+ document.documentElement.style.setProperty('--navy',s.settings.primary||'#073763');
+ document.documentElement.style.setProperty('--blue',s.settings.accent||'#1298c8');
+ document.title=s.settings.title||'Critical Role Assignments';
+ document.getElementById('title').textContent=s.settings.title||'Critical Role Assignments';
+ document.getElementById('siteCode').textContent=s.settings.siteCode||'YXU1';
+
+ var label=shift==='day'?'Day Shift':'Night Shift';
+ if(shiftMode==='auto')label+=' - Auto';
+ document.getElementById('shiftLabel').textContent=label;
+
+ document.getElementById('currentRange').textContent=rangeText(cur,add(cur,6));
+ document.getElementById('nextRange').textContent=rangeText(next,add(next,6));
+ document.getElementById('twoWeekRange').textContent=rangeText(cur,add(next,6));
+ document.getElementById('dayLabel').textContent=now.toLocaleDateString('en-CA',{weekday:'long'});
+ document.getElementById('clock').textContent=now.toLocaleTimeString('en-CA',{hour:'numeric',minute:'2-digit'});
+
+ renderWeek('currentWeek',s,cur,shift,today);
+ renderWeek('nextWeek',s,next,shift,today);
+
+ document.getElementById('updated').textContent=s.lastUpdated
+   ? 'Updated '+new Date(s.lastUpdated).toLocaleString('en-CA',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})
+   : 'Waiting for Manager to publish';
+
+ updateSwitch();
+}
+
+render();
+setInterval(render,30000);
+window.addEventListener('storage',function(e){
+ if(e.key===SHIFT_MODE_KEY)shiftMode=loadShiftMode();
+ render();
+});
+window.addEventListener('cra:cloud-state',render);
+})();
+</script>
+
+<script type="module">
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js';
+import {getAuth,signInAnonymously} from 'https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js';
+import {getDatabase,ref,onValue} from 'https://www.gstatic.com/firebasejs/12.17.1/firebase-database.js';
+
+const firebaseConfig={
+ apiKey:'AIzaSyDopxxbJOlUQdMfd-lM-a6Odb8Yux7jAkA',
+ authDomain:'yxu1-critical-roles.firebaseapp.com',
+ databaseURL:'https://yxu1-critical-roles-default-rtdb.firebaseio.com',
+ projectId:'yxu1-critical-roles',
+ storageBucket:'yxu1-critical-roles.firebasestorage.app',
+ messagingSenderId:'681933966768',
+ appId:'1:681933966768:web:327d36b8683db1f4fa1a75'
+};
+
+const syncTitle=document.getElementById('syncTitle');
+const syncDot=document.getElementById('syncDot');
+const setStatus=(title,online)=>{
+ syncTitle.textContent=title;
+ syncDot.style.background=online?'#23b26d':'#d97706';
+};
+
+try{
+ const app=initializeApp(firebaseConfig);
+ const auth=getAuth(app);
+ const db=getDatabase(app);
+ await signInAnonymously(auth);
+
+ onValue(ref(db,'appState'),snapshot=>{
+   if(snapshot.exists()){
+     localStorage.setItem('critical-role-assignments-v1',JSON.stringify(snapshot.val()));
+     window.dispatchEvent(new CustomEvent('cra:cloud-state'));
+     setStatus('Live schedule connected',true);
+   }else{
+     setStatus('Connected - waiting for first publish',true);
+   }
+ },()=>{
+   setStatus('Offline schedule cache',false);
+ });
+}catch(error){
+ console.error('Firebase dashboard connection failed:',error);
+ setStatus('Offline schedule cache',false);
+}
+</script>
 </body>
 </html>
