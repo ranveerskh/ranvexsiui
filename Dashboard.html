@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Live Operations Dashboard v4.7 - Grouped Defects</title>
+  <title>Live Operations Dashboard v4.8 - Grouped Defects</title>
 
   <style>
     :root {
@@ -18,9 +18,7 @@
       --sidebar:#111827;
     }
 
-    * {
-      box-sizing:border-box;
-    }
+    * { box-sizing:border-box; }
 
     body {
       margin:0;
@@ -41,11 +39,7 @@
       padding:20px 16px;
     }
 
-    .brand {
-      font-size:20px;
-      font-weight:800;
-      margin-bottom:8px;
-    }
+    .brand { font-size:20px; font-weight:800; margin-bottom:8px; }
 
     .sub {
       font-size:13px;
@@ -64,18 +58,10 @@
       cursor:pointer;
     }
 
-    .feature:hover {
-      background:#1f2937;
-    }
+    .feature:hover { background:#1f2937; }
+    .feature input { accent-color:var(--accent); }
 
-    .feature input {
-      accent-color:var(--accent);
-    }
-
-    main {
-      padding:24px;
-      min-width:0;
-    }
+    main { padding:24px; min-width:0; }
 
     .topbar {
       display:flex;
@@ -85,10 +71,7 @@
       margin-bottom:15px;
     }
 
-    h1 {
-      margin:0;
-      font-size:26px;
-    }
+    h1 { margin:0; font-size:26px; }
 
     .subtitle {
       margin-top:5px;
@@ -104,8 +87,7 @@
       flex-wrap:wrap;
     }
 
-    .pill,
-    .btn {
+    .pill, .btn {
       background:#fff;
       border:1px solid var(--line);
       color:var(--text);
@@ -118,9 +100,7 @@
       white-space:nowrap;
     }
 
-    .btn {
-      font-weight:700;
-    }
+    .btn { font-weight:700; }
 
     .btn-small {
       padding:6px 9px;
@@ -130,10 +110,7 @@
       font-weight:700;
     }
 
-    .btn:hover,
-    .pill:hover {
-      border-color:var(--accent);
-    }
+    .btn:hover, .pill:hover { border-color:var(--accent); }
 
     .refresh-pill {
       font-weight:800;
@@ -181,27 +158,12 @@
       letter-spacing:-1px;
     }
 
-    .kpi-note {
-      margin-top:8px;
-      font-size:12px;
-      color:var(--muted);
-    }
+    .kpi-note { margin-top:8px; font-size:12px; color:var(--muted); }
 
-    .good {
-      border-left:7px solid #43a047;
-    }
-
-    .warn {
-      border-left:7px solid #f59e0b;
-    }
-
-    .bad {
-      border-left:7px solid #e11d48;
-    }
-
-    .neutral {
-      border-left:7px solid #98a2b3;
-    }
+    .good { border-left:7px solid #43a047; }
+    .warn { border-left:7px solid #f59e0b; }
+    .bad { border-left:7px solid #e11d48; }
+    .neutral { border-left:7px solid #98a2b3; }
 
     .section-title {
       margin:8px 0 12px;
@@ -223,10 +185,7 @@
       overflow:hidden;
     }
 
-    .card.dock-wide,
-    .card.defect-wide {
-      grid-column:1 / -1;
-    }
+    .card.dock-wide, .card.defect-wide { grid-column:1 / -1; }
 
     .card-head {
       display:flex;
@@ -280,13 +239,9 @@
       cursor:pointer;
     }
 
-    .card-refresh:hover {
-      border-color:#2563eb;
-    }
+    .card-refresh:hover { border-color:#2563eb; }
 
-    .card-body {
-      padding:8px 16px 14px;
-    }
+    .card-body { padding:8px 16px 14px; }
 
     .item {
       display:flex;
@@ -299,9 +254,7 @@
       border-radius:8px;
     }
 
-    .item:last-child {
-      border-bottom:0;
-    }
+    .item:last-child { border-bottom:0; }
 
     .item-main {
       display:flex;
@@ -316,9 +269,7 @@
       font-weight:700;
     }
 
-    .item a:hover {
-      text-decoration:underline;
-    }
+    .item a:hover { text-decoration:underline; }
 
     .meta {
       color:var(--muted);
@@ -340,57 +291,27 @@
       box-shadow:0 0 10px rgba(37,99,235,.75);
     }
 
-    .light-orange {
-      background:#f97316;
-      animation:blinkOrange 1s infinite;
-    }
-
+    .light-orange { background:#f97316; animation:blinkOrange 1s infinite; }
     .light-sky {
       background:#38bdf8;
       box-shadow:0 0 10px rgba(56,189,248,.75);
     }
-
-    .light-green {
-      background:#22c55e;
-      animation:blinkGreen 1s infinite;
-    }
-
-    .light-red {
-      background:#ef4444;
-      animation:blinkRed 1s infinite;
-    }
+    .light-green { background:#22c55e; animation:blinkGreen 1s infinite; }
+    .light-red { background:#ef4444; animation:blinkRed 1s infinite; }
 
     @keyframes blinkOrange {
-      0%, 100% {
-        opacity:1;
-        box-shadow:0 0 12px rgba(249,115,22,.9);
-      }
-      50% {
-        opacity:.25;
-        box-shadow:none;
-      }
+      0%,100% { opacity:1; box-shadow:0 0 12px rgba(249,115,22,.9); }
+      50% { opacity:.25; box-shadow:none; }
     }
 
     @keyframes blinkGreen {
-      0%, 100% {
-        opacity:1;
-        box-shadow:0 0 12px rgba(34,197,94,.9);
-      }
-      50% {
-        opacity:.25;
-        box-shadow:none;
-      }
+      0%,100% { opacity:1; box-shadow:0 0 12px rgba(34,197,94,.9); }
+      50% { opacity:.25; box-shadow:none; }
     }
 
     @keyframes blinkRed {
-      0%, 100% {
-        opacity:1;
-        box-shadow:0 0 12px rgba(239,68,68,.9);
-      }
-      50% {
-        opacity:.25;
-        box-shadow:none;
-      }
+      0%,100% { opacity:1; box-shadow:0 0 12px rgba(239,68,68,.9); }
+      50% { opacity:.25; box-shadow:none; }
     }
 
     .dock-table {
@@ -416,27 +337,12 @@
       vertical-align:top;
     }
 
-    .dock-table tr:last-child td {
-      border-bottom:0;
-    }
+    .dock-table tr:last-child td { border-bottom:0; }
+    .dock-status { font-weight:800; }
+    .dock-time { white-space:nowrap; }
+    .dock-cpt-soon { background:#fff7ed; }
+    .dock-cpt-soon td { color:#c2410c; }
 
-    .dock-status {
-      font-weight:800;
-    }
-
-    .dock-time {
-      white-space:nowrap;
-    }
-
-    .dock-cpt-soon {
-      background:#fff7ed;
-    }
-
-    .dock-cpt-soon td {
-      color:#c2410c;
-    }
-
-    /* Grouped Defect / Recirc layout */
     .defect-groups {
       display:grid;
       grid-template-columns:repeat(2,minmax(0,1fr));
@@ -455,35 +361,12 @@
       box-shadow:0 4px 14px rgba(16,24,40,.07);
     }
 
-    .location-east {
-      --group-color:#2563eb;
-      --group-soft:#eff6ff;
-    }
-
-    .location-west {
-      --group-color:#f97316;
-      --group-soft:#fff7ed;
-    }
-
-    .location-jackpot {
-      --group-color:#dc2626;
-      --group-soft:#fef2f2;
-    }
-
-    .location-odd {
-      --group-color:#7c3aed;
-      --group-soft:#f5f3ff;
-    }
-
-    .location-even {
-      --group-color:#059669;
-      --group-soft:#ecfdf5;
-    }
-
-    .location-other {
-      --group-color:#64748b;
-      --group-soft:#f8fafc;
-    }
+    .location-east { --group-color:#2563eb; --group-soft:#eff6ff; }
+    .location-west { --group-color:#f97316; --group-soft:#fff7ed; }
+    .location-jackpot { --group-color:#dc2626; --group-soft:#fef2f2; }
+    .location-odd { --group-color:#7c3aed; --group-soft:#f5f3ff; }
+    .location-even { --group-color:#059669; --group-soft:#ecfdf5; }
+    .location-other { --group-color:#64748b; --group-soft:#f8fafc; }
 
     .defect-location-head {
       display:flex;
@@ -532,10 +415,7 @@
       white-space:nowrap;
     }
 
-    .defect-table-wrap {
-      width:100%;
-      overflow-x:auto;
-    }
+    .defect-table-wrap { width:100%; overflow-x:auto; }
 
     .defect-group-table {
       width:100%;
@@ -548,7 +428,7 @@
       text-align:left;
       color:#667085;
       font-size:11px;
-      padding:8px 8px;
+      padding:8px;
       border-bottom:1px solid #e4e7ec;
       background:#fff;
       white-space:nowrap;
@@ -562,41 +442,13 @@
       overflow-wrap:anywhere;
     }
 
-    .defect-group-table tr:last-child td {
-      border-bottom:0;
-    }
-
-    .defect-group-table th:nth-child(1),
-    .defect-group-table td:nth-child(1) {
-      width:24%;
-    }
-
-    .defect-group-table th:nth-child(2),
-    .defect-group-table td:nth-child(2) {
-      width:11%;
-      text-align:center;
-    }
-
-    .defect-group-table th:nth-child(3),
-    .defect-group-table td:nth-child(3) {
-      width:28%;
-    }
-
-    .defect-group-table th:nth-child(4),
-    .defect-group-table td:nth-child(4) {
-      width:37%;
-    }
-
-    .defect-group-table a {
-      color:#17202a;
-      font-weight:900;
-    }
-
-    .defect-pkgs {
-      text-align:center;
-      font-size:15px;
-      font-weight:900;
-    }
+    .defect-group-table tr:last-child td { border-bottom:0; }
+    .defect-group-table th:nth-child(1), .defect-group-table td:nth-child(1) { width:24%; }
+    .defect-group-table th:nth-child(2), .defect-group-table td:nth-child(2) { width:11%; text-align:center; }
+    .defect-group-table th:nth-child(3), .defect-group-table td:nth-child(3) { width:28%; }
+    .defect-group-table th:nth-child(4), .defect-group-table td:nth-child(4) { width:37%; }
+    .defect-group-table a { color:#17202a; font-weight:900; }
+    .defect-pkgs { text-align:center; font-size:15px; font-weight:900; }
 
     .issue-badge {
       display:inline-flex;
@@ -610,127 +462,79 @@
       margin:2px 4px 2px 0;
     }
 
-    .issue-blue {
-      background:#dbeafe;
-      color:#1d4ed8;
+    .issue-blue { background:#dbeafe; color:#1d4ed8; }
+    .issue-disabled { background:#e0f2fe; color:#0369a1; }
+    .issue-jam { background:#fef9c3; color:#a16207; }
+    .issue-other { background:#f2f4f7; color:#344054; }
+    .defect-row-blue { background:#eff6ff; }
+    .defect-row-disabled { background:#f0f9ff; }
+    .defect-row-jam { background:#fefce8; }
+    .hidden { display:none!important; }
+    .empty { padding:24px; text-align:center; color:var(--muted); }
+
+    /* Critical-role assignment note from the floor board */
+    .assignment-warning {
+      margin-top:18px;
+      display:grid;
+      grid-template-columns:110px 1fr;
+      background:#facc15;
+      border:1px solid #d6a900;
+      color:#111827;
+      min-height:58px;
+      box-shadow:0 4px 14px rgba(16,24,40,.08);
     }
 
-    .issue-disabled {
-      background:#e0f2fe;
-      color:#0369a1;
+    .assignment-warning-label {
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:12px;
+      border-right:1px solid #d6a900;
+      font-size:16px;
+      font-weight:900;
     }
 
-    .issue-jam {
-      background:#fef9c3;
-      color:#a16207;
-    }
-
-    .issue-other {
-      background:#f2f4f7;
-      color:#344054;
-    }
-
-    .defect-row-blue {
-      background:#eff6ff;
-    }
-
-    .defect-row-disabled {
-      background:#f0f9ff;
-    }
-
-    .defect-row-jam {
-      background:#fefce8;
-    }
-
-    .hidden {
-      display:none!important;
-    }
-
-    .empty {
-      padding:24px;
+    .assignment-warning-text {
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:10px 18px;
       text-align:center;
-      color:var(--muted);
+      font-size:14px;
+      line-height:1.45;
+      font-weight:700;
     }
 
     @media(max-width:1100px) {
-      .kpi-grid {
-        grid-template-columns:repeat(2,minmax(0,1fr));
-      }
-
-      .defect-groups {
-        grid-template-columns:1fr;
-      }
+      .kpi-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .defect-groups { grid-template-columns:1fr; }
     }
 
     @media(max-width:900px) {
-      .app {
-        grid-template-columns:1fr;
-      }
-
-      .grid {
-        grid-template-columns:1fr;
-      }
-
-      .topbar {
-        flex-direction:column;
-        align-items:flex-start;
-      }
-
-      .actions {
-        justify-content:flex-start;
-      }
-
-      .card.dock-wide,
-      .card.defect-wide {
-        grid-column:auto;
-      }
+      .app { grid-template-columns:1fr; }
+      .grid { grid-template-columns:1fr; }
+      .topbar { flex-direction:column; align-items:flex-start; }
+      .actions { justify-content:flex-start; }
+      .card.dock-wide, .card.defect-wide { grid-column:auto; }
     }
 
     @media(max-width:560px) {
-      main {
-        padding:16px;
-      }
+      main { padding:16px; }
+      .kpi-grid { grid-template-columns:1fr; }
+      .item { flex-direction:column; align-items:flex-start; gap:4px; }
+      .meta { max-width:100%; text-align:left; }
+      .defect-location-head { align-items:flex-start; flex-direction:column; }
+      .location-summary { justify-content:flex-start; }
+      .defect-group-table, .dock-table { font-size:12px; }
+      .defect-group-table th, .defect-group-table td, .dock-table th, .dock-table td { padding:8px 6px; }
+      .issue-badge { white-space:normal; text-align:center; }
 
-      .kpi-grid {
-        grid-template-columns:1fr;
+      .assignment-warning { grid-template-columns:1fr; }
+      .assignment-warning-label {
+        border-right:0;
+        border-bottom:1px solid #d6a900;
       }
-
-      .item {
-        flex-direction:column;
-        align-items:flex-start;
-        gap:4px;
-      }
-
-      .meta {
-        max-width:100%;
-        text-align:left;
-      }
-
-      .defect-location-head {
-        align-items:flex-start;
-        flex-direction:column;
-      }
-
-      .location-summary {
-        justify-content:flex-start;
-      }
-
-      .defect-group-table,
-      .dock-table {
-        font-size:12px;
-      }
-
-      .defect-group-table th,
-      .defect-group-table td,
-      .dock-table th,
-      .dock-table td {
-        padding:8px 6px;
-      }
-
-      .issue-badge {
-        white-space:normal;
-        text-align:center;
-      }
+      .assignment-warning-text { padding:12px; }
     }
   </style>
 </head>
@@ -792,6 +596,16 @@
       <section id="dashboard" class="grid">
         <div class="card empty">Keep source pages open in other tabs.</div>
       </section>
+
+      <div class="assignment-warning">
+        <div class="assignment-warning-label">Notes</div>
+        <div class="assignment-warning-text">
+          In the event that you're unable to make it to site on the day of your assignment,
+          please do not assume that you'll be assigned the next day.
+          First preference will be given to AAs assigned to critical roles for that day.
+          This is to ensure a fair chance for all.
+        </div>
+      </div>
     </main>
   </div>
 
@@ -1053,25 +867,11 @@
     function getLocationStyle(location) {
       const text = String(location || '').toLowerCase();
 
-      if (text.includes('east')) {
-        return { className:'location-east', order:10 };
-      }
-
-      if (text.includes('west')) {
-        return { className:'location-west', order:20 };
-      }
-
-      if (text.includes('jackpot')) {
-        return { className:'location-jackpot', order:30 };
-      }
-
-      if (text.includes('palletize') && text.includes('odd')) {
-        return { className:'location-odd', order:40 };
-      }
-
-      if (text.includes('palletize') && text.includes('even')) {
-        return { className:'location-even', order:50 };
-      }
+      if (text.includes('east')) return { className:'location-east', order:10 };
+      if (text.includes('west')) return { className:'location-west', order:20 };
+      if (text.includes('jackpot')) return { className:'location-jackpot', order:30 };
+      if (text.includes('palletize') && text.includes('odd')) return { className:'location-odd', order:40 };
+      if (text.includes('palletize') && text.includes('even')) return { className:'location-even', order:50 };
 
       return { className:'location-other', order:100 };
     }
@@ -1100,58 +900,27 @@
 
       let issue = '';
 
-      if (/blue light/i.test(value)) {
-        issue += issue ? ' + Blue Light' : 'Blue Light';
-      }
-
-      if (/disabled|failed to divert/i.test(value)) {
-        issue += issue ? ' + Disabled' : 'Disabled';
-      }
-
-      if (/jam/i.test(value)) {
-        issue += issue ? ' + Jam' : 'Jam';
-      }
-
-      if (!issue && /100% defect/i.test(value)) {
-        issue = '100% Defect';
-      }
+      if (/blue light/i.test(value)) issue += issue ? ' + Blue Light' : 'Blue Light';
+      if (/disabled|failed to divert/i.test(value)) issue += issue ? ' + Disabled' : 'Disabled';
+      if (/jam/i.test(value)) issue += issue ? ' + Jam' : 'Jam';
+      if (!issue && /100% defect/i.test(value)) issue = '100% Defect';
 
       const reason = value
         .replace(/^\d+\s*pkg\s*recirc\s*â¢?\s*/i, '')
         .trim();
 
-      return {
-        lowerChute: label,
-        packages,
-        issue,
-        reason
-      };
+      return { lowerChute: label, packages, issue, reason };
     }
 
     function getIssueBadge(issue) {
       const text = String(issue || '').toLowerCase();
-
       const badges = [];
 
-      if (text.includes('blue')) {
-        badges.push('<span class="issue-badge issue-blue">Blue Light</span>');
-      }
-
-      if (text.includes('disabled') || text.includes('failed to divert')) {
-        badges.push('<span class="issue-badge issue-disabled">Disabled</span>');
-      }
-
-      if (text.includes('jam')) {
-        badges.push('<span class="issue-badge issue-jam">Jam</span>');
-      }
-
-      if (!badges.length && text.includes('100%')) {
-        badges.push('<span class="issue-badge issue-other">100% Defect</span>');
-      }
-
-      if (!badges.length) {
-        badges.push(`<span class="issue-badge issue-other">${escapeHtml(issue || 'Issue')}</span>`);
-      }
+      if (text.includes('blue')) badges.push('<span class="issue-badge issue-blue">Blue Light</span>');
+      if (text.includes('disabled') || text.includes('failed to divert')) badges.push('<span class="issue-badge issue-disabled">Disabled</span>');
+      if (text.includes('jam')) badges.push('<span class="issue-badge issue-jam">Jam</span>');
+      if (!badges.length && text.includes('100%')) badges.push('<span class="issue-badge issue-other">100% Defect</span>');
+      if (!badges.length) badges.push(`<span class="issue-badge issue-other">${escapeHtml(issue || 'Issue')}</span>`);
 
       return badges.join(' ');
     }
@@ -1159,17 +928,9 @@
     function getDefectRowClass(issue) {
       const text = String(issue || '').toLowerCase();
 
-      if (text.includes('jam')) {
-        return 'defect-row-jam';
-      }
-
-      if (text.includes('blue')) {
-        return 'defect-row-blue';
-      }
-
-      if (text.includes('disabled') || text.includes('failed')) {
-        return 'defect-row-disabled';
-      }
+      if (text.includes('jam')) return 'defect-row-jam';
+      if (text.includes('blue')) return 'defect-row-blue';
+      if (text.includes('disabled') || text.includes('failed')) return 'defect-row-disabled';
 
       return '';
     }
@@ -1195,28 +956,16 @@
 
       const text = String(value || '').toLowerCase();
 
-      if (text.includes('blue light')) {
-        return '<span class="status-light light-blue" title="Blue Light"></span>';
-      }
-
-      if (text.includes('jam')) {
-        return '<span class="status-light light-orange" title="Jam"></span>';
-      }
-
-      if (text.includes('disabled')) {
-        return '<span class="status-light light-sky" title="Disabled"></span>';
-      }
-
-      if (text.includes('100% defect')) {
-        return '<span class="status-light light-red" title="100% Defect"></span>';
-      }
+      if (text.includes('blue light')) return '<span class="status-light light-blue" title="Blue Light"></span>';
+      if (text.includes('jam')) return '<span class="status-light light-orange" title="Jam"></span>';
+      if (text.includes('disabled')) return '<span class="status-light light-sky" title="Disabled"></span>';
+      if (text.includes('100% defect')) return '<span class="status-light light-red" title="100% Defect"></span>';
 
       return '';
     }
 
     function isCptWithinNextMinutes(value, minutes) {
       const text = String(value || '');
-
       const match = text.match(/\bCPT\s+(\d{1,2}):(\d{2})\b/i);
       if (!match) return false;
 
@@ -1227,7 +976,6 @@
 
       const now = new Date();
       const cpt = new Date(now);
-
       cpt.setHours(hour, minute, 0, 0);
 
       if (cpt.getTime() < now.getTime() - 6 * 60 * 60 * 1000) {
@@ -1253,15 +1001,10 @@
         nonce: Date.now()
       };
 
-      window.dispatchEvent(new CustomEvent('OPS_MANUAL_SECTION_REFRESH', {
-        detail: payload
-      }));
-
+      window.dispatchEvent(new CustomEvent('OPS_MANUAL_SECTION_REFRESH', { detail: payload }));
       window.postMessage(payload, '*');
 
-      setTimeout(() => {
-        btn.textContent = old;
-      }, 1600);
+      setTimeout(() => { btn.textContent = old; }, 1600);
     }
 
     function requestDockOBRefresh(button) {
@@ -1277,47 +1020,22 @@
         nonce: Date.now()
       };
 
-      window.dispatchEvent(new CustomEvent('OPS_CLEAR_CACHE', {
-        detail: payload
-      }));
-
+      window.dispatchEvent(new CustomEvent('OPS_CLEAR_CACHE', { detail: payload }));
       window.postMessage(payload, '*');
 
       document.getElementById('status').textContent = 'Cache cleared. Reloading...';
 
-      setTimeout(() => {
-        location.reload();
-      }, 700);
+      setTimeout(() => { location.reload(); }, 700);
     }
 
     function renderKpis(data) {
       const kpis = document.getElementById('kpis');
 
       const cards = [
-        {
-          title:'Ops Defect %',
-          value:findMetric(data, ['Ops Defect %']),
-          type:'ops',
-          note:'Operational sorter defects'
-        },
-        {
-          title:'Total Scan Defect %',
-          value:findMetric(data, ['Total Scan Defect %', 'Scan Defect %']),
-          type:'scan',
-          note:'Scanner defect rate'
-        },
-        {
-          title:'Load Balance Defect %',
-          value:findMetric(data, ['Load Balance Defect %']),
-          type:'load',
-          note:'Load balance defects'
-        },
-        {
-          title:'FPY Success/Total',
-          value:findMetric(data, ['FPY Success/Total', 'FPY (Success/Total)', 'FPY']),
-          type:'fpy',
-          note:'First pass yield'
-        }
+        { title:'Ops Defect %', value:findMetric(data, ['Ops Defect %']), type:'ops', note:'Operational sorter defects' },
+        { title:'Total Scan Defect %', value:findMetric(data, ['Total Scan Defect %', 'Scan Defect %']), type:'scan', note:'Scanner defect rate' },
+        { title:'Load Balance Defect %', value:findMetric(data, ['Load Balance Defect %']), type:'load', note:'Load balance defects' },
+        { title:'FPY Success/Total', value:findMetric(data, ['FPY Success/Total', 'FPY (Success/Total)', 'FPY']), type:'fpy', note:'First pass yield' }
       ];
 
       kpis.innerHTML = cards.map(card => `
